@@ -1,0 +1,35 @@
+.xp {
+    li {
+        display: inline-block;
+        text-align: center;
+    }
+    .block {
+        width: 50px;
+        height: 20px;
+        margin: 0 auto;
+    }
+    .frequency {
+        margin: 50px;
+        .block {
+            background-color: Steelblue;
+        }
+    }
+    .amplitude {
+        margin: 50px;
+        .block {
+            background-color: lime;
+        }
+    }
+    .waveForm {
+        margin: 50px;
+        .block {
+            background-color: tomato;
+        }
+    }
+    .pitch {
+        margin: 50px;
+        .block {
+            background-color: black;
+        }
+    }
+}
