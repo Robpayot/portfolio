@@ -31,39 +31,20 @@ class Xp {
             loop: true
         });
 
-        let analyser = sono.effect.analyser({
+        this.analyser = sono.effect.analyser({
             fftSize: 2048,
             smoothingTimeConstant: 0.7
         });
 
-        this.frequencies = analyser.getFrequencies();
-
-        var frequencies, waveform, magnitude, normalised, i;
-
-        function draw() {
-            window.requestAnimationFrame(draw);
-
-            frequencies = analyser.getFrequencies();
-
-            for (i = 0; i < frequencies.length; i++) {
-                magnitude = frequencies[i];
-                normalised = magnitude / 256;
-                // draw some visualisation
-                console.log(magnitude);
-            }
-
-            waveform = analyser.getWaveform();
-
-            for (i = 0; i < waveform.length; i++) {
-                magnitude = waveform[i];
-                normalised = magnitude / 256;
-                // draw some visualisation
-            }
-        }
-        draw();
-        // this.draw();
-
         sound.play();
+
+        setTimeout(() => {
+            this.draw();
+        }, 2000);
+
+
+
+
 
         console.log(sound);
     }
@@ -74,19 +55,24 @@ class Xp {
 
         // var frequencies, waveform, magnitude, normalised, i;
 
+        let frequencies = this.analyser.getFrequencies();
 
-        for (let i = 0; i < this.frequencies.length; i++) {
-            this.magnitude = this.frequencies[i];
+
+        for (let i = 0; i < frequencies.length; i++) {
+            this.magnitude = frequencies[i];
             this.normalised = this.magnitude / 256;
-            console.log(this.normalised);
+            
+            let val = this.normalised * 100;
+
+            console.log(val);
             // draw some visualisation
-            // this.frequencyB.style.height = `${normalised*100}px`;
+            this.frequencyB.style.height = `${val}px`;
 
             // console.log(this.frequencyB);
             // console.log(normalised);
         }
 
-        this.waveform = this.analyser.getWaveform();
+        // this.waveform = this.analyser.getWaveform();
 
         // for (i = 0; i < this.waveform.length; i++) {
         //     magnitude = this.waveform[i];
