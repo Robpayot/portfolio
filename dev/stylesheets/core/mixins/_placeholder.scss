@@ -1,0 +1,24 @@
+/* ------------------------------------------------------------------ */
+/*        PLACEHOLDER
+/* ------------------------------------------------------------------ */
+
+@mixin placeholder($color, $font:false) {
+    &.placeholder {
+        color: $color;
+        @if $font != false {
+            font:unquote($font);
+        }
+    }
+    &:-moz-placeholder {
+        color: $color;
+        @if $font != false {
+            font:unquote($font);
+        }
+    }
+    &::-webkit-input-placeholder {
+        color: $color;
+        @if $font != false {
+            font:unquote($font);
+        }
+    }
+}

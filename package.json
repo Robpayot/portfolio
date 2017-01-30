@@ -1,0 +1,52 @@
+{
+  "name": "ProjectName",
+  "author": "Antoine Martin - a.martin@84paris.com",
+  "description": "Description of your project",
+  "version": "0.0.2",
+  "scripts": {
+    "watch": "gulp",
+    "build": "gulp --env=production"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "~6.18.0",
+    "babelify": "^7.3.0",
+    "browser-sync": "~2.18.5",
+    "browserify": "~13.1.1",
+    "browserify-shim": "~3.8.12",
+    "deamdify": "~0.2.0",
+    "del": "~2.2.2",
+    "extfs": "~0.0.7",
+    "gulp": "~3.9.1",
+    "gulp-autoprefixer": "~3.1.0",
+    "gulp-changed": "~1.3.0",
+    "gulp-clean-css": "~2.3.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-if": "~2.0.0",
+    "gulp-jsonminify": "~1.0.0",
+    "gulp-notify": "~2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sass": "~3.0.0",
+    "gulp-shell": "~0.5.2",
+    "gulp-sourcemaps": "~1.9.1",
+    "gulp-strip-debug": "~1.1.0",
+    "gulp-uglify": "~2.0.0",
+    "gulp-util": "3.0.8",
+    "gulp-yaml": "~1.0.1",
+    "lodash.assign": "~4.2.0",
+    "shimify": "0.0.0",
+    "vinyl-buffer": "~1.0.0",
+    "vinyl-source-stream": "~1.1.0",
+    "watchify": "~3.8.0"
+  },
+  "dependencies": {
+    "@84paris/84.tools": "~0.0.2",
+    "babel": "~6.5.2",
+    "babel-polyfill": "~6.20.0"
+  },
+  "browser": {
+    "modernizr": "./dev/javascripts/vendors/modernizr.js"
+  },
+  "browserify-shim": {
+    "modernizr": "Modernizr"
+  }
+}

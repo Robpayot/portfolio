@@ -1,0 +1,77 @@
+{
+	"parser": "espree",
+
+	"parserOptions": {
+		"ecmaVersion": 6,
+		"sourceType": "module"
+	},
+
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true
+	},
+
+	"extends": "eslint:recommended",
+
+	"globals": {
+		"$"                : true,
+		"Modernizr"        : true,
+		"TimelineLite"     : true,
+		"TimelineMax"      : true,
+		"TweenLite"        : true,
+		"TweenMax"         : true,
+		"Back"             : true,
+		"Bounce"           : true,
+		"Circ"             : true,
+		"Cubic"            : true,
+		"Ease"             : true,
+		"EaseLookup"       : true,
+		"Elastic"          : true,
+		"Expo"             : true,
+		"Linear"           : true,
+		"Power0"           : true,
+		"Power1"           : true,
+		"Power2"           : true,
+		"Power3"           : true,
+		"Power4"           : true,
+		"Quad"             : true,
+		"Quart"            : true,
+		"Quint"            : true,
+		"RoughEase"        : true,
+		"Sine"             : true,
+		"SlowMo"           : true,
+		"SteppedEase"      : true,
+		"Strong"           : true,
+		"Draggable"        : true,
+		"SplitText"        : true,
+		"VelocityTracker"  : true,
+		"CSSPlugin"        : true,
+		"ThrowPropsPlugin" : true,
+		"BezierPlugin"     : true
+	},
+
+	"rules": {
+		"eol-last": 2,
+		"eqeqeq": 2,
+		"indent": [2, "tab", {"SwitchCase": 1}],
+		"keyword-spacing": 2,
+		"no-console": 0,
+		"no-debugger": 0,
+		"no-extra-parens": 2,
+		"no-multi-spaces": 0,
+		"no-spaced-func": 2,
+		"no-trailing-spaces": 2,
+		"no-var": 2,
+		"no-case-declarations": 0,
+		"no-unused-vars": ["error", { "args": "none" }],
+		"prefer-template": 2,
+		"prefer-arrow-callback": 2,
+		"quotes": [2, "single"],
+		"semi": [2, "always"],
+		"space-before-blocks": 2,
+		"space-before-function-paren": [2, "never"],
+		"space-infix-ops": 2,
+		"space-unary-ops": 2
+	}
+}

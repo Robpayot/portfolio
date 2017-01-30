@@ -1,0 +1,25 @@
+/* ------------------------------------------------------------------ */
+/*        CORE IMPORTS
+/* ------------------------------------------------------------------ */
+
+// Reset browser predefs
+@import "reset";
+
+// Variables
+@import "variables";
+@import "easings";
+
+// Common functions
+@import "functions/unpack";
+@import "functions/em";
+
+// Common mixins
+@import "mixins/media-object";
+@import "mixins/attention";
+@import "mixins/arrow";
+@import "mixins/placeholder";
+@import "mixins/position";
+@import "mixins/media-queries";
+
+// Common abstract classes
+@import "extends";

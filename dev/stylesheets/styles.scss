@@ -1,0 +1,20 @@
+/* ------------------------------------------------------------------ */
+/*        YOUR PROJECT NAME
+/* ------------------------------------------------------------------ */
+
+// Import core
+@import "core/import";
+
+// Add the layout dependencies here
+@import "layouts/grid";
+// @import "layouts/header";
+// @import "layouts/footer";
+
+// Typography
+@import "typography/font-face";
+@import "typography/titles";
+@import "typography/subtitles";
+
+// Add your components here
+@import "components/buttons";
+// @import "components/mycomponent";

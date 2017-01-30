@@ -1,0 +1,33 @@
+/* ------------------------------------------------------------------ */
+/*        MEDIA OBJECTS
+/* ------------------------------------------------------------------ */
+
+@mixin media-object($margin:10px, $media: '.media__left', $block: '.media__right', $position: left, $formating-context: 'overflow') {
+    @extend %clearfix;
+
+
+    #{unquote($block)} {
+        @if $formating-context == 'overflow' {
+            overflow:hidden;
+        } @else {
+            display:table-cell;
+            width:10000px;
+            *width:auto;
+            *zoom:1;
+        }
+    }
+
+
+    #{unquote($media)} {
+        float:$position;
+        img{display:block;}
+        @if $margin > 0 {
+            @if $position == left {
+                margin-right:$margin;
+            }
+            @if $position == right {
+                margin-left:$margin;
+            }
+        }
+    }
+}
