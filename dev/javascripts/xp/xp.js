@@ -19,14 +19,16 @@ class Xp {
     init() {
 
         this.frequencyB = document.querySelector('.frequency .block');
+        this.amplitudeB = document.querySelector('.amplitude .block');
+        this.waveFormB = document.querySelector('.waveForm .block');
+        this.ptichB = document.querySelector('.pitch .block');
 
-        this.frequencyB.style.height = '300px';
 
         console.log(this.frequencyB);
 
         const sound = sono.createSound({
             id: 'hiphop',
-            src: ['sounds/hiphop_ldd.mp3'],
+            src: ['sounds/dnb_ldd.mp3'],
             volume: 0.5,
             loop: true
         });
@@ -61,24 +63,44 @@ class Xp {
         for (let i = 0; i < frequencies.length; i++) {
             this.magnitude = frequencies[i];
             this.normalised = this.magnitude / 256;
-            
+
             let val = this.normalised * 100;
 
-            console.log(val);
+            // console.log(val);
             // draw some visualisation
-            this.frequencyB.style.height = `${val}px`;
+            if (val > 0) {
+                this.frequencyB.style.height = `${val}px`;
+            }
+
 
             // console.log(this.frequencyB);
             // console.log(normalised);
         }
+        // console.log('test');
 
-        // this.waveform = this.analyser.getWaveform();
+        let waveform = this.analyser.getWaveform();
 
-        // for (i = 0; i < this.waveform.length; i++) {
-        //     magnitude = this.waveform[i];
-        //     normalised = magnitude / 256;
+        for (let i = 0; i < waveform.length; i++) {
+            this.magnitudeW = waveform[i];
+            this.normalisedW = this.magnitudeW / 256;
+            let val = this.normalisedW * 100;
+            // draw some visualisation
+            if (val > 0) {
+                this.waveFormB.style.height = `${val}px`;
+            }
+        }
+
+
+        // let amplitude = this.analyser.getAmplitude();
+
+        // for (let i = 0; i < amplitude.length; i++) {
+        //     this.magnitudeA = amplitude[i];
+        //     this.normalisedA = this.magnitudeA / 256;
+        //     let val = this.normalisedA * 100;
         //     // draw some visualisation
-        //     // console.log(normalised);
+        //     if (val > 0) {
+        //         this.amplitudeB.style.height = `${val}px`;
+        //     }
         // }
     }
 

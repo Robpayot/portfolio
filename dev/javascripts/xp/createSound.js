@@ -47,19 +47,19 @@ var positionY;
 document.onmousemove = updatePage;
 
 function updatePage(e) {
-    positionX = (window.Event) ? e.pageX : e.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-    positionY = (window.Event) ? e.pageY : e.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+	positionX = (window.Event) ? e.pageX : e.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+	positionY = (window.Event) ? e.pageY : e.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
 
-    // source.frequency.value = (positionX / largeur) * frequenceMax;
-    // noeudGain.gain.value = (positionY / hauteur) * volumeMax;
+	// source.frequency.value = (positionX / largeur) * frequenceMax;
+	// noeudGain.gain.value = (positionY / hauteur) * volumeMax;
 
-    console.log(analyseur.frequencyBinCount);
+	console.log(analyseur.frequencyBinCount);
 
-    canvasDraw();
+	canvasDraw();
 }
 
 function aleatoire(number1, number2) {
-    return number1 + (Math.floor(Math.random() * (number2 - number1)) + 1);
+	return number1 + (Math.floor(Math.random() * (number2 - number1)) + 1);
 }
 
 var canvas = document.querySelector('.canvas');
@@ -70,24 +70,24 @@ var contexteCanvas = canvas.getContext('2d');
 
 function canvasDraw() {
 
-    return false;
-    var rX = positionX;
-    var rY = positionY;
-    var rC = Math.floor((noeudGain.gain.value / volumeMax) * 30);
+	return false;
+	var rX = positionX;
+	var rY = positionY;
+	var rC = Math.floor((noeudGain.gain.value / volumeMax) * 30);
 
 
 
-    contexteCanvas.globalAlpha = 0.2;
+	contexteCanvas.globalAlpha = 0.2;
 
-    for (var i = 1; i <= 15; i = i + 2) {
-        contexteCanvas.beginPath();
-        var chaineStyle = 'rgb(' + 100 + (i * 10) + ',' + Math.floor((noeudGain.gain.value / volumeMax) * 255);
-        chaineStyle += ',' + Math.floor((source.frequency.value / frequenceMax) * 255) + ')';
-        contexteCanvas.fillStyle = chaineStyle;
-        contexteCanvas.arc(rX + aleatoire(0, 50), rY + aleatoire(0, 50), rC / 2 + i, (Math.PI / 180) * 0, (Math.PI / 180) * 360, false);
-        contexteCanvas.fill();
-        contexteCanvas.closePath();
-    }
+	for (var i = 1; i <= 15; i = i + 2) {
+		contexteCanvas.beginPath();
+		var chaineStyle = 'rgb(' + 100 + (i * 10) + ',' + Math.floor((noeudGain.gain.value / volumeMax) * 255);
+		chaineStyle += ',' + Math.floor((source.frequency.value / frequenceMax) * 255) + ')';
+		contexteCanvas.fillStyle = chaineStyle;
+		contexteCanvas.arc(rX + aleatoire(0, 50), rY + aleatoire(0, 50), rC / 2 + i, (Math.PI / 180) * 0, (Math.PI / 180) * 360, false);
+		contexteCanvas.fill();
+		contexteCanvas.closePath();
+	}
 }
 
 console.log(analyseur);
