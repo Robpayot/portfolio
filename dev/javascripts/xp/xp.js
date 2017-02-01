@@ -18,10 +18,86 @@ class Xp {
 
     init() {
 
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+        this.audioCtx = new(window.AudioContext || window.webkitAudioContext)(); // définition du contexte audio
+
+        this.myAudio = document.querySelector('audio');
         this.frequencyB = document.querySelector('.frequency .block');
         this.amplitudeB = document.querySelector('.amplitude .block');
         this.waveFormB = document.querySelector('.waveForm .block');
         this.ptichB = document.querySelector('.pitch .block');
+
+
+
+        var analyser = this.audioCtx.createAnalyser();
+
+        var source = this.audioCtx.createMediaElementSource(this.myAudio);
+        source.connect(analyser);
+        analyser.connect(this.audioCtx.destination);
+
+
+        analyser.fftSize = 2048;
+        var bufferLength = analyser.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+
+        analyser.getByteTimeDomainData(dataArray);
+
+        var canvas = document.querySelector('.canvas');
+        canvas.width = 500;
+        canvas.height = 500;
+
+        var canvasCtx = canvas.getContext('2d');
+
+        canvasCtx.clearRect(0, 0, 500, 500);
+
+        console.log(analyser);
+
+
+        function draw() {
+            requestAnimationFrame(draw);
+            analyser.getByteTimeDomainData(dataArray);
+            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+            canvasCtx.fillRect(0, 0, 500, 500);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+
+            canvasCtx.beginPath();
+
+            var sliceWidth = 500 * 1.0 / bufferLength;
+            var x = 0;
+            console.log('yes');
+
+            for (var i = 0; i < bufferLength; i++) {
+
+                var v = dataArray[i] / 128.0;
+                var y = v * 500 / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+            canvasCtx.stroke();
+        };
+
+        // Drawing code goes here
+
+        draw();
+
+
+        ///////////////////////////////////
+        ///////////////////////////////////
+
+
+        return false;
 
 
         console.log(this.frequencyB);
@@ -45,13 +121,16 @@ class Xp {
         }, 2000);
 
 
-
-
-
-        console.log(sound);
     }
 
     draw() {
+
+        return false;
+
+
+        ///////////////////////////////////
+        ///////////////////////////////////
+
 
         window.requestAnimationFrame(this.draw);
 
