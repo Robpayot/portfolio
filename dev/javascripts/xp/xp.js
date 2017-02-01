@@ -38,7 +38,7 @@ class Xp {
         this.analyser.connect(this.audioCtx.destination);
 
 
-        this.analyser.fftSize = 128;
+        this.analyser.fftSize = 256;
         //  Longueur des fréquences !!!
         this.bufferLength = this.analyser.frequencyBinCount;
         // Tableaux des intensités !!
@@ -68,15 +68,14 @@ class Xp {
 
         requestAnimationFrame(this.draw);
 
-        this.analyser.getByteTimeDomainData(this.dataArray);
-
+        this.analyser.getByteFrequencyData(this.dataArray);
+		// .getByteFrequencyData()
         this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         this.canvasCtx.fillRect(0, 0, this.canvas.width, 500);
 
         var barWidth = (500 / this.bufferLength) * 2.5;
         var barHeight;
         var x = 0;
-        console.log('yes');
 
         for (var i = 0; i < this.bufferLength; i++) {
             barHeight = this.dataArray[i] / 2;
