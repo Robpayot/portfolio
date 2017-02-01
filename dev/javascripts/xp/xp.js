@@ -31,156 +31,65 @@ class Xp {
 
 
 
-        var analyser = this.audioCtx.createAnalyser();
+        this.analyser = this.audioCtx.createAnalyser();
 
         var source = this.audioCtx.createMediaElementSource(this.myAudio);
-        source.connect(analyser);
-        analyser.connect(this.audioCtx.destination);
+        source.connect(this.analyser);
+        this.analyser.connect(this.audioCtx.destination);
 
 
-        analyser.fftSize = 2048;
-        var bufferLength = analyser.frequencyBinCount;
-        var dataArray = new Uint8Array(bufferLength);
+        this.analyser.fftSize = 128;
+        //  Longueur des fréquences !!!
+        this.bufferLength = this.analyser.frequencyBinCount;
+        // Tableaux des intensités !!
+        this.dataArray = new Uint8Array(this.bufferLength);
 
-        analyser.getByteTimeDomainData(dataArray);
+        this.analyser.getByteTimeDomainData(this.dataArray);
 
-        var canvas = document.querySelector('.canvas');
-        canvas.width = 500;
-        canvas.height = 500;
+        this.canvas = document.querySelector('.canvas');
+        this.canvas.width = 500;
+        this.canvas.height = 500;
 
-        var canvasCtx = canvas.getContext('2d');
+        this.canvasCtx = this.canvas.getContext('2d');
 
-        canvasCtx.clearRect(0, 0, 500, 500);
+        this.canvasCtx.clearRect(0, 0, 500, 500);
 
-        console.log(analyser);
+        console.log(this.analyser);
 
-
-        function draw() {
-            requestAnimationFrame(draw);
-            analyser.getByteTimeDomainData(dataArray);
-            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-            canvasCtx.fillRect(0, 0, 500, 500);
-
-            canvasCtx.lineWidth = 2;
-            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
-
-            canvasCtx.beginPath();
-
-            var sliceWidth = 500 * 1.0 / bufferLength;
-            var x = 0;
-            console.log('yes');
-
-            for (var i = 0; i < bufferLength; i++) {
-
-                var v = dataArray[i] / 128.0;
-                var y = v * 500 / 2;
-
-                if (i === 0) {
-                    canvasCtx.moveTo(x, y);
-                } else {
-                    canvasCtx.lineTo(x, y);
-                }
-
-                x += sliceWidth;
-            }
-
-            canvasCtx.lineTo(canvas.width, canvas.height / 2);
-            canvasCtx.stroke();
-        };
 
         // Drawing code goes here
 
-        draw();
-
-
-        ///////////////////////////////////
-        ///////////////////////////////////
-
-
-        return false;
-
-
-        console.log(this.frequencyB);
-
-        const sound = sono.createSound({
-            id: 'hiphop',
-            src: ['sounds/dnb_ldd.mp3'],
-            volume: 0.5,
-            loop: true
-        });
-
-        this.analyser = sono.effect.analyser({
-            fftSize: 2048,
-            smoothingTimeConstant: 0.7
-        });
-
-        sound.play();
-
-        setTimeout(() => {
-            this.draw();
-        }, 2000);
+        this.draw();
 
 
     }
 
     draw() {
 
-        return false;
+        requestAnimationFrame(this.draw);
 
+        this.analyser.getByteTimeDomainData(this.dataArray);
 
-        ///////////////////////////////////
-        ///////////////////////////////////
+        this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        this.canvasCtx.fillRect(0, 0, 500, 500);
 
+        var barWidth = (500 / this.bufferLength) * 2.5;
+        var barHeight;
+        var x = 0;
+        console.log('yes');
 
-        window.requestAnimationFrame(this.draw);
+        for (var i = 0; i < this.bufferLength; i++) {
+            barHeight = this.dataArray[i] / 2;
 
-        // var frequencies, waveform, magnitude, normalised, i;
+            this.canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight + 100)+ ',50)';
+            this.canvasCtx.fillRect(x, 500 - barHeight / 2, barWidth, barHeight);
 
-        let frequencies = this.analyser.getFrequencies();
-
-
-        for (let i = 0; i < frequencies.length; i++) {
-            this.magnitude = frequencies[i];
-            this.normalised = this.magnitude / 256;
-
-            let val = this.normalised * 100;
-
-            // console.log(val);
-            // draw some visualisation
-            if (val > 0) {
-                this.frequencyB.style.height = `${val}px`;
-            }
-
-
-            // console.log(this.frequencyB);
-            // console.log(normalised);
-        }
-        // console.log('test');
-
-        let waveform = this.analyser.getWaveform();
-
-        for (let i = 0; i < waveform.length; i++) {
-            this.magnitudeW = waveform[i];
-            this.normalisedW = this.magnitudeW / 256;
-            let val = this.normalisedW * 100;
-            // draw some visualisation
-            if (val > 0) {
-                this.waveFormB.style.height = `${val}px`;
-            }
+            x += barWidth + 1;
         }
 
+        // this.canvasCtx.lineTo(this.canvas.width, this.canvas.height / 2);
+        // this.canvasCtx.stroke();
 
-        // let amplitude = this.analyser.getAmplitude();
-
-        // for (let i = 0; i < amplitude.length; i++) {
-        //     this.magnitudeA = amplitude[i];
-        //     this.normalisedA = this.magnitudeA / 256;
-        //     let val = this.normalisedA * 100;
-        //     // draw some visualisation
-        //     if (val > 0) {
-        //         this.amplitudeB.style.height = `${val}px`;
-        //     }
-        // }
     }
 
 
