@@ -47,8 +47,8 @@ class Xp {
         this.analyser.getByteTimeDomainData(this.dataArray);
 
         this.canvas = document.querySelector('.canvas');
-        this.canvas.width = 500;
-        this.canvas.height = 500;
+        this.canvas.width = 1400;
+        this.canvas.height = 200;
 
         this.canvasCtx = this.canvas.getContext('2d');
 
@@ -71,7 +71,7 @@ class Xp {
         this.analyser.getByteTimeDomainData(this.dataArray);
 
         this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        this.canvasCtx.fillRect(0, 0, 500, 500);
+        this.canvasCtx.fillRect(0, 0, this.canvas.width, 500);
 
         var barWidth = (500 / this.bufferLength) * 2.5;
         var barHeight;
@@ -82,7 +82,7 @@ class Xp {
             barHeight = this.dataArray[i] / 2;
 
             this.canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight + 100)+ ',50)';
-            this.canvasCtx.fillRect(x, 500 - barHeight / 2, barWidth, barHeight);
+            this.canvasCtx.fillRect(x, this.canvas.height - barHeight / 2, barWidth, barHeight);
 
             x += barWidth + 1;
         }
