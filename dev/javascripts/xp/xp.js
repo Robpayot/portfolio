@@ -53,7 +53,7 @@ class Xp {
 
         this.canvas = document.querySelector('.canvas');
         this.canvas.width = window.innerWidth;
-        this.canvas.height = 200;
+        this.canvas.height = 300;
         console.log(this.canvas.width);
         this.canvasCtx = this.canvas.getContext('2d');
         this.canvasCtx.clearRect(0, 0, 500, 500);
@@ -106,11 +106,11 @@ class Xp {
         // console.log(this.dataArray[0]);
 
         for (let i = 0; i < this.bufferLength; i++) {
-            barHeight = this.dataArray[i] / 2;
+            barHeight = this.dataArray[i];
 
-            let hue = i / this.analyser.frequencyBinCount * 360;
+            let hue = i / this.bufferLength * 360;
             this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-            this.canvasCtx.fillRect(x, this.canvas.height - barHeight / 2, barWidth, barHeight);
+            this.canvasCtx.fillRect(x, this.canvas.height - barHeight * 3/4, barWidth, barHeight);
 
             x += barWidth + 1;
         }
