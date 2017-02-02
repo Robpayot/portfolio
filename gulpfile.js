@@ -268,7 +268,8 @@ gulp.task('watch', function() {
 	browserSync.watch([
 		'./dist/datas/**',
 		'./dist/stylesheets/**',
-		'./dist/javascripts/**'
+		'./dist/javascripts/**',
+		copyRoot
 	], {
 		ignored: '**/*.map'
 	}).on('change', browserSync.reload);
