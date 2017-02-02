@@ -29,7 +29,7 @@ class Xp {
         this.waveFormB = document.querySelector('.waveForm .block');
         this.ptichB = document.querySelector('.pitch .block');
 
-
+// init
 
         this.analyser = this.audioCtx.createAnalyser();
 
