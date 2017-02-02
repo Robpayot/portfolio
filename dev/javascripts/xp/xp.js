@@ -106,11 +106,11 @@ class Xp {
         // console.log(this.dataArray[0]);
 
         for (let i = 0; i < this.bufferLength; i++) {
-            barHeight = this.dataArray[i];
+            barHeight = this.dataArray[i] * 3/4;
 
             let hue = i / this.bufferLength * 360;
             this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-            this.canvasCtx.fillRect(x, this.canvas.height - barHeight * 3/4, barWidth, barHeight);
+            this.canvasCtx.fillRect(x, this.canvas.height - barHeight, barWidth, barHeight);
 
             x += barWidth + 1;
         }
