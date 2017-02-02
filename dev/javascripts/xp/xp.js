@@ -29,7 +29,7 @@ class Xp {
         this.waveFormB = document.querySelector('.waveForm .block');
         this.ptichB = document.querySelector('.pitch .block');
 
-// init
+        // init
 
         this.analyser = this.audioCtx.createAnalyser();
 
@@ -69,7 +69,8 @@ class Xp {
         requestAnimationFrame(this.draw);
 
         this.analyser.getByteFrequencyData(this.dataArray);
-		// .getByteFrequencyData()
+        // .getByteFrequencyData()
+        // .getByteTimeDomainData()
         this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         this.canvasCtx.fillRect(0, 0, this.canvas.width, 500);
 
@@ -80,7 +81,9 @@ class Xp {
         for (var i = 0; i < this.bufferLength; i++) {
             barHeight = this.dataArray[i] / 2;
 
-            this.canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight + 100)+ ',50)';
+            var hue = i / this.analyser.frequencyBinCount * 360;
+            this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+            // this.canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight + 100) + ',50)';
             this.canvasCtx.fillRect(x, this.canvas.height - barHeight / 2, barWidth, barHeight);
 
             x += barWidth + 1;
