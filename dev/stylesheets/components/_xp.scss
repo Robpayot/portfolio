@@ -1,35 +1,43 @@
 .xp {
-    li {
-        display: inline-block;
-        text-align: center;
-    }
-    .block {
-        width: 50px;
-        height: 20px;
-        margin: 0 auto;
-    }
-    .frequency {
-        margin: 50px;
-        .block {
-            background-color: Steelblue;
+    .frequencies {
+        margin: 50px auto;
+        display: flex;
+        align-self: center;
+        justify-content: space-around;
+        width: 100%;
+        max-width: 900px;
+        li {
+            display: inline-block;
+            text-align: center;
+            position: relative;
         }
-    }
-    .amplitude {
-        margin: 50px;
-        .block {
-            background-color: lime;
+        .circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0px auto;
+            position: absolute;
+            left: 50%;
+            top: 200px;
+            transform: translate(-50%, -50%);
         }
-    }
-    .waveForm {
-        margin: 50px;
-        .block {
-            background-color: tomato;
+        .hight {
+            margin: 50px;
+            .circle {
+                background-color: tomato;
+            }
         }
-    }
-    .pitch {
-        margin: 50px;
-        .block {
-            background-color: black;
+        .medium {
+            margin: 50px;
+            .circle {
+                background-color: lime;
+            }
+        }
+        .low {
+            margin: 50px;
+            .circle {
+                background-color: Steelblue;
+            }
         }
     }
     .canvas {
@@ -38,6 +46,6 @@
         height: 200px;
     }
     audio {
-    	display: block;
+        display: block;
     }
 }

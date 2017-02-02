@@ -264,6 +264,7 @@ gulp.task('watch', function() {
 	gulp.watch('./dev/stylesheets/**', ['stylesheets']);
 	gulp.watch('./dev/datas/**', ['datas']);
 	gulp.watch(copyRoot, ['copy:root']);
+	gulp.watch('./dev/sounds/**', ['copy:sound']);
 
 	browserSync.watch([
 		'./dist/datas/**',

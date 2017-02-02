@@ -4,6 +4,7 @@
 // because it's ~6000 lines of code unminified
 // import 'babel-polyfill';
 import 'modernizr';
+import 'gsap';
 // import * as tools from '@84paris/84.tools';
 
 // Your imports

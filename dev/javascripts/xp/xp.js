@@ -21,15 +21,17 @@ class Xp {
 
     init() {
 
+        this.el = document.querySelector('.xp');
+
 
         this.ui = {
-            myAudio: document.querySelector('audio'),
-            frequencyB: document.querySelector('.frequency .block'),
-            amplitudeB: document.querySelector('.amplitude .block'),
-            waveFormB: document.querySelector('.waveForm .block'),
-            ptichB: document.querySelector('.pitch .block'),
-            formFtt: document.querySelector('.fttSize')
-        }
+            myAudio: this.el.querySelector('audio'),
+            formFtt: this.el.querySelector('.formFtt'),
+            frequencies: this.el.querySelector('.frequencies'),
+            hight: this.el.querySelector('.frequencies .hight .circle'),
+            medium: this.el.querySelector('.frequencies .medium .circle'),
+            low: this.el.querySelector('.frequencies .low .circle')
+        };
 
         // New WebAudio API
         this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
@@ -38,7 +40,7 @@ class Xp {
         this.analyser = this.audioCtx.createAnalyser();
 
         // Connect nodes together
-        var source = this.audioCtx.createMediaElementSource(this.ui.myAudio);
+        let source = this.audioCtx.createMediaElementSource(this.ui.myAudio);
         source.connect(this.analyser);
         this.analyser.connect(this.audioCtx.destination);
 
@@ -80,7 +82,7 @@ class Xp {
         this.bufferLength = this.analyser.frequencyBinCount;
         this.dataArray = new Uint8Array(this.bufferLength);
 
-        console.log(this.bufferLength, this.dataArray);
+        console.log(this.bufferLength);
     }
 
     resizeHandler() {
@@ -96,9 +98,9 @@ class Xp {
 
         // create background
         this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        this.canvasCtx.fillRect(0, 0, this.canvas.width, 500);
+        this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        let barWidth = (this.canvas.width / this.bufferLength);
+        let barWidth = this.canvas.width / this.bufferLength;
         let barHeight;
         let x = 0;
 
@@ -106,17 +108,64 @@ class Xp {
         // console.log(this.dataArray[0]);
 
         for (let i = 0; i < this.bufferLength; i++) {
-            barHeight = this.dataArray[i] * 3/4;
+
+            barHeight = this.dataArray[i] * (3 / 4);
 
             let hue = i / this.bufferLength * 360;
-            this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+            this.canvasCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
             this.canvasCtx.fillRect(x, this.canvas.height - barHeight, barWidth, barHeight);
 
             x += barWidth + 1;
         }
 
 
+        ////////////
+        // hight
+        ///////////
 
+        let hightVals = 0;
+        let hightLimit = Math.round(this.bufferLength / 5);
+
+        for (let i = 0; i < hightLimit; i++) {
+
+            hightVals += this.dataArray[i];
+
+        }
+
+        const hightAvg = hightVals / hightLimit;
+        TweenMax.to(this.ui.hight, 0, { width: hightAvg, height: hightAvg });
+
+        ////////////
+        // medium
+        ///////////
+
+        let mediumVals = 0;
+        let mediumLimit = Math.round((this.bufferLength / 5) * 2);
+
+        for (let i = hightLimit; i < mediumLimit; i++) {
+
+            mediumVals += this.dataArray[i];
+
+        }
+
+        const mediumAvg = mediumVals / mediumLimit;
+        TweenMax.to(this.ui.medium, 0, { width: mediumAvg, height: mediumAvg });
+
+        ////////////
+        // low
+        ///////////
+
+        let lowVals = 0;
+        let lowLimit = Math.round((this.bufferLength / 5) * 3);
+
+        for (let i = mediumLimit; i < lowLimit; i++) {
+
+            lowVals += this.dataArray[i];
+
+        }
+
+        const lowAvg = lowVals / lowLimit;
+        TweenMax.to(this.ui.low, 0, { width: lowAvg, height: lowAvg });
         requestAnimationFrame(this.draw);
 
     }

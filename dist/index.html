@@ -2,62 +2,69 @@
 <html class="no-js" lang="">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>ProjectName</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
-    <link rel="stylesheet" href="stylesheets/styles.css">
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>ProjectName</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<!-- Place favicon.ico in the root directory -->
+	<link rel="stylesheet" href="stylesheets/styles.css">
 </head>
 
 <body>
-    <section class="xp">
-        <canvas class="canvas"></canvas>
-        <audio controls autoplay="">
-            <!-- <source src="sounds/hiphop_ldd.mp3" type="audio/ogg"> -->
-            <source src="sounds/eery_her.mp3" type="audio/mp3">
-            <p>Browser too old to support HTML5 audio? How depressing!</p>
-        </audio>
-        <h1>Valeur de transformation de Fourier rapide</h1>
-        <select class="fttSize" name="" id="">
-            <option value="256">256</option>
-            <option value="512">512</option>
-            <option value="1024">1024</option>
-            <option value="2048" selected>2048</option>
-        </select>
-        <!--         <ul>
-            <li class="frequency">
-                <h1>Frequency</h1>
-                <div class="block"></div>
-            </li>
-            <li class="amplitude">
-                <h1>Amplitude</h1>
-                <div class="block"></div>
-            </li>
-            <li class="waveForm">
-                <h1>Wave Form</h1>
-                <div class="block"></div>
-            </li>
-            <li class="pitch">
-                <h1>Pitch</h1>
-                <div class="block"></div>
-            </li>
-        </ul> -->
-    </section>
-    <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
-    <script>
-    // SC.initialize({
-    //     client_id: 'YOUR_CLIENT_ID'
-    // });
+	<section class="xp">
 
-    // // stream track id 293
-    // SC.stream('/tracks/293').then(function(player) {
-    //     player.play();
-    // });
-    </script>
-    <script src="javascripts/app.js"></script>
+		<canvas class="canvas"></canvas>
+		<audio controls autoplay="">
+			<!-- <source src="sounds/hiphop_ldd.mp3" type="audio/ogg"> -->
+			<source src="sounds/eery_her.mp3" type="audio/mp3">
+			<p>Browser too old to support HTML5 audio? How depressing!</p>
+		</audio>
+
+
+		<h2>Valeur de transformation de Fourier rapide</h2>
+		<select class="formFtt" name="" id="">
+			<option value="256">256</option>
+			<option value="512">512</option>
+			<option value="1024">1024</option> 
+			
+			<option value="2048" selected>2048</option>
+		</select>
+
+
+		<h2>Frequencies</h2>
+		<ul class="frequencies">
+			<li class="hight">
+				<h1>Hight</h1>
+				<div class="circle"></div>
+			</li>
+			<li class="medium">
+				<h1>Medium</h1>
+				<div class="circle"></div>
+			</li>
+			<li class="low">
+				<h1>Low</h1>
+				<div class="circle"></div>
+			</li>
+		</ul>
+	</section>
+
+
+
+
+	<script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
+	<script>
+	// SC.initialize({
+	//     client_id: 'YOUR_CLIENT_ID'
+	// });
+
+	// // stream track id 293
+	// SC.stream('/tracks/293').then(function(player) {
+	//     player.play();
+	// });
+	</script>
+	<script src="javascripts/app.js"></script>
 </body>
 
 </html>
