@@ -9,6 +9,9 @@ class Xp {
 
 
         this.draw = this.draw.bind(this);
+        this.events = this.events.bind(this);
+        this.changeFtt = this.changeFtt.bind(this);
+
 
 
         this.init();
@@ -28,6 +31,8 @@ class Xp {
         this.amplitudeB = document.querySelector('.amplitude .block');
         this.waveFormB = document.querySelector('.waveForm .block');
         this.ptichB = document.querySelector('.pitch .block');
+
+        this.formFtt = document.querySelector('.fttSize');
 
         // init
 
@@ -59,9 +64,27 @@ class Xp {
 
         // Drawing code goes here
 
+        this.events();
+
         this.draw();
 
 
+    }
+
+    events() {
+
+        this.formFtt.addEventListener('change', this.changeFtt);
+
+    }
+
+    changeFtt(e) {
+        this.analyser.fftSize = this.formFtt.value;
+        //  Longueur des fréquences !!!
+        this.bufferLength = this.analyser.frequencyBinCount;
+        // Tableaux des intensités !!
+        this.dataArray = new Uint8Array(this.bufferLength);
+
+        this.analyser.getByteTimeDomainData(this.dataArray);
     }
 
     draw() {
