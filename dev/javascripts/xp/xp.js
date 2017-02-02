@@ -11,7 +11,7 @@ class Xp {
         this.draw = this.draw.bind(this);
         this.events = this.events.bind(this);
         this.changeFtt = this.changeFtt.bind(this);
-
+        this.resizeHandler = this.resizeHandler.bind(this);
 
 
         this.init();
@@ -21,48 +21,44 @@ class Xp {
 
     init() {
 
-        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-            window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-        this.audioCtx = new(window.AudioContext || window.webkitAudioContext)(); // définition du contexte audio
+        this.ui = {
+            myAudio: document.querySelector('audio'),
+            frequencyB: document.querySelector('.frequency .block'),
+            amplitudeB: document.querySelector('.amplitude .block'),
+            waveFormB: document.querySelector('.waveForm .block'),
+            ptichB: document.querySelector('.pitch .block'),
+            formFtt: document.querySelector('.fttSize')
+        }
 
-        this.myAudio = document.querySelector('audio');
-        this.frequencyB = document.querySelector('.frequency .block');
-        this.amplitudeB = document.querySelector('.amplitude .block');
-        this.waveFormB = document.querySelector('.waveForm .block');
-        this.ptichB = document.querySelector('.pitch .block');
+        // New WebAudio API
+        this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 
-        this.formFtt = document.querySelector('.fttSize');
-
-        // init
-
+        //  Create Analyser node
         this.analyser = this.audioCtx.createAnalyser();
 
-        var source = this.audioCtx.createMediaElementSource(this.myAudio);
+        // Connect nodes together
+        var source = this.audioCtx.createMediaElementSource(this.ui.myAudio);
         source.connect(this.analyser);
         this.analyser.connect(this.audioCtx.destination);
 
 
-        this.analyser.fftSize = this.formFtt.value;
-        //  Longueur des fréquences !!!
+        // Set Fourier value
+        this.analyser.fftSize = this.ui.formFtt.value;
+        // Get frequency length ( fftSize / 2)
         this.bufferLength = this.analyser.frequencyBinCount;
-        // Tableaux des intensités !!
+        // Prepare array of frequencies
         this.dataArray = new Uint8Array(this.bufferLength);
 
-        this.analyser.getByteTimeDomainData(this.dataArray);
 
         this.canvas = document.querySelector('.canvas');
-        this.canvas.width = 1400;
+        this.canvas.width = window.innerWidth;
         this.canvas.height = 200;
-
+        console.log(this.canvas.width);
         this.canvasCtx = this.canvas.getContext('2d');
-
         this.canvasCtx.clearRect(0, 0, 500, 500);
 
         console.log(this.bufferLength);
-
-
-        // Drawing code goes here
 
         this.events();
 
@@ -73,47 +69,55 @@ class Xp {
 
     events() {
 
-        this.formFtt.addEventListener('change', this.changeFtt);
+        this.ui.formFtt.addEventListener('change', this.changeFtt);
+        window.addEventListener('resize', this.resizeHandler);
 
     }
 
     changeFtt(e) {
-        this.analyser.fftSize = this.formFtt.value;
-        // Longueur des fréquences !!!
+        // Reset frequencies 
+        this.analyser.fftSize = this.ui.formFtt.value;
         this.bufferLength = this.analyser.frequencyBinCount;
-        // Tableaux des intensités !!
         this.dataArray = new Uint8Array(this.bufferLength);
 
-        this.analyser.getByteTimeDomainData(this.dataArray);
+        console.log(this.bufferLength, this.dataArray);
+    }
+
+    resizeHandler() {
+        this.canvas.width = window.innerWidth;
     }
 
     draw() {
 
-        requestAnimationFrame(this.draw);
 
+        // .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
+        // .getByteTimeDomainData() --> For oscilloscope visualisation 
         this.analyser.getByteFrequencyData(this.dataArray);
-        // .getByteFrequencyData()
-        // .getByteTimeDomainData()
+
+        // create background
         this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         this.canvasCtx.fillRect(0, 0, this.canvas.width, 500);
 
-        var barWidth = (500 / this.bufferLength) * 2.5;
-        var barHeight;
-        var x = 0;
+        let barWidth = (this.canvas.width / this.bufferLength);
+        let barHeight;
+        let x = 0;
 
-        for (var i = 0; i < this.bufferLength; i++) {
+        // Value of first Bar
+        // console.log(this.dataArray[0]);
+
+        for (let i = 0; i < this.bufferLength; i++) {
             barHeight = this.dataArray[i] / 2;
 
-            var hue = i / this.analyser.frequencyBinCount * 360;
+            let hue = i / this.analyser.frequencyBinCount * 360;
             this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-            // this.canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',' + (barHeight + 100) + ',50)';
             this.canvasCtx.fillRect(x, this.canvas.height - barHeight / 2, barWidth, barHeight);
 
             x += barWidth + 1;
         }
 
-        // this.canvasCtx.lineTo(this.canvas.width, this.canvas.height / 2);
-        // this.canvasCtx.stroke();
+
+
+        requestAnimationFrame(this.draw);
 
     }
 
