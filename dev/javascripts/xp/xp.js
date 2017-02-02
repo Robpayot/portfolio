@@ -43,7 +43,7 @@ class Xp {
         this.analyser.connect(this.audioCtx.destination);
 
 
-        this.analyser.fftSize = 256;
+        this.analyser.fftSize = this.formFtt.value;
         //  Longueur des fréquences !!!
         this.bufferLength = this.analyser.frequencyBinCount;
         // Tableaux des intensités !!
@@ -59,7 +59,7 @@ class Xp {
 
         this.canvasCtx.clearRect(0, 0, 500, 500);
 
-        console.log(this.analyser);
+        console.log(this.bufferLength);
 
 
         // Drawing code goes here
@@ -79,7 +79,7 @@ class Xp {
 
     changeFtt(e) {
         this.analyser.fftSize = this.formFtt.value;
-        //  Longueur des fréquences !!!
+        // Longueur des fréquences !!!
         this.bufferLength = this.analyser.frequencyBinCount;
         // Tableaux des intensités !!
         this.dataArray = new Uint8Array(this.bufferLength);
