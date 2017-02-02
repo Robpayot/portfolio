@@ -16,11 +16,11 @@
     <canvas class="canvas"></canvas>
     <audio controls>
         <!-- <source src="sounds/hiphop_ldd.mp3" type="audio/ogg"> -->
-        <source src="sounds/hiphop_ldd.mp3" type="audio/mp3">
+        <source src="sounds/eery_her.mp3" type="audio/mp3">
         <p>Browser too old to support HTML5 audio? How depressing!</p>
     </audio>
     <section class="xp">
-        <ul>
+<!--         <ul>
             <li class="frequency">
                 <h1>Frequency</h1>
                 <div class="block"></div>
@@ -37,8 +37,19 @@
                 <h1>Pitch</h1>
                 <div class="block"></div>
             </li>
-        </ul>
+        </ul> -->
     </section>
+    <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
+    <script>
+    // SC.initialize({
+    //     client_id: 'YOUR_CLIENT_ID'
+    // });
+
+    // // stream track id 293
+    // SC.stream('/tracks/293').then(function(player) {
+    //     player.play();
+    // });
+    </script>
     <script src="javascripts/app.js"></script>
 </body>
 
