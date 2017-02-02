@@ -3,11 +3,4 @@ node_modules
 npm-debug.log
 
 # you can skip this first one if it is not already excluded by prior patterns
-!dist/
-
-dist/*
-!dist/images/
-!dist/sounds/
-!dist/videos/
-!dist/fonts/
 
