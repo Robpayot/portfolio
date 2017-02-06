@@ -284,7 +284,7 @@ gulp.task('default', ['clean'], function() {
 
 	if (minify === false) {
 		browserSync.init({
-			port: 8080,
+			port: 1234,
 			ui: false,
 			// This is if you need PHP execution on your BrowserSync server
 			// proxy: 'myproxy.dev',

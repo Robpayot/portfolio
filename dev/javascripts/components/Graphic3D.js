@@ -1,19 +1,25 @@
-export default class SoundPlayer {
+// import SoundManager from '../managers/SoundManager';
 
-    constructor() {
+export default class Graphic3D {
+
+    constructor(SoundManager) {
 
         this.draw = this.draw.bind(this);
         this.events = this.events.bind(this);
         this.changeFtt = this.changeFtt.bind(this);
         this.resizeHandler = this.resizeHandler.bind(this);
 
-
-        this.init();
+        this.start();
 
 
     }
 
-    init() {
+    start() {
+
+        console.log('test 2');
+
+
+        return false;
 
         this.el = document.querySelector('.xp');
 

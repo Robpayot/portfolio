@@ -13,6 +13,7 @@
     "browser-sync": "~2.18.5",
     "browserify": "~13.1.1",
     "browserify-shim": "~3.8.12",
+    "component-emitter": "^1.2.1",
     "deamdify": "~0.2.0",
     "del": "~2.2.2",
     "extfs": "~0.0.7",
