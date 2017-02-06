@@ -1,4 +1,3 @@
-// import SoundManager from '../managers/SoundManager';
 import EmitterManager from '../managers/EmitterManager';
 
 export default class GraphicBars {
@@ -35,7 +34,7 @@ export default class GraphicBars {
             low: this.el.querySelector('.frequencies .low .circle')
         };
 
-        this.canvas = document.querySelector('.canvas');
+        this.canvas = document.querySelector('.canvas__bars');
         this.canvas.width = window.innerWidth;
         this.canvas.height = 300;
         this.canvasCtx = this.canvas.getContext('2d');

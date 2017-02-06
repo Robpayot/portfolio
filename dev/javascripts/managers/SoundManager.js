@@ -1,6 +1,8 @@
 import GraphicBars from '../components/GraphicBars';
 import Graphic3D from '../components/Graphic3D';
 
+import dat from 'dat-gui';
+
 
 export default class SoundManager {
 
@@ -25,8 +27,7 @@ export default class SoundManager {
 
 
         this.ui = {
-            myAudio: this.el.querySelector('audio'),
-            formFtt: this.el.querySelector('.formFtt')
+            myAudio: this.el.querySelector('audio')
         };
 
         // New WebAudio API
@@ -42,7 +43,7 @@ export default class SoundManager {
 
 
         // Set Fourier value
-        this.analyser.fftSize = this.ui.formFtt.value;
+        this.analyser.fftSize = 2048;
         // Get frequency length ( fftSize / 2)
         this.bufferLength = this.analyser.frequencyBinCount;
         // Prepare array of frequencies
@@ -55,6 +56,15 @@ export default class SoundManager {
 
         this.events(true);
 
+        // GUI
+
+        this.params = {
+            Fourier_value: this.analyser.fftSize
+        }
+
+        const gui = new dat.GUI();
+        gui.add(this.params, 'Fourier_value', [256, 512, 1024, 2048]).onChange(this.changeFtt);
+
 
     }
 
@@ -63,8 +73,6 @@ export default class SoundManager {
         let listener = method === false ? 'removeEventListener' : 'addEventListener';
         let emitterListener = method === false ? 'off' : 'on';
 
-        this.ui.formFtt[listener]('change', this.changeFtt);
-
         // raf
         TweenMax.ticker[listener]('tick', this.raf);
 
@@ -72,7 +80,7 @@ export default class SoundManager {
 
     changeFtt(e) {
         // Reset frequencies 
-        this.analyser.fftSize = this.ui.formFtt.value;
+        this.analyser.fftSize = this.params.Fourier_value;
         this.bufferLength = this.analyser.frequencyBinCount;
         this.dataArray = new Uint8Array(this.bufferLength);
 

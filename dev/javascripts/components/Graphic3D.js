@@ -1,5 +1,3 @@
-// import SoundManager from '../managers/SoundManager';
-
 export default class Graphic3D {
 
     constructor(SoundManager) {
@@ -56,7 +54,6 @@ export default class Graphic3D {
         this.canvas = document.querySelector('.canvas');
         this.canvas.width = window.innerWidth;
         this.canvas.height = 300;
-        console.log(this.canvas.width);
         this.canvasCtx = this.canvas.getContext('2d');
         this.canvasCtx.clearRect(0, 0, 500, 500);
 
