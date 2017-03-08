@@ -109,7 +109,7 @@ function compile(watch) {
 
 
 	function rebundle() {
-		gulp.start('lint');
+		// gulp.start('lint');
 
 		return bundler.bundle()
 		.on('error', notify.onError({
@@ -148,8 +148,8 @@ function watch() {
 
 gulp.task('javascripts:build', function() { return compile(); });
 gulp.task('javascripts:watch', function() { return watch(); });
-gulp.task('javascripts', [ 'lint', minify === true ? 'javascripts:build' : 'javascripts:watch' ]);
-
+// gulp.task('javascripts', [ 'lint', minify === true ? 'javascripts:build' : 'javascripts:watch' ]);
+gulp.task('javascripts', [ minify === true ? 'javascripts:build' : 'javascripts:watch' ]);
 
 //---------------------------------------------------------------------------------------------
 //    SASS
