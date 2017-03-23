@@ -1,9 +1,9 @@
 import EmitterManager from '../managers/EmitterManager';
+import SoundManager from '../managers/SoundManager';
 
 export default class GraphicBars {
 
-    constructor(SoundManager) {
-
+    constructor(SoundManagers) {
 
         this.sound = SoundManager;
 
@@ -48,10 +48,11 @@ export default class GraphicBars {
 
     events(method) {
 
-        let listener = method === false ? 'removeEventListener' : 'addEventListener';
-        let emitterListener = method === false ? 'off' : 'on';
+        let listen = method === false ? 'removeEventListener' : 'addEventListener';
+        listen = method === false ? 'off' : 'on';
 
-        EmitterManager[emitterListener]('resize', this.resizeHandler);
+        EmitterManager[listen]('resize', this.resizeHandler);
+        EmitterManager[listen]('raf', this.raf);
 
     }
 

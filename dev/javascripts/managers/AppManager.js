@@ -3,8 +3,11 @@ import EmitterManager from './EmitterManager';
 // import RouterManager from './RouterManager';
 // import Device from '../helpers/Device';
 // import WebFont from 'webfontloader';
-import SoundManager from './SoundManager';
+// import SoundManager from './SoundManager';
+import GraphicBars from '../components/GraphicBars';
+import Graphic3D from '../components/Graphic3D';
 
+import bean from 'bean';
 
 class AppManager {
 
@@ -12,18 +15,40 @@ class AppManager {
 
         this.start = this.start.bind(this);
         this.resizeHandler = this.resizeHandler.bind(this);
+        this.raf = this.raf.bind(this);
 
     }
 
     start() {
 
         // }
-        window.addEventListener('resize', this.resizeHandler);
+
+        this.events(true);
+
+        // SoundManager
+
+        this.graphicBars = new GraphicBars();
+        this.graphic3D = new Graphic3D();
+    }
+
+    events(method) {
+
+        let listen = method === false ? 'removeEventListener' : 'addEventListener';
+
+        // raf
+        TweenMax.ticker[listen]('tick', this.raf);
+        
+
+        listen = method === false ? 'off' : 'on';
+        
         this.resizeHandler();
+        bean[listen](window, 'resize', this.resizeHandler);
 
-        // create SoundManager
-        new SoundManager();
+    }
 
+    raf() {
+
+    	EmitterManager.emit('raf');
     }
 
     // completeLoading() {

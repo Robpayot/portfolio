@@ -4,7 +4,7 @@ import Graphic3D from '../components/Graphic3D';
 import dat from 'dat-gui';
 
 
-export default class SoundManager {
+class SoundManager {
 
     constructor() {
 
@@ -16,12 +16,14 @@ export default class SoundManager {
     }
 
     bind() {
-        this.raf = this.raf.bind(this);
+
         this.events = this.events.bind(this);
         this.changeFtt = this.changeFtt.bind(this);
+        this.init = this.init.bind(this);
     }
 
     init() {
+    	console.log('init SoundManager');
 
         this.el = document.querySelector('.xp');
 
@@ -51,9 +53,6 @@ export default class SoundManager {
 
         console.log(this.bufferLength);
 
-        this.graphicBars = new GraphicBars(this);
-        // new Graphic3D(this);
-
         this.events(true);
 
         // GUI
@@ -70,11 +69,8 @@ export default class SoundManager {
 
     events(method) {
 
-        let listener = method === false ? 'removeEventListener' : 'addEventListener';
-        let emitterListener = method === false ? 'off' : 'on';
-
-        // raf
-        TweenMax.ticker[listener]('tick', this.raf);
+        let listen = method === false ? 'removeEventListener' : 'addEventListener';
+        listen = method === false ? 'off' : 'on';
 
     }
 
@@ -87,12 +83,7 @@ export default class SoundManager {
         console.log(this.bufferLength);
     }
 
-    raf() {
-
-        // Raf for GraphicBars
-        this.graphicBars.raf();
-
-    }
-
 
 }
+
+export default new SoundManager();
