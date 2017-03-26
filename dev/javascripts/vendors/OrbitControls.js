@@ -13,7 +13,7 @@
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finger swipe
 
-import { EventDispatcher, Vector3, Vector2, MOUSE, Quaternion, Spherical } from 'three';
+import { EventDispatcher, Vector3, Vector2, MOUSE, Quaternion, Spherical, PerspectiveCamera } from 'three';
 
 let OrbitControls = function ( object, domElement ) {
 

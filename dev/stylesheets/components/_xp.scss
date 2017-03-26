@@ -7,6 +7,7 @@
         justify-content: space-around;
         width: 100%;
         max-width: 900px;
+        height: 300px;
         li {
             display: inline-block;
             text-align: center;
@@ -52,5 +53,8 @@
     .audio {
         display: inline-block;
         text-align: center;
+    }
+    .graphic3D {
+    	border: 1px solid grey;
     }
 }

@@ -1,4 +1,5 @@
-import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry } from 'three';
+import { getRandom } from '../helpers/utils';
 import OrbitControls from '../vendors/OrbitControls';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
@@ -8,12 +9,14 @@ console.log(OrbitControls);
 
 export default class Graphic3D {
 
-    constructor(SoundManager) {
+    constructor() {
 
         this.raf = this.raf.bind(this);
         this.events = this.events.bind(this);
-        this.setElements = this.setElements.bind(this);
+        this.setSpheres = this.setSpheres.bind(this);
         this.resizeHandler = this.resizeHandler.bind(this);
+
+        this.sound = SoundManager;
 
         this.start();
 
@@ -51,14 +54,13 @@ export default class Graphic3D {
                 this.far
             );
 
-        this.camera.position.z = 500;
+        // controls
+        this.camera.position.x = 300;
+        this.camera.position.y = 300;
+        this.camera.position.z = 300;
+
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        console.log(OrbitControls);
-        // this.controls.addEventListener('change', this.raf); // remove when using animation loop
-        // enable animation loop when using damping or autorotation
-        //controls.enableDamping = true;
-        //controls.dampingFactor = 0.25;
-        this.controls.enableZoom = false;
+        this.controls.enableZoom = true;
 
         this.scene = new Scene();
         this.scene.background = new Color(0xffffff);
@@ -74,9 +76,31 @@ export default class Graphic3D {
         // DOM element.
         this.el.appendChild(this.renderer.domElement);
 
-        this.elements = [];
+        // spheres
+        this.spheres = [];
+        this.numbElements = 50;
 
-        this.setElements();
+        for (let i = 0; i < this.numbElements; i++) {
+            this.setSpheres();
+        }
+
+        // pyramides
+        this.pyramides = [];
+        this.numbElements = 40;
+
+        for (let i = 0; i < this.numbElements; i++) {
+            this.setPyramides();
+        }
+
+        // cubes
+        this.cubes = [];
+        this.numbElements = 30;
+
+        for (let i = 0; i < this.numbElements; i++) {
+            this.setCubes();
+        }
+
+
         this.setLight();
 
         this.events(true);
@@ -95,18 +119,56 @@ export default class Graphic3D {
 
     }
 
-    setElements() {
+    setSpheres() {
 
         // // Set up the sphere vars
-        const RADIUS = 50;
+        const RADIUS = 10;
         const SEGMENTS = 32;
         const RINGS = 32;
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const material = new MeshLambertMaterial({ color: 0xCC0000 });
-        const sphere = new Mesh(geometry, material);
-        sphere.position.z = -300;
-        this.scene.add(sphere);
+        const material = new MeshBasicMaterial({ color: 0xff6347 });
+        const mesh = new Mesh(geometry, material);
+
+        mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
+
+        this.scene.add(mesh);
+
+        this.spheres.push(mesh);
+    }
+
+    setPyramides() {
+
+        const geometry = new ConeBufferGeometry( 5, 20, 32 );
+        geometry.radiusSegments = 4;
+        const material = new MeshBasicMaterial({ color: 0x00ff00 });
+        const mesh = new Mesh(geometry, material);
+
+        mesh.position.set(getRandom(-250, 250), getRandom(-250, 250), getRandom(-250, 250));
+        mesh.lookAt(new Vector3( 0, 0, -300 ));
+
+        this.scene.add(mesh);
+
+        this.pyramides.push(mesh);
+    }
+
+    setCubes() {
+
+        // // Set up the sphere vars
+        const RADIUS = 10;
+        const SEGMENTS = 32;
+        const RINGS = 32;
+
+        const geometry = new BoxGeometry( 20, 20, 20 );
+
+        const material = new MeshBasicMaterial({ color: 0x4682b4 });
+        const mesh = new Mesh(geometry, material);
+
+        mesh.position.set(getRandom(-150, 150), getRandom(-150, 150), getRandom(-150, 150));
+
+        this.scene.add(mesh);
+
+        this.cubes.push(mesh);
     }
 
     setLight() {
@@ -114,14 +176,11 @@ export default class Graphic3D {
         const pointLight = new PointLight(0xFFFFFF);
 
         // set its position
-        pointLight.position.x = 100;
-        pointLight.position.y = 150;
-        pointLight.position.z = 130;
-
-        // Light shadow
-        // pointLight.shadow.radius = 0.5;
-        // pointLight.shadow.bias = 0.5;
-        console.log(pointLight.shadow);
+        pointLight.position.set(0, 0, 0);
+        pointLight.power = 40;
+        pointLight.distance = 600;
+        pointLight.decay = 2;
+        console.log(pointLight);
 
         // add to the scene
         this.scene.add(pointLight);
@@ -133,7 +192,76 @@ export default class Graphic3D {
 
     raf() {
 
-    	this.controls.update();
+        this.sound.analyser.getByteFrequencyData(this.sound.dataArray);
+
+        ////////////
+        // hight
+        ///////////
+
+        let hightVals = 0;
+        let hightLimit = Math.round(this.sound.bufferLength / 5);
+
+        for (let i = 0; i < hightLimit; i++) {
+
+            hightVals += this.sound.dataArray[i];
+
+        }
+        let coefAttenuate = 0.01;
+        const hightAvg = (hightVals / hightLimit) * coefAttenuate;
+
+        for (let i = 0; i < this.spheres.length; i++) {
+            this.spheres[i].scale.x = hightAvg;
+            this.spheres[i].scale.y = hightAvg;
+            this.spheres[i].scale.z = hightAvg;
+        }
+
+        ////////////
+        // medium
+        ///////////
+
+        let mediumVals = 0;
+        let mediumLimit = Math.round((this.sound.bufferLength / 5) * 2);
+
+        for (let i = hightLimit; i < mediumLimit; i++) {
+
+            mediumVals += this.sound.dataArray[i];
+
+        }
+
+        coefAttenuate = 0.03;
+        const mediumAvg = (mediumVals / mediumLimit) * coefAttenuate;
+
+        for (let i = 0; i < this.pyramides.length; i++) {
+            this.pyramides[i].scale.x = mediumAvg;
+            this.pyramides[i].scale.y = mediumAvg;
+            this.pyramides[i].scale.z = mediumAvg;
+        }
+
+        ////////////
+        // low
+        ///////////
+
+        let lowVals = 0;
+        let lowLimit = Math.round((this.sound.bufferLength / 5) * 3);
+
+        for (let i = mediumLimit; i < lowLimit; i++) {
+
+            lowVals += this.sound.dataArray[i];
+
+        }
+
+        coefAttenuate = 0.03;
+        const lowAvg = (lowVals / lowLimit) * coefAttenuate;
+
+        for (let i = 0; i < this.cubes.length; i++) {
+            this.cubes[i].scale.x = lowAvg;
+            this.cubes[i].scale.y = lowAvg;
+            this.cubes[i].scale.z = lowAvg;
+        }
+
+
+
+        this.controls.update();
         // Draw!
         this.renderer.render(this.scene, this.camera);
 

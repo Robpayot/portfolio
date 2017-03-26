@@ -3,7 +3,7 @@ import SoundManager from '../managers/SoundManager';
 
 export default class GraphicBars {
 
-    constructor(SoundManagers) {
+    constructor() {
 
         this.sound = SoundManager;
 
