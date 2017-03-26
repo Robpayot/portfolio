@@ -28,7 +28,7 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 	_AppManager2.default.start();
 })();
 
-},{"./managers/AppManager":4,"gsap":14,"modernizr":8}],2:[function(require,module,exports){
+},{"./managers/AppManager":5,"gsap":15,"modernizr":9}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38,6 +38,8 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _three = require('three');
+
+var _utils = require('../helpers/utils');
 
 var _OrbitControls = require('../vendors/OrbitControls');
 
@@ -58,13 +60,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 console.log(_OrbitControls2.default);
 
 var Graphic3D = function () {
-    function Graphic3D(SoundManager) {
+    function Graphic3D() {
         _classCallCheck(this, Graphic3D);
 
         this.raf = this.raf.bind(this);
         this.events = this.events.bind(this);
-        this.setElements = this.setElements.bind(this);
+        this.setSpheres = this.setSpheres.bind(this);
         this.resizeHandler = this.resizeHandler.bind(this);
+
+        this.sound = _SoundManager2.default;
 
         this.start();
     }
@@ -95,14 +99,13 @@ var Graphic3D = function () {
             });
             this.camera = new _three.PerspectiveCamera(this.viewAngle, this.aspect, this.near, this.far);
 
-            this.camera.position.z = 500;
+            // controls
+            this.camera.position.x = 300;
+            this.camera.position.y = 300;
+            this.camera.position.z = 300;
+
             this.controls = new _OrbitControls2.default(this.camera, this.renderer.domElement);
-            console.log(_OrbitControls2.default);
-            // this.controls.addEventListener('change', this.raf); // remove when using animation loop
-            // enable animation loop when using damping or autorotation
-            //controls.enableDamping = true;
-            //controls.dampingFactor = 0.25;
-            this.controls.enableZoom = false;
+            this.controls.enableZoom = true;
 
             this.scene = new _three.Scene();
             this.scene.background = new _three.Color(0xffffff);
@@ -118,9 +121,30 @@ var Graphic3D = function () {
             // DOM element.
             this.el.appendChild(this.renderer.domElement);
 
-            this.elements = [];
+            // spheres
+            this.spheres = [];
+            this.numbElements = 50;
 
-            this.setElements();
+            for (var i = 0; i < this.numbElements; i++) {
+                this.setSpheres();
+            }
+
+            // pyramides
+            this.pyramides = [];
+            this.numbElements = 40;
+
+            for (var _i = 0; _i < this.numbElements; _i++) {
+                this.setPyramides();
+            }
+
+            // cubes
+            this.cubes = [];
+            this.numbElements = 30;
+
+            for (var _i2 = 0; _i2 < this.numbElements; _i2++) {
+                this.setCubes();
+            }
+
             this.setLight();
 
             this.events(true);
@@ -136,19 +160,59 @@ var Graphic3D = function () {
             _EmitterManager2.default[listen]('raf', this.raf);
         }
     }, {
-        key: 'setElements',
-        value: function setElements() {
+        key: 'setSpheres',
+        value: function setSpheres() {
 
             // // Set up the sphere vars
-            var RADIUS = 50;
+            var RADIUS = 10;
             var SEGMENTS = 32;
             var RINGS = 32;
 
             var geometry = new _three.SphereGeometry(RADIUS, SEGMENTS, RINGS);
-            var material = new _three.MeshLambertMaterial({ color: 0xCC0000 });
-            var sphere = new _three.Mesh(geometry, material);
-            sphere.position.z = -300;
-            this.scene.add(sphere);
+            var material = new _three.MeshBasicMaterial({ color: 0xff6347 });
+            var mesh = new _three.Mesh(geometry, material);
+
+            mesh.position.set((0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300));
+
+            this.scene.add(mesh);
+
+            this.spheres.push(mesh);
+        }
+    }, {
+        key: 'setPyramides',
+        value: function setPyramides() {
+
+            var geometry = new _three.ConeBufferGeometry(5, 20, 32);
+            geometry.radiusSegments = 4;
+            var material = new _three.MeshBasicMaterial({ color: 0x00ff00 });
+            var mesh = new _three.Mesh(geometry, material);
+
+            mesh.position.set((0, _utils.getRandom)(-250, 250), (0, _utils.getRandom)(-250, 250), (0, _utils.getRandom)(-250, 250));
+            mesh.lookAt(new _three.Vector3(0, 0, -300));
+
+            this.scene.add(mesh);
+
+            this.pyramides.push(mesh);
+        }
+    }, {
+        key: 'setCubes',
+        value: function setCubes() {
+
+            // // Set up the sphere vars
+            var RADIUS = 10;
+            var SEGMENTS = 32;
+            var RINGS = 32;
+
+            var geometry = new _three.BoxGeometry(20, 20, 20);
+
+            var material = new _three.MeshBasicMaterial({ color: 0x4682b4 });
+            var mesh = new _three.Mesh(geometry, material);
+
+            mesh.position.set((0, _utils.getRandom)(-150, 150), (0, _utils.getRandom)(-150, 150), (0, _utils.getRandom)(-150, 150));
+
+            this.scene.add(mesh);
+
+            this.cubes.push(mesh);
         }
     }, {
         key: 'setLight',
@@ -157,14 +221,11 @@ var Graphic3D = function () {
             var pointLight = new _three.PointLight(0xFFFFFF);
 
             // set its position
-            pointLight.position.x = 100;
-            pointLight.position.y = 150;
-            pointLight.position.z = 130;
-
-            // Light shadow
-            // pointLight.shadow.radius = 0.5;
-            // pointLight.shadow.bias = 0.5;
-            console.log(pointLight.shadow);
+            pointLight.position.set(0, 0, 0);
+            pointLight.power = 40;
+            pointLight.distance = 600;
+            pointLight.decay = 2;
+            console.log(pointLight);
 
             // add to the scene
             this.scene.add(pointLight);
@@ -178,6 +239,70 @@ var Graphic3D = function () {
         key: 'raf',
         value: function raf() {
 
+            this.sound.analyser.getByteFrequencyData(this.sound.dataArray);
+
+            ////////////
+            // hight
+            ///////////
+
+            var hightVals = 0;
+            var hightLimit = Math.round(this.sound.bufferLength / 5);
+
+            for (var i = 0; i < hightLimit; i++) {
+
+                hightVals += this.sound.dataArray[i];
+            }
+            var coefAttenuate = 0.01;
+            var hightAvg = hightVals / hightLimit * coefAttenuate;
+
+            for (var _i3 = 0; _i3 < this.spheres.length; _i3++) {
+                this.spheres[_i3].scale.x = hightAvg;
+                this.spheres[_i3].scale.y = hightAvg;
+                this.spheres[_i3].scale.z = hightAvg;
+            }
+
+            ////////////
+            // medium
+            ///////////
+
+            var mediumVals = 0;
+            var mediumLimit = Math.round(this.sound.bufferLength / 5 * 2);
+
+            for (var _i4 = hightLimit; _i4 < mediumLimit; _i4++) {
+
+                mediumVals += this.sound.dataArray[_i4];
+            }
+
+            coefAttenuate = 0.03;
+            var mediumAvg = mediumVals / mediumLimit * coefAttenuate;
+
+            for (var _i5 = 0; _i5 < this.pyramides.length; _i5++) {
+                this.pyramides[_i5].scale.x = mediumAvg;
+                this.pyramides[_i5].scale.y = mediumAvg;
+                this.pyramides[_i5].scale.z = mediumAvg;
+            }
+
+            ////////////
+            // low
+            ///////////
+
+            var lowVals = 0;
+            var lowLimit = Math.round(this.sound.bufferLength / 5 * 3);
+
+            for (var _i6 = mediumLimit; _i6 < lowLimit; _i6++) {
+
+                lowVals += this.sound.dataArray[_i6];
+            }
+
+            coefAttenuate = 0.03;
+            var lowAvg = lowVals / lowLimit * coefAttenuate;
+
+            for (var _i7 = 0; _i7 < this.cubes.length; _i7++) {
+                this.cubes[_i7].scale.x = lowAvg;
+                this.cubes[_i7].scale.y = lowAvg;
+                this.cubes[_i7].scale.z = lowAvg;
+            }
+
             this.controls.update();
             // Draw!
             this.renderer.render(this.scene, this.camera);
@@ -189,7 +314,7 @@ var Graphic3D = function () {
 
 exports.default = Graphic3D;
 
-},{"../managers/EmitterManager":5,"../managers/SoundManager":6,"../vendors/OrbitControls":7,"three":15}],3:[function(require,module,exports){
+},{"../helpers/utils":4,"../managers/EmitterManager":6,"../managers/SoundManager":7,"../vendors/OrbitControls":8,"three":16}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -211,7 +336,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GraphicBars = function () {
-    function GraphicBars(SoundManagers) {
+    function GraphicBars() {
         _classCallCheck(this, GraphicBars);
 
         this.sound = _SoundManager2.default;
@@ -350,7 +475,70 @@ var GraphicBars = function () {
 
 exports.default = GraphicBars;
 
-},{"../managers/EmitterManager":5,"../managers/SoundManager":6}],4:[function(require,module,exports){
+},{"../managers/EmitterManager":6,"../managers/SoundManager":7}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.findAncestor = findAncestor;
+exports.getRandom = getRandom;
+exports.elementInViewport = elementInViewport;
+exports.browser = browser;
+exports.getOffsetTop = getOffsetTop;
+function findAncestor(el, cls) {
+	while ((el = el.parentElement) && !el.classList.contains(cls)) {}
+	return el;
+}
+
+function getRandom(min, max) {
+	return Math.random() * (max - min) + min;
+}
+
+function elementInViewport(el) {
+	var top = el.offsetTop;
+	var left = el.offsetLeft;
+	var width = el.offsetWidth;
+	var height = el.offsetHeight;
+
+	while (el.offsetParent) {
+		el = el.offsetParent;
+		top += el.offsetTop;
+		left += el.offsetLeft;
+	}
+
+	return top < window.pageYOffset + window.innerHeight && left < window.pageXOffset + window.innerWidth && top + height > window.pageYOffset && left + width > window.pageXOffset;
+}
+
+function browser() {
+	var ua = navigator.userAgent,
+	    tem,
+	    M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+	if (/trident/i.test(M[1])) {
+		tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+		return 'IE ' + (tem[1] || '');
+	}
+	if (M[1] === 'Chrome') {
+		tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
+		if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+	}
+	M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+	if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+	return M.join(' ');
+}
+
+function getOffsetTop(elem) {
+
+	var offsetTop = 0;
+	do {
+		if (!isNaN(elem.offsetTop)) {
+			offsetTop += elem.offsetTop;
+		}
+	} while (elem = elem.offsetParent);
+	return offsetTop;
+}
+
+},{}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -480,7 +668,7 @@ var AppManager = function () {
 
 exports.default = new AppManager();
 
-},{"../components/Graphic3D":2,"../components/GraphicBars":3,"./EmitterManager":5,"bean":9}],5:[function(require,module,exports){
+},{"../components/Graphic3D":2,"../components/GraphicBars":3,"./EmitterManager":6,"bean":10}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -503,7 +691,7 @@ var EmitterManager = function EmitterManager() {
 
 exports.default = new EmitterManager();
 
-},{"component-emitter":10}],6:[function(require,module,exports){
+},{"component-emitter":11}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -611,7 +799,7 @@ var SoundManager = function () {
 
 exports.default = new SoundManager();
 
-},{"../components/Graphic3D":2,"../components/GraphicBars":3,"dat-gui":11}],7:[function(require,module,exports){
+},{"../components/Graphic3D":2,"../components/GraphicBars":3,"dat-gui":12}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -919,7 +1107,7 @@ var OrbitControls = function OrbitControls(object, domElement) {
 
 			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-			if (scope.object instanceof PerspectiveCamera) {
+			if (scope.object instanceof _three.PerspectiveCamera) {
 
 				// perspective
 				var position = scope.object.position;
@@ -948,7 +1136,7 @@ var OrbitControls = function OrbitControls(object, domElement) {
 
 	function dollyIn(dollyScale) {
 
-		if (scope.object instanceof PerspectiveCamera) {
+		if (scope.object instanceof _three.PerspectiveCamera) {
 
 			scale /= dollyScale;
 		} else if (scope.object instanceof OrthographicCamera) {
@@ -965,7 +1153,7 @@ var OrbitControls = function OrbitControls(object, domElement) {
 
 	function dollyOut(dollyScale) {
 
-		if (scope.object instanceof PerspectiveCamera) {
+		if (scope.object instanceof _three.PerspectiveCamera) {
 
 			scale *= dollyScale;
 		} else if (scope.object instanceof OrthographicCamera) {
@@ -1563,7 +1751,7 @@ Object.defineProperties(OrbitControls.prototype, {
 
 exports.default = OrbitControls;
 
-},{"three":15}],8:[function(require,module,exports){
+},{"three":16}],9:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 'use strict';
@@ -2967,7 +3155,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
@@ -3710,7 +3898,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   return bean
 });
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -3875,10 +4063,10 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = require('./vendor/dat.gui')
 module.exports.color = require('./vendor/dat.color')
-},{"./vendor/dat.color":12,"./vendor/dat.gui":13}],12:[function(require,module,exports){
+},{"./vendor/dat.color":13,"./vendor/dat.gui":14}],13:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -4634,7 +4822,7 @@ dat.color.math = (function () {
 })(),
 dat.color.toString,
 dat.utils.common);
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -8295,7 +8483,7 @@ dat.dom.CenteredDiv = (function (dom, common) {
 dat.utils.common),
 dat.dom.dom,
 dat.utils.common);
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 1.19.1
@@ -16156,7 +16344,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 })((typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this || window, "TweenMax");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
