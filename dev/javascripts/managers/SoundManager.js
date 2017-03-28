@@ -1,3 +1,4 @@
+import EmitterManager from './EmitterManager';
 import GraphicBars from '../components/GraphicBars';
 import Graphic3D from '../components/Graphic3D';
 
@@ -20,10 +21,11 @@ class SoundManager {
         this.events = this.events.bind(this);
         this.changeFtt = this.changeFtt.bind(this);
         this.init = this.init.bind(this);
+        this.raf = this.raf.bind(this);
     }
 
     init() {
-    	console.log('init SoundManager');
+        console.log('init SoundManager');
 
         this.el = document.querySelector('.xp');
 
@@ -51,8 +53,6 @@ class SoundManager {
         // Prepare array of frequencies
         this.dataArray = new Uint8Array(this.bufferLength);
 
-        console.log(this.bufferLength);
-
         this.events(true);
 
         // GUI
@@ -72,6 +72,8 @@ class SoundManager {
         let listen = method === false ? 'removeEventListener' : 'addEventListener';
         listen = method === false ? 'off' : 'on';
 
+        EmitterManager[listen]('raf', this.raf);
+
     }
 
     changeFtt(e) {
@@ -79,8 +81,60 @@ class SoundManager {
         this.analyser.fftSize = this.params.Fourier_value;
         this.bufferLength = this.analyser.frequencyBinCount;
         this.dataArray = new Uint8Array(this.bufferLength);
+    }
 
-        console.log(this.bufferLength);
+    raf() {
+
+        // .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
+        // .getByteTimeDomainData() --> For oscilloscope visualisation 
+        this.analyser.getByteFrequencyData(this.dataArray);
+
+        // Divise frequencies in 3 parts
+
+        ////////////
+        // hight
+        ///////////
+
+        let hightVals = 0;
+        let hightLimit = Math.round(this.bufferLength / 5);
+
+        for (let i = 0; i < hightLimit; i++) {
+
+            hightVals += this.dataArray[i];
+
+        }
+
+        this.hightAvg = hightVals / hightLimit;
+
+        ////////////
+        // medium
+        ///////////
+
+        let mediumVals = 0;
+        let mediumLimit = Math.round((this.bufferLength / 5) * 2);
+
+        for (let i = hightLimit; i < mediumLimit; i++) {
+
+            mediumVals += this.dataArray[i];
+
+        }
+
+        this.mediumAvg = mediumVals / mediumLimit;
+
+        ////////////
+        // low
+        ///////////
+
+        let lowVals = 0;
+        let lowLimit = Math.round((this.bufferLength / 5) * 3);
+
+        for (let i = mediumLimit; i < lowLimit; i++) {
+
+            lowVals += this.dataArray[i];
+
+        }
+
+        this.lowAvg = lowVals / lowLimit;
     }
 
 

@@ -63,11 +63,6 @@ export default class GraphicBars {
 
     raf() {
 
-        // .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
-        // .getByteTimeDomainData() --> For oscilloscope visualisation 
-        this.sound.analyser.getByteFrequencyData(this.sound.dataArray);
-
-
         // Create background
         this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
         this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -90,55 +85,25 @@ export default class GraphicBars {
         }
 
 
-        // Circles anim
+        // Update circles size
 
         ////////////
         // hight
         ///////////
 
-        let hightVals = 0;
-        let hightLimit = Math.round(this.sound.bufferLength / 5);
-
-        for (let i = 0; i < hightLimit; i++) {
-
-            hightVals += this.sound.dataArray[i];
-
-        }
-
-        const hightAvg = hightVals / hightLimit;
-        TweenMax.to(this.ui.hight, 0, { width: hightAvg, height: hightAvg });
+        TweenMax.to(this.ui.hight, 0, { width: this.sound.hightAvg, height: this.sound.hightAvg });
 
         ////////////
         // medium
         ///////////
 
-        let mediumVals = 0;
-        let mediumLimit = Math.round((this.sound.bufferLength / 5) * 2);
-
-        for (let i = hightLimit; i < mediumLimit; i++) {
-
-            mediumVals += this.sound.dataArray[i];
-
-        }
-
-        const mediumAvg = mediumVals / mediumLimit;
-        TweenMax.to(this.ui.medium, 0, { width: mediumAvg, height: mediumAvg });
+        TweenMax.to(this.ui.medium, 0, { width: this.sound.mediumAvg, height: this.sound.mediumAvg });
 
         ////////////
         // low
         ///////////
 
-        let lowVals = 0;
-        let lowLimit = Math.round((this.sound.bufferLength / 5) * 3);
-
-        for (let i = mediumLimit; i < lowLimit; i++) {
-
-            lowVals += this.sound.dataArray[i];
-
-        }
-
-        const lowAvg = lowVals / lowLimit;
-        TweenMax.to(this.ui.low, 0, { width: lowAvg, height: lowAvg });
+        TweenMax.to(this.ui.low, 0, { width: this.sound.lowAvg, height: this.sound.lowAvg });
 
     }
 

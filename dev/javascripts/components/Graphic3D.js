@@ -192,22 +192,15 @@ export default class Graphic3D {
 
     raf() {
 
-        this.sound.analyser.getByteFrequencyData(this.sound.dataArray);
+
+        // Update meth size
 
         ////////////
         // hight
         ///////////
 
-        let hightVals = 0;
-        let hightLimit = Math.round(this.sound.bufferLength / 5);
-
-        for (let i = 0; i < hightLimit; i++) {
-
-            hightVals += this.sound.dataArray[i];
-
-        }
         let coefAttenuate = 0.01;
-        const hightAvg = (hightVals / hightLimit) * coefAttenuate;
+        const hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
 
         for (let i = 0; i < this.spheres.length; i++) {
             this.spheres[i].scale.x = hightAvg;
@@ -219,17 +212,7 @@ export default class Graphic3D {
         // medium
         ///////////
 
-        let mediumVals = 0;
-        let mediumLimit = Math.round((this.sound.bufferLength / 5) * 2);
-
-        for (let i = hightLimit; i < mediumLimit; i++) {
-
-            mediumVals += this.sound.dataArray[i];
-
-        }
-
-        coefAttenuate = 0.03;
-        const mediumAvg = (mediumVals / mediumLimit) * coefAttenuate;
+        const mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
 
         for (let i = 0; i < this.pyramides.length; i++) {
             this.pyramides[i].scale.x = mediumAvg;
@@ -241,17 +224,7 @@ export default class Graphic3D {
         // low
         ///////////
 
-        let lowVals = 0;
-        let lowLimit = Math.round((this.sound.bufferLength / 5) * 3);
-
-        for (let i = mediumLimit; i < lowLimit; i++) {
-
-            lowVals += this.sound.dataArray[i];
-
-        }
-
-        coefAttenuate = 0.03;
-        const lowAvg = (lowVals / lowLimit) * coefAttenuate;
+        const lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
 
         for (let i = 0; i < this.cubes.length; i++) {
             this.cubes[i].scale.x = lowAvg;
