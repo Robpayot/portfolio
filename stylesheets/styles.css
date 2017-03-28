@@ -282,15 +282,41 @@ body {
 /* ------------------------------------------------------------------ */
 .xp {
   text-align: center; }
-  .xp .frequencies {
+
+.graphic3D {
+  border: 1px solid grey;
+  margin-top: 100px; }
+
+.graphicBars {
+  background-color: transparent;
+  position: absolute;
+  top: 0px; }
+  .graphicBars__canvas {
+    display: block;
+    width: 100%;
+    height: 100px; }
+  .graphicBars .formFtt__title {
+    display: inline-block; }
+  .graphicBars .audio {
+    display: inline-block;
+    text-align: center;
+    background-color: transparent; }
+
+.jauge {
+  position: absolute;
+  width: 100px;
+  height: 100vh;
+  left: 10px;
+  opacity: 0.5;
+  top: 0;
+  z-index: 20;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex; }
+  .jauge .frequencies {
     margin: 0px auto;
     display: -webkit-box;
-<<<<<<< Updated upstream
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-item-align: center;
-    align-self: center;
-=======
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
@@ -298,49 +324,43 @@ body {
     -ms-flex-item-align: center;
     align-self: center;
     -webkit-justify-content: space-around;
->>>>>>> Stashed changes
     -ms-flex-pack: distribute;
     justify-content: space-around;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
     width: 100%;
     max-width: 900px;
     height: 300px; }
-    .xp .frequencies li {
+    .jauge .frequencies li {
       display: inline-block;
       text-align: center;
       position: relative; }
-    .xp .frequencies .circle {
+    .jauge .frequencies .circle {
       width: 50px;
       height: 50px;
       border-radius: 50%;
       margin: 0px auto;
       position: absolute;
+      -webkit-transform-origin: center center;
+      -ms-transform-origin: center center;
+      transform-origin: center center;
       left: 50%;
-      top: 130px;
+      top: 50%;
       -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%); }
-    .xp .frequencies .hight {
-      margin: 50px; }
-      .xp .frequencies .hight .circle {
-        background-color: tomato; }
-    .xp .frequencies .medium {
-      margin: 50px; }
-      .xp .frequencies .medium .circle {
-        background-color: lime; }
-    .xp .frequencies .low {
-      margin: 50px; }
-      .xp .frequencies .low .circle {
-        background-color: Steelblue; }
-  .xp .canvas {
-    display: block;
-    width: 100%;
-    height: 200px; }
-  .xp .formFtt__title {
-    display: inline-block; }
-  .xp .audio {
-    display: inline-block;
-    text-align: center; }
-  .xp .graphic3D {
-    border: 1px solid grey; }
+    .jauge .frequencies .hight .circle {
+      background-color: tomato; }
+    .jauge .frequencies h1 {
+      z-index: 10;
+      position: relative;
+      text-align: center; }
+    .jauge .frequencies .medium .circle {
+      background-color: lime; }
+    .jauge .frequencies .low .circle {
+      background-color: Steelblue; }
 
 /*# sourceMappingURL=styles.css.map */
