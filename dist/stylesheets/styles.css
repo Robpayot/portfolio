@@ -285,10 +285,20 @@ body {
   .xp .frequencies {
     margin: 0px auto;
     display: -webkit-box;
+<<<<<<< Updated upstream
     display: -ms-flexbox;
     display: flex;
     -ms-flex-item-align: center;
     align-self: center;
+=======
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-self: center;
+    -ms-flex-item-align: center;
+    align-self: center;
+    -webkit-justify-content: space-around;
+>>>>>>> Stashed changes
     -ms-flex-pack: distribute;
     justify-content: space-around;
     width: 100%;
