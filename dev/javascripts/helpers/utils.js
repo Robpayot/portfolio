@@ -55,3 +55,13 @@ export function getOffsetTop(elem) {
 	} while (elem = elem.offsetParent);
 	return offsetTop;
 }
+
+export function toDegree(radians) {
+
+	return radians * 180 / Math.PI;
+}
+
+export function toRadian(degrees) {
+
+	return degrees * Math.PI / 180;
+}

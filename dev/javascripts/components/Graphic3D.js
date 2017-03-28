@@ -1,6 +1,6 @@
 import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry } from 'three';
 import { World } from 'oimo';
-import { getRandom } from '../helpers/utils';
+import { getRandom, toRadian } from '../helpers/utils';
 import OrbitControls from '../vendors/OrbitControls';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
@@ -134,7 +134,7 @@ export default class Graphic3D {
 
         console.log('oui');
 
-        const world = new World({
+        this.world = new World({
             timestep: 1 / 60,
             iterations: 8,
             broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
@@ -144,7 +144,7 @@ export default class Graphic3D {
             gravity: [0, -9.8, 0]
         });
 
-        let body = world.add({
+        this.body = this.world.add({
             type: 'sphere', // type of shape : sphere, box, cylinder 
             size: [1, 1, 1], // size of shape
             pos: [0, 0, 0], // start position in degree
@@ -163,15 +163,23 @@ export default class Graphic3D {
         // 	body2: "b1", // name or id of attach rigidbody
         // });
 
+        this.ground0 = this.world.add({ size: [200, 200, 20], pos: [0, -50, 0], rot: [-90, 90, 90], world: this.world });
 
-        // update world
-        world.step();
 
-        // and copy position and rotation to three mesh
-        for (let i = 0; i < this.spheres.length; i++) {
-            this.spheres[i].position.copy(body.getPosition());
-            this.spheres[i].quaternion.copy(body.getQuaternion());
-        }
+        const geometry = new BoxGeometry(200, 200, 20);
+
+        const material = new MeshBasicMaterial({ color: 0x00ffff });
+        const mesh = new Mesh(geometry, material);
+
+        // mesh.position.set(0, -50, 0);
+        // mesh.rotation.set(toRadian(60), toRadian(30), toRadian(90));
+        mesh.position.copy(this.ground0.getPosition());
+        mesh.quaternion.copy(this.ground0.getQuaternion());
+
+
+        this.scene.add(mesh);
+
+
 
     }
 
@@ -291,7 +299,14 @@ export default class Graphic3D {
         }
 
 
+        // update world
+        this.world.step();
 
+        // and copy position and rotation to three mesh
+        for (let i = 0; i < this.spheres.length; i++) {
+            this.spheres[i].position.copy(this.body.getPosition());
+            this.spheres[i].quaternion.copy(this.body.getQuaternion());
+        }
         this.controls.update();
         // Draw!
         this.renderer.render(this.scene, this.camera);
