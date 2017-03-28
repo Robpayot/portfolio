@@ -239,68 +239,43 @@ var Graphic3D = function () {
         key: 'raf',
         value: function raf() {
 
-            this.sound.analyser.getByteFrequencyData(this.sound.dataArray);
+            // Update meth size
 
             ////////////
             // hight
             ///////////
 
-            var hightVals = 0;
-            var hightLimit = Math.round(this.sound.bufferLength / 5);
-
-            for (var i = 0; i < hightLimit; i++) {
-
-                hightVals += this.sound.dataArray[i];
-            }
             var coefAttenuate = 0.01;
-            var hightAvg = hightVals / hightLimit * coefAttenuate;
+            var hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
 
-            for (var _i3 = 0; _i3 < this.spheres.length; _i3++) {
-                this.spheres[_i3].scale.x = hightAvg;
-                this.spheres[_i3].scale.y = hightAvg;
-                this.spheres[_i3].scale.z = hightAvg;
+            for (var i = 0; i < this.spheres.length; i++) {
+                this.spheres[i].scale.x = hightAvg;
+                this.spheres[i].scale.y = hightAvg;
+                this.spheres[i].scale.z = hightAvg;
             }
 
             ////////////
             // medium
             ///////////
 
-            var mediumVals = 0;
-            var mediumLimit = Math.round(this.sound.bufferLength / 5 * 2);
+            var mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
 
-            for (var _i4 = hightLimit; _i4 < mediumLimit; _i4++) {
-
-                mediumVals += this.sound.dataArray[_i4];
-            }
-
-            coefAttenuate = 0.03;
-            var mediumAvg = mediumVals / mediumLimit * coefAttenuate;
-
-            for (var _i5 = 0; _i5 < this.pyramides.length; _i5++) {
-                this.pyramides[_i5].scale.x = mediumAvg;
-                this.pyramides[_i5].scale.y = mediumAvg;
-                this.pyramides[_i5].scale.z = mediumAvg;
+            for (var _i3 = 0; _i3 < this.pyramides.length; _i3++) {
+                this.pyramides[_i3].scale.x = mediumAvg;
+                this.pyramides[_i3].scale.y = mediumAvg;
+                this.pyramides[_i3].scale.z = mediumAvg;
             }
 
             ////////////
             // low
             ///////////
 
-            var lowVals = 0;
-            var lowLimit = Math.round(this.sound.bufferLength / 5 * 3);
+            var lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
 
-            for (var _i6 = mediumLimit; _i6 < lowLimit; _i6++) {
-
-                lowVals += this.sound.dataArray[_i6];
-            }
-
-            coefAttenuate = 0.03;
-            var lowAvg = lowVals / lowLimit * coefAttenuate;
-
-            for (var _i7 = 0; _i7 < this.cubes.length; _i7++) {
-                this.cubes[_i7].scale.x = lowAvg;
-                this.cubes[_i7].scale.y = lowAvg;
-                this.cubes[_i7].scale.z = lowAvg;
+            for (var _i4 = 0; _i4 < this.cubes.length; _i4++) {
+                this.cubes[_i4].scale.x = lowAvg;
+                this.cubes[_i4].scale.y = lowAvg;
+                this.cubes[_i4].scale.z = lowAvg;
             }
 
             this.controls.update();
@@ -396,10 +371,6 @@ var GraphicBars = function () {
         key: 'raf',
         value: function raf() {
 
-            // .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
-            // .getByteTimeDomainData() --> For oscilloscope visualisation 
-            this.sound.analyser.getByteFrequencyData(this.sound.dataArray);
-
             // Create background
             this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
             this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -421,52 +392,25 @@ var GraphicBars = function () {
                 x += barWidth + 1;
             }
 
-            // Circles anim
+            // Update circles size
 
             ////////////
             // hight
             ///////////
 
-            var hightVals = 0;
-            var hightLimit = Math.round(this.sound.bufferLength / 5);
-
-            for (var _i = 0; _i < hightLimit; _i++) {
-
-                hightVals += this.sound.dataArray[_i];
-            }
-
-            var hightAvg = hightVals / hightLimit;
-            TweenMax.to(this.ui.hight, 0, { width: hightAvg, height: hightAvg });
+            TweenMax.to(this.ui.hight, 0, { width: this.sound.hightAvg, height: this.sound.hightAvg });
 
             ////////////
             // medium
             ///////////
 
-            var mediumVals = 0;
-            var mediumLimit = Math.round(this.sound.bufferLength / 5 * 2);
-
-            for (var _i2 = hightLimit; _i2 < mediumLimit; _i2++) {
-
-                mediumVals += this.sound.dataArray[_i2];
-            }
-
-            var mediumAvg = mediumVals / mediumLimit;
-            TweenMax.to(this.ui.medium, 0, { width: mediumAvg, height: mediumAvg });
+            TweenMax.to(this.ui.medium, 0, { width: this.sound.mediumAvg, height: this.sound.mediumAvg });
 
             ////////////
             // low
             ///////////
 
-            var lowVals = 0;
-            var lowLimit = Math.round(this.sound.bufferLength / 5 * 3);
-
-            for (var _i3 = mediumLimit; _i3 < lowLimit; _i3++) {
-
-                lowVals += this.sound.dataArray[_i3];
-            }
-
-            var lowAvg = lowVals / lowLimit;
-            TweenMax.to(this.ui.low, 0, { width: lowAvg, height: lowAvg });
+            TweenMax.to(this.ui.low, 0, { width: this.sound.lowAvg, height: this.sound.lowAvg });
         }
     }]);
 
@@ -700,6 +644,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _EmitterManager = require('./EmitterManager');
+
+var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
+
 var _GraphicBars = require('../components/GraphicBars');
 
 var _GraphicBars2 = _interopRequireDefault(_GraphicBars);
@@ -732,6 +680,7 @@ var SoundManager = function () {
             this.events = this.events.bind(this);
             this.changeFtt = this.changeFtt.bind(this);
             this.init = this.init.bind(this);
+            this.raf = this.raf.bind(this);
         }
     }, {
         key: 'init',
@@ -762,8 +711,6 @@ var SoundManager = function () {
             // Prepare array of frequencies
             this.dataArray = new Uint8Array(this.bufferLength);
 
-            console.log(this.bufferLength);
-
             this.events(true);
 
             // GUI
@@ -781,6 +728,8 @@ var SoundManager = function () {
 
             var listen = method === false ? 'removeEventListener' : 'addEventListener';
             listen = method === false ? 'off' : 'on';
+
+            _EmitterManager2.default[listen]('raf', this.raf);
         }
     }, {
         key: 'changeFtt',
@@ -789,8 +738,58 @@ var SoundManager = function () {
             this.analyser.fftSize = this.params.Fourier_value;
             this.bufferLength = this.analyser.frequencyBinCount;
             this.dataArray = new Uint8Array(this.bufferLength);
+        }
+    }, {
+        key: 'raf',
+        value: function raf() {
 
-            console.log(this.bufferLength);
+            // .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
+            // .getByteTimeDomainData() --> For oscilloscope visualisation 
+            this.analyser.getByteFrequencyData(this.dataArray);
+
+            // Divise frequencies in 3 parts
+
+            ////////////
+            // hight
+            ///////////
+
+            var hightVals = 0;
+            var hightLimit = Math.round(this.bufferLength / 5);
+
+            for (var i = 0; i < hightLimit; i++) {
+
+                hightVals += this.dataArray[i];
+            }
+
+            this.hightAvg = hightVals / hightLimit;
+
+            ////////////
+            // medium
+            ///////////
+
+            var mediumVals = 0;
+            var mediumLimit = Math.round(this.bufferLength / 5 * 2);
+
+            for (var _i = hightLimit; _i < mediumLimit; _i++) {
+
+                mediumVals += this.dataArray[_i];
+            }
+
+            this.mediumAvg = mediumVals / mediumLimit;
+
+            ////////////
+            // low
+            ///////////
+
+            var lowVals = 0;
+            var lowLimit = Math.round(this.bufferLength / 5 * 3);
+
+            for (var _i2 = mediumLimit; _i2 < lowLimit; _i2++) {
+
+                lowVals += this.dataArray[_i2];
+            }
+
+            this.lowAvg = lowVals / lowLimit;
         }
     }]);
 
@@ -799,7 +798,7 @@ var SoundManager = function () {
 
 exports.default = new SoundManager();
 
-},{"../components/Graphic3D":2,"../components/GraphicBars":3,"dat-gui":12}],8:[function(require,module,exports){
+},{"../components/Graphic3D":2,"../components/GraphicBars":3,"./EmitterManager":6,"dat-gui":12}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
