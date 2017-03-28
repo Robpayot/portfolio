@@ -1,0 +1,18 @@
+.graphicBars {
+	background-color: transparent;
+	position: absolute;
+	top: 0px;
+    &__canvas {
+        display: block;
+        width: 100%;
+        height: 100px;
+    }
+    .formFtt__title {
+        display: inline-block;
+    }
+    .audio {
+        display: inline-block;
+        text-align: center;
+        background-color: transparent;
+    }
+}

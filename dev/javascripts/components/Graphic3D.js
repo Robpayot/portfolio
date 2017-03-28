@@ -1,10 +1,11 @@
 import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry } from 'three';
+import { World } from 'oimo';
 import { getRandom } from '../helpers/utils';
 import OrbitControls from '../vendors/OrbitControls';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
 
-console.log(OrbitControls);
+console.log(World);
 
 
 export default class Graphic3D {
@@ -29,7 +30,7 @@ export default class Graphic3D {
 
         // Set the scene size.
         this.width = window.innerWidth;
-        this.height = 500;
+        this.height = window.innerHeight - 100;
 
 
         // Set some camera attributes.
@@ -46,6 +47,9 @@ export default class Graphic3D {
         this.renderer = new WebGLRenderer({
             antialias: true,
         });
+        // Start the renderer.
+        this.renderer.setSize(this.width, this.height);
+
         this.camera =
             new PerspectiveCamera(
                 this.viewAngle,
@@ -62,6 +66,29 @@ export default class Graphic3D {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = true;
 
+
+        this.initScene();
+
+        this.initPhysics();
+
+        this.events(true);
+
+
+
+    }
+
+    events(method) {
+
+        let listen = method === false ? 'removeEventListener' : 'addEventListener';
+        listen = method === false ? 'off' : 'on';
+
+        EmitterManager[listen]('resize', this.resizeHandler);
+        EmitterManager[listen]('raf', this.raf);
+
+    }
+
+    initScene() {
+
         this.scene = new Scene();
         this.scene.background = new Color(0xffffff);
         console.log(this.scene);
@@ -69,8 +96,7 @@ export default class Graphic3D {
         // Add the camera to the scene.
         this.scene.add(this.camera);
 
-        // Start the renderer.
-        this.renderer.setSize(this.width, this.height);
+
 
         // Attach the renderer-supplied
         // DOM element.
@@ -102,20 +128,50 @@ export default class Graphic3D {
 
 
         this.setLight();
-
-        this.events(true);
-
-
-
     }
 
-    events(method) {
+    initPhysics() {
 
-        let listen = method === false ? 'removeEventListener' : 'addEventListener';
-        listen = method === false ? 'off' : 'on';
+        console.log('oui');
 
-        EmitterManager[listen]('resize', this.resizeHandler);
-        EmitterManager[listen]('raf', this.raf);
+        const world = new World({
+            timestep: 1 / 60,
+            iterations: 8,
+            broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
+            worldscale: 1, // scale full world 
+            random: true, // randomize sample
+            info: false, // calculate statistic or not
+            gravity: [0, -9.8, 0]
+        });
+
+        let body = world.add({
+            type: 'sphere', // type of shape : sphere, box, cylinder 
+            size: [1, 1, 1], // size of shape
+            pos: [0, 0, 0], // start position in degree
+            rot: [0, 0, 90], // start rotation in degree
+            move: true, // dynamic or statique
+            density: 1,
+            friction: 0.2,
+            restitution: 0.2,
+            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+        });
+
+        // let body = world.add({
+        // 	type: 'jointHinge', // type of joint : jointDistance, jointHinge, jointPrisme, jointSlide, jointWheel
+        // 	body1: "b1", // name or id of attach rigidbody
+        // 	body2: "b1", // name or id of attach rigidbody
+        // });
+
+
+        // update world
+        world.step();
+
+        // and copy position and rotation to three mesh
+        for (let i = 0; i < this.spheres.length; i++) {
+            this.spheres[i].position.copy(body.getPosition());
+            this.spheres[i].quaternion.copy(body.getQuaternion());
+        }
 
     }
 
@@ -139,13 +195,13 @@ export default class Graphic3D {
 
     setPyramides() {
 
-        const geometry = new ConeBufferGeometry( 5, 20, 32 );
+        const geometry = new ConeBufferGeometry(5, 20, 32);
         geometry.radiusSegments = 4;
         const material = new MeshBasicMaterial({ color: 0x00ff00 });
         const mesh = new Mesh(geometry, material);
 
         mesh.position.set(getRandom(-250, 250), getRandom(-250, 250), getRandom(-250, 250));
-        mesh.lookAt(new Vector3( 0, 0, -300 ));
+        mesh.lookAt(new Vector3(0, 0, -300));
 
         this.scene.add(mesh);
 
@@ -159,7 +215,7 @@ export default class Graphic3D {
         const SEGMENTS = 32;
         const RINGS = 32;
 
-        const geometry = new BoxGeometry( 20, 20, 20 );
+        const geometry = new BoxGeometry(20, 20, 20);
 
         const material = new MeshBasicMaterial({ color: 0x4682b4 });
         const mesh = new Mesh(geometry, material);
@@ -187,7 +243,9 @@ export default class Graphic3D {
     }
 
     resizeHandler() {
-        this.canvas.width = window.innerWidth;
+
+        this.renderer.setSize(window.innerWidth, window.innerHeight - 100);
+
     }
 
     raf() {

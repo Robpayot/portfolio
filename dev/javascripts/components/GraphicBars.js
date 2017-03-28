@@ -34,7 +34,7 @@ export default class GraphicBars {
             low: this.el.querySelector('.frequencies .low .circle')
         };
 
-        this.canvas = document.querySelector('.canvas__bars');
+        this.canvas = document.querySelector('.graphicBars__canvas');
         this.canvas.width = window.innerWidth;
         this.canvas.height = 300;
         this.canvasCtx = this.canvas.getContext('2d');
@@ -64,7 +64,7 @@ export default class GraphicBars {
     raf() {
 
         // Create background
-        this.canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        this.canvasCtx.fillStyle = 'rgb(255, 255, 255)';
         this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         let barWidth = this.canvas.width / this.sound.bufferLength;
@@ -90,20 +90,21 @@ export default class GraphicBars {
         ////////////
         // hight
         ///////////
+        let scale = this.sound.hightAvg * 0.8 + 20;
 
-        TweenMax.to(this.ui.hight, 0, { width: this.sound.hightAvg, height: this.sound.hightAvg });
+        TweenMax.to(this.ui.hight, 0, { width: scale, height: scale });
 
         ////////////
         // medium
         ///////////
-
-        TweenMax.to(this.ui.medium, 0, { width: this.sound.mediumAvg, height: this.sound.mediumAvg });
+        scale = this.sound.mediumAvg * 0.8 + 20;
+        TweenMax.to(this.ui.medium, 0, { width: scale, height: scale });
 
         ////////////
         // low
         ///////////
-
-        TweenMax.to(this.ui.low, 0, { width: this.sound.lowAvg, height: this.sound.lowAvg });
+        scale = this.sound.lowAvg * 0.8 + 20;
+        TweenMax.to(this.ui.low, 0, { width: scale, height: scale });
 
     }
 
