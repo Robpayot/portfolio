@@ -67,9 +67,24 @@ export default class Graphic3D {
         this.controls.enableZoom = true;
 
 
+        
+        this.initPhysics();
         this.initScene();
 
-        this.initPhysics();
+        
+        const geometry = new BoxGeometry(5, 600, 600);
+
+        const material = new MeshBasicMaterial({ color: 0x00ffff });
+        const mesh = new Mesh(geometry, material);
+
+        // mesh.position.set(0, -50, 0);
+        // mesh.rotation.set(toRadian(60), toRadian(30), toRadian(90));
+        mesh.position.copy(this.ground0.getPosition());
+        mesh.quaternion.copy(this.ground0.getQuaternion());
+
+
+        this.scene.add(mesh);
+        
 
         this.events(true);
 
@@ -141,21 +156,10 @@ export default class Graphic3D {
             worldscale: 1, // scale full world 
             random: true, // randomize sample
             info: false, // calculate statistic or not
-            gravity: [0, -9.8, 0]
+            gravity: [0, -90.8, 0]
         });
 
-        this.body = this.world.add({
-            type: 'sphere', // type of shape : sphere, box, cylinder 
-            size: [1, 1, 1], // size of shape
-            pos: [0, 0, 0], // start position in degree
-            rot: [0, 0, 90], // start rotation in degree
-            move: true, // dynamic or statique
-            density: 1,
-            friction: 0.2,
-            restitution: 0.2,
-            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-        });
+
 
         // let body = world.add({
         // 	type: 'jointHinge', // type of joint : jointDistance, jointHinge, jointPrisme, jointSlide, jointWheel
@@ -163,22 +167,7 @@ export default class Graphic3D {
         // 	body2: "b1", // name or id of attach rigidbody
         // });
 
-        this.ground0 = this.world.add({ size: [200, 200, 20], pos: [0, -50, 0], rot: [-90, 90, 90], world: this.world });
-
-
-        const geometry = new BoxGeometry(200, 200, 20);
-
-        const material = new MeshBasicMaterial({ color: 0x00ffff });
-        const mesh = new Mesh(geometry, material);
-
-        // mesh.position.set(0, -50, 0);
-        // mesh.rotation.set(toRadian(60), toRadian(30), toRadian(90));
-        mesh.position.copy(this.ground0.getPosition());
-        mesh.quaternion.copy(this.ground0.getQuaternion());
-
-
-        this.scene.add(mesh);
-
+        this.ground0 = this.world.add({ size: [5, 600, 600], pos: [0, -50, 0], rot: [0, 90, 60], world: this.world });
 
 
     }
@@ -197,6 +186,19 @@ export default class Graphic3D {
         mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
 
         this.scene.add(mesh);
+
+        mesh.bodySphere = this.world.add({
+            type: 'sphere', // type of shape : sphere, box, cylinder 
+            size: [1, 1, 1], // size of shape
+            pos: [getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300)], // start position in degree
+            rot: [0, 0, 90], // start rotation in degree
+            move: true, // dynamic or statique
+            density: 1,
+            friction: 0.2,
+            restitution: 0.2,
+            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+        });
 
         this.spheres.push(mesh);
     }
@@ -304,8 +306,8 @@ export default class Graphic3D {
 
         // and copy position and rotation to three mesh
         for (let i = 0; i < this.spheres.length; i++) {
-            this.spheres[i].position.copy(this.body.getPosition());
-            this.spheres[i].quaternion.copy(this.body.getQuaternion());
+            this.spheres[i].position.copy(this.spheres[i].bodySphere.getPosition());
+            this.spheres[i].quaternion.copy(this.spheres[i].bodySphere.getQuaternion());
         }
         this.controls.update();
         // Draw!

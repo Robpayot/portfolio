@@ -112,9 +112,20 @@ var Graphic3D = function () {
             this.controls = new _OrbitControls2.default(this.camera, this.renderer.domElement);
             this.controls.enableZoom = true;
 
+            this.initPhysics();
             this.initScene();
 
-            this.initPhysics();
+            var geometry = new _three.BoxGeometry(5, 600, 600);
+
+            var material = new _three.MeshBasicMaterial({ color: 0x00ffff });
+            var mesh = new _three.Mesh(geometry, material);
+
+            // mesh.position.set(0, -50, 0);
+            // mesh.rotation.set(toRadian(60), toRadian(30), toRadian(90));
+            mesh.position.copy(this.ground0.getPosition());
+            mesh.quaternion.copy(this.ground0.getQuaternion());
+
+            this.scene.add(mesh);
 
             this.events(true);
         }
@@ -182,20 +193,7 @@ var Graphic3D = function () {
                 worldscale: 1, // scale full world 
                 random: true, // randomize sample
                 info: false, // calculate statistic or not
-                gravity: [0, -9.8, 0]
-            });
-
-            this.body = this.world.add({
-                type: 'sphere', // type of shape : sphere, box, cylinder 
-                size: [1, 1, 1], // size of shape
-                pos: [0, 0, 0], // start position in degree
-                rot: [0, 0, 90], // start rotation in degree
-                move: true, // dynamic or statique
-                density: 1,
-                friction: 0.2,
-                restitution: 0.2,
-                belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-                collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+                gravity: [0, -90.8, 0]
             });
 
             // let body = world.add({
@@ -204,19 +202,7 @@ var Graphic3D = function () {
             // 	body2: "b1", // name or id of attach rigidbody
             // });
 
-            this.ground0 = this.world.add({ size: [200, 200, 20], pos: [0, -50, 0], rot: [-90, 90, 90], world: this.world });
-
-            var geometry = new _three.BoxGeometry(200, 200, 20);
-
-            var material = new _three.MeshBasicMaterial({ color: 0x00ffff });
-            var mesh = new _three.Mesh(geometry, material);
-
-            // mesh.position.set(0, -50, 0);
-            // mesh.rotation.set(toRadian(60), toRadian(30), toRadian(90));
-            mesh.position.copy(this.ground0.getPosition());
-            mesh.quaternion.copy(this.ground0.getQuaternion());
-
-            this.scene.add(mesh);
+            this.ground0 = this.world.add({ size: [5, 600, 600], pos: [0, -50, 0], rot: [0, 90, 60], world: this.world });
         }
     }, {
         key: 'setSpheres',
@@ -234,6 +220,19 @@ var Graphic3D = function () {
             mesh.position.set((0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300));
 
             this.scene.add(mesh);
+
+            mesh.bodySphere = this.world.add({
+                type: 'sphere', // type of shape : sphere, box, cylinder 
+                size: [1, 1, 1], // size of shape
+                pos: [(0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300)], // start position in degree
+                rot: [0, 0, 90], // start rotation in degree
+                move: true, // dynamic or statique
+                density: 1,
+                friction: 0.2,
+                restitution: 0.2,
+                belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+                collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+            });
 
             this.spheres.push(mesh);
         }
@@ -343,8 +342,8 @@ var Graphic3D = function () {
 
             // and copy position and rotation to three mesh
             for (var _i5 = 0; _i5 < this.spheres.length; _i5++) {
-                this.spheres[_i5].position.copy(this.body.getPosition());
-                this.spheres[_i5].quaternion.copy(this.body.getQuaternion());
+                this.spheres[_i5].position.copy(this.spheres[_i5].bodySphere.getPosition());
+                this.spheres[_i5].quaternion.copy(this.spheres[_i5].bodySphere.getQuaternion());
             }
             this.controls.update();
             // Draw!
