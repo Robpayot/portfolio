@@ -61,8 +61,8 @@ class SoundManager {
             Fourier_value: this.analyser.fftSize
         }
 
-        const gui = new dat.GUI();
-        gui.add(this.params, 'Fourier_value', [256, 512, 1024, 2048]).onChange(this.changeFtt);
+        this.gui = new dat.GUI();
+        this.gui.add(this.params, 'Fourier_value', [256, 512, 1024, 2048]).onChange(this.changeFtt);
 
 
     }
