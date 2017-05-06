@@ -59,8 +59,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-console.log(_oimo.World);
-
 var Graphic3D = function () {
     function Graphic3D() {
         _classCallCheck(this, Graphic3D);
@@ -71,6 +69,8 @@ var Graphic3D = function () {
         this.resizeHandler = this.resizeHandler.bind(this);
         this.reset = this.reset.bind(this);
         this.destroy = this.destroy.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onClick = this.onClick.bind(this);
 
         this.sound = _SoundManager2.default;
 
@@ -81,14 +81,15 @@ var Graphic3D = function () {
         key: 'start',
         value: function start() {
 
-            console.log('test 2', _SoundManager2.default);
-
             // Set the scene size.
             this.width = window.innerWidth;
             this.height = window.innerHeight - 100;
 
+            // body element
+            this.body = document.getElementsByTagName('body')[0];
+
             // Set some camera attributes.
-            this.viewAngle = 45;
+            this.fov = 45;
             this.aspect = this.width / this.height;
             this.near = 0.1;
             this.far = 10000;
@@ -104,12 +105,18 @@ var Graphic3D = function () {
             // Start the renderer.
             this.renderer.setSize(this.width, this.height);
 
-            this.camera = new _three.PerspectiveCamera(this.viewAngle, this.aspect, this.near, this.far);
+            this.camera = new _three.PerspectiveCamera(this.fov, this.aspect, this.near, this.far);
+
+            // Raycaster
+            this.raycaster = new _three.Raycaster();
+
+            // Mouse
+            this.mouse = { x: 0, y: 0 };
 
             // controls
-            this.camera.position.x = 750;
-            this.camera.position.y = 750;
-            this.camera.position.z = 750;
+            this.camera.position.x = 75;
+            this.camera.position.y = 75;
+            this.camera.position.z = 75;
 
             this.controls = new _OrbitControls2.default(this.camera, this.renderer.domElement);
             this.controls.enableZoom = true;
@@ -130,6 +137,10 @@ var Graphic3D = function () {
         value: function events(method) {
 
             var listen = method === false ? 'removeEventListener' : 'addEventListener';
+
+            document[listen]('mousemove', this.onMouseMove);
+            document[listen]('click', this.onClick);
+
             listen = method === false ? 'off' : 'on';
 
             _EmitterManager2.default[listen]('resize', this.resizeHandler);
@@ -141,7 +152,6 @@ var Graphic3D = function () {
 
             this.scene = new _three.Scene();
             this.scene.background = new _three.Color(0xffffff);
-            console.log(this.scene);
 
             // Add the camera to the scene.
             this.scene.add(this.camera);
@@ -152,7 +162,7 @@ var Graphic3D = function () {
 
             // spheres
             this.spheres = [];
-            this.numbElements = 50;
+            this.numbElements = 1;
 
             for (var i = 0; i < this.numbElements; i++) {
                 this.setSpheres();
@@ -160,7 +170,7 @@ var Graphic3D = function () {
 
             // pyramides
             this.pyramides = [];
-            this.numbElements = 40;
+            this.numbElements = 0;
 
             for (var _i = 0; _i < this.numbElements; _i++) {
                 this.setPyramides();
@@ -168,14 +178,14 @@ var Graphic3D = function () {
 
             // cubes
             this.cubes = [];
-            this.numbElements = 30;
+            this.numbElements = 0;
 
             for (var _i2 = 0; _i2 < this.numbElements; _i2++) {
                 this.setCubes();
             }
 
             // Set ground
-            this.setGround();
+            // this.setGround();
 
             // set Light
             this.setLight();
@@ -207,22 +217,23 @@ var Graphic3D = function () {
             var material = new _three.MeshLambertMaterial({ color: 0xff6347 });
             var mesh = new _three.Mesh(geometry, material);
 
-            mesh.position.set((0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300));
+            // mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
+            mesh.position.set(0, 0, 0);
 
             this.scene.add(mesh);
 
-            mesh.body = this.world.add({
-                type: 'sphere', // type of shape : sphere, box, cylinder 
-                size: [10, 10, 10], // size of shape
-                pos: [(0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300), (0, _utils.getRandom)(-300, 300)], // start position in degree
-                rot: [0, 0, 90], // start rotation in degree
-                move: true, // dynamic or statique
-                density: 1,
-                friction: 0.2,
-                restitution: 0.2,
-                belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-                collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-            });
+            // mesh.body = this.world.add({
+            //     type: 'sphere', // type of shape : sphere, box, cylinder 
+            //     size: [10, 10, 10], // size of shape
+            //     pos: [getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300)], // start position in degree
+            //     rot: [0, 0, 90], // start rotation in degree
+            //     move: true, // dynamic or statique
+            //     density: 1,
+            //     friction: 0.2,
+            //     restitution: 0.2,
+            //     belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+            //     collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+            // });
 
             this.spheres.push(mesh);
         }
@@ -309,17 +320,82 @@ var Graphic3D = function () {
     }, {
         key: 'setLight',
         value: function setLight() {
-            // create a point light
-            var pointLight = new _three.PointLight(0xFFFFFF);
 
-            // set its position
-            pointLight.position.set(0, 0, 0);
-            pointLight.power = 40;
-            pointLight.distance = 1000;
-            pointLight.decay = 2;
+            var paramsLight = [{ x: 70, y: 70, z: 0 }, { x: -70, y: -70, z: -90 }];
 
-            // add to the scene
-            this.scene.add(pointLight);
+            for (var i = 0; i < paramsLight.length; i++) {
+
+                // create a point light
+                var pointLight = new _three.PointLight(0xFFFFFF);
+                // set its position
+                pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+                // pointLight.power = 20;
+                pointLight.distance = 1000;
+                pointLight.decay = 2;
+                pointLight.intensity = 1;
+
+                // add to the scene
+                this.scene.add(pointLight);
+            }
+
+            // white spotlight shining from the side, casting a shadow
+
+            // var spotLight = new SpotLight(0xffffff);
+            // spotLight.position.set(100, 1000, 100);
+
+            // spotLight.castShadow = true;
+
+            // spotLight.shadow.mapSize.width = 1024;
+            // spotLight.shadow.mapSize.height = 1024;
+
+            // spotLight.shadow.camera.near = 500;
+            // spotLight.shadow.camera.far = 4000;
+            // spotLight.shadow.camera.fov = 30;
+
+            // this.scene.add(spotLight);
+
+        }
+    }, {
+        key: 'onClick',
+        value: function onClick(e) {
+
+            if (this.clickSymbol === true) {
+                // console.log('click Symbol', this.too);
+
+                if (this.toggle !== true) {
+
+                    TweenMax.to(this.spheres[0].scale, 0.5, {
+                        x: 1.5,
+                        y: 1.5,
+                        z: 1.5,
+                        ease: window.Power4.easeInOut
+                    });
+                    this.toggle = true;
+                } else {
+
+                    TweenMax.to(this.spheres[0].scale, 0.5, {
+                        x: 1,
+                        y: 1,
+                        z: 1,
+                        ease: window.Power4.easeInOut
+                    });
+
+                    this.toggle = false;
+                }
+            }
+        }
+    }, {
+        key: 'onMouseMove',
+        value: function onMouseMove(e) {
+
+            var eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+            var eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+
+            // calculate mouse position in normalized device coordinates
+            // (-1 to +1) for both components
+            this.mouse.x = event.clientX / this.width * 2 - 1;
+            this.mouse.y = -(event.clientY / this.height) * 2 + 1;
+            // console.log(this.mouse);
         }
     }, {
         key: 'resizeHandler',
@@ -331,60 +407,77 @@ var Graphic3D = function () {
         key: 'raf',
         value: function raf() {
 
-            // Update meth size
+            //////////////////
+            // Raycasters
+            //////////////////
 
-            ////////////
-            // hight
-            ///////////
+            this.raycaster.setFromCamera(this.mouse, this.camera);
 
-            var coefAttenuate = 0.01;
-            var hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
+            var intersects = this.raycaster.intersectObjects(this.spheres);
 
-            for (var i = 0; i < this.spheres.length; i++) {
-                this.spheres[i].scale.x = hightAvg;
-                this.spheres[i].scale.y = hightAvg;
-                this.spheres[i].scale.z = hightAvg;
+            if (intersects.length > 0) {
+                this.body.style.cursor = 'pointer';
+                this.clickSymbol = true;
+            } else {
+                this.body.style.cursor = 'auto';
+                this.clickSymbol = false;
             }
 
-            ////////////
-            // medium
-            ///////////
+            // // Update meth size
 
-            var mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
+            // ////////////
+            // // hight
+            // ///////////
 
-            for (var _i3 = 0; _i3 < this.pyramides.length; _i3++) {
-                this.pyramides[_i3].scale.x = mediumAvg;
-                this.pyramides[_i3].scale.y = mediumAvg;
-                this.pyramides[_i3].scale.z = mediumAvg;
-            }
+            // let coefAttenuate = 0.01;
+            // const hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
 
-            ////////////
-            // low
-            ///////////
+            // for (let i = 0; i < this.spheres.length; i++) {
+            //     this.spheres[i].scale.x = hightAvg;
+            //     this.spheres[i].scale.y = hightAvg;
+            //     this.spheres[i].scale.z = hightAvg;
+            // }
 
-            var lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
+            // ////////////
+            // // medium
+            // ///////////
 
-            for (var _i4 = 0; _i4 < this.cubes.length; _i4++) {
-                this.cubes[_i4].scale.x = lowAvg;
-                this.cubes[_i4].scale.y = lowAvg;
-                this.cubes[_i4].scale.z = lowAvg;
-            }
+            // const mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
+
+            // for (let i = 0; i < this.pyramides.length; i++) {
+            //     this.pyramides[i].scale.x = mediumAvg;
+            //     this.pyramides[i].scale.y = mediumAvg;
+            //     this.pyramides[i].scale.z = mediumAvg;
+            // }
+
+            // ////////////
+            // // low
+            // ///////////
+
+            // const lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
+
+            // for (let i = 0; i < this.cubes.length; i++) {
+            //     this.cubes[i].scale.x = lowAvg;
+            //     this.cubes[i].scale.y = lowAvg;
+            //     this.cubes[i].scale.z = lowAvg;
+            // }
+
 
             // update world
             this.world.step();
 
             // and copy position and rotation to three mesh
-            for (var _i5 = 0; _i5 < this.spheres.length; _i5++) {
-                this.spheres[_i5].position.copy(this.spheres[_i5].body.getPosition());
-                this.spheres[_i5].quaternion.copy(this.spheres[_i5].body.getQuaternion());
+            // for (let i = 0; i < this.spheres.length; i++) {
+            //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
+            //     this.spheres[i].quaternion.copy(this.spheres[i].body.getQuaternion());
+            // }
+            for (var i = 0; i < this.cubes.length; i++) {
+                this.cubes[i].position.copy(this.cubes[i].body.getPosition());
+                this.cubes[i].quaternion.copy(this.cubes[i].body.getQuaternion());
             }
-            for (var _i6 = 0; _i6 < this.cubes.length; _i6++) {
-                this.cubes[_i6].position.copy(this.cubes[_i6].body.getPosition());
-                this.cubes[_i6].quaternion.copy(this.cubes[_i6].body.getQuaternion());
-            }
-            for (var _i7 = 0; _i7 < this.pyramides.length; _i7++) {
-                this.pyramides[_i7].position.copy(this.pyramides[_i7].body.getPosition());
-                this.pyramides[_i7].quaternion.copy(this.pyramides[_i7].body.getQuaternion());
+            for (var _i3 = 0; _i3 < this.pyramides.length; _i3++) {
+                this.pyramides[_i3].position.copy(this.pyramides[_i3].body.getPosition());
+                this.pyramides[_i3].quaternion.copy(this.pyramides[_i3].body.getQuaternion());
             }
             this.controls.update();
             // Draw!

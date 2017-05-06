@@ -1,11 +1,9 @@
-import { WebGLRenderer, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry } from 'three';
+import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry } from 'three';
 import { World } from 'oimo';
 import { getRandom, toRadian } from '../helpers/utils';
 import OrbitControls from '../vendors/OrbitControls';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
-
-console.log(World);
 
 
 export default class Graphic3D {
@@ -18,6 +16,8 @@ export default class Graphic3D {
         this.resizeHandler = this.resizeHandler.bind(this);
         this.reset = this.reset.bind(this);
         this.destroy = this.destroy.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onClick = this.onClick.bind(this);
 
         this.sound = SoundManager;
 
@@ -28,15 +28,16 @@ export default class Graphic3D {
 
     start() {
 
-        console.log('test 2', SoundManager);
-
         // Set the scene size.
         this.width = window.innerWidth;
         this.height = window.innerHeight - 100;
 
+        // body element
+        this.body = document.getElementsByTagName('body')[0];
+
 
         // Set some camera attributes.
-        this.viewAngle = 45;
+        this.fov = 45;
         this.aspect = this.width / this.height;
         this.near = 0.1;
         this.far = 10000;
@@ -52,18 +53,23 @@ export default class Graphic3D {
         // Start the renderer.
         this.renderer.setSize(this.width, this.height);
 
-        this.camera =
-            new PerspectiveCamera(
-                this.viewAngle,
-                this.aspect,
-                this.near,
-                this.far
-            );
+        this.camera = new PerspectiveCamera(
+            this.fov,
+            this.aspect,
+            this.near,
+            this.far
+        );
+
+        // Raycaster
+        this.raycaster = new Raycaster();
+
+        // Mouse
+        this.mouse = { x: 0, y: 0 };
 
         // controls
-        this.camera.position.x = 750;
-        this.camera.position.y = 750;
-        this.camera.position.z = 750;
+        this.camera.position.x = 75;
+        this.camera.position.y = 75;
+        this.camera.position.z = 75;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = true;
@@ -88,6 +94,10 @@ export default class Graphic3D {
     events(method) {
 
         let listen = method === false ? 'removeEventListener' : 'addEventListener';
+
+        document[listen]('mousemove', this.onMouseMove);
+        document[listen]('click', this.onClick);
+
         listen = method === false ? 'off' : 'on';
 
         EmitterManager[listen]('resize', this.resizeHandler);
@@ -99,7 +109,6 @@ export default class Graphic3D {
 
         this.scene = new Scene();
         this.scene.background = new Color(0xffffff);
-        console.log(this.scene);
 
         // Add the camera to the scene.
         this.scene.add(this.camera);
@@ -112,7 +121,7 @@ export default class Graphic3D {
 
         // spheres
         this.spheres = [];
-        this.numbElements = 50;
+        this.numbElements = 1;
 
         for (let i = 0; i < this.numbElements; i++) {
             this.setSpheres();
@@ -120,7 +129,7 @@ export default class Graphic3D {
 
         // pyramides
         this.pyramides = [];
-        this.numbElements = 40;
+        this.numbElements = 0;
 
         for (let i = 0; i < this.numbElements; i++) {
             this.setPyramides();
@@ -128,14 +137,14 @@ export default class Graphic3D {
 
         // cubes
         this.cubes = [];
-        this.numbElements = 30;
+        this.numbElements = 0;
 
         for (let i = 0; i < this.numbElements; i++) {
             this.setCubes();
         }
 
         // Set ground
-        this.setGround();
+        // this.setGround();
 
         // set Light
         this.setLight();
@@ -168,22 +177,23 @@ export default class Graphic3D {
         const material = new MeshLambertMaterial({ color: 0xff6347 });
         const mesh = new Mesh(geometry, material);
 
-        mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
+        // mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
+        mesh.position.set(0, 0, 0);
 
         this.scene.add(mesh);
 
-        mesh.body = this.world.add({
-            type: 'sphere', // type of shape : sphere, box, cylinder 
-            size: [10, 10, 10], // size of shape
-            pos: [getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300)], // start position in degree
-            rot: [0, 0, 90], // start rotation in degree
-            move: true, // dynamic or statique
-            density: 1,
-            friction: 0.2,
-            restitution: 0.2,
-            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-        });
+        // mesh.body = this.world.add({
+        //     type: 'sphere', // type of shape : sphere, box, cylinder 
+        //     size: [10, 10, 10], // size of shape
+        //     pos: [getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300)], // start position in degree
+        //     rot: [0, 0, 90], // start rotation in degree
+        //     move: true, // dynamic or statique
+        //     density: 1,
+        //     friction: 0.2,
+        //     restitution: 0.2,
+        //     belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+        //     collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+        // });
 
         this.spheres.push(mesh);
     }
@@ -266,17 +276,92 @@ export default class Graphic3D {
     }
 
     setLight() {
-        // create a point light
-        const pointLight = new PointLight(0xFFFFFF);
 
-        // set its position
-        pointLight.position.set(0, 0, 0);
-        pointLight.power = 40;
-        pointLight.distance = 1000;
-        pointLight.decay = 2;
 
-        // add to the scene
-        this.scene.add(pointLight);
+        let paramsLight = [
+            { x: 70, y: 70, z: 0 },
+            { x: -70, y: -70, z: -90 },
+            // { x: 70, y: -70, z: -90 }
+        ];
+
+        for (var i = 0; i < paramsLight.length; i++) {
+
+            // create a point light
+            let pointLight = new PointLight(0xFFFFFF);
+            // set its position
+            pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+            // pointLight.power = 20;
+            pointLight.distance = 1000;
+            pointLight.decay = 2;
+            pointLight.intensity = 1;
+
+            // add to the scene
+            this.scene.add(pointLight);
+        }
+
+        // white spotlight shining from the side, casting a shadow
+
+        // var spotLight = new SpotLight(0xffffff);
+        // spotLight.position.set(100, 1000, 100);
+
+        // spotLight.castShadow = true;
+
+        // spotLight.shadow.mapSize.width = 1024;
+        // spotLight.shadow.mapSize.height = 1024;
+
+        // spotLight.shadow.camera.near = 500;
+        // spotLight.shadow.camera.far = 4000;
+        // spotLight.shadow.camera.fov = 30;
+
+        // this.scene.add(spotLight);
+
+
+    }
+
+    onClick(e) {
+
+        if (this.clickSymbol === true) {
+        	// console.log('click Symbol', this.too);
+
+            if (this.toggle !== true) {
+
+                TweenMax.to(this.spheres[0].scale, 0.5, {
+                    x: 1.5,
+                    y: 1.5,
+                    z: 1.5,
+                    ease: window.Power4.easeInOut
+                });
+                this.toggle = true;
+
+            } else {
+
+                TweenMax.to(this.spheres[0].scale, 0.5, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: window.Power4.easeInOut
+                });
+
+                this.toggle = false;
+            }
+
+
+
+
+        }
+
+    }
+
+    onMouseMove(e) {
+
+        const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+        const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+
+        // calculate mouse position in normalized device coordinates
+        // (-1 to +1) for both components
+        this.mouse.x = (event.clientX / this.width) * 2 - 1;
+        this.mouse.y = -(event.clientY / this.height) * 2 + 1;
+        // console.log(this.mouse);
     }
 
     resizeHandler() {
@@ -288,54 +373,74 @@ export default class Graphic3D {
     raf() {
 
 
-        // Update meth size
 
-        ////////////
-        // hight
-        ///////////
+        //////////////////
+        // Raycasters
+        //////////////////
 
-        let coefAttenuate = 0.01;
-        const hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
+        this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        for (let i = 0; i < this.spheres.length; i++) {
-            this.spheres[i].scale.x = hightAvg;
-            this.spheres[i].scale.y = hightAvg;
-            this.spheres[i].scale.z = hightAvg;
+        const intersects = this.raycaster.intersectObjects(this.spheres);
+
+        if (intersects.length > 0) {
+            this.body.style.cursor = 'pointer';
+            this.clickSymbol = true;
+
+        } else {
+            this.body.style.cursor = 'auto';
+            this.clickSymbol = false;
         }
 
-        ////////////
-        // medium
-        ///////////
 
-        const mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
 
-        for (let i = 0; i < this.pyramides.length; i++) {
-            this.pyramides[i].scale.x = mediumAvg;
-            this.pyramides[i].scale.y = mediumAvg;
-            this.pyramides[i].scale.z = mediumAvg;
-        }
+        // // Update meth size
 
-        ////////////
-        // low
-        ///////////
+        // ////////////
+        // // hight
+        // ///////////
 
-        const lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
+        // let coefAttenuate = 0.01;
+        // const hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
 
-        for (let i = 0; i < this.cubes.length; i++) {
-            this.cubes[i].scale.x = lowAvg;
-            this.cubes[i].scale.y = lowAvg;
-            this.cubes[i].scale.z = lowAvg;
-        }
+        // for (let i = 0; i < this.spheres.length; i++) {
+        //     this.spheres[i].scale.x = hightAvg;
+        //     this.spheres[i].scale.y = hightAvg;
+        //     this.spheres[i].scale.z = hightAvg;
+        // }
+
+        // ////////////
+        // // medium
+        // ///////////
+
+        // const mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
+
+        // for (let i = 0; i < this.pyramides.length; i++) {
+        //     this.pyramides[i].scale.x = mediumAvg;
+        //     this.pyramides[i].scale.y = mediumAvg;
+        //     this.pyramides[i].scale.z = mediumAvg;
+        // }
+
+        // ////////////
+        // // low
+        // ///////////
+
+        // const lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
+
+        // for (let i = 0; i < this.cubes.length; i++) {
+        //     this.cubes[i].scale.x = lowAvg;
+        //     this.cubes[i].scale.y = lowAvg;
+        //     this.cubes[i].scale.z = lowAvg;
+        // }
 
 
         // update world
         this.world.step();
 
         // and copy position and rotation to three mesh
-        for (let i = 0; i < this.spheres.length; i++) {
-            this.spheres[i].position.copy(this.spheres[i].body.getPosition());
-            this.spheres[i].quaternion.copy(this.spheres[i].body.getQuaternion());
-        }
+        // for (let i = 0; i < this.spheres.length; i++) {
+        //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
+        //     this.spheres[i].quaternion.copy(this.spheres[i].body.getQuaternion());
+        // }
         for (let i = 0; i < this.cubes.length; i++) {
             this.cubes[i].position.copy(this.cubes[i].body.getPosition());
             this.cubes[i].quaternion.copy(this.cubes[i].body.getQuaternion());

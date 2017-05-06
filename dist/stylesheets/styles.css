@@ -284,13 +284,13 @@ body {
   text-align: center; }
 
 .graphic3D {
-  border: 1px solid grey;
-  margin-top: 100px; }
+  border: 1px solid grey; }
 
 .graphicBars {
   background-color: transparent;
   position: absolute;
-  top: 0px; }
+  top: 0px;
+  display: none; }
   .graphicBars__canvas {
     display: block;
     width: 100%;
