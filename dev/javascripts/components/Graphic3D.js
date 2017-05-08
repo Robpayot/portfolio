@@ -157,7 +157,7 @@ export default class Graphic3D {
 
         this.camera.position.x = 0;
         this.camera.position.y = 0;
-        this.camera.position.z = 120;
+        this.camera.position.z = 130;
     }
 
 
@@ -165,26 +165,26 @@ export default class Graphic3D {
 
         // Text
 
-        const div = document.createElement('div');
-        div.classList.add('project__context');
+        let div = document.createElement('div');
+        div.classList.add('css-container');
 
-        div.innerHTML = `<h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p>`;
+        div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
 
         this.text = new CSS3DObject(div);
-        this.text.position.set(45, 10, 20);
+        this.text.position.set(45, 5, 20);
         this.text.rotation.set(0, toRadian(-35), 0);
 
         this.cssScene.add(this.text);
 
         this.text.scale.multiplyScalar(1 / 6);
 
-        const div2 = document.createElement('div');
-        div2.classList.add('project__image');
+        let div2 = document.createElement('div');
+        div2.classList.add('css-container');
 
-        div2.innerHTML = `<img src="images/bmw.jpg" alt="project image" />`;
+        div2.innerHTML = `<div class='project__image'><img src="images/bmw.jpg" alt="project image" /></div>`;
 
         const div23d = new CSS3DObject(div2);
-        div23d.position.set(-45, 10, 20);
+        div23d.position.set(-45, 5, 20);
         div23d.rotation.set(0, toRadian(35), 0);
 
         this.cssScene.add(div23d);
@@ -367,41 +367,47 @@ export default class Graphic3D {
         if (this.clickSymbol === true) {
             // console.log('click Symbol', this.too);
 
+            const tl = new TimelineMax();
+
             if (this.toggle !== true) {
 
-                TweenMax.to(this.symbols[0].scale, 0.5, {
+
+
+                tl.to(this.symbols[0].scale, 0.7, {
                     x: 1.5,
                     y: 1.5,
                     z: 1.5,
                     ease: window.Power4.easeInOut
                 });
 
-                TweenMax.to(['.project__context', '.project__image'], 0.5, {
+                tl.staggerFromTo(['.project__image', '.project__context'], 0.8, {
+                    opacity: 0,
+                    y: 30
+                }, {
                     opacity: 1,
-                    ease: window.Power4.easeInOut
-                });
+                    y: 0,
+                    ease: window.Power4.easeOut
+                }, 0.1, 0.4);
 
                 this.toggle = true;
 
             } else {
 
-                TweenMax.to(this.symbols[0].scale, 0.5, {
-                    x: 1,
-                    y: 1,
-                    z: 1,
-                    ease: window.Power4.easeInOut
-                });
-
-                TweenMax.to(['.project__context', '.project__image'], 0.5, {
+                tl.to(['.project__context', '.project__image'], 0.8, {
                     opacity: 0,
                     ease: window.Power4.easeInOut
                 });
 
+
+                tl.to(this.symbols[0].scale, 0.5, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    ease: window.Power4.easeInOut
+                }, 0.1);
+
                 this.toggle = false;
             }
-
-
-
 
         }
 
@@ -421,8 +427,8 @@ export default class Graphic3D {
 
     resizeHandler() {
 
-        this.renderer.setSize(window.innerWidth, window.innerHeight - 100);
-        this.cssRenderer.setSize(window.innerWidth, window.innerHeight - 100);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 
     }
 
@@ -524,7 +530,7 @@ export default class Graphic3D {
         if (this.guiParams.gravity === true) {
             this.world.gravity.y = -90;
 
-            console.log('graivty down');
+            console.log('gravity down');
         } else {
             this.world.gravity.y = 0;
         }
