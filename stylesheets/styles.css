@@ -286,8 +286,10 @@ body {
 .graphic3D {
   border: 1px solid grey;
   position: relative; }
-  .graphic3D .container3D {
-    pointer-events: none; }
+  .graphic3D .container3D .project__context {
+    max-width: 300px;
+    font-size: 12px;
+    line-height: 1.4em; }
 
 .graphicBars {
   background-color: transparent;
