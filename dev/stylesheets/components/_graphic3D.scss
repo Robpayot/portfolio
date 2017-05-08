@@ -5,9 +5,11 @@
     .container3D {
         // width: 100%;
         // height: 100%;
-        pointer-events: none;
+        // pointer-events: none;
         .project__context {
-        	
+        	max-width: 300px;
+        	font-size: 12px;
+        	line-height: 1.4em;
         }
     }
 }

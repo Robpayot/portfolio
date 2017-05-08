@@ -14,7 +14,7 @@ export default class Graphic3D {
 
         this.raf = this.raf.bind(this);
         this.events = this.events.bind(this);
-        this.setSpheres = this.setSpheres.bind(this);
+        this.setSymbol = this.setSymbol.bind(this);
         this.resizeHandler = this.resizeHandler.bind(this);
         this.reset = this.reset.bind(this);
         this.destroy = this.destroy.bind(this);
@@ -30,120 +30,32 @@ export default class Graphic3D {
 
     start() {
 
-        // Set the scene size.
+        // set ui
+        this.ui = {
+            el: document.querySelector('.graphic3D'),
+            body: document.getElementsByTagName('body')[0]
+        };
+
+        // Set the canvas size.
         this.width = window.innerWidth;
         this.height = window.innerHeight - 100;
 
-        // body element
-        this.body = document.getElementsByTagName('body')[0];
+        // Set Camera.
+        this.setCamera();
 
-
-        // Set some camera attributes.
-        this.fov = 45;
-        this.aspect = this.width / this.height;
-        this.near = 0.1;
-        this.far = 10000;
-
-        // Get the DOM element to attach to
-        this.el = document.querySelector('.graphic3D');
-
-        // Create a WebGL renderer, camera
-        // and a scene
-        this.renderer = new WebGLRenderer({
-            antialias: true,
-        });
-        // Start the renderer.
-        this.renderer.setSize(this.width, this.height);
-
-        // Css Renderer
-        this.cssRenderer = new CSS3DRendererIE();
-        this.cssRenderer.setSize(this.width, this.height);
-
-        // Set up 3D-container
-        this.cssRenderer.domElement.style.position = 'absolute';
-        this.cssRenderer.domElement.style.top = 0;
-        this.cssRenderer.domElement.style.left = 0;
-        this.cssRenderer.domElement.style.zIndex = 1;
-        this.cssRenderer.domElement.classList.add('container3D');
-
-        this.el.appendChild(this.cssRenderer.domElement);
-
-
-        this.camera = new PerspectiveCamera(
-            this.fov,
-            this.aspect,
-            this.near,
-            this.far
-        );
-
-        this.camera.position.x = 75;
-        this.camera.position.y = 75;
-        this.camera.position.z = 75;
-
-
-        // Raycaster
-        this.raycaster = new Raycaster();
-
-        // Mouse
-        this.mouse = { x: 0, y: 0 };
-
-
-        // Camera controls
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableZoom = true;
-
-
-
-        this.initPhysics();
-        this.initScene();
-        this.initCssScene();
-
-        this.guiParams = {
-            gravity: false
-        };
-
-        this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
-
-        this.events(true);
-
-
-
-    }
-
-    events(method) {
-
-        let listen = method === false ? 'removeEventListener' : 'addEventListener';
-
-        document[listen]('mousemove', this.onMouseMove);
-        document[listen]('click', this.onClick);
-
-        listen = method === false ? 'off' : 'on';
-
-        EmitterManager[listen]('resize', this.resizeHandler);
-        EmitterManager[listen]('raf', this.raf);
-
-    }
-
-    initScene() {
-
+        // Set scenes
         this.scene = new Scene();
-        this.scene.background = new Color(0xffffff);
+        this.cssScene = new Scene();
 
-        // Add the camera to the scene.
-        this.scene.add(this.camera);
+        // Set symbol
+        this.setSymbol();
 
+        // Set Context
+        this.setContext();
 
-        // Attach the renderer-supplied
-        // DOM element.
-        this.el.appendChild(this.renderer.domElement);
-
-        // spheres
-        this.spheres = [];
-        this.numbElements = 1;
-
-        for (let i = 0; i < this.numbElements; i++) {
-            this.setSpheres();
-        }
+        // for (let i = 0; i < this.numbElements; i++) {
+        //     this.setSpheres();
+        // }
 
         // // pyramides
         // this.pyramides = [];
@@ -167,61 +79,110 @@ export default class Graphic3D {
         // set Light
         this.setLight();
 
+        // Raycaster
+        this.raycaster = new Raycaster();
+
+        // Mouse
+        this.mouse = { x: 0, y: 0 };
+
+        // Set physics
+        this.initPhysics();
+
+        // Set CssRenderer and WebGLRenderer 
+
+        this.cssRenderer = new CSS3DRendererIE();
+        this.cssRenderer.setSize(this.width, this.height);
+        this.cssRenderer.domElement.style.position = 'absolute';
+        this.cssRenderer.domElement.style.top = 0;
+        this.cssRenderer.domElement.style.left = 0;
+        this.cssRenderer.domElement.style.zIndex = 1;
+        this.cssRenderer.domElement.classList.add('container3D');
+
+        this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setClearColor(0x00ff00, 0.0);
+
+        this.renderer.setSize(this.width, this.height);
+
+        this.renderer.domElement.style.position = 'absolute';
+        this.renderer.domElement.style.zIndex = 1;
+        this.renderer.domElement.style.top = 0;
+        this.renderer.domElement.style.left = 0;
+        this.renderer.domElement.classList.add('webGl');
+        this.cssRenderer.domElement.appendChild(this.renderer.domElement);
+
+        this.ui.el.appendChild(this.cssRenderer.domElement);
+
+        // Camera controls
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableZoom = true;
+
+        // GUI
+        this.guiParams = {
+            gravity: false
+        };
+        this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
+
+        this.events(true);
+
+
+
     }
 
-    initCssScene() {
+    events(method) {
 
+        let listen = method === false ? 'removeEventListener' : 'addEventListener';
 
-        // CSS Scene
-        this.cssScene = new Scene();
-        this.cssScene.add(this.camera);
+        document[listen]('mousemove', this.onMouseMove);
+        document[listen]('click', this.onClick);
 
-        // ContainerMeshCss
-        this.containerMeshCSS = new Object3D();
-        // Add css3D Mesh container
+        listen = method === false ? 'off' : 'on';
 
-        this.cssScene.add(this.containerMeshCSS);
-
-        this.setText();
-
-
-        this.containerMeshCSS.add(this.text);
+        EmitterManager[listen]('resize', this.resizeHandler);
+        EmitterManager[listen]('raf', this.raf);
 
     }
 
-    setText() {
+    setCamera() {
 
-        // const staticWording = PreloadManager.getResult('wordingG').map;
+        this.fov = 45;
+        this.aspect = this.width / this.height;
+        this.near = 0.1;
+        this.far = 10000;
 
-        // const material = new MeshBasicMaterial({
-        //     visible: true,
-        //     color: 0xff6347
-        // });
+        this.camera = new PerspectiveCamera(
+            this.fov,
+            this.aspect,
+            this.near,
+            this.far
+        );
 
-        // const mesh = new Mesh(new PlaneGeometry(1, 1), material);
-
-        // // First rectangle
-        // mesh.position.set(0, 0, 0);
-
-        // mesh.rotation.set(0, toRadian(-90), 0);
-
-        const span = document.createElement('span');
-        span.classList.add('project__context');
-
-        span.innerHTML = `<h1>BMW Paris Motorshow 2016</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p>`;
+        this.camera.position.x = 0;
+        this.camera.position.y = 0;
+        this.camera.position.z = 120;
+    }
 
 
-        this.text = new CSS3DObject(span);
-        console.log(this.text);
+    setContext() {
 
-        // this.text.position.copy(mesh.position);
-        // this.text.rotation.copy(mesh.rotation);
+        // Text
+
+        const div = document.createElement('div');
+        div.classList.add('project__context');
+
+        div.innerHTML = `<h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p>`;
 
 
-        this.text.position.set(0, 0, 0);
-        this.text.rotation.set(0, 0, 0);
+        this.text = new CSS3DObject(div);
+        this.text.position.x = 50;
+        this.text.position.y = 10;
+        this.text.position.z = 20;
+        this.text.rotation.x = 0;
+        this.text.rotation.y = toRadian(-35);
+        this.text.rotation.z = 0;
 
-        // this.cssObject.scale.multiplyScalar(1 / 5);
+        this.cssScene.add(this.text);
+
+        this.text.scale.multiplyScalar(1 / 6);
 
     }
 
@@ -240,7 +201,7 @@ export default class Graphic3D {
 
     }
 
-    setSpheres() {
+    setSymbol() {
 
         // // Set up the sphere vars
         const RADIUS = 10;
@@ -249,12 +210,15 @@ export default class Graphic3D {
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
         const material = new MeshLambertMaterial({ color: 0xff6347 });
-        const mesh = new Mesh(geometry, material);
+        this.symbol = new Mesh(geometry, material);
 
         // mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
-        mesh.position.set(0, 0, 0);
+        this.symbol.position.set(0, 0, 0);
 
-        this.scene.add(mesh);
+        this.scene.add(this.symbol);
+
+
+        this.symbols = [this.symbol];
 
         // mesh.body = this.world.add({
         //     type: 'sphere', // type of shape : sphere, box, cylinder 
@@ -269,7 +233,7 @@ export default class Graphic3D {
         //     collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
         // });
 
-        this.spheres.push(mesh);
+        // this.spheres.push(mesh);
     }
 
     setPyramides() {
@@ -399,7 +363,7 @@ export default class Graphic3D {
 
             if (this.toggle !== true) {
 
-                TweenMax.to(this.spheres[0].scale, 0.5, {
+                TweenMax.to(this.symbols[0].scale, 0.5, {
                     x: 1.5,
                     y: 1.5,
                     z: 1.5,
@@ -409,7 +373,7 @@ export default class Graphic3D {
 
             } else {
 
-                TweenMax.to(this.spheres[0].scale, 0.5, {
+                TweenMax.to(this.symbols[0].scale, 0.5, {
                     x: 1,
                     y: 1,
                     z: 1,
@@ -455,14 +419,14 @@ export default class Graphic3D {
 
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        const intersects = this.raycaster.intersectObjects(this.spheres);
+        const intersects = this.raycaster.intersectObjects(this.symbols);
 
         if (intersects.length > 0) {
-            this.body.style.cursor = 'pointer';
+            this.ui.body.style.cursor = 'pointer';
             this.clickSymbol = true;
 
         } else {
-            this.body.style.cursor = 'auto';
+            this.ui.body.style.cursor = 'auto';
             this.clickSymbol = false;
         }
 
@@ -509,7 +473,7 @@ export default class Graphic3D {
 
 
         // update world
-        this.world.step();
+        // this.world.step();
 
         // and copy position and rotation to three mesh
         // for (let i = 0; i < this.spheres.length; i++) {
