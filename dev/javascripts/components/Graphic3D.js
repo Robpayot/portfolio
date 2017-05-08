@@ -1,7 +1,9 @@
-import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry } from 'three';
+import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS } from 'three';
+import { CSS3DObject } from '../vendors/CSS3DRenderer';
+import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
+import OrbitControls from '../vendors/OrbitControls';
 import { World } from 'oimo';
 import { getRandom, toRadian } from '../helpers/utils';
-import OrbitControls from '../vendors/OrbitControls';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
 
@@ -53,6 +55,20 @@ export default class Graphic3D {
         // Start the renderer.
         this.renderer.setSize(this.width, this.height);
 
+        // Css Renderer
+        this.cssRenderer = new CSS3DRendererIE();
+        this.cssRenderer.setSize(this.width, this.height);
+
+        // Set up 3D-container
+        this.cssRenderer.domElement.style.position = 'absolute';
+        this.cssRenderer.domElement.style.top = 0;
+        this.cssRenderer.domElement.style.left = 0;
+        this.cssRenderer.domElement.style.zIndex = 1;
+        this.cssRenderer.domElement.classList.add('container3D');
+
+        this.el.appendChild(this.cssRenderer.domElement);
+
+
         this.camera = new PerspectiveCamera(
             this.fov,
             this.aspect,
@@ -60,17 +76,19 @@ export default class Graphic3D {
             this.far
         );
 
+        this.camera.position.x = 75;
+        this.camera.position.y = 75;
+        this.camera.position.z = 75;
+
+
         // Raycaster
         this.raycaster = new Raycaster();
 
         // Mouse
         this.mouse = { x: 0, y: 0 };
 
-        // controls
-        this.camera.position.x = 75;
-        this.camera.position.y = 75;
-        this.camera.position.z = 75;
 
+        // Camera controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = true;
 
@@ -78,6 +96,7 @@ export default class Graphic3D {
 
         this.initPhysics();
         this.initScene();
+        this.initCssScene();
 
         this.guiParams = {
             gravity: false
@@ -114,7 +133,6 @@ export default class Graphic3D {
         this.scene.add(this.camera);
 
 
-
         // Attach the renderer-supplied
         // DOM element.
         this.el.appendChild(this.renderer.domElement);
@@ -127,27 +145,83 @@ export default class Graphic3D {
             this.setSpheres();
         }
 
-        // pyramides
-        this.pyramides = [];
-        this.numbElements = 0;
+        // // pyramides
+        // this.pyramides = [];
+        // this.numbElements = 0;
 
-        for (let i = 0; i < this.numbElements; i++) {
-            this.setPyramides();
-        }
+        // for (let i = 0; i < this.numbElements; i++) {
+        //     this.setPyramides();
+        // }
 
-        // cubes
-        this.cubes = [];
-        this.numbElements = 0;
+        // // cubes
+        // this.cubes = [];
+        // this.numbElements = 0;
 
-        for (let i = 0; i < this.numbElements; i++) {
-            this.setCubes();
-        }
+        // for (let i = 0; i < this.numbElements; i++) {
+        //     this.setCubes();
+        // }
 
         // Set ground
         // this.setGround();
 
         // set Light
         this.setLight();
+
+    }
+
+    initCssScene() {
+
+
+        // CSS Scene
+        this.cssScene = new Scene();
+        this.cssScene.add(this.camera);
+
+        // ContainerMeshCss
+        this.containerMeshCSS = new Object3D();
+        // Add css3D Mesh container
+
+        this.cssScene.add(this.containerMeshCSS);
+
+        this.setText();
+
+
+        this.containerMeshCSS.add(this.text);
+
+    }
+
+    setText() {
+
+        // const staticWording = PreloadManager.getResult('wordingG').map;
+
+        // const material = new MeshBasicMaterial({
+        //     visible: true,
+        //     color: 0xff6347
+        // });
+
+        // const mesh = new Mesh(new PlaneGeometry(1, 1), material);
+
+        // // First rectangle
+        // mesh.position.set(0, 0, 0);
+
+        // mesh.rotation.set(0, toRadian(-90), 0);
+
+        const span = document.createElement('span');
+        span.classList.add('project__context');
+
+        span.innerHTML = `<h1>BMW Paris Motorshow 2016</h1><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p>`;
+
+
+        this.text = new CSS3DObject(span);
+        console.log(this.text);
+
+        // this.text.position.copy(mesh.position);
+        // this.text.rotation.copy(mesh.rotation);
+
+
+        this.text.position.set(0, 0, 0);
+        this.text.rotation.set(0, 0, 0);
+
+        // this.cssObject.scale.multiplyScalar(1 / 5);
 
     }
 
@@ -321,7 +395,7 @@ export default class Graphic3D {
     onClick(e) {
 
         if (this.clickSymbol === true) {
-        	// console.log('click Symbol', this.too);
+            // console.log('click Symbol', this.too);
 
             if (this.toggle !== true) {
 
@@ -367,6 +441,7 @@ export default class Graphic3D {
     resizeHandler() {
 
         this.renderer.setSize(window.innerWidth, window.innerHeight - 100);
+        this.cssRenderer.setSize(window.innerWidth, window.innerHeight - 100);
 
     }
 
@@ -441,18 +516,21 @@ export default class Graphic3D {
         //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
         //     this.spheres[i].quaternion.copy(this.spheres[i].body.getQuaternion());
         // }
-        for (let i = 0; i < this.cubes.length; i++) {
-            this.cubes[i].position.copy(this.cubes[i].body.getPosition());
-            this.cubes[i].quaternion.copy(this.cubes[i].body.getQuaternion());
-        }
-        for (let i = 0; i < this.pyramides.length; i++) {
-            this.pyramides[i].position.copy(this.pyramides[i].body.getPosition());
-            this.pyramides[i].quaternion.copy(this.pyramides[i].body.getQuaternion());
-        }
-        this.controls.update();
-        // Draw!
+        // for (let i = 0; i < this.cubes.length; i++) {
+        //     this.cubes[i].position.copy(this.cubes[i].body.getPosition());
+        //     this.cubes[i].quaternion.copy(this.cubes[i].body.getQuaternion());
+        // }
+        // for (let i = 0; i < this.pyramides.length; i++) {
+        //     this.pyramides[i].position.copy(this.pyramides[i].body.getPosition());
+        //     this.pyramides[i].quaternion.copy(this.pyramides[i].body.getQuaternion());
+        // }
+
+        // Render cssScene
+        this.cssRenderer.render(this.cssScene, this.camera);
+        // Render scene
         this.renderer.render(this.scene, this.camera);
 
+        this.controls.update();
 
     }
 

@@ -1,4 +1,13 @@
 .graphic3D {
     border: 1px solid grey;
+    position: relative;
     // margin-top: 100px;
+    .container3D {
+        // width: 100%;
+        // height: 100%;
+        pointer-events: none;
+        .project__context {
+        	
+        }
+    }
 }
