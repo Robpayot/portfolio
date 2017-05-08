@@ -10,6 +10,17 @@
         	max-width: 300px;
         	font-size: 12px;
         	line-height: 1.4em;
+        	z-index: 10;
+        	opacity: 0;
+        }
+        .project__image {
+        	max-width: 300px;
+        	max-height: 300px;
+        	border: 1px solid rgba(128, 128, 128, 0.15);
+        	opacity: 0;
+        	img {
+        		width: 100%;
+        	}
         }
     }
 }

@@ -38,7 +38,7 @@ export default class Graphic3D {
 
         // Set the canvas size.
         this.width = window.innerWidth;
-        this.height = window.innerHeight - 100;
+        this.height = window.innerHeight;
 
         // Set Camera.
         this.setCamera();
@@ -104,7 +104,6 @@ export default class Graphic3D {
         this.renderer.setSize(this.width, this.height);
 
         this.renderer.domElement.style.position = 'absolute';
-        this.renderer.domElement.style.zIndex = 1;
         this.renderer.domElement.style.top = 0;
         this.renderer.domElement.style.left = 0;
         this.renderer.domElement.classList.add('webGl');
@@ -171,19 +170,26 @@ export default class Graphic3D {
 
         div.innerHTML = `<h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p>`;
 
-
         this.text = new CSS3DObject(div);
-        this.text.position.x = 50;
-        this.text.position.y = 10;
-        this.text.position.z = 20;
-        this.text.rotation.x = 0;
-        this.text.rotation.y = toRadian(-35);
-        this.text.rotation.z = 0;
+        this.text.position.set(45, 10, 20);
+        this.text.rotation.set(0, toRadian(-35), 0);
 
         this.cssScene.add(this.text);
 
         this.text.scale.multiplyScalar(1 / 6);
 
+        const div2 = document.createElement('div');
+        div2.classList.add('project__image');
+
+        div2.innerHTML = `<img src="images/bmw.jpg" alt="project image" />`;
+
+        const div23d = new CSS3DObject(div2);
+        div23d.position.set(-45, 10, 20);
+        div23d.rotation.set(0, toRadian(35), 0);
+
+        this.cssScene.add(div23d);
+
+        div23d.scale.multiplyScalar(1 / 6);
     }
 
     initPhysics() {
@@ -369,6 +375,12 @@ export default class Graphic3D {
                     z: 1.5,
                     ease: window.Power4.easeInOut
                 });
+
+                TweenMax.to(['.project__context', '.project__image'], 0.5, {
+                    opacity: 1,
+                    ease: window.Power4.easeInOut
+                });
+
                 this.toggle = true;
 
             } else {
@@ -377,6 +389,11 @@ export default class Graphic3D {
                     x: 1,
                     y: 1,
                     z: 1,
+                    ease: window.Power4.easeInOut
+                });
+
+                TweenMax.to(['.project__context', '.project__image'], 0.5, {
+                    opacity: 0,
                     ease: window.Power4.easeInOut
                 });
 
