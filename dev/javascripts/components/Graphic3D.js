@@ -47,6 +47,13 @@ export default class Graphic3D {
         this.scene = new Scene();
         this.cssScene = new Scene();
 
+        // Set physics
+        this.initPhysics();
+
+        // Set asteroid
+        this.asteroids = [];
+        this.setAsteroids();
+
         // Set symbol
         this.setSymbol();
 
@@ -85,8 +92,6 @@ export default class Graphic3D {
         // Mouse
         this.mouse = { x: 0, y: 0 };
 
-        // Set physics
-        this.initPhysics();
 
         // Set CssRenderer and WebGLRenderer 
 
@@ -157,7 +162,7 @@ export default class Graphic3D {
 
         this.camera.position.x = 0;
         this.camera.position.y = 0;
-        this.camera.position.z = 130;
+        this.camera.position.z = 200;
     }
 
 
@@ -204,6 +209,8 @@ export default class Graphic3D {
             gravity: [0, 0, 0]
         });
 
+        this.world.gravity.y = 0;
+
 
     }
 
@@ -240,6 +247,65 @@ export default class Graphic3D {
         // });
 
         // this.spheres.push(mesh);
+    }
+
+    setAsteroids() {
+        // Set up the sphere vars
+        const RADIUS = 5;
+        const SEGMENTS = 32;
+        const RINGS = 32;
+
+        const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+        const material = new MeshLambertMaterial({ color: 0x4682b4 });
+
+
+        const nb = 10;
+
+        for (let i = 0; i < nb; i++) {
+            // mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
+            let asteroid = new Mesh(geometry, material);
+
+            asteroid.position.set((i + 1) * 30, 0, 100);
+            asteroid.position.x = asteroid.position.x - ((nb + 1) * 30) / 2;
+
+            // asteroid.body = this.world.add({
+            //     type: 'sphere', // type of shape : sphere, box, cylinder 
+            //     size: [10, 10, 10], // size of shape
+            //     pos: [asteroid.position.x, asteroid.position.y, asteroid.position.z], // start position in degree
+            //     rot: [0, 0, 90], // start rotation in degree
+            //     move: true, // dynamic or statique
+            //     density: 1,
+            //     friction: 0.2,
+            //     restitution: 0.2,
+            //     belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+            //     collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+            // });
+
+            // asteroid.body.pos = asteroid.position;
+
+            this.asteroids.push(asteroid);
+            this.scene.add(asteroid);
+
+            let randomDirX = getRandom(-40, 40);
+            let randomDirY = getRandom(-40, 40);
+            const tl = new TimelineMax({ repeat: -1 });
+            tl.to([asteroid.position], 10, {
+                x: asteroid.position.x + randomDirX,
+                y: asteroid.position.y + randomDirY,
+                z: -500,
+                ease: window.Linear.ease
+            });
+
+
+            if (i === 5) {
+                // console.log(asteroid.body.pos);
+                // asteroid.body.pos.x = asteroid.body.pos.x +1000;
+                // TweenMax.to([asteroid.body.pos], 5, { x: 0, ease: window.Expo.easeOut });
+                // TweenMax.to([asteroid.position,asteroid.body], 5, { x: 0, ease: window.Expo.easeOut });
+            }
+        }
+
+
     }
 
     setPyramides() {
@@ -365,52 +431,55 @@ export default class Graphic3D {
     onClick(e) {
 
         if (this.clickSymbol === true) {
-            // console.log('click Symbol', this.too);
-
-            const tl = new TimelineMax();
-
-            if (this.toggle !== true) {
-
-
-
-                tl.to(this.symbols[0].scale, 0.7, {
-                    x: 1.5,
-                    y: 1.5,
-                    z: 1.5,
-                    ease: window.Power4.easeInOut
-                });
-
-                tl.staggerFromTo(['.project__image', '.project__context'], 0.8, {
-                    opacity: 0,
-                    y: 30
-                }, {
-                    opacity: 1,
-                    y: 0,
-                    ease: window.Power4.easeOut
-                }, 0.1, 0.4);
-
-                this.toggle = true;
-
-            } else {
-
-                tl.to(['.project__context', '.project__image'], 0.8, {
-                    opacity: 0,
-                    ease: window.Power4.easeInOut
-                });
-
-
-                tl.to(this.symbols[0].scale, 0.5, {
-                    x: 1,
-                    y: 1,
-                    z: 1,
-                    ease: window.Power4.easeInOut
-                }, 0.1);
-
-                this.toggle = false;
-            }
+            this.onClickSymbol();
 
         }
 
+    }
+
+    onClickSymbol() {
+
+        const tl = new TimelineMax();
+
+        if (this.toggle !== true) {
+
+
+
+            tl.to(this.symbols[0].scale, 0.7, {
+                x: 1.5,
+                y: 1.5,
+                z: 1.5,
+                ease: window.Power4.easeInOut
+            });
+
+            tl.staggerFromTo(['.project__image', '.project__context'], 0.8, {
+                opacity: 0,
+                y: 30
+            }, {
+                opacity: 1,
+                y: 0,
+                ease: window.Power4.easeOut
+            }, 0.1, 0.4);
+
+            this.toggle = true;
+
+        } else {
+
+            tl.to(['.project__context', '.project__image'], 0.8, {
+                opacity: 0,
+                ease: window.Power4.easeInOut
+            });
+
+
+            tl.to(this.symbols[0].scale, 0.5, {
+                x: 1,
+                y: 1,
+                z: 1,
+                ease: window.Power4.easeInOut
+            }, 0.1);
+
+            this.toggle = false;
+        }
     }
 
     onMouseMove(e) {
@@ -497,7 +566,10 @@ export default class Graphic3D {
 
         // update world
         // this.world.step();
-
+        // for (let i = 0; i < this.asteroids.length; i++) {
+        //     this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
+        //     this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+        // }
         // and copy position and rotation to three mesh
         // for (let i = 0; i < this.spheres.length; i++) {
         //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
