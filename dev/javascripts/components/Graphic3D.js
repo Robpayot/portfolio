@@ -2,7 +2,7 @@ import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Pl
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
-import { World } from 'oimo';
+import { World, RigidBody } from 'oimo';
 import { getRandom, toRadian } from '../helpers/utils';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
@@ -160,8 +160,8 @@ export default class Graphic3D {
             this.far
         );
 
-        this.camera.position.x = 0;
-        this.camera.position.y = 0;
+        this.camera.position.x = 200;
+        this.camera.position.y = 400;
         this.camera.position.z = 200;
     }
 
@@ -231,20 +231,22 @@ export default class Graphic3D {
         this.scene.add(this.symbol);
 
 
-        this.symbols = [this.symbol];
+        
 
-        // mesh.body = this.world.add({
-        //     type: 'sphere', // type of shape : sphere, box, cylinder 
-        //     size: [10, 10, 10], // size of shape
-        //     pos: [getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300)], // start position in degree
-        //     rot: [0, 0, 90], // start rotation in degree
-        //     move: true, // dynamic or statique
-        //     density: 1,
-        //     friction: 0.2,
-        //     restitution: 0.2,
-        //     belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-        //     collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-        // });
+        this.symbol.body = this.world.add({
+            type: 'sphere', // type of shape : sphere, box, cylinder 
+            size: [RADIUS, RADIUS, RADIUS], // size of shape
+            pos: [0, 0, 0], // start position in degree
+            rot: [0, 0, 90], // start rotation in degree
+            move: false, // dynamic or statique
+            density: 1,
+            friction: 0.2,
+            restitution: 0.2,
+            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+        });
+
+        this.symbols = [this.symbol];
 
         // this.spheres.push(mesh);
     }
@@ -265,39 +267,44 @@ export default class Graphic3D {
             // mesh.position.set(getRandom(-300, 300), getRandom(-300, 300), getRandom(-300, 300));
             let asteroid = new Mesh(geometry, material);
 
-            asteroid.position.set((i + 1) * 30, 0, 100);
+            asteroid.position.set((i + 1) * 30, 0, 40);
             asteroid.position.x = asteroid.position.x - ((nb + 1) * 30) / 2;
 
-            // asteroid.body = this.world.add({
-            //     type: 'sphere', // type of shape : sphere, box, cylinder 
-            //     size: [10, 10, 10], // size of shape
-            //     pos: [asteroid.position.x, asteroid.position.y, asteroid.position.z], // start position in degree
-            //     rot: [0, 0, 90], // start rotation in degree
-            //     move: true, // dynamic or statique
-            //     density: 1,
-            //     friction: 0.2,
-            //     restitution: 0.2,
-            //     belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-            //     collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-            // });
+            asteroid.body = this.world.add({
+                type: 'sphere', // type of shape : sphere, box, cylinder 
+                size: [RADIUS, RADIUS, RADIUS], // size of shape
+                pos: [asteroid.position.x, asteroid.position.y, asteroid.position.z], // start position in degree
+                rot: [0, 0, 0], // start rotation in degree
+                move: true, // dynamic or statique
+                density: 1,
+                friction: 0.2,
+                restitution: 0.2,
+                belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+                collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+            });
 
-            // asteroid.body.pos = asteroid.position;
+            // Set force impulsion
+            let randomForceX;
+            if (i < 5) {
+                randomForceX = getRandom(0, 200);
+            } else {
+                randomForceX = getRandom(-200, 0);
+            }
+
+            let randomForceY = getRandom(0, 0);
+            let randomForceZ = getRandom(0, 0);
+
+            asteroid.force = { x: randomForceX, y: randomForceY, z: randomForceZ };
 
             this.asteroids.push(asteroid);
             this.scene.add(asteroid);
 
-            let randomDirX = getRandom(-40, 40);
-            let randomDirY = getRandom(-40, 40);
-            const tl = new TimelineMax({ repeat: -1 });
-            tl.to([asteroid.position], 10, {
-                x: asteroid.position.x + randomDirX,
-                y: asteroid.position.y + randomDirY,
-                z: -500,
-                ease: window.Linear.ease
-            });
+
 
 
             if (i === 5) {
+
+                // var rigidBody = new RigidBody();
                 // console.log(asteroid.body.pos);
                 // asteroid.body.pos.x = asteroid.body.pos.x +1000;
                 // TweenMax.to([asteroid.body.pos], 5, { x: 0, ease: window.Expo.easeOut });
@@ -565,11 +572,20 @@ export default class Graphic3D {
 
 
         // update world
-        // this.world.step();
-        // for (let i = 0; i < this.asteroids.length; i++) {
-        //     this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
-        //     this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
-        // }
+        this.world.step();
+
+        for (let i = 0; i < this.symbols.length; i++) {
+            this.symbols[i].position.copy(this.symbols[i].body.getPosition());
+            this.symbols[i].quaternion.copy(this.symbols[i].body.getQuaternion());
+        }
+        for (let i = 0; i < this.asteroids.length; i++) {
+            this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
+            this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+
+            // Add force impulsion on a 0 Gravity to move asteroids
+            this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+
+        }
         // and copy position and rotation to three mesh
         // for (let i = 0; i < this.spheres.length; i++) {
         //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
