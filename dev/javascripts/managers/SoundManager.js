@@ -1,6 +1,4 @@
 import EmitterManager from './EmitterManager';
-import GraphicBars from '../components/GraphicBars';
-import Graphic3D from '../components/Graphic3D';
 
 import dat from 'dat-gui';
 

@@ -5,7 +5,7 @@ import EmitterManager from './EmitterManager';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
-import Graphic3D from '../components/Graphic3D';
+import UniversView from '../views/UniversView';
 
 import bean from 'bean';
 
@@ -28,7 +28,7 @@ class AppManager {
         // SoundManager
 
         this.graphicBars = new GraphicBars();
-        this.graphic3D = new Graphic3D();
+        this.universView = new UniversView();
     }
 
     events(method) {
