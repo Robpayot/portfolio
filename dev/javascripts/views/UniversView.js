@@ -1,4 +1,4 @@
-import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS } from 'three';
+import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS } from 'three';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
@@ -55,7 +55,7 @@ export default class UniversView {
 
         // Set symbol
         this.setSymbol();
-        
+
         // Set asteroid
         this.setAsteroids();
 
@@ -106,7 +106,7 @@ export default class UniversView {
         this.cssRenderer.domElement.classList.add('container3D');
 
         this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-        this.renderer.setClearColor(0x00ff00, 0.0);
+        this.renderer.setClearColor(0x000000, 1.0);
 
         this.renderer.setSize(this.width, this.height);
 
@@ -162,8 +162,8 @@ export default class UniversView {
             this.far
         );
 
-        this.camera.position.x = 200;
-        this.camera.position.y = 400;
+        this.camera.position.x = 0;
+        this.camera.position.y = 0;
         this.camera.position.z = 200;
     }
 
@@ -252,30 +252,64 @@ export default class UniversView {
         const RINGS = 32;
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const material = new MeshLambertMaterial({ color: 0x4682b4 });
-
-        const nb = 10;
+        // const material = new MeshLambertMaterial({ color: 0x4682b4 });
+        const matPhongParams = {
+            specular: 0xFFFFFF,
+            shininess: 1000,
+            color: 0x4682b4
+        };
+        const material = new MeshPhongMaterial(matPhongParams);
+        const nb = 20;
 
         for (let i = 0; i < nb; i++) {
 
+            // random position
+
+            // const pos = {
+            //     x: (i + 1) * 30 - ((nb / 2 + 1) * 30) / 2,
+            //     y: 0,
+            //     z: -50,
+            // };
+            // if (i > 9) {
+            //     pos.x = (i - 10) * 30 - ((nb / 2 + 1) * 30) / 2,
+            //         pos.y = 30;
+            // }
+
             const pos = {
-                x: (i + 1) * 30 - ((nb + 1) * 30) / 2,
-                y: 0,
-                z: 40,
+                x: getRandom(-100, 100),
+                y: getRandom(-100, 100),
+                z: getRandom(-100, 100),
             };
+
+            // Sphere perimeter :
+            // x: -15 à 15
+            // y : -15 to 15
+            // z : -15 to 15
+
+            // Intra perimeter radius
+            const ipRadius = 50;
+
+            if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+                console.log(i, ' dans le périmetre !');
+                pos.x += ipRadius;
+                pos.y += ipRadius;
+                pos.z += ipRadius;
+
+            }
+
+
+
 
             //  force impulsion
             let randomForceX;
-            if (i < 5) {
-                randomForceX = getRandom(0, 200);
-            } else {
-                randomForceX = getRandom(-200, 0);
-            }
+
+            randomForceX = getRandom(-200, 200);
+
 
             const force = {
-                x: randomForceX,
-                y: getRandom(0, 0),
-                z: getRandom(0, 0)
+                x: getRandom(-10, 10),
+                y: getRandom(-10, 10),
+                z: getRandom(-10, 10)
             };
 
             const asteroid = new Asteroid(geometry, material, pos, force);

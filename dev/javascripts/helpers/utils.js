@@ -65,3 +65,8 @@ export function toRadian(degrees) {
 
 	return degrees * Math.PI / 180;
 }
+
+export function clamp(value, min, max) {
+
+	return Math.min(Math.max(value, min), max);
+}
