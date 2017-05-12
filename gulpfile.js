@@ -240,6 +240,13 @@ gulp.task('copy:root', function() {
 		.pipe(gulp.dest('./dist'))
 });
 
+// IMAGES FILE
+gulp.task('copy:image', function() {
+	return gulp.src('./dev/images/**')
+		// Concat all errors
+		.pipe(gulp.dest('./dist/images'))
+});
+
 
 // sound files
 gulp.task('copy:sound', function() {
@@ -254,6 +261,8 @@ gulp.task('copy', ['copy:root']);
 
 // Registering main copy task
 gulp.task('copy', ['copy:sound']);
+
+gulp.task('copy', ['copy:image']);
 
 
 //---------------------------------------------------------------------------------------------

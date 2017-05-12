@@ -1,4 +1,4 @@
-import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS } from 'three';
+import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS } from 'three';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
@@ -8,6 +8,7 @@ import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
 import Symbol from '../shapes/Symbol';
 import Asteroid from '../shapes/Asteroid';
+import PreloadManager from '../managers/PreloadManager';
 
 
 export default class UniversView {
@@ -106,7 +107,7 @@ export default class UniversView {
         this.cssRenderer.domElement.classList.add('container3D');
 
         this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-        this.renderer.setClearColor(0x000000, 1.0);
+        this.renderer.setClearColor(0x000000, 0.0);
 
         this.renderer.setSize(this.width, this.height);
 
@@ -253,10 +254,16 @@ export default class UniversView {
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
         // const material = new MeshLambertMaterial({ color: 0x4682b4 });
+        const img = PreloadManager.getResult('texture-asteroid');
+
+        const tex = new Texture(img);
+        tex.needsUpdate = true;
+
         const matPhongParams = {
-            specular: 0xFFFFFF,
-            shininess: 1000,
-            color: 0x4682b4
+            // specular: 0xFFFFFF,
+            shininess: 100000,
+            // color: 0x4682b4,
+            map: tex
         };
         const material = new MeshPhongMaterial(matPhongParams);
         const nb = 20;
@@ -590,11 +597,16 @@ export default class UniversView {
             this.symbols[i].quaternion.copy(this.symbols[i].body.getQuaternion());
         }
         for (let i = 0; i < this.asteroids.length; i++) {
-            this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
-            this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+
 
             // Add force impulsion on a 0 Gravity to move asteroids
-            this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+            this.asteroids[i].body.applyImpulse({ x: 0, y: 400, z: 0 }, this.asteroids[i].force);
+            
+            this.asteroids[i].body.rot = [0,0,0];
+
+            this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
+            // --> For Rotation
+            // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
 
         }
         // and copy position and rotation to three mesh

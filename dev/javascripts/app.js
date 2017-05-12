@@ -6,7 +6,10 @@
 import 'modernizr';
 import 'gsap';
 
+// import './vendors/preloadjs-0.6.2.min.js';
 
+
+ 
 
 // import * as tools from '@84paris/84.tools';
 
@@ -17,11 +20,26 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 // import Xp from './xp/xp';
 
 import AppManager from './managers/AppManager';
+import PreloadManager from './managers/PreloadManager';
+
 
 
 (() => {
 
-	AppManager.start();
+    PreloadManager.on('complete', () => {
+
+        AppManager.start();
+
+    }, this, true);
+
+
+
+    PreloadManager.loadFile({ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' });
+
+
+
+    PreloadManager.load();
+
+
 
 })();
-
