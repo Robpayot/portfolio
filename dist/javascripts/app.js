@@ -42,7 +42,7 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
     _PreloadManager2.default.load();
 })();
 
-},{"./managers/AppManager":4,"./managers/PreloadManager":6,"gsap":22,"modernizr":15}],2:[function(require,module,exports){
+},{"./managers/AppManager":4,"./managers/PreloadManager":6,"gsap":23,"modernizr":16}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -384,7 +384,7 @@ var AppManager = function () {
 
 exports.default = new AppManager();
 
-},{"../components/GraphicBars":2,"../views/UniversView":16,"./EmitterManager":5,"bean":17}],5:[function(require,module,exports){
+},{"../components/GraphicBars":2,"../views/UniversView":17,"./EmitterManager":5,"bean":18}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -407,7 +407,7 @@ var EmitterManager = function EmitterManager() {
 
 exports.default = new EmitterManager();
 
-},{"component-emitter":18}],6:[function(require,module,exports){
+},{"component-emitter":19}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -574,7 +574,7 @@ var SoundManager = function () {
 
 exports.default = new SoundManager();
 
-},{"./EmitterManager":5,"dat-gui":19}],8:[function(require,module,exports){
+},{"./EmitterManager":5,"dat-gui":20}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -613,7 +613,7 @@ var AbstractShape = function () {
 
 exports.default = AbstractShape;
 
-},{"three":24}],9:[function(require,module,exports){
+},{"three":25}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -624,8 +624,6 @@ var _AbstractShape2 = require('./AbstractShape');
 
 var _AbstractShape3 = _interopRequireDefault(_AbstractShape2);
 
-var _three = require('three');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -633,6 +631,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// import { SphereGeometry, MeshLambertMaterial } from 'three';
 
 var Asteroid = function (_AbstractShape) {
     _inherits(Asteroid, _AbstractShape);
@@ -672,7 +672,69 @@ var Asteroid = function (_AbstractShape) {
 
 exports.default = Asteroid;
 
-},{"./AbstractShape":8,"three":24}],10:[function(require,module,exports){
+},{"./AbstractShape":8}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _AbstractShape2 = require('./AbstractShape');
+
+var _AbstractShape3 = _interopRequireDefault(_AbstractShape2);
+
+var _utils = require('../helpers/utils');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// import { SphereGeometry, MeshLambertMaterial } from 'three';
+
+var Envelop = function (_AbstractShape) {
+	_inherits(Envelop, _AbstractShape);
+
+	function Envelop(geometry, material, pos, rot) {
+		var _ret;
+
+		_classCallCheck(this, Envelop);
+
+		var _this = _possibleConstructorReturn(this, (Envelop.__proto__ || Object.getPrototypeOf(Envelop)).call(this));
+
+		_this.createMesh(geometry, material);
+
+		_this.mesh.position.copy(pos);
+		_this.mesh.rotation.x = rot.x;
+		_this.mesh.rotation.y = rot.y;
+		_this.mesh.rotation.z = rot.z;
+
+		// physic body
+		_this.mesh.physics = {
+			type: 'box', // type of shape : sphere, box, cylinder 
+			size: [geometry.parameters.width, geometry.parameters.height, geometry.parameters.depth], // size of shape
+			pos: [pos.x, pos.y, pos.z], // start position in degree
+			rot: [(0, _utils.toDegree)(rot.x), (0, _utils.toDegree)(rot.y), (0, _utils.toDegree)(rot.z)], // start rotation in degree
+			move: false, // dynamic or statique
+			density: 1,
+			friction: 0.2,
+			restitution: 0.2,
+			belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+			collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+		};
+
+		return _ret = _this.mesh, _possibleConstructorReturn(_this, _ret);
+	}
+
+	return Envelop;
+}(_AbstractShape3.default);
+
+exports.default = Envelop;
+
+},{"../helpers/utils":3,"./AbstractShape":8}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -684,8 +746,6 @@ var _AbstractShape2 = require('./AbstractShape');
 
 var _AbstractShape3 = _interopRequireDefault(_AbstractShape2);
 
-var _three = require('three');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -693,6 +753,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+// import { SphereGeometry, MeshLambertMaterial } from 'three';
 
 var _Symbol = function (_AbstractShape) {
     _inherits(_Symbol, _AbstractShape);
@@ -730,7 +792,7 @@ var _Symbol = function (_AbstractShape) {
 
 exports.default = _Symbol;
 
-},{"./AbstractShape":8,"three":24}],11:[function(require,module,exports){
+},{"./AbstractShape":8}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -943,7 +1005,7 @@ THREE.CSS3DRenderer = function () {
 exports.CSS3DObject = CSS3DObject;
 exports.CSS3DSprite = CSS3DSprite;
 
-},{"three":24}],12:[function(require,module,exports){
+},{"three":25}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1153,7 +1215,7 @@ var CSS3DRendererIE = function () {
 exports.default = CSS3DRendererIE;
 ;
 
-},{"./CSS3DRenderer":11,"./Projector":14,"three":24}],13:[function(require,module,exports){
+},{"./CSS3DRenderer":12,"./Projector":15,"three":25}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2105,7 +2167,7 @@ Object.defineProperties(OrbitControls.prototype, {
 
 exports.default = OrbitControls;
 
-},{"three":24}],14:[function(require,module,exports){
+},{"three":25}],15:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -2936,7 +2998,7 @@ THREE.Projector = function () {
 	}
 };
 
-},{"three":24}],15:[function(require,module,exports){
+},{"three":25}],16:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 'use strict';
@@ -4340,7 +4402,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4372,6 +4434,10 @@ var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 var _SoundManager = require('../managers/SoundManager');
 
 var _SoundManager2 = _interopRequireDefault(_SoundManager);
+
+var _Envelop = require('../shapes/Envelop');
+
+var _Envelop2 = _interopRequireDefault(_Envelop);
 
 var _Symbol2 = require('../shapes/Symbol');
 
@@ -4436,6 +4502,9 @@ var UniversView = function () {
 
             // Set asteroid
             this.setAsteroids();
+
+            // Set envelop
+            this.setEnvelop();
 
             // Set Context
             this.setContext();
@@ -4585,6 +4654,52 @@ var UniversView = function () {
             this.world.gravity.y = 0;
         }
     }, {
+        key: 'setEnvelop',
+        value: function setEnvelop() {
+            // Set up the sphere vars
+            var width = 400;
+            var height = 400;
+            var depth = 10;
+
+            this.envelopSize = width;
+
+            var geometry = new _three.BoxGeometry(width, height, depth);
+            var material = new _three.MeshLambertMaterial({ color: 0xff6347 });
+            this.envelops = [];
+
+            var configs = [{
+                pos: { x: -width / 2, y: 0, z: 0 },
+                rot: { x: 0, y: (0, _utils.toRadian)(-90), z: 0 }
+            }, {
+                pos: { x: width / 2, y: 0, z: 0 },
+                rot: { x: 0, y: (0, _utils.toRadian)(-90), z: 0 }
+            }, {
+                pos: { x: 0, y: 0, z: -width / 2 },
+                rot: { x: 0, y: 0, z: 0 }
+            }, {
+                pos: { x: 0, y: 0, z: width / 2 },
+                rot: { x: 0, y: 0, z: 0 }
+            }, {
+                pos: { x: 0, y: -width / 2, z: 0 },
+                rot: { x: (0, _utils.toRadian)(-90), y: 0, z: 0 }
+            }, {
+                pos: { x: 0, y: width / 2, z: 0 },
+                rot: { x: (0, _utils.toRadian)(-90), y: 0, z: 0 }
+            }];
+
+            for (var i = 0; i < configs.length; i++) {
+
+                var envelop = new _Envelop2.default(geometry, material, configs[i].pos, configs[i].rot);
+
+                // add physic body to world
+                envelop.body = this.world.add(envelop.physics);
+                this.envelops.push(envelop);
+
+                // add mesh to the scene
+                this.scene.add(envelop);
+            }
+        }
+    }, {
         key: 'setSymbol',
         value: function setSymbol() {
 
@@ -4673,20 +4788,23 @@ var UniversView = function () {
                 }
 
                 //  force impulsion
-                var randomForceX = void 0;
-
-                randomForceX = (0, _utils.getRandom)(-200, 200);
-
                 var force = {
-                    x: (0, _utils.getRandom)(-10, 10),
-                    y: (0, _utils.getRandom)(-10, 10),
-                    z: (0, _utils.getRandom)(-10, 10)
+                    x: (0, _utils.getRandom)(-10, 100),
+                    y: (0, _utils.getRandom)(-10, 100),
+                    z: (0, _utils.getRandom)(-10, 100)
                 };
 
                 var asteroid = new _Asteroid2.default(geometry, material, pos, force);
 
                 // add physic body to world
                 asteroid.body = this.world.add(asteroid.physics);
+
+                // setTimeout(()=> {
+                // asteroid.body.applyImpulse({ x: 0, y: 0, z: 0 }, force);
+                // asteroid.body.linearVelocity = force;
+                // console.log(asteroid.body.linearVelocity);
+                // }, 2000);ertgg
+
                 this.asteroids.push(asteroid);
 
                 // add mesh to the scene
@@ -4940,25 +5058,159 @@ var UniversView = function () {
             //     this.cubes[i].scale.z = lowAvg;
             // }
 
-
-            // update world
+            // update world 
             this.world.step();
 
-            for (var i = 0; i < this.symbols.length; i++) {
-                this.symbols[i].position.copy(this.symbols[i].body.getPosition());
-                this.symbols[i].quaternion.copy(this.symbols[i].body.getQuaternion());
+            // Envelop body
+            for (var i = 0; i < this.envelops.length; i++) {
+                this.envelops[i].position.copy(this.envelops[i].body.getPosition());
+                this.envelops[i].quaternion.copy(this.envelops[i].body.getQuaternion());
             }
-            for (var _i = 0; _i < this.asteroids.length; _i++) {
+            // Symbol body
+            for (var _i = 0; _i < this.symbols.length; _i++) {
+                this.symbols[_i].position.copy(this.symbols[_i].body.getPosition());
+                this.symbols[_i].quaternion.copy(this.symbols[_i].body.getQuaternion());
+            }
+            // Asteroids bodies
+            for (var _i2 = 0; _i2 < this.asteroids.length; _i2++) {
 
                 // Add force impulsion on a 0 Gravity to move asteroids
-                this.asteroids[_i].body.applyImpulse({ x: 0, y: 400, z: 0 }, this.asteroids[_i].force);
 
-                this.asteroids[_i].body.rot = [0, 0, 0];
+                // if ()
 
-                this.asteroids[_i].position.copy(this.asteroids[_i].body.getPosition());
+
+                // this.asteroids[i].body.rot = [0,0,0];
+
+                // APPLY IMPULSE
+                // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+
+
+                if (_i2 === 0) {
+                    // console.log(this.asteroids[i].position.x);
+                }
+
+                if (this.asteroids[_i2].position.x > this.envelopSize / 2 - 50 || this.asteroids[_i2].position.x < -this.envelopSize / 2 + 50 || this.asteroids[_i2].position.y > this.envelopSize / 2 - 50 || this.asteroids[_i2].position.y < -this.envelopSize / 2 + 50 || this.asteroids[_i2].position.z > this.envelopSize / 2 - 50 || this.asteroids[_i2].position.z < -this.envelopSize / 2 + 50) {
+                    // Reverse Force Vector
+
+                    // if (i === 0) {
+                    // console.log('reverse ! :', this.asteroids[i].force.x);
+
+                    // Reset Asteroid
+                    // Set up the sphere vars
+                    var RADIUS = 5;
+                    var SEGMENTS = 32;
+                    var RINGS = 32;
+
+                    var geometry = new _three.SphereGeometry(RADIUS, SEGMENTS, RINGS);
+                    // const material = new MeshLambertMaterial({ color: 0x4682b4 });
+                    var img = _PreloadManager2.default.getResult('texture-asteroid');
+
+                    var tex = new _three.Texture(img);
+                    tex.needsUpdate = true;
+
+                    var matPhongParams = {
+                        // specular: 0xFFFFFF,
+                        shininess: 100000,
+                        // color: 0x4682b4,
+                        map: tex
+                    };
+                    var material = new _three.MeshPhongMaterial(matPhongParams);
+                    var pos = {
+                        x: (0, _utils.getRandom)(-100, 100),
+                        y: (0, _utils.getRandom)(-100, 100),
+                        z: (0, _utils.getRandom)(-100, 100)
+                    };
+
+                    // Sphere perimeter :
+                    // x: -15 à 15
+                    // y : -15 to 15
+                    // z : -15 to 15
+
+                    // Intra perimeter radius
+                    var ipRadius = 50;
+
+                    if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+                        console.log(_i2, ' dans le périmetre !');
+                        pos.x += ipRadius;
+                        pos.y += ipRadius;
+                        pos.z += ipRadius;
+                    }
+
+                    //  force impulsion
+                    var force = {
+                        x: (0, _utils.getRandom)(-10, 10),
+                        y: (0, _utils.getRandom)(-10, 10),
+                        z: (0, _utils.getRandom)(-10, 10)
+                    };
+                    // console.log('RESET Asteroid');
+                    this.asteroids[_i2] = new _Asteroid2.default(geometry, material, pos, force);
+
+                    this.asteroids[_i2].body = this.world.add(this.asteroids[_i2].physics);
+
+                    this.scene.add(this.asteroids[_i2]);
+                    // this.asteroids[i].force.x = 0;
+                    // this.asteroids[i].force.y = 0;
+                    // this.asteroids[i].force.z = 0;
+
+                    // this.asteroids[i].position.x = 50;
+                    // this.asteroids[i].position.y = 50;
+                    // this.asteroids[i].position.z = 50;
+
+                    // this.asteroids[i].body.pos.x = 50;
+                    // this.asteroids[i].body.pos.y = 50;
+                    // this.asteroids[i].body.pos.z = 50;
+
+
+                    // this.asteroids[i].force.x = 0;
+                    // this.asteroids[i].force.y = 0;
+                    // this.asteroids[i].force.z = 0;
+
+                    // this.asteroids[i].body.linearVelocity.x = 0;
+                    // this.asteroids[i].body.linearVelocity.y = 0;
+                    // this.asteroids[i].body.linearVelocity.z = 0;
+                    // setTimeout(()=> {
+                    // 	this.asteroids[i].force.x = 10;
+                    // }, 2000);
+                    // this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
+                    // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+
+                    // if (i === 0) {
+                    //     console.log(this.asteroids[i].position.x);
+                    // }
+                    // }
+                } else {
+
+                    if (this.asteroids[_i2].body !== undefined) {
+                        this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
+                        this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
+                        this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
+                        this.asteroids[_i2].position.copy(this.asteroids[_i2].body.getPosition());
+                    }
+
+                    // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+                    // update world
+                }
+
+                // If touch limit Envelop --> reverse impulsion
+                // console.log(this.asteroids[i].position.x , this.envelopSize);
+
+                // if ()
+                // 
+                // if (i===0) {
+
+                // 	if (this.asteroids[i].body.linearVelocity.x >= 3 ) {
+                // 		this.asteroids[i].body.linearVelocity.x = 3;
+                // 	}
+                // 	if (this.asteroids[i].body.linearVelocity.x <= -3 ) {
+                // 		this.asteroids[i].body.linearVelocity.x = -3;
+                // 	}
+                // 	console.log(this.asteroids[i].body.linearVelocity);
+                // 	// console.log(this.asteroids[i].position);
+                // }
                 // --> For Rotation
-                // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+
             }
+
             // and copy position and rotation to three mesh
             // for (let i = 0; i < this.spheres.length; i++) {
             //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
@@ -5059,7 +5311,7 @@ var UniversView = function () {
 
 exports.default = UniversView;
 
-},{"../helpers/utils":3,"../managers/EmitterManager":5,"../managers/PreloadManager":6,"../managers/SoundManager":7,"../shapes/Asteroid":9,"../shapes/Symbol":10,"../vendors/CSS3DRenderer":11,"../vendors/CSS3DRendererIE":12,"../vendors/OrbitControls":13,"oimo":23,"three":24}],17:[function(require,module,exports){
+},{"../helpers/utils":3,"../managers/EmitterManager":5,"../managers/PreloadManager":6,"../managers/SoundManager":7,"../shapes/Asteroid":9,"../shapes/Envelop":10,"../shapes/Symbol":11,"../vendors/CSS3DRenderer":12,"../vendors/CSS3DRendererIE":13,"../vendors/OrbitControls":14,"oimo":24,"three":25}],18:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
@@ -5802,7 +6054,7 @@ exports.default = UniversView;
   return bean
 });
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -5967,10 +6219,10 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = require('./vendor/dat.gui')
 module.exports.color = require('./vendor/dat.color')
-},{"./vendor/dat.color":20,"./vendor/dat.gui":21}],20:[function(require,module,exports){
+},{"./vendor/dat.color":21,"./vendor/dat.gui":22}],21:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -6726,7 +6978,7 @@ dat.color.math = (function () {
 })(),
 dat.color.toString,
 dat.utils.common);
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -10387,7 +10639,7 @@ dat.dom.CenteredDiv = (function (dom, common) {
 dat.utils.common),
 dat.dom.dom,
 dat.utils.common);
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 1.19.1
@@ -18248,7 +18500,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 })((typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this || window, "TweenMax");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -30570,7 +30822,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 
 })));
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :

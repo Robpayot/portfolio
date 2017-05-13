@@ -1,5 +1,5 @@
 import AbstractShape from './AbstractShape';
-import { SphereGeometry, MeshLambertMaterial } from 'three';
+// import { SphereGeometry, MeshLambertMaterial } from 'three';
 
 export default class Symbol extends AbstractShape {
 

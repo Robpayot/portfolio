@@ -1,5 +1,5 @@
 import AbstractShape from './AbstractShape';
-import { SphereGeometry, MeshLambertMaterial } from 'three';
+// import { SphereGeometry, MeshLambertMaterial } from 'three';
 
 export default class Asteroid extends AbstractShape {
 
@@ -31,4 +31,5 @@ export default class Asteroid extends AbstractShape {
         return this.mesh;
 
     }
+    
 }
