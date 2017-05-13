@@ -34,14 +34,14 @@ export default class Asteroid extends AbstractShape {
         this.initForce = force;
 
 
-        setInterval(() => {
-            console.log('change force !!!');
+        // setInterval(() => {
+        //     console.log('change force !!!');
 
-            this.force.x = getRandom(-10,10);
-            this.force.y = getRandom(-10,10);
-            this.force.z = getRandom(-10,10);
+        //     this.force.x = getRandom(-10,10);
+        //     this.force.y = getRandom(-10,10);
+        //     this.force.z = getRandom(-10,10);
 
-        }, 500);
+        // }, 500);
 
     }
 
@@ -49,7 +49,7 @@ export default class Asteroid extends AbstractShape {
 
         // console.log(this.mesh);
 
-        console.log('changeDirection');
+        console.log('changeDirection !!!');
 
 
         // this.body.move = false;
@@ -64,9 +64,11 @@ export default class Asteroid extends AbstractShape {
         // this.force.z = -this.initForce.z;
 
 
-        // this.force.x = -20;
-        // this.force.y = -20;
-        // this.force.z = -20;
+        this.force.x = -this.initForce.x;
+        this.force.y = -this.initForce.x;
+        this.force.z = -this.initForce.x;
+
+        
 
         // reticleExclude("shapeName");
 
@@ -91,21 +93,21 @@ export default class Asteroid extends AbstractShape {
 
         // this.annilled = true;
 
-        // setTimeout(() => {
-        // 	 console.log(this.mesh.position.x);
-        //     // this.mesh.position.x = 50;
-        //     // this.mesh.position.y = 50;
-        //     // this.mesh.position.z = 50;
+        setTimeout(() => {
+        	 // console.log(this.mesh.position.x);
+            // this.mesh.position.x = 50;
+            // this.mesh.position.y = 50;
+            // this.mesh.position.z = 50;
 
-        //     // this.body.pos.x = 50;
-        //     // this.body.pos.y = 50;
-        //     // this.body.pos.z = 50;
+            // this.body.pos.x = 50;
+            // this.body.pos.y = 50;
+            // this.body.pos.z = 50;
 
-        //     // this.force.x = 10;
-        //     // this.force.y = 0;
-        //     // this.force.z = 0;
-        //     this.annilled = false;
-        // }, 2000);
+            // this.force.x = 10;
+            // this.force.y = 0;
+            // this.force.z = 0;
+            this.annilled = false;
+        }, 2000);
 
 
 

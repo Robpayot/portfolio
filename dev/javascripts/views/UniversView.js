@@ -660,7 +660,7 @@ export default class UniversView {
             this.symbols[i].quaternion.copy(this.symbols[i].body.getQuaternion());
         }
         // Asteroids bodies
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < this.asteroids.length; i++) {
 
 
             // Add force impulsion on a 0 Gravity to move asteroids
@@ -777,51 +777,51 @@ export default class UniversView {
 
                 if (this.asteroids[i].annilled !== true) {
 
-                	this.asteroids[i].changeDirection();
-                	this.asteroids[i].annilled = true;
+                    this.asteroids[i].changeDirection();
+                    this.asteroids[i].annilled = true;
                 }
 
-                
 
-                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                // // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+                // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+                // // // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+
+                // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
                 // console.log(this.asteroids[i].mesh.position.x);
                 // console.log(this.asteroids[i].body.linearVelocity.x);
 
 
-            } else {
+            }
 
-                if (this.asteroids[i].body !== undefined) {
+            if (this.asteroids[i].body !== undefined) {
 
-                    if (this.asteroids[i].annilled !== true) {
+                // if (this.asteroids[i].annilled !== true) {
 
-                        this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                        this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                        this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+                    this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                    this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                    this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                        // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+                    // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
 
-                        this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                        this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+                    this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                    this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
-                        console.log(this.asteroids[i].mesh.position.x);
-                        console.log(this.asteroids[i].body.linearVelocity.x);
-                    }
-
-                }
-
-
-                // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
-                // update world
+                    console.log(this.asteroids[i].mesh.position.x);
+                    console.log(this.asteroids[i].body.linearVelocity.x);
+                // }
 
             }
+
+
+            // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+            // update world
+
+
 
 
 

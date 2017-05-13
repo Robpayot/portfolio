@@ -671,13 +671,14 @@ var Asteroid = function (_AbstractShape) {
 
         _this.initForce = force;
 
-        setInterval(function () {
-            console.log('change force !!!');
+        // setInterval(() => {
+        //     console.log('change force !!!');
 
-            _this.force.x = (0, _utils.getRandom)(-10, 10);
-            _this.force.y = (0, _utils.getRandom)(-10, 10);
-            _this.force.z = (0, _utils.getRandom)(-10, 10);
-        }, 500);
+        //     this.force.x = getRandom(-10,10);
+        //     this.force.y = getRandom(-10,10);
+        //     this.force.z = getRandom(-10,10);
+
+        // }, 500);
 
         return _this;
     }
@@ -685,10 +686,11 @@ var Asteroid = function (_AbstractShape) {
     _createClass(Asteroid, [{
         key: 'changeDirection',
         value: function changeDirection() {
+            var _this2 = this;
 
             // console.log(this.mesh);
 
-            console.log('changeDirection');
+            console.log('changeDirection !!!');
 
             // this.body.move = false;
 
@@ -702,9 +704,9 @@ var Asteroid = function (_AbstractShape) {
             // this.force.z = -this.initForce.z;
 
 
-            // this.force.x = -20;
-            // this.force.y = -20;
-            // this.force.z = -20;
+            this.force.x = -this.initForce.x;
+            this.force.y = -this.initForce.x;
+            this.force.z = -this.initForce.x;
 
             // reticleExclude("shapeName");
 
@@ -727,22 +729,21 @@ var Asteroid = function (_AbstractShape) {
 
             // this.annilled = true;
 
-            // setTimeout(() => {
-            // 	 console.log(this.mesh.position.x);
-            //     // this.mesh.position.x = 50;
-            //     // this.mesh.position.y = 50;
-            //     // this.mesh.position.z = 50;
+            setTimeout(function () {
+                // console.log(this.mesh.position.x);
+                // this.mesh.position.x = 50;
+                // this.mesh.position.y = 50;
+                // this.mesh.position.z = 50;
 
-            //     // this.body.pos.x = 50;
-            //     // this.body.pos.y = 50;
-            //     // this.body.pos.z = 50;
+                // this.body.pos.x = 50;
+                // this.body.pos.y = 50;
+                // this.body.pos.z = 50;
 
-            //     // this.force.x = 10;
-            //     // this.force.y = 0;
-            //     // this.force.z = 0;
-            //     this.annilled = false;
-            // }, 2000);
-
+                // this.force.x = 10;
+                // this.force.y = 0;
+                // this.force.z = 0;
+                _this2.annilled = false;
+            }, 2000);
         }
     }]);
 
@@ -5153,7 +5154,7 @@ var UniversView = function () {
                 this.symbols[_i].quaternion.copy(this.symbols[_i].body.getQuaternion());
             }
             // Asteroids bodies
-            for (var _i2 = 0; _i2 < 1; _i2++) {
+            for (var _i2 = 0; _i2 < this.asteroids.length; _i2++) {
 
                 // Add force impulsion on a 0 Gravity to move asteroids
 
@@ -5270,41 +5271,41 @@ var UniversView = function () {
                         this.asteroids[_i2].annilled = true;
                     }
 
-                    this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
-                    this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
-                    this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
+                    // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                    // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                    // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                    // // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+                    // // // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
 
-                    this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
-                    this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
+                    // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                    // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
                     // console.log(this.asteroids[i].mesh.position.x);
                     // console.log(this.asteroids[i].body.linearVelocity.x);
 
-                } else {
-
-                    if (this.asteroids[_i2].body !== undefined) {
-
-                        if (this.asteroids[_i2].annilled !== true) {
-
-                            this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
-                            this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
-                            this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
-
-                            // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
-
-                            this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
-                            this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
-
-                            console.log(this.asteroids[_i2].mesh.position.x);
-                            console.log(this.asteroids[_i2].body.linearVelocity.x);
-                        }
-                    }
-
-                    // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
-                    // update world
                 }
+
+                if (this.asteroids[_i2].body !== undefined) {
+
+                    // if (this.asteroids[i].annilled !== true) {
+
+                    this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
+                    this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
+                    this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
+
+                    // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+
+                    this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
+                    this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
+
+                    console.log(this.asteroids[_i2].mesh.position.x);
+                    console.log(this.asteroids[_i2].body.linearVelocity.x);
+                    // }
+                }
+
+                // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
+                // update world
+
 
                 // If touch limit Envelop --> reverse impulsion
                 // console.log(this.asteroids[i].position.x , this.envelopSize);
