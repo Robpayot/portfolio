@@ -379,10 +379,12 @@ export default class UniversView {
             // console.log(asteroid.body.linearVelocity);
             // }, 2000);ertgg
 
+            // asteroid.changeDirection();
+
             this.asteroids.push(asteroid);
 
             // add mesh to the scene
-            this.scene.add(asteroid);
+            this.scene.add(asteroid.mesh);
 
         }
 
@@ -658,7 +660,7 @@ export default class UniversView {
             this.symbols[i].quaternion.copy(this.symbols[i].body.getQuaternion());
         }
         // Asteroids bodies
-        for (let i = 0; i < this.asteroids.length; i++) {
+        for (let i = 0; i < 1; i++) {
 
 
             // Add force impulsion on a 0 Gravity to move asteroids
@@ -674,69 +676,74 @@ export default class UniversView {
 
 
             if (i === 0) {
-                // console.log(this.asteroids[i].position.x);
+                // console.log(this.asteroids[i].mesh.position.x);
+                //  console.log(this.asteroids[i].body.pos.x);
             }
 
-            if (this.asteroids[i].position.x > this.envelopSize / 2 - 50 || this.asteroids[i].position.x < -this.envelopSize / 2 + 50 || this.asteroids[i].position.y > this.envelopSize / 2 - 50 || this.asteroids[i].position.y < -this.envelopSize / 2 + 50 || this.asteroids[i].position.z > this.envelopSize / 2 - 50 || this.asteroids[i].position.z < -this.envelopSize / 2 + 50) {
+
+
+            if (this.asteroids[i].mesh.position.x > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.x < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.y > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.y < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.z > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.z < -this.envelopSize / 2 + 50) {
                 // Reverse Force Vector
 
                 // if (i === 0) {
-                // console.log('reverse ! :', this.asteroids[i].force.x);
+                // console.log('reverse ! :', this.asteroids[i].mesh.force.x);
 
                 // Reset Asteroid
                 // Set up the sphere vars
-                const RADIUS = 5;
-                const SEGMENTS = 32;
-                const RINGS = 32;
+                // const RADIUS = 5;
+                // const SEGMENTS = 32;
+                // const RINGS = 32;
 
-                const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-                // const material = new MeshLambertMaterial({ color: 0x4682b4 });
-                const img = PreloadManager.getResult('texture-asteroid');
+                // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+                // // const material = new MeshLambertMaterial({ color: 0x4682b4 });
+                // const img = PreloadManager.getResult('texture-asteroid');
 
-                const tex = new Texture(img);
-                tex.needsUpdate = true;
+                // const tex = new Texture(img);
+                // tex.needsUpdate = true;
 
-                const matPhongParams = {
-                    // specular: 0xFFFFFF,
-                    shininess: 100000,
-                    // color: 0x4682b4,
-                    map: tex
-                };
-                const material = new MeshPhongMaterial(matPhongParams);
-                const pos = {
-                    x: getRandom(-100, 100),
-                    y: getRandom(-100, 100),
-                    z: getRandom(-100, 100),
-                };
+                // const matPhongParams = {
+                //     // specular: 0xFFFFFF,
+                //     shininess: 100000,
+                //     // color: 0x4682b4,
+                //     map: tex
+                // };
+                // const material = new MeshPhongMaterial(matPhongParams);
+                // const pos = {
+                //     x: getRandom(-100, 100),
+                //     y: getRandom(-100, 100),
+                //     z: getRandom(-100, 100),
+                // };
 
-                // Sphere perimeter :
-                // x: -15 à 15
-                // y : -15 to 15
-                // z : -15 to 15
+                // // Sphere perimeter :
+                // // x: -15 à 15
+                // // y : -15 to 15
+                // // z : -15 to 15
 
-                // Intra perimeter radius
-                const ipRadius = 50;
+                // // Intra perimeter radius
+                // const ipRadius = 50;
 
-                if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-                    console.log(i, ' dans le périmetre !');
-                    pos.x += ipRadius;
-                    pos.y += ipRadius;
-                    pos.z += ipRadius;
+                // if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+                //     console.log(i, ' dans le périmetre !');
+                //     pos.x += ipRadius;
+                //     pos.y += ipRadius;
+                //     pos.z += ipRadius;
 
-                }
+                // }
 
-                //  force impulsion
-                const force = {
-                    x: getRandom(-10, 10),
-                    y: getRandom(-10, 10),
-                    z: getRandom(-10, 10)
-                };
-                // console.log('RESET Asteroid');
-                this.asteroids[i] = new Asteroid(geometry, material, pos, force);
+                // //  force impulsion
+                // const force = {
+                //     x: getRandom(-10, 10),
+                //     y: getRandom(-10, 10),
+                //     z: getRandom(-10, 10)
+                // };
+                // // console.log('RESET Asteroid');
+                // this.asteroids[i] = new Asteroid(geometry, material, pos, force);
 
-                this.asteroids[i].body = this.world.add( this.asteroids[i].physics);
+                // this.asteroids[i].body = this.world.add( this.asteroids[i].physics);
 
-                this.scene.add(this.asteroids[i]);
+                // this.scene.add(this.asteroids[i]);
+
+
                 // this.asteroids[i].force.x = 0;
                 // this.asteroids[i].force.y = 0;
                 // this.asteroids[i].force.z = 0;
@@ -768,13 +775,46 @@ export default class UniversView {
                 // }
                 // }
 
+                if (this.asteroids[i].annilled !== true) {
+
+                	this.asteroids[i].changeDirection();
+                	this.asteroids[i].annilled = true;
+                }
+
+                
+
+                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+
+                // // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+
+                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+
+                // console.log(this.asteroids[i].mesh.position.x);
+                // console.log(this.asteroids[i].body.linearVelocity.x);
+
+
             } else {
 
                 if (this.asteroids[i].body !== undefined) {
-                    this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                    this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                    this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
-                    this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
+
+                    if (this.asteroids[i].annilled !== true) {
+
+                        this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                        this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                        this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+
+                        // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
+
+                        this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                        this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+
+                        console.log(this.asteroids[i].mesh.position.x);
+                        console.log(this.asteroids[i].body.linearVelocity.x);
+                    }
+
                 }
 
 
