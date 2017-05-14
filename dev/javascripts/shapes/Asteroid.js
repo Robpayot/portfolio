@@ -49,7 +49,7 @@ export default class Asteroid extends AbstractShape {
 
         // console.log(this.mesh);
 
-        console.log('changeDirection !!!');
+        // console.log('changeDirection !!!');
 
 
         // this.body.move = false;
@@ -65,8 +65,8 @@ export default class Asteroid extends AbstractShape {
 
 
         this.force.x = -this.initForce.x;
-        this.force.y = -this.initForce.x;
-        this.force.z = -this.initForce.x;
+        this.force.y = -this.initForce.y;
+        this.force.z = -this.initForce.z;
 
         
 

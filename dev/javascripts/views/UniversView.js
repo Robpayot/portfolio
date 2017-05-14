@@ -112,7 +112,7 @@ export default class UniversView {
         this.cssRenderer.domElement.classList.add('container3D');
 
         this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-        this.renderer.setClearColor(0x000000, 0.0);
+        this.renderer.setClearColor(0x000000, 1);
 
         this.renderer.setSize(this.width, this.height);
 
@@ -226,13 +226,13 @@ export default class UniversView {
         // Set up the sphere vars
         const width = 400;
         const height = 400;
-        const depth = 10;
+        const depth = 2;
 
         this.envelopSize = width;
 
 
         const geometry = new BoxGeometry(width, height, depth);
-        const material = new MeshLambertMaterial({ color: 0xff6347 });
+        const material = new MeshBasicMaterial({ color: 0x0101010, transparent: true, opacity: 1 });
         this.envelops = [];
 
         const configs = [{
@@ -279,7 +279,7 @@ export default class UniversView {
         const RINGS = 32;
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const material = new MeshLambertMaterial({ color: 0xff6347 });
+        const material = new MeshPhongMaterial({ color: 0xff6347, shininess: 1 });
         const pos = {
             x: 0,
             y: 0,
@@ -315,7 +315,7 @@ export default class UniversView {
 
         const matPhongParams = {
             // specular: 0xFFFFFF,
-            shininess: 100000,
+            shininess: 300,
             // color: 0x4682b4,
             map: tex
         };
@@ -324,28 +324,11 @@ export default class UniversView {
 
         for (let i = 0; i < nb; i++) {
 
-            // random position
-
-            // const pos = {
-            //     x: (i + 1) * 30 - ((nb / 2 + 1) * 30) / 2,
-            //     y: 0,
-            //     z: -50,
-            // };
-            // if (i > 9) {
-            //     pos.x = (i - 10) * 30 - ((nb / 2 + 1) * 30) / 2,
-            //         pos.y = 30;
-            // }
-
             const pos = {
                 x: getRandom(-100, 100),
                 y: getRandom(-100, 100),
                 z: getRandom(-100, 100),
             };
-
-            // Sphere perimeter :
-            // x: -15 à 15
-            // y : -15 to 15
-            // z : -15 to 15
 
             // Intra perimeter radius
             const ipRadius = 50;
@@ -358,28 +341,17 @@ export default class UniversView {
 
             }
 
-
-
-
             //  force impulsion
             const force = {
-                x: getRandom(-10, 100),
-                y: getRandom(-10, 100),
-                z: getRandom(-10, 100)
+                x: getRandom(-10, 10),
+                y: getRandom(-10, 10),
+                z: getRandom(-10, 10)
             };
 
             const asteroid = new Asteroid(geometry, material, pos, force);
 
             // add physic body to world
             asteroid.body = this.world.add(asteroid.physics);
-
-            // setTimeout(()=> {
-            // asteroid.body.applyImpulse({ x: 0, y: 0, z: 0 }, force);
-            // asteroid.body.linearVelocity = force;
-            // console.log(asteroid.body.linearVelocity);
-            // }, 2000);ertgg
-
-            // asteroid.changeDirection();
 
             this.asteroids.push(asteroid);
 
@@ -391,90 +363,13 @@ export default class UniversView {
 
     }
 
-    setPyramides() {
-
-        const geometry = new ConeBufferGeometry(5, 20, 32);
-        geometry.radiusSegments = 4;
-        const material = new MeshLambertMaterial({ color: 0x00ff00 });
-        const mesh = new Mesh(geometry, material);
-
-        mesh.position.set(getRandom(-250, 250), getRandom(-250, 250), getRandom(-250, 250));
-        mesh.lookAt(new Vector3(0, 0, -300));
-
-        this.scene.add(mesh);
-
-        mesh.body = this.world.add({
-            type: 'box', // type of shape : sphere, box, cylinder 
-            size: [10, 10, 10], // size of shape
-            pos: [getRandom(-250, 250), getRandom(-250, 250), getRandom(-250, 250)], // start position in degree
-            rot: [0, 0, 90], // start rotation in degree
-            move: true, // dynamic or statique
-            density: 1,
-            friction: 0.2,
-            restitution: 0.2,
-            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-        });
-
-        this.pyramides.push(mesh);
-    }
-
-    setCubes() {
-
-        // // Set up the sphere vars
-        const RADIUS = 10;
-        const SEGMENTS = 32;
-        const RINGS = 32;
-
-        const geometry = new BoxGeometry(20, 20, 20);
-
-        const material = new MeshLambertMaterial({ color: 0x4682b4 });
-        const mesh = new Mesh(geometry, material);
-
-        mesh.position.set(getRandom(-150, 150), getRandom(-150, 150), getRandom(-150, 150));
-
-        this.scene.add(mesh);
-
-        mesh.body = this.world.add({
-            type: 'box', // type of shape : sphere, box, cylinder 
-            size: [10, 10, 10], // size of shape
-            pos: [getRandom(-150, 150), getRandom(-150, 150), getRandom(-150, 150)], // start position in degree
-            rot: [0, 0, 90], // start rotation in degree
-            move: true, // dynamic or statique
-            density: 1,
-            friction: 0.2,
-            restitution: 0.2,
-            belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-            collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-        });
-
-        this.cubes.push(mesh);
-    }
-
-    setGround() {
-
-        // physics
-        this.ground0 = this.world.add({ size: [2, 600, 600], pos: [0, -50, 0], rot: [0, 90, 60], world: this.world });
-
-        const geometry = new BoxGeometry(2, 600, 600);
-
-        const material = new MeshLambertMaterial({ color: 0x000000, transparent: true, opacity: 0.8 });
-
-        const mesh = new Mesh(geometry, material);
-
-        mesh.position.copy(this.ground0.getPosition());
-        mesh.quaternion.copy(this.ground0.getQuaternion());
-
-        this.scene.add(mesh);
-    }
-
     setLight() {
 
 
         let paramsLight = [
-            { x: 70, y: 70, z: 0 },
-            { x: -70, y: -70, z: -90 },
-            // { x: 70, y: -70, z: -90 }
+            // { x: 70, y: 70, z: 0 },
+            { x: -50, y: -50, z: 100 },
+            { x: 0, y: -0, z: 0 }
         ];
 
         for (var i = 0; i < paramsLight.length; i++) {
@@ -484,9 +379,9 @@ export default class UniversView {
             // set its position
             pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
             // pointLight.power = 20;
-            pointLight.distance = 1000;
+            pointLight.distance = 600;
             pointLight.decay = 2;
-            pointLight.intensity = 1;
+            pointLight.intensity = 1.5;
 
             // add to the scene
             this.scene.add(pointLight);
@@ -662,206 +557,30 @@ export default class UniversView {
         // Asteroids bodies
         for (let i = 0; i < this.asteroids.length; i++) {
 
-
-            // Add force impulsion on a 0 Gravity to move asteroids
-
-            // if ()
-
-
-            // this.asteroids[i].body.rot = [0,0,0];
-
-            // APPLY IMPULSE
-            // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
-
-
-
-            if (i === 0) {
-                // console.log(this.asteroids[i].mesh.position.x);
-                //  console.log(this.asteroids[i].body.pos.x);
-            }
-
-
-
             if (this.asteroids[i].mesh.position.x > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.x < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.y > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.y < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.z > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.z < -this.envelopSize / 2 + 50) {
                 // Reverse Force Vector
-
-                // if (i === 0) {
-                // console.log('reverse ! :', this.asteroids[i].mesh.force.x);
-
-                // Reset Asteroid
-                // Set up the sphere vars
-                // const RADIUS = 5;
-                // const SEGMENTS = 32;
-                // const RINGS = 32;
-
-                // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-                // // const material = new MeshLambertMaterial({ color: 0x4682b4 });
-                // const img = PreloadManager.getResult('texture-asteroid');
-
-                // const tex = new Texture(img);
-                // tex.needsUpdate = true;
-
-                // const matPhongParams = {
-                //     // specular: 0xFFFFFF,
-                //     shininess: 100000,
-                //     // color: 0x4682b4,
-                //     map: tex
-                // };
-                // const material = new MeshPhongMaterial(matPhongParams);
-                // const pos = {
-                //     x: getRandom(-100, 100),
-                //     y: getRandom(-100, 100),
-                //     z: getRandom(-100, 100),
-                // };
-
-                // // Sphere perimeter :
-                // // x: -15 à 15
-                // // y : -15 to 15
-                // // z : -15 to 15
-
-                // // Intra perimeter radius
-                // const ipRadius = 50;
-
-                // if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-                //     console.log(i, ' dans le périmetre !');
-                //     pos.x += ipRadius;
-                //     pos.y += ipRadius;
-                //     pos.z += ipRadius;
-
-                // }
-
-                // //  force impulsion
-                // const force = {
-                //     x: getRandom(-10, 10),
-                //     y: getRandom(-10, 10),
-                //     z: getRandom(-10, 10)
-                // };
-                // // console.log('RESET Asteroid');
-                // this.asteroids[i] = new Asteroid(geometry, material, pos, force);
-
-                // this.asteroids[i].body = this.world.add( this.asteroids[i].physics);
-
-                // this.scene.add(this.asteroids[i]);
-
-
-                // this.asteroids[i].force.x = 0;
-                // this.asteroids[i].force.y = 0;
-                // this.asteroids[i].force.z = 0;
-
-                // this.asteroids[i].position.x = 50;
-                // this.asteroids[i].position.y = 50;
-                // this.asteroids[i].position.z = 50;
-
-                // this.asteroids[i].body.pos.x = 50;
-                // this.asteroids[i].body.pos.y = 50;
-                // this.asteroids[i].body.pos.z = 50;
-
-
-                // this.asteroids[i].force.x = 0;
-                // this.asteroids[i].force.y = 0;
-                // this.asteroids[i].force.z = 0;
-
-                // this.asteroids[i].body.linearVelocity.x = 0;
-                // this.asteroids[i].body.linearVelocity.y = 0;
-                // this.asteroids[i].body.linearVelocity.z = 0;
-                // setTimeout(()=> {
-                // 	this.asteroids[i].force.x = 10;
-                // }, 2000);
-                // this.asteroids[i].position.copy(this.asteroids[i].body.getPosition());
-                // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
-
-                // if (i === 0) {
-                //     console.log(this.asteroids[i].position.x);
-                // }
-                // }
-
                 if (this.asteroids[i].annilled !== true) {
 
                     this.asteroids[i].changeDirection();
                     this.asteroids[i].annilled = true;
                 }
-
-
-
-                // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
-
-                // // // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
-
-                // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
-
-                // console.log(this.asteroids[i].mesh.position.x);
-                // console.log(this.asteroids[i].body.linearVelocity.x);
-
-
             }
 
             if (this.asteroids[i].body !== undefined) {
 
-                // if (this.asteroids[i].annilled !== true) {
+                // APPLY IMPULSE
+                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                    this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                    this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                    this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
-                    // this.asteroids[i].body.applyImpulse({ x: 0, y: 0, z: 0 }, this.asteroids[i].force);
-
-                    this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                    this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
-
-                    console.log(this.asteroids[i].mesh.position.x);
-                    console.log(this.asteroids[i].body.linearVelocity.x);
-                // }
 
             }
 
 
-            // this.asteroids[i].quaternion.copy(this.asteroids[i].body.getQuaternion());
-            // update world
-
-
-
-
-
-
-
-
-            // If touch limit Envelop --> reverse impulsion
-            // console.log(this.asteroids[i].position.x , this.envelopSize);
-
-            // if ()
-            // 
-            // if (i===0) {
-
-            // 	if (this.asteroids[i].body.linearVelocity.x >= 3 ) {
-            // 		this.asteroids[i].body.linearVelocity.x = 3;
-            // 	}
-            // 	if (this.asteroids[i].body.linearVelocity.x <= -3 ) {
-            // 		this.asteroids[i].body.linearVelocity.x = -3;
-            // 	}
-            // 	console.log(this.asteroids[i].body.linearVelocity);
-            // 	// console.log(this.asteroids[i].position);
-            // }
-            // --> For Rotation
-
-
         }
-
-        // and copy position and rotation to three mesh
-        // for (let i = 0; i < this.spheres.length; i++) {
-        //     this.spheres[i].position.copy(this.spheres[i].body.getPosition());
-        //     this.spheres[i].quaternion.copy(this.spheres[i].body.getQuaternion());
-        // }
-        // for (let i = 0; i < this.cubes.length; i++) {
-        //     this.cubes[i].position.copy(this.cubes[i].body.getPosition());
-        //     this.cubes[i].quaternion.copy(this.cubes[i].body.getQuaternion());
-        // }
-        // for (let i = 0; i < this.pyramides.length; i++) {
-        //     this.pyramides[i].position.copy(this.pyramides[i].body.getPosition());
-        //     this.pyramides[i].quaternion.copy(this.pyramides[i].body.getQuaternion());
-        // }
 
         // Render cssScene
         this.cssRenderer.render(this.cssScene, this.camera);
