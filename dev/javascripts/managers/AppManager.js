@@ -1,11 +1,11 @@
 // import PreloadManager from './PreloadManager';
 import EmitterManager from './EmitterManager';
-// import RouterManager from './RouterManager';
+import RouterManager from './RouterManager';
 // import Device from '../helpers/Device';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
-import UniversView from '../views/UniversView';
+
 
 import bean from 'bean';
 
@@ -28,7 +28,8 @@ class AppManager {
         // SoundManager
 
         this.graphicBars = new GraphicBars();
-        this.universView = new UniversView();
+
+        RouterManager.start();
     }
 
     events(method) {

@@ -150,38 +150,6 @@ export default class UniversView {
         this.camera.position.z = 200;
     }
 
-
-    setContext() {
-
-        // Text
-
-        let div = document.createElement('div');
-        div.classList.add('css-container');
-
-        div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
-
-        this.text = new CSS3DObject(div);
-        this.text.position.set(50, 5, 20);
-        this.text.rotation.set(0, toRadian(-35), 0);
-
-        this.cssScene.add(this.text);
-
-        this.text.scale.multiplyScalar(1 / 14);
-
-        let div2 = document.createElement('div');
-        div2.classList.add('css-container');
-
-        div2.innerHTML = `<div class='project__image'><img src="images/bmw.jpg" alt="project image" /></div>`;
-
-        const div23d = new CSS3DObject(div2);
-        div23d.position.set(-50, 5, 20);
-        div23d.rotation.set(0, toRadian(35), 0);
-
-        this.cssScene.add(div23d);
-
-        div23d.scale.multiplyScalar(1 / 14);
-    }
-
     initPhysics() {
 
         this.world = new World({
@@ -383,6 +351,42 @@ export default class UniversView {
 
     }
 
+    setContext() {
+
+        console.log('createText');
+
+        // Text
+
+        let div = document.createElement('div');
+        div.classList.add('css-container');
+
+        div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
+
+        this.text = new CSS3DObject(div);
+        this.text.position.set(50, 5, 20);
+        this.text.rotation.set(0, toRadian(-35), 0);
+
+        this.cssScene.add(this.text);
+
+        this.text.scale.multiplyScalar(1 / 14);
+
+        let div2 = document.createElement('div');
+        div2.classList.add('css-container');
+
+        div2.innerHTML = `<div class='project__image'><img src="images/bmw.jpg" alt="project image" /></div>`;
+
+        const div23d = new CSS3DObject(div2);
+        div23d.position.set(-50, 5, 20);
+        div23d.rotation.set(0, toRadian(35), 0);
+
+        this.cssScene.add(div23d);
+
+        div23d.scale.multiplyScalar(1 / 14);
+
+        console.log(div23d);
+        div23d.element.remove();
+    }
+
     onClick(e) {
 
         if (this.clickSymbol === true) {
@@ -395,6 +399,8 @@ export default class UniversView {
     onClickSymbol() {
 
         const tl = new TimelineMax();
+
+        this.reset();
 
         if (this.toggle !== true) {
 
@@ -571,16 +577,48 @@ export default class UniversView {
     reset(e) {
 
         this.destroy();
-        this.initScene();
+
+        // // Set symbol
+        // this.setSymbol();
+
+        // // Set asteroid
+        // this.setAsteroids();
+
+        // // Set envelop
+        // this.setEnvelop();
+
+        // // Set Context
+        // this.setContext();
+
+        // // set Light
+        // this.setLight();
+
+        // // Raycaster
+        // this.raycaster = new Raycaster();
+
+        // // Mouse
+        // this.mouse = { x: 0, y: 0 };
         // this.initPhysics();
 
-        if (this.guiParams.gravity === true) {
-            this.world.gravity.y = -90;
+        // if (this.guiParams.gravity === true) {
+        //     this.world.gravity.y = -90;
 
-            console.log('gravity down');
-        } else {
-            this.world.gravity.y = 0;
-        }
+        //     console.log('gravity down');
+        // } else {
+        //     this.world.gravity.y = 0;
+        // }
+
+        setTimeout(() => {
+            let cssContainers = document.querySelectorAll('.testeur');
+
+            for (let i = 0; i < cssContainers.length; i++) {
+
+                console.log('remove');
+                cssContainers[i].innerHTML = '';
+                cssContainers[i].remove();
+                // cssContainers[i].parentNode.removeChild(cssContainers[i]);
+            }
+        }, 1000);
 
     }
 
@@ -620,6 +658,49 @@ export default class UniversView {
         }
 
 
+        let cssContainers = document.querySelectorAll('.css-container');
+
+        for (let i = 0; i < cssContainers.length; i++) {
+
+            console.log('remove');
+            cssContainers[i].innerHTML = '';
+            cssContainers[i].remove();
+            // cssContainers[i].parentNode.removeChild(cssContainers[i]);
+        }
+        // document.querySelector('.css-container').remove();
+
+        // Destroy css scene
+        this.cssScene.traverse((obj) => {
+
+            // remove physics
+            if (obj.body) obj.body.remove();
+
+            if (obj.geometry) obj.geometry.dispose();
+
+            if (obj.material) {
+
+                if (obj.material.materials) {
+
+                    for (const mat of obj.material.materials) {
+
+                        if (mat.map) mat.map.dispose();
+
+                        mat.dispose();
+                    }
+                } else {
+
+                    if (obj.material.map) obj.material.map.dispose();
+
+                    obj.material.dispose();
+                }
+            }
+
+        });
+
+        for (let i = this.scene.children.length - 1; i >= 0; i--) {
+
+            this.cssScene.remove(this.scene.children[i]);
+        }
 
     }
 
