@@ -68,29 +68,6 @@ export default class UniversView {
         // Set Context
         this.setContext();
 
-        // for (let i = 0; i < this.numbElements; i++) {
-        //     this.setSpheres();
-        // }
-
-        // // pyramides
-        // this.pyramides = [];
-        // this.numbElements = 0;
-
-        // for (let i = 0; i < this.numbElements; i++) {
-        //     this.setPyramides();
-        // }
-
-        // // cubes
-        // this.cubes = [];
-        // this.numbElements = 0;
-
-        // for (let i = 0; i < this.numbElements; i++) {
-        //     this.setCubes();
-        // }
-
-        // Set ground
-        // this.setGround();
-
         // set Light
         this.setLight();
 
@@ -184,12 +161,12 @@ export default class UniversView {
         div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
 
         this.text = new CSS3DObject(div);
-        this.text.position.set(45, 5, 20);
+        this.text.position.set(50, 5, 20);
         this.text.rotation.set(0, toRadian(-35), 0);
 
         this.cssScene.add(this.text);
 
-        this.text.scale.multiplyScalar(1 / 6);
+        this.text.scale.multiplyScalar(1 / 14);
 
         let div2 = document.createElement('div');
         div2.classList.add('css-container');
@@ -197,12 +174,12 @@ export default class UniversView {
         div2.innerHTML = `<div class='project__image'><img src="images/bmw.jpg" alt="project image" /></div>`;
 
         const div23d = new CSS3DObject(div2);
-        div23d.position.set(-45, 5, 20);
+        div23d.position.set(-50, 5, 20);
         div23d.rotation.set(0, toRadian(35), 0);
 
         this.cssScene.add(div23d);
 
-        div23d.scale.multiplyScalar(1 / 6);
+        div23d.scale.multiplyScalar(1 / 14);
     }
 
     initPhysics() {
