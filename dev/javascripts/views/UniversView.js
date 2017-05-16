@@ -262,6 +262,8 @@ export default class UniversView {
             // specular: 0xFFFFFF,
             shininess: 300,
             // color: 0x4682b4,
+            transparent : true,
+            opacity: 0.9,
             map: tex
         };
         const material = new MeshPhongMaterial(matPhongParams);
