@@ -292,13 +292,8 @@ body {
 .graphic3D {
   position: relative; }
   .graphic3D .container3D .project__context {
-<<<<<<< Updated upstream
     max-width: 900px;
     font-size: 38px;
-=======
-    max-width: 300px;
-    font-size: 12px;
->>>>>>> Stashed changes
     line-height: 1.4em;
     z-index: 10;
     opacity: 0;
@@ -308,12 +303,7 @@ body {
     -ms-user-select: none;
     user-select: none; }
   .graphic3D .container3D .project__image {
-<<<<<<< Updated upstream
     max-width: 900px;
-=======
-    max-width: 300px;
-    max-height: 300px;
->>>>>>> Stashed changes
     border: 1px solid rgba(128, 128, 128, 0.15);
     opacity: 0;
     -webkit-user-select: none;
@@ -348,22 +338,13 @@ body {
   top: 0;
   z-index: 20;
   display: -webkit-box;
-<<<<<<< Updated upstream
-=======
   display: -webkit-flex;
->>>>>>> Stashed changes
   display: -ms-flexbox;
   display: flex;
   display: none; }
   .jauge .frequencies {
     margin: 0px auto;
     display: -webkit-box;
-<<<<<<< Updated upstream
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-item-align: center;
-    align-self: center;
-=======
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
@@ -371,15 +352,11 @@ body {
     -ms-flex-item-align: center;
     align-self: center;
     -webkit-justify-content: space-around;
->>>>>>> Stashed changes
     -ms-flex-pack: distribute;
     justify-content: space-around;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
-<<<<<<< Updated upstream
-=======
     -webkit-flex-direction: column;
->>>>>>> Stashed changes
     -ms-flex-direction: column;
     flex-direction: column;
     width: 100%;
