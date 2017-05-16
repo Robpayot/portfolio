@@ -64,9 +64,14 @@ export default class CSS3DRendererIE {
 
                 var element = object.element;
 
-                if (element.parentNode !== this.domElement) {
-                    this.domElement.appendChild(element);
+                // If element is destroyed, stop append him
+                if (element !== null) {
+                    if (element.parentNode !== this.domElement) {
+                        this.domElement.appendChild(element);
+                    }
                 }
+
+
 
                 if (object['visible'] !== false) {
                     if (object.wasVisible === false) {
@@ -93,7 +98,11 @@ export default class CSS3DRendererIE {
                         _tmpMatrix.copy(object.matrixWorld);
                     }
 
-                    this.setStyle(element, 'transform', view_matrix + this.getObjectCSSMatrix(_tmpMatrix));
+                    if (element !== null) {
+                    	this.setStyle(element, 'transform', view_matrix + this.getObjectCSSMatrix(_tmpMatrix));
+                    }
+
+                    
 
 
                     // apply depth sorting.

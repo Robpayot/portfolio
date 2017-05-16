@@ -40,6 +40,8 @@ export default class UniversView {
             body: document.getElementsByTagName('body')[0]
         };
 
+        this.cssObjects = [];
+
         // Set the canvas size.
         this.width = window.innerWidth;
         this.height = window.innerHeight;
@@ -367,10 +369,12 @@ export default class UniversView {
         this.text = new CSS3DObject(div);
         this.text.position.set(50, 5, 20);
         this.text.rotation.set(0, toRadian(-35), 0);
+        this.text.scale.multiplyScalar(1 / 14);
 
         this.cssScene.add(this.text);
+        this.cssObjects.push(this.text);
 
-        this.text.scale.multiplyScalar(1 / 14);
+
 
         let div2 = document.createElement('div');
         div2.classList.add('css-container');
@@ -380,13 +384,12 @@ export default class UniversView {
         const div23d = new CSS3DObject(div2);
         div23d.position.set(-50, 5, 20);
         div23d.rotation.set(0, toRadian(35), 0);
+        div23d.scale.multiplyScalar(1 / 14);
 
         this.cssScene.add(div23d);
 
-        div23d.scale.multiplyScalar(1 / 14);
+        this.cssObjects.push(div23d);
 
-        console.log(div23d);
-        div23d.element.remove();
     }
 
     onClick(e) {
@@ -459,6 +462,11 @@ export default class UniversView {
 
     resizeHandler() {
 
+        // Update camera
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+
+        // Update canvas size
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -580,27 +588,27 @@ export default class UniversView {
 
         this.destroy();
 
-        // // Set symbol
-        // this.setSymbol();
+        // Set symbol
+        this.setSymbol();
 
-        // // Set asteroid
-        // this.setAsteroids();
+        // Set asteroid
+        this.setAsteroids();
 
-        // // Set envelop
-        // this.setEnvelop();
+        // Set envelop
+        this.setEnvelop();
 
-        // // Set Context
-        // this.setContext();
+        // Set Context
+        this.setContext();
 
-        // // set Light
-        // this.setLight();
+        // set Light
+        this.setLight();
 
-        // // Raycaster
-        // this.raycaster = new Raycaster();
+        // Raycaster
+        this.raycaster = new Raycaster();
 
-        // // Mouse
-        // this.mouse = { x: 0, y: 0 };
-        // this.initPhysics();
+        // Mouse
+        this.mouse = { x: 0, y: 0 };
+        this.initPhysics();
 
         // if (this.guiParams.gravity === true) {
         //     this.world.gravity.y = -90;
@@ -609,18 +617,6 @@ export default class UniversView {
         // } else {
         //     this.world.gravity.y = 0;
         // }
-
-        setTimeout(() => {
-            let cssContainers = document.querySelectorAll('.testeur');
-
-            for (let i = 0; i < cssContainers.length; i++) {
-
-                console.log('remove');
-                cssContainers[i].innerHTML = '';
-                cssContainers[i].remove();
-                // cssContainers[i].parentNode.removeChild(cssContainers[i]);
-            }
-        }, 1000);
 
     }
 
@@ -659,18 +655,6 @@ export default class UniversView {
             this.scene.remove(this.scene.children[i]);
         }
 
-
-        let cssContainers = document.querySelectorAll('.css-container');
-
-        for (let i = 0; i < cssContainers.length; i++) {
-
-            console.log('remove');
-            cssContainers[i].innerHTML = '';
-            cssContainers[i].remove();
-            // cssContainers[i].parentNode.removeChild(cssContainers[i]);
-        }
-        // document.querySelector('.css-container').remove();
-
         // Destroy css scene
         this.cssScene.traverse((obj) => {
 
@@ -703,7 +687,15 @@ export default class UniversView {
 
             this.cssScene.remove(this.scene.children[i]);
         }
+        
+        let cssContainers = document.querySelectorAll('.css-container');
+        for (var i = 0; i < cssContainers.length; i++) {
 
+        	this.cssObjects[i].element = null;
+        	cssContainers[i].remove();
+        }
+
+        this.cssObjects = [];
     }
 
 
