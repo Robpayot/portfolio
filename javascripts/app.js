@@ -4845,7 +4845,7 @@ var UniversView = function () {
             var RINGS = 32;
 
             var geometry = new _three.SphereGeometry(RADIUS, SEGMENTS, RINGS);
-            var material = new _three.MeshPhongMaterial({ color: 0xff6347, shininess: 1 });
+            var material = new _three.MeshPhongMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 1 });
             var pos = {
                 x: 0,
                 y: 0,
@@ -4881,11 +4881,12 @@ var UniversView = function () {
 
             var matPhongParams = {
                 // specular: 0xFFFFFF,
-                shininess: 300,
+                shininess: 3000,
                 // color: 0x4682b4,
                 transparent: true,
-                opacity: 0.9,
-                map: tex
+                opacity: 1,
+                // map: tex,
+                alphaMap: tex
             };
             var material = new _three.MeshPhongMaterial(matPhongParams);
             var nb = 20;
@@ -4934,16 +4935,17 @@ var UniversView = function () {
             // { x: 70, y: 70, z: 0 },
             { x: -50, y: -50, z: 100 }, { x: 0, y: -0, z: 0 }];
 
+            // Check Ambient Light
+            // scene.add( new THREE.AmbientLight( 0x00020 ) );
+
             for (var i = 0; i < paramsLight.length; i++) {
 
                 // create a point light
-                var pointLight = new _three.PointLight(0xFFFFFF);
+                var pointLight = new _three.PointLight(0xFFFFFF, 1.5, 600, 2);
                 // set its position
                 pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
                 // pointLight.power = 20;
-                pointLight.distance = 600;
-                pointLight.decay = 2;
-                pointLight.intensity = 1.5;
+                pointLight.visible = true;
 
                 // add to the scene
                 this.scene.add(pointLight);
@@ -4952,18 +4954,22 @@ var UniversView = function () {
             // white spotlight shining from the side, casting a shadow
 
             // var spotLight = new SpotLight(0xffffff);
-            // spotLight.position.set(100, 1000, 100);
+            // spotLight.position.set(0, 0, -100);
+            // spotLight.angle = toRadian(180);
 
-            // spotLight.castShadow = true;
+            // spotLight.castShadow = false;
 
             // spotLight.shadow.mapSize.width = 1024;
             // spotLight.shadow.mapSize.height = 1024;
 
             // spotLight.shadow.camera.near = 500;
-            // spotLight.shadow.camera.far = 4000;
-            // spotLight.shadow.camera.fov = 30;
+            // spotLight.shadow.camera.far = 4;
+            // spotLight.shadow.camera.fov = 120;
 
             // this.scene.add(spotLight);
+
+            // var directionalLight = new DirectionalLight(0xffffff, 0.5);
+            // this.scene.add(directionalLight);
 
         }
     }, {
@@ -5015,7 +5021,7 @@ var UniversView = function () {
 
             var tl = new TimelineMax();
 
-            this.reset();
+            // this.reset();
 
             if (this.toggle !== true) {
 
