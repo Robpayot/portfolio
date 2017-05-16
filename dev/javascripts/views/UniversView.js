@@ -1,4 +1,4 @@
-import { WebGLRenderer, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS } from 'three';
+import { WebGLRenderer, DirectionalLight, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
@@ -226,7 +226,7 @@ export default class UniversView {
         const RINGS = 32;
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const material = new MeshPhongMaterial({ color: 0xff6347, shininess: 1 });
+        const material = new MeshPhongMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 1 });
         const pos = {
             x: 0,
             y: 0,
@@ -262,11 +262,13 @@ export default class UniversView {
 
         const matPhongParams = {
             // specular: 0xFFFFFF,
-            shininess: 300,
+            shininess: 3000,
             // color: 0x4682b4,
-            transparent : true,
-            opacity: 0.9,
-            map: tex
+            transparent: true,
+            opacity: 1,
+            // map: tex,
+            alphaMap: tex,
+            // lightmap: tex
         };
         const material = new MeshPhongMaterial(matPhongParams);
         const nb = 20;
@@ -321,16 +323,17 @@ export default class UniversView {
             { x: 0, y: -0, z: 0 }
         ];
 
+        // Check Ambient Light
+        // scene.add( new THREE.AmbientLight( 0x00020 ) );
+
         for (var i = 0; i < paramsLight.length; i++) {
 
             // create a point light
-            let pointLight = new PointLight(0xFFFFFF);
+            let pointLight = new PointLight(0xFFFFFF, 1.5, 600, 2);
             // set its position
             pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
             // pointLight.power = 20;
-            pointLight.distance = 600;
-            pointLight.decay = 2;
-            pointLight.intensity = 1.5;
+            pointLight.visible = true;
 
             // add to the scene
             this.scene.add(pointLight);
@@ -339,18 +342,22 @@ export default class UniversView {
         // white spotlight shining from the side, casting a shadow
 
         // var spotLight = new SpotLight(0xffffff);
-        // spotLight.position.set(100, 1000, 100);
+        // spotLight.position.set(0, 0, -100);
+        // spotLight.angle = toRadian(180);
 
-        // spotLight.castShadow = true;
+        // spotLight.castShadow = false;
 
         // spotLight.shadow.mapSize.width = 1024;
         // spotLight.shadow.mapSize.height = 1024;
 
         // spotLight.shadow.camera.near = 500;
-        // spotLight.shadow.camera.far = 4000;
-        // spotLight.shadow.camera.fov = 30;
+        // spotLight.shadow.camera.far = 4;
+        // spotLight.shadow.camera.fov = 120;
 
         // this.scene.add(spotLight);
+
+        // var directionalLight = new DirectionalLight(0xffffff, 0.5);
+        // this.scene.add(directionalLight);
 
 
     }
@@ -405,7 +412,7 @@ export default class UniversView {
 
         const tl = new TimelineMax();
 
-        this.reset();
+        // this.reset();
 
         if (this.toggle !== true) {
 
@@ -687,12 +694,12 @@ export default class UniversView {
 
             this.cssScene.remove(this.scene.children[i]);
         }
-        
+
         let cssContainers = document.querySelectorAll('.css-container');
         for (var i = 0; i < cssContainers.length; i++) {
 
-        	this.cssObjects[i].element = null;
-        	cssContainers[i].remove();
+            this.cssObjects[i].element = null;
+            cssContainers[i].remove();
         }
 
         this.cssObjects = [];
