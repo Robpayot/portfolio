@@ -179,7 +179,7 @@ export default class UniversView {
 
 
         const geometry = new BoxGeometry(width, height, depth);
-        const material = new MeshBasicMaterial({ color: 0x0101010, transparent: true, opacity: 1 });
+        const material = new MeshPhongMaterial({ color: 0x0101010, transparent: true, opacity: 1 });
         this.envelops = [];
 
         const configs = [{
@@ -267,8 +267,8 @@ export default class UniversView {
             // color: 0x4682b4,
             transparent: true,
             opacity: 1,
-            // map: tex,
-            alphaMap: tex,
+            map: tex,
+            // alphaMap: tex,
             // lightmap: tex
         };
         const material = new MeshPhongMaterial(matPhongParams);
@@ -464,11 +464,12 @@ export default class UniversView {
 
     onClickAsteroid(el) {
 
-    	console.log(el);
-    	el.force.x = 0;
-    	el.force.y = 0;
-    	el.force.z = -100;
-    	console.log(el);
+    	console.log(el.force.x);
+    	el.force.x = el.force.x ;
+    	console.log(el.force.x);
+    	el.force.y = -Math.abs(-el.force.y );
+    	el.force.z = -70;
+    	// console.log(el);
 
     }
 
@@ -504,6 +505,8 @@ export default class UniversView {
         // Raycasters
         //////////////////
 
+        this.ui.body.style.cursor = 'auto';
+
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         const intersects = this.raycaster.intersectObjects(this.symbols);
@@ -512,11 +515,8 @@ export default class UniversView {
             this.ui.body.style.cursor = 'pointer';
             this.clickSymbol = true;
 
-            // intersects[0].object.index
-            console.log(intersects);
-
         } else {
-            this.ui.body.style.cursor = 'auto';
+            
             this.clickSymbol = false;
         }
 
@@ -527,7 +527,7 @@ export default class UniversView {
         	this.clickAsteroid = true;
         	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
         } else {
-        	this.ui.body.style.cursor = 'auto';
+        	// this.ui.body.style.cursor = 'auto';
         	this.clickAsteroid = false;
         }
 

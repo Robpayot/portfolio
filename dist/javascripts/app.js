@@ -4800,7 +4800,7 @@ var UniversView = function () {
             this.envelopSize = width;
 
             var geometry = new _three.BoxGeometry(width, height, depth);
-            var material = new _three.MeshBasicMaterial({ color: 0x0101010, transparent: true, opacity: 1 });
+            var material = new _three.MeshPhongMaterial({ color: 0x0101010, transparent: true, opacity: 1 });
             this.envelops = [];
 
             var configs = [{
@@ -4886,8 +4886,7 @@ var UniversView = function () {
                 // color: 0x4682b4,
                 transparent: true,
                 opacity: 1,
-                // map: tex,
-                alphaMap: tex
+                map: tex
             };
             var material = new _three.MeshPhongMaterial(matPhongParams);
             var nb = 20;
@@ -5070,11 +5069,12 @@ var UniversView = function () {
         key: 'onClickAsteroid',
         value: function onClickAsteroid(el) {
 
-            console.log(el);
-            el.force.x = 0;
-            el.force.y = 0;
-            el.force.z = -100;
-            console.log(el);
+            console.log(el.force.x);
+            el.force.x = el.force.x;
+            console.log(el.force.x);
+            el.force.y = -Math.abs(-el.force.y);
+            el.force.z = -70;
+            // console.log(el);
         }
     }, {
         key: 'onMouseMove',
@@ -5109,6 +5109,8 @@ var UniversView = function () {
             // Raycasters
             //////////////////
 
+            this.ui.body.style.cursor = 'auto';
+
             this.raycaster.setFromCamera(this.mouse, this.camera);
 
             var intersects = this.raycaster.intersectObjects(this.symbols);
@@ -5116,11 +5118,8 @@ var UniversView = function () {
             if (intersects.length > 0) {
                 this.ui.body.style.cursor = 'pointer';
                 this.clickSymbol = true;
-
-                // intersects[0].object.index
-                console.log(intersects);
             } else {
-                this.ui.body.style.cursor = 'auto';
+
                 this.clickSymbol = false;
             }
 
@@ -5131,7 +5130,7 @@ var UniversView = function () {
                 this.clickAsteroid = true;
                 this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
             } else {
-                this.ui.body.style.cursor = 'auto';
+                // this.ui.body.style.cursor = 'auto';
                 this.clickAsteroid = false;
             }
 
