@@ -247,6 +247,7 @@ export default class UniversView {
     setAsteroids() {
 
         this.asteroids = [];
+        this.asteroidsM = [];
 
         // Set up the sphere vars
         const RADIUS = 5;
@@ -303,8 +304,10 @@ export default class UniversView {
 
             // add physic body to world
             asteroid.body = this.world.add(asteroid.physics);
+            asteroid.mesh.index = i;
 
             this.asteroids.push(asteroid);
+            this.asteroidsM.push(asteroid.mesh);
 
             // add mesh to the scene
             this.scene.add(asteroid.mesh);
@@ -406,6 +409,10 @@ export default class UniversView {
 
         }
 
+        if (this.clickAsteroid === true) {
+        	this.onClickAsteroid(this.currentAstClicked);
+        }
+
     }
 
     onClickSymbol() {
@@ -455,6 +462,16 @@ export default class UniversView {
         }
     }
 
+    onClickAsteroid(el) {
+
+    	console.log(el);
+    	el.force.x = 0;
+    	el.force.y = 0;
+    	el.force.z = -100;
+    	console.log(el);
+
+    }
+
     onMouseMove(e) {
 
         const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
@@ -495,11 +512,24 @@ export default class UniversView {
             this.ui.body.style.cursor = 'pointer';
             this.clickSymbol = true;
 
+            // intersects[0].object.index
+            console.log(intersects);
+
         } else {
             this.ui.body.style.cursor = 'auto';
             this.clickSymbol = false;
         }
 
+        const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+
+        if (intersectsAst.length > 0) {
+        	this.ui.body.style.cursor = 'pointer';
+        	this.clickAsteroid = true;
+        	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+        } else {
+        	this.ui.body.style.cursor = 'auto';
+        	this.clickAsteroid = false;
+        }
 
 
         // // Update meth size

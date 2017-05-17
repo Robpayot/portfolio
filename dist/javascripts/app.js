@@ -4866,6 +4866,7 @@ var UniversView = function () {
         value: function setAsteroids() {
 
             this.asteroids = [];
+            this.asteroidsM = [];
 
             // Set up the sphere vars
             var RADIUS = 5;
@@ -4920,8 +4921,10 @@ var UniversView = function () {
 
                 // add physic body to world
                 asteroid.body = this.world.add(asteroid.physics);
+                asteroid.mesh.index = i;
 
                 this.asteroids.push(asteroid);
+                this.asteroidsM.push(asteroid.mesh);
 
                 // add mesh to the scene
                 this.scene.add(asteroid.mesh);
@@ -5014,6 +5017,10 @@ var UniversView = function () {
             if (this.clickSymbol === true) {
                 this.onClickSymbol();
             }
+
+            if (this.clickAsteroid === true) {
+                this.onClickAsteroid(this.currentAstClicked);
+            }
         }
     }, {
         key: 'onClickSymbol',
@@ -5060,6 +5067,16 @@ var UniversView = function () {
             }
         }
     }, {
+        key: 'onClickAsteroid',
+        value: function onClickAsteroid(el) {
+
+            console.log(el);
+            el.force.x = 0;
+            el.force.y = 0;
+            el.force.z = -100;
+            console.log(el);
+        }
+    }, {
         key: 'onMouseMove',
         value: function onMouseMove(e) {
 
@@ -5099,9 +5116,23 @@ var UniversView = function () {
             if (intersects.length > 0) {
                 this.ui.body.style.cursor = 'pointer';
                 this.clickSymbol = true;
+
+                // intersects[0].object.index
+                console.log(intersects);
             } else {
                 this.ui.body.style.cursor = 'auto';
                 this.clickSymbol = false;
+            }
+
+            var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+
+            if (intersectsAst.length > 0) {
+                this.ui.body.style.cursor = 'pointer';
+                this.clickAsteroid = true;
+                this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+            } else {
+                this.ui.body.style.cursor = 'auto';
+                this.clickAsteroid = false;
             }
 
             // // Update meth size
