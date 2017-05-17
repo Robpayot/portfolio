@@ -42,7 +42,7 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
     _PreloadManager2.default.load();
 })();
 
-},{"./managers/AppManager":4,"./managers/PreloadManager":6,"gsap":24,"modernizr":17}],2:[function(require,module,exports){
+},{"./managers/AppManager":4,"./managers/PreloadManager":6,"gsap":25,"modernizr":17}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -384,7 +384,7 @@ var AppManager = function () {
 
 exports.default = new AppManager();
 
-},{"../components/GraphicBars":2,"./EmitterManager":5,"./RouterManager":7,"bean":19}],5:[function(require,module,exports){
+},{"../components/GraphicBars":2,"./EmitterManager":5,"./RouterManager":7,"bean":20}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -407,7 +407,7 @@ var EmitterManager = function EmitterManager() {
 
 exports.default = new EmitterManager();
 
-},{"component-emitter":20}],6:[function(require,module,exports){
+},{"component-emitter":21}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -522,7 +522,7 @@ var RouterManager = function () {
 
 exports.default = new RouterManager();
 
-},{"../views/UniversView":18,"./EmitterManager":5,"./PreloadManager":6}],8:[function(require,module,exports){
+},{"../views/UniversView":19,"./EmitterManager":5,"./PreloadManager":6}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -677,7 +677,7 @@ var SoundManager = function () {
 
 exports.default = new SoundManager();
 
-},{"./EmitterManager":5,"dat-gui":21}],9:[function(require,module,exports){
+},{"./EmitterManager":5,"dat-gui":22}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -716,7 +716,7 @@ var AbstractShape = function () {
 
 exports.default = AbstractShape;
 
-},{"three":26}],10:[function(require,module,exports){
+},{"three":27}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -774,80 +774,16 @@ var Asteroid = function (_AbstractShape) {
 
         _this.initForce = force;
 
-        // setInterval(() => {
-        //     console.log('change force !!!');
-
-        //     this.force.x = getRandom(-10,10);
-        //     this.force.y = getRandom(-10,10);
-        //     this.force.z = getRandom(-10,10);
-
-        // }, 500);
-
         return _this;
     }
 
     _createClass(Asteroid, [{
         key: 'changeDirection',
         value: function changeDirection() {
-            var _this2 = this;
-
-            // console.log(this.mesh);
-
-            // console.log('changeDirection !!!');
-
-
-            // this.body.move = false;
-
-
-            // this.mesh.position.x = 50;
-            // this.mesh.position.y = 50;
-            // this.mesh.position.z = 50;
-
-            // this.force.x = -this.initForce.x;
-            // this.force.y = -this.initForce.y;
-            // this.force.z = -this.initForce.z;
-
 
             this.force.x = -this.initForce.x;
             this.force.y = -this.initForce.y;
             this.force.z = -this.initForce.z;
-
-            // reticleExclude("shapeName");
-
-
-            // this.body.setPosition({ x: 50, y: 50, z: 50 });
-
-            // this.body.linearVelocity.x = 100;
-            // this.body.linearVelocity.y = 100;
-            // this.body.linearVelocity.z = 100;
-
-            // console.log(this.body);
-
-            // console.log(this.mesh.position.x);
-
-            // this.mesh.position.copy(this.body.getPosition());
-
-            // this.body.applyImpulse({ x: 50, y: 50, z: 50 }, this.force);
-
-            // this.body.move = true;
-
-            // this.annilled = true;
-
-            setTimeout(function () {
-                // console.log(this.mesh.position.x);
-                // this.mesh.position.x = 50;
-                // this.mesh.position.y = 50;
-                // this.mesh.position.z = 50;
-
-                // this.body.pos.x = 50;
-                // this.body.pos.y = 50;
-                // this.body.pos.z = 50;
-
-                // this.force.x = 10;
-                // this.force.y = 0;
-                // this.force.z = 0;
-                _this2.annilled = false;
-            }, 2000);
         }
     }]);
 
@@ -944,8 +880,6 @@ var _Symbol = function (_AbstractShape) {
     _inherits(_Symbol, _AbstractShape);
 
     function _Symbol(geometry, material, pos) {
-        var _ret;
-
         _classCallCheck(this, _Symbol);
 
         var _this = _possibleConstructorReturn(this, (_Symbol.__proto__ || Object.getPrototypeOf(_Symbol)).call(this));
@@ -955,7 +889,7 @@ var _Symbol = function (_AbstractShape) {
         _this.mesh.position.copy(pos);
 
         // physic body
-        _this.mesh.physics = {
+        _this.physics = {
             type: 'sphere', // type of shape : sphere, box, cylinder 
             size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
             pos: [pos.x, pos.y, pos.z], // start position in degree
@@ -968,7 +902,7 @@ var _Symbol = function (_AbstractShape) {
             collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
         };
 
-        return _ret = _this.mesh, _possibleConstructorReturn(_this, _ret);
+        return _this;
     }
 
     return _Symbol;
@@ -1189,7 +1123,7 @@ THREE.CSS3DRenderer = function () {
 exports.CSS3DObject = CSS3DObject;
 exports.CSS3DSprite = CSS3DSprite;
 
-},{"three":26}],14:[function(require,module,exports){
+},{"three":27}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1404,7 +1338,7 @@ var CSS3DRendererIE = function () {
 exports.default = CSS3DRendererIE;
 ;
 
-},{"./CSS3DRenderer":13,"./Projector":16,"three":26}],15:[function(require,module,exports){
+},{"./CSS3DRenderer":13,"./Projector":16,"three":27}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2356,7 +2290,7 @@ Object.defineProperties(OrbitControls.prototype, {
 
 exports.default = OrbitControls;
 
-},{"three":26}],16:[function(require,module,exports){
+},{"three":27}],16:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -3187,7 +3121,7 @@ THREE.Projector = function () {
 	}
 };
 
-},{"three":26}],17:[function(require,module,exports){
+},{"three":27}],17:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 'use strict';
@@ -4597,6 +4531,117 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.THREEx = undefined;
+
+var _three = require('three');
+
+var THREE = _interopRequireWildcard(_three);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var THREEx = THREEx || {};
+
+/**
+ * from http://stemkoski.blogspot.fr/2013/07/shaders-in-threejs-glow-and-halo.html
+ * @return {[type]} [description]
+ */
+THREEx.createAtmosphereMaterial = function () {
+    var vertexShader = ['varying vec3	vVertexWorldPosition;', 'varying vec3	vVertexNormal;', 'varying vec4	vFragColor;', 'void main(){', '	vVertexNormal	= normalize(normalMatrix * normal);', '	vVertexWorldPosition	= (modelMatrix * vec4(position, 1.0)).xyz;', '	// set gl_Position', '	gl_Position	= projectionMatrix * modelViewMatrix * vec4(position, 1.0);', '}'].join('\n');
+    var fragmentShader = ['uniform vec3	glowColor;', 'uniform float	coeficient;', 'uniform float	power;', 'varying vec3	vVertexNormal;', 'varying vec3	vVertexWorldPosition;', 'varying vec4	vFragColor;', 'void main(){', '	vec3 worldCameraToVertex= vVertexWorldPosition - cameraPosition;', '	vec3 viewCameraToVertex	= (viewMatrix * vec4(worldCameraToVertex, 0.0)).xyz;', '	viewCameraToVertex	= normalize(viewCameraToVertex);', '	float intensity		= pow(coeficient + dot(vVertexNormal, viewCameraToVertex), power);', '	gl_FragColor		= vec4(glowColor, intensity);', '}'].join('\n');
+
+    // create custom material from the shader code above
+    //   that is within specially labeled script tags
+    var material = new THREE.ShaderMaterial({
+        uniforms: {
+            coeficient: {
+                type: "f",
+                value: 1.0
+            },
+            power: {
+                type: "f",
+                value: 2
+            },
+            glowColor: {
+                type: "c",
+                value: new THREE.Color('pink')
+            }
+        },
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader,
+        //blending	: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false
+    });
+    return material;
+};
+
+/**
+ * dilate a geometry inplace
+ * @param  {THREE.Geometry} geometry geometry to dilate
+ * @param  {Number} length   percent to dilate, use negative value to erode
+ */
+THREEx.dilateGeometry = function (geometry, length) {
+    // gather vertexNormals from geometry.faces
+    var vertexNormals = new Array(geometry.vertices.length);
+    geometry.faces.forEach(function (face) {
+        if (face instanceof THREE.Face4) {
+            vertexNormals[face.a] = face.vertexNormals[0];
+            vertexNormals[face.b] = face.vertexNormals[1];
+            vertexNormals[face.c] = face.vertexNormals[2];
+            vertexNormals[face.d] = face.vertexNormals[3];
+        } else if (face instanceof THREE.Face3) {
+            vertexNormals[face.a] = face.vertexNormals[0];
+            vertexNormals[face.b] = face.vertexNormals[1];
+            vertexNormals[face.c] = face.vertexNormals[2];
+        } else console.assert(false);
+    });
+    console.log(geometry);
+    // modify the vertices according to vertextNormal
+    geometry.vertices.forEach(function (vertex, idx) {
+        var vertexNormal = vertexNormals[idx];
+        // console.log(vertex, vertexNormals);
+        vertex.x += vertex.x * length;
+        vertex.y += vertex.y * length;
+        vertex.z += vertex.z * length;
+    });
+};
+
+THREEx.GeometricGlowMesh = function (mesh) {
+    var object3d = new THREE.Object3D();
+
+    var geometry = mesh.geometry.clone();
+    THREEx.dilateGeometry(geometry, 0.01);
+    var material = THREEx.createAtmosphereMaterial();
+    material.uniforms.glowColor.value = new THREE.Color('cyan');
+    material.uniforms.coeficient.value = 1.1;
+    material.uniforms.power.value = 1.4;
+    var insideMesh = new THREE.Mesh(geometry, material);
+    object3d.add(insideMesh);
+
+    var geometry = mesh.geometry.clone();
+    THREEx.dilateGeometry(geometry, 0.1);
+    var material = THREEx.createAtmosphereMaterial();
+    material.uniforms.glowColor.value = new THREE.Color('cyan');
+    material.uniforms.coeficient.value = 0.1;
+    material.uniforms.power.value = 1.2;
+    material.side = THREE.BackSide;
+    var outsideMesh = new THREE.Mesh(geometry, material);
+    object3d.add(outsideMesh);
+
+    // expose a few variable
+    this.object3d = object3d;
+    this.insideMesh = insideMesh;
+    this.outsideMesh = outsideMesh;
+};
+
+exports.THREEx = THREEx;
+
+},{"three":27}],19:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -4640,9 +4685,17 @@ var _PreloadManager = require('../managers/PreloadManager');
 
 var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
 
+var _threex = require('../vendors/threex/threex.js');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// glow shader
+
+
+// console.log(poulet);
+
 
 var UniversView = function () {
     function UniversView() {
@@ -4673,6 +4726,7 @@ var UniversView = function () {
             };
 
             this.cssObjects = [];
+            this.glow = 1;
 
             // Set the canvas size.
             this.width = window.innerWidth;
@@ -4845,7 +4899,10 @@ var UniversView = function () {
             var RINGS = 32;
 
             var geometry = new _three.SphereGeometry(RADIUS, SEGMENTS, RINGS);
-            var material = new _three.MeshPhongMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 1 });
+            var img = _PreloadManager2.default.getResult('texture-asteroid');
+            var tex = new _three.Texture(img);
+            tex.needsUpdate = true;
+            var material = new _three.MeshBasicMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 0.9, map: tex });
             var pos = {
                 x: 0,
                 y: 0,
@@ -4856,10 +4913,27 @@ var UniversView = function () {
 
             // add physic body to world
             symbol.body = this.world.add(symbol.physics);
+
+            // create a glowMesh
+            symbol.glowMesh = new _threex.THREEx.GeometricGlowMesh(symbol.mesh);
+            symbol.mesh.add(symbol.glowMesh.object3d);
+
+            // example of customization of the default glowMesh
+            // Inside
+            symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white');
+            symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 0.5;
+            symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
+
+            // Outside
+            symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white');
+            symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
+            symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
+
             this.symbols = [symbol];
+            this.symbolsM = [symbol.mesh];
 
             // add mesh to the scene
-            this.scene.add(symbol);
+            this.scene.add(symbol.mesh);
         }
     }, {
         key: 'setAsteroids',
@@ -5031,7 +5105,7 @@ var UniversView = function () {
 
             if (this.toggle !== true) {
 
-                tl.to(this.symbols[0].scale, 0.7, {
+                tl.to(this.symbols[0].mesh.scale, 0.7, {
                     x: 1.5,
                     y: 1.5,
                     z: 1.5,
@@ -5055,7 +5129,7 @@ var UniversView = function () {
                     ease: window.Power4.easeInOut
                 });
 
-                tl.to(this.symbols[0].scale, 0.5, {
+                tl.to(this.symbols[0].mesh.scale, 0.5, {
                     x: 1,
                     y: 1,
                     z: 1,
@@ -5113,7 +5187,7 @@ var UniversView = function () {
 
             this.raycaster.setFromCamera(this.mouse, this.camera);
 
-            var intersects = this.raycaster.intersectObjects(this.symbols);
+            var intersects = this.raycaster.intersectObjects(this.symbolsM);
 
             if (intersects.length > 0) {
                 this.ui.body.style.cursor = 'pointer';
@@ -5183,8 +5257,8 @@ var UniversView = function () {
             }
             // Symbol body
             for (var _i = 0; _i < this.symbols.length; _i++) {
-                this.symbols[_i].position.copy(this.symbols[_i].body.getPosition());
-                this.symbols[_i].quaternion.copy(this.symbols[_i].body.getQuaternion());
+                this.symbols[_i].mesh.position.copy(this.symbols[_i].body.getPosition());
+                this.symbols[_i].mesh.quaternion.copy(this.symbols[_i].body.getQuaternion());
             }
             // Asteroids bodies
             for (var _i2 = 0; _i2 < this.asteroids.length; _i2++) {
@@ -5209,6 +5283,12 @@ var UniversView = function () {
                     this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
                 }
             }
+
+            // Glow continuously 
+            this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = (Math.sin(this.glow / 20) + 3.5) / 2;
+            this.glow++;
+            // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+
 
             // Render cssScene
             this.cssRenderer.render(this.cssScene, this.camera);
@@ -5378,7 +5458,7 @@ var UniversView = function () {
 
 exports.default = UniversView;
 
-},{"../helpers/utils":3,"../managers/EmitterManager":5,"../managers/PreloadManager":6,"../managers/SoundManager":8,"../shapes/Asteroid":10,"../shapes/Envelop":11,"../shapes/Symbol":12,"../vendors/CSS3DRenderer":13,"../vendors/CSS3DRendererIE":14,"../vendors/OrbitControls":15,"oimo":25,"three":26}],19:[function(require,module,exports){
+},{"../helpers/utils":3,"../managers/EmitterManager":5,"../managers/PreloadManager":6,"../managers/SoundManager":8,"../shapes/Asteroid":10,"../shapes/Envelop":11,"../shapes/Symbol":12,"../vendors/CSS3DRenderer":13,"../vendors/CSS3DRendererIE":14,"../vendors/OrbitControls":15,"../vendors/threex/threex.js":18,"oimo":26,"three":27}],20:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
@@ -6121,7 +6201,7 @@ exports.default = UniversView;
   return bean
 });
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -6286,10 +6366,10 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = require('./vendor/dat.gui')
 module.exports.color = require('./vendor/dat.color')
-},{"./vendor/dat.color":22,"./vendor/dat.gui":23}],22:[function(require,module,exports){
+},{"./vendor/dat.color":23,"./vendor/dat.gui":24}],23:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -7045,7 +7125,7 @@ dat.color.math = (function () {
 })(),
 dat.color.toString,
 dat.utils.common);
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -10706,7 +10786,7 @@ dat.dom.CenteredDiv = (function (dom, common) {
 dat.utils.common),
 dat.dom.dom,
 dat.utils.common);
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 1.19.1
@@ -18567,7 +18647,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 })((typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this || window, "TweenMax");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -30889,7 +30969,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 
 })));
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
