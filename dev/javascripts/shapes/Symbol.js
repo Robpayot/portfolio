@@ -12,7 +12,7 @@ export default class Symbol extends AbstractShape {
         this.mesh.position.copy(pos);
 
         // physic body
-        this.mesh.physics = {
+        this.physics = {
             type: 'sphere', // type of shape : sphere, box, cylinder 
             size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
             pos: [pos.x, pos.y, pos.z], // start position in degree
@@ -26,7 +26,7 @@ export default class Symbol extends AbstractShape {
         }
 
 
-        return this.mesh;
+        
 
     }
 }

@@ -11,6 +11,11 @@ import Symbol from '../shapes/Symbol';
 import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
 
+import { THREEx } from '../vendors/threex/threex.js'; // glow shader
+
+
+// console.log(poulet);
+
 
 export default class UniversView {
 
@@ -41,6 +46,7 @@ export default class UniversView {
         };
 
         this.cssObjects = [];
+        this.glow = 1;
 
         // Set the canvas size.
         this.width = window.innerWidth;
@@ -226,7 +232,10 @@ export default class UniversView {
         const RINGS = 32;
 
         const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const material = new MeshPhongMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 1 });
+        const img = PreloadManager.getResult('texture-asteroid');
+        const tex = new Texture(img);
+        tex.needsUpdate = true;
+        const material = new MeshBasicMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 0.9, map: tex });
         const pos = {
             x: 0,
             y: 0,
@@ -237,10 +246,28 @@ export default class UniversView {
 
         // add physic body to world
         symbol.body = this.world.add(symbol.physics);
+
+
+        // create a glowMesh
+        symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
+        symbol.mesh.add(symbol.glowMesh.object3d);
+
+        // example of customization of the default glowMesh
+        // Inside
+        symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white')
+        symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 0.5;
+        symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
+
+        // Outside
+        symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white')
+        symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
+        symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
+
         this.symbols = [symbol];
+        this.symbolsM = [symbol.mesh];
 
         // add mesh to the scene
-        this.scene.add(symbol);
+        this.scene.add(symbol.mesh);
 
     }
 
@@ -270,6 +297,8 @@ export default class UniversView {
             map: tex,
             // alphaMap: tex,
             // lightmap: tex
+            // emissive: new Color('rgb(255, 255, 255)'),
+            // specular: new Color('rgb(255, 255, 255)')
         };
         const material = new MeshPhongMaterial(matPhongParams);
         const nb = 20;
@@ -410,7 +439,7 @@ export default class UniversView {
         }
 
         if (this.clickAsteroid === true) {
-        	this.onClickAsteroid(this.currentAstClicked);
+            this.onClickAsteroid(this.currentAstClicked);
         }
 
     }
@@ -425,7 +454,7 @@ export default class UniversView {
 
 
 
-            tl.to(this.symbols[0].scale, 0.7, {
+            tl.to(this.symbols[0].mesh.scale, 0.7, {
                 x: 1.5,
                 y: 1.5,
                 z: 1.5,
@@ -451,7 +480,7 @@ export default class UniversView {
             });
 
 
-            tl.to(this.symbols[0].scale, 0.5, {
+            tl.to(this.symbols[0].mesh.scale, 0.5, {
                 x: 1,
                 y: 1,
                 z: 1,
@@ -464,12 +493,12 @@ export default class UniversView {
 
     onClickAsteroid(el) {
 
-    	console.log(el.force.x);
-    	el.force.x = el.force.x ;
-    	console.log(el.force.x);
-    	el.force.y = -Math.abs(-el.force.y );
-    	el.force.z = -70;
-    	// console.log(el);
+        console.log(el.force.x);
+        el.force.x = el.force.x;
+        console.log(el.force.x);
+        el.force.y = -Math.abs(-el.force.y);
+        el.force.z = -70;
+        // console.log(el);
 
     }
 
@@ -509,26 +538,26 @@ export default class UniversView {
 
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        const intersects = this.raycaster.intersectObjects(this.symbols);
+        const intersects = this.raycaster.intersectObjects(this.symbolsM);
 
         if (intersects.length > 0) {
             this.ui.body.style.cursor = 'pointer';
             this.clickSymbol = true;
 
         } else {
-            
+
             this.clickSymbol = false;
         }
 
         const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
         if (intersectsAst.length > 0) {
-        	this.ui.body.style.cursor = 'pointer';
-        	this.clickAsteroid = true;
-        	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+            this.ui.body.style.cursor = 'pointer';
+            this.clickAsteroid = true;
+            this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
         } else {
-        	// this.ui.body.style.cursor = 'auto';
-        	this.clickAsteroid = false;
+            // this.ui.body.style.cursor = 'auto';
+            this.clickAsteroid = false;
         }
 
 
@@ -581,8 +610,8 @@ export default class UniversView {
         }
         // Symbol body
         for (let i = 0; i < this.symbols.length; i++) {
-            this.symbols[i].position.copy(this.symbols[i].body.getPosition());
-            this.symbols[i].quaternion.copy(this.symbols[i].body.getQuaternion());
+            this.symbols[i].mesh.position.copy(this.symbols[i].body.getPosition());
+            this.symbols[i].mesh.quaternion.copy(this.symbols[i].body.getQuaternion());
         }
         // Asteroids bodies
         for (let i = 0; i < this.asteroids.length; i++) {
@@ -611,6 +640,12 @@ export default class UniversView {
 
 
         }
+
+        // Glow continuously 
+        this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = (Math.sin(this.glow / 20) + 3.5 ) / 2;
+        this.glow++;
+        // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+
 
         // Render cssScene
         this.cssRenderer.render(this.cssScene, this.camera);

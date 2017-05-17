@@ -33,84 +33,13 @@ export default class Asteroid extends AbstractShape {
 
         this.initForce = force;
 
-
-        // setInterval(() => {
-        //     console.log('change force !!!');
-
-        //     this.force.x = getRandom(-10,10);
-        //     this.force.y = getRandom(-10,10);
-        //     this.force.z = getRandom(-10,10);
-
-        // }, 500);
-
     }
 
     changeDirection() {
 
-        // console.log(this.mesh);
-
-        // console.log('changeDirection !!!');
-
-
-        // this.body.move = false;
-
-
-        // this.mesh.position.x = 50;
-        // this.mesh.position.y = 50;
-        // this.mesh.position.z = 50;
-
-        // this.force.x = -this.initForce.x;
-        // this.force.y = -this.initForce.y;
-        // this.force.z = -this.initForce.z;
-
-
         this.force.x = -this.initForce.x;
         this.force.y = -this.initForce.y;
         this.force.z = -this.initForce.z;
-
-        
-
-        // reticleExclude("shapeName");
-
-
-
-
-        // this.body.setPosition({ x: 50, y: 50, z: 50 });
-
-        // this.body.linearVelocity.x = 100;
-        // this.body.linearVelocity.y = 100;
-        // this.body.linearVelocity.z = 100;
-
-        // console.log(this.body);
-
-        // console.log(this.mesh.position.x);
-
-        // this.mesh.position.copy(this.body.getPosition());
-
-        // this.body.applyImpulse({ x: 50, y: 50, z: 50 }, this.force);
-
-        // this.body.move = true;
-
-        // this.annilled = true;
-
-        setTimeout(() => {
-        	 // console.log(this.mesh.position.x);
-            // this.mesh.position.x = 50;
-            // this.mesh.position.y = 50;
-            // this.mesh.position.z = 50;
-
-            // this.body.pos.x = 50;
-            // this.body.pos.y = 50;
-            // this.body.pos.z = 50;
-
-            // this.force.x = 10;
-            // this.force.y = 0;
-            // this.force.z = 0;
-            this.annilled = false;
-        }, 2000);
-
-
-
 
     }
 
