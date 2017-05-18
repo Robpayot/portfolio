@@ -780,11 +780,15 @@ var Asteroid = function (_AbstractShape) {
     _createClass(Asteroid, [{
         key: 'changeDirection',
         value: function changeDirection() {
+            var _this2 = this;
+
             // reverse direction
-            console.log('change direction');
             this.force.x = this.initForce.x = -this.initForce.x;
             this.force.y = this.initForce.y = -this.initForce.y;
             this.force.z = this.initForce.z = -this.initForce.z;
+            setTimeout(function () {
+                _this2.annilled = false;
+            }, 2000);
         }
     }]);
 
@@ -5165,7 +5169,12 @@ var UniversView = function () {
         key: 'onClickAsteroid',
         value: function onClickAsteroid(el) {
 
-            el.initForce.x = el.force.x = el.force.x;
+            // console.log(el.force.x);
+            // el.force.x = el.force.x;
+            // console.log(el.force.x);
+
+
+            el.initForce.x = el.force.x;
             el.initForce.y = el.force.y = -Math.abs(-el.force.y);
             el.initForce.z = el.force.z = -70;
             // console.log(el);
