@@ -788,8 +788,9 @@ var Asteroid = function (_AbstractShape) {
             this.force.z = this.initForce.z = -this.initForce.z;
 
             // random x / y coef to have diff direction
-            this.force.x += 1;
-            this.force.y += 1;
+            this.force.x += (0, _utils.getRandom)(-1, 1);
+            this.force.y += (0, _utils.getRandom)(-1, 1);
+            console.log();
 
             // Slow down force
             if (this.force.z < -10) {
