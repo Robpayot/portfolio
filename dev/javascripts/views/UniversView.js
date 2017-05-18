@@ -1,4 +1,4 @@
-import { WebGLRenderer, DirectionalLight, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
+import { WebGLRenderer, DirectionalLight, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Texture,TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
@@ -14,7 +14,6 @@ import PreloadManager from '../managers/PreloadManager';
 import { THREEx } from '../vendors/threex/threex.js'; // glow shader
 
 
-// console.log(poulet);
 
 
 export default class UniversView {
@@ -29,6 +28,7 @@ export default class UniversView {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.onChangeGlow = this.onChangeGlow.bind(this);
 
         this.sound = SoundManager;
 
@@ -115,14 +115,35 @@ export default class UniversView {
 
         // GUI
         this.guiParams = {
-            gravity: false
+            gravity: false,
+            coeficient: 1,
+            power: 2,
+            glowColor: 0xffffff,
+            coeficientOut: 1,
+            powerOut: 2,
+            glowColorOut: 0xffffff
         };
         this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
-
+		this.sound.gui.add( this.guiParams, 'coeficient', 0.0 , 2).listen().onChange( this.onChangeGlow )
+		this.sound.gui.add( this.guiParams, 'power'	, 0.0 , 5).listen().onChange( this.onChangeGlow )
+		this.sound.gui.addColor( this.guiParams, 'glowColor' ).listen().onChange( this.onChangeGlow )
+		this.sound.gui.add( this.guiParams, 'coeficientOut', 0.0 , 2).listen().onChange( this.onChangeGlow )
+		this.sound.gui.add( this.guiParams, 'powerOut'	, 0.0 , 20).listen().onChange( this.onChangeGlow )
+		this.sound.gui.addColor( this.guiParams, 'glowColorOut' ).listen().onChange( this.onChangeGlow )
         this.events(true);
 
 
 
+    }
+
+    onChangeGlow () {
+    	this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficient;
+    	this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.guiParams.power;
+    	this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColor);
+
+    	this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficientOut;
+    	this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.guiParams.powerOut;
+    	this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColorOut);
     }
 
     events(method) {
@@ -231,11 +252,12 @@ export default class UniversView {
         const SEGMENTS = 32;
         const RINGS = 32;
 
-        const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+        // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+        const geometry =  new TorusGeometry( 6, 1.5, 16, 100 );
         const img = PreloadManager.getResult('texture-asteroid');
         const tex = new Texture(img);
         tex.needsUpdate = true;
-        const material = new MeshBasicMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 0.9, map: tex });
+        const material = new MeshBasicMaterial({ color: 0xffffff, shininess: 1, transparent: true, opacity: 1, map: null });
         const pos = {
             x: 0,
             y: 0,
@@ -255,7 +277,7 @@ export default class UniversView {
         // example of customization of the default glowMesh
         // Inside
         symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white')
-        symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 0.5;
+        symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
         symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
 
         // Outside
@@ -642,7 +664,7 @@ export default class UniversView {
         }
 
         // Glow continuously 
-        this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = (Math.sin(this.glow / 20) + 3.5 ) / 2;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1 ) / 5;
         this.glow++;
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
 

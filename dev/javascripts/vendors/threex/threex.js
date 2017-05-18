@@ -113,7 +113,7 @@ THREEx.GeometricGlowMesh = function(mesh) {
 
 
     var geometry = mesh.geometry.clone()
-    THREEx.dilateGeometry(geometry, 0.1)
+    THREEx.dilateGeometry(geometry, 0.12) // change halo size
     var material = THREEx.createAtmosphereMaterial()
     material.uniforms.glowColor.value = new THREE.Color('cyan')
     material.uniforms.coeficient.value = 0.1
