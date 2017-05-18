@@ -253,11 +253,11 @@ export default class UniversView {
         const RINGS = 32;
 
         // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const geometry =  new TorusGeometry( 6, 1.5, 16, 100 );
+        const geometry =  new TorusGeometry( 6, 1, 16, 100 );
         const img = PreloadManager.getResult('texture-asteroid');
         const tex = new Texture(img);
         tex.needsUpdate = true;
-        const material = new MeshBasicMaterial({ color: 0xffffff, shininess: 1, transparent: true, opacity: 1, map: null });
+        const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: null });
         const pos = {
             x: 0,
             y: 0,
@@ -515,11 +515,9 @@ export default class UniversView {
 
     onClickAsteroid(el) {
 
-        console.log(el.force.x);
-        el.force.x = el.force.x;
-        console.log(el.force.x);
-        el.force.y = -Math.abs(-el.force.y);
-        el.force.z = -70;
+        el.initForce.x = -el.force.x = el.force.x;
+        el.initForce.y = -el.force.y = -Math.abs(-el.force.y);
+        el.initForce.z = -el.force.z = -70;
         // console.log(el);
 
     }

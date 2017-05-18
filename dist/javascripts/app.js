@@ -780,10 +780,11 @@ var Asteroid = function (_AbstractShape) {
     _createClass(Asteroid, [{
         key: 'changeDirection',
         value: function changeDirection() {
-
-            this.force.x = -this.initForce.x;
-            this.force.y = -this.initForce.y;
-            this.force.z = -this.initForce.z;
+            // reverse direction
+            console.log('change direction');
+            this.force.x = this.initForce.x = -this.initForce.x;
+            this.force.y = this.initForce.y = -this.initForce.y;
+            this.force.z = this.initForce.z = -this.initForce.z;
         }
     }]);
 
@@ -4919,11 +4920,11 @@ var UniversView = function () {
             var RINGS = 32;
 
             // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-            var geometry = new _three.TorusGeometry(6, 1.5, 16, 100);
+            var geometry = new _three.TorusGeometry(6, 1, 16, 100);
             var img = _PreloadManager2.default.getResult('texture-asteroid');
             var tex = new _three.Texture(img);
             tex.needsUpdate = true;
-            var material = new _three.MeshBasicMaterial({ color: 0xffffff, shininess: 1, transparent: true, opacity: 1, map: null });
+            var material = new _three.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: null });
             var pos = {
                 x: 0,
                 y: 0,
@@ -5164,11 +5165,9 @@ var UniversView = function () {
         key: 'onClickAsteroid',
         value: function onClickAsteroid(el) {
 
-            console.log(el.force.x);
-            el.force.x = el.force.x;
-            console.log(el.force.x);
-            el.force.y = -Math.abs(-el.force.y);
-            el.force.z = -70;
+            el.initForce.x = el.force.x = el.force.x;
+            el.initForce.y = el.force.y = -Math.abs(-el.force.y);
+            el.initForce.z = el.force.z = -70;
             // console.log(el);
         }
     }, {
