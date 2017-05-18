@@ -37,11 +37,12 @@ export default class Asteroid extends AbstractShape {
 
     changeDirection() {
         // reverse direction
-        console.log('change direction');
         this.force.x = this.initForce.x = -this.initForce.x;
         this.force.y = this.initForce.y = -this.initForce.y;
         this.force.z = this.initForce.z = -this.initForce.z;
-
+        setTimeout(() => { 
+            this.annilled = false; 
+        }, 2000);
     }
 
 }

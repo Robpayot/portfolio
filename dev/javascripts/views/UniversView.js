@@ -515,9 +515,15 @@ export default class UniversView {
 
     onClickAsteroid(el) {
 
-        el.initForce.x = -el.force.x = el.force.x;
-        el.initForce.y = -el.force.y = -Math.abs(-el.force.y);
-        el.initForce.z = -el.force.z = -70;
+        // console.log(el.force.x);
+        // el.force.x = el.force.x;
+        // console.log(el.force.x);
+        
+        
+
+        el.initForce.x = el.force.x;
+        el.initForce.y = el.force.y = -Math.abs(-el.force.y);
+        el.initForce.z = el.force.z = -70;
         // console.log(el);
 
     }
