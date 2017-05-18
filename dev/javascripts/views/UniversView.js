@@ -3,7 +3,7 @@ import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
 import { World } from 'oimo';
-import { getRandom, toRadian } from '../helpers/utils';
+import { getRandom, toRadian, clamp } from '../helpers/utils';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
 import Envelop from '../shapes/Envelop';
@@ -47,6 +47,7 @@ export default class UniversView {
 
         this.cssObjects = [];
         this.glow = 1;
+        this.nbAst = 20;
 
         // Set the canvas size.
         this.width = window.innerWidth;
@@ -323,9 +324,8 @@ export default class UniversView {
             // specular: new Color('rgb(255, 255, 255)')
         };
         const material = new MeshPhongMaterial(matPhongParams);
-        const nb = 20;
 
-        for (let i = 0; i < nb; i++) {
+        for (let i = 0; i < this.nbAst; i++) {
 
             const pos = {
                 x: getRandom(-100, 100),
@@ -641,6 +641,17 @@ export default class UniversView {
                 this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
                 this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
                 this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+
+                // console.log(this.asteroids[i].body.angularVelocity);
+                // angular Velocity always inferior to 5 (or too much rotations)
+
+                this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x,-1,1);
+                this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y,-1,1);
+                this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z,-1,1);
+                // if (i === 0) {
+                // 	 console.log(this.asteroids[i].body.angularVelocity.x);
+                // }
+               
 
                 this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
                 this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());

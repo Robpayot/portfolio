@@ -4752,6 +4752,7 @@ var UniversView = function () {
 
             this.cssObjects = [];
             this.glow = 1;
+            this.nbAst = 20;
 
             // Set the canvas size.
             this.width = window.innerWidth;
@@ -5011,9 +5012,8 @@ var UniversView = function () {
                 map: tex
             };
             var material = new _three.MeshPhongMaterial(matPhongParams);
-            var nb = 20;
 
-            for (var i = 0; i < nb; i++) {
+            for (var i = 0; i < this.nbAst; i++) {
 
                 var pos = {
                     x: (0, _utils.getRandom)(-100, 100),
@@ -5315,6 +5315,17 @@ var UniversView = function () {
                     this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
                     this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
                     this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
+
+                    // console.log(this.asteroids[i].body.angularVelocity);
+                    // angular Velocity always inferior to 5 (or too much rotations)
+
+                    this.asteroids[_i2].body.angularVelocity.x = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.x, -1, 1);
+                    this.asteroids[_i2].body.angularVelocity.y = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.y, -1, 1);
+                    this.asteroids[_i2].body.angularVelocity.z = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.z, -1, 1);
+                    // if (i === 0) {
+                    // 	 console.log(this.asteroids[i].body.angularVelocity.x);
+                    // }
+
 
                     this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
                     this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
