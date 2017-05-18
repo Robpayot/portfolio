@@ -4619,7 +4619,7 @@ THREEx.GeometricGlowMesh = function (mesh) {
     object3d.add(insideMesh);
 
     var geometry = mesh.geometry.clone();
-    THREEx.dilateGeometry(geometry, 0.1);
+    THREEx.dilateGeometry(geometry, 0.12); // change halo size
     var material = THREEx.createAtmosphereMaterial();
     material.uniforms.glowColor.value = new THREE.Color('cyan');
     material.uniforms.coeficient.value = 0.1;
@@ -4694,9 +4694,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // glow shader
 
 
-// console.log(poulet);
-
-
 var UniversView = function () {
     function UniversView() {
         _classCallCheck(this, UniversView);
@@ -4709,6 +4706,7 @@ var UniversView = function () {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.onChangeGlow = this.onChangeGlow.bind(this);
 
         this.sound = _SoundManager2.default;
 
@@ -4792,11 +4790,33 @@ var UniversView = function () {
 
             // GUI
             this.guiParams = {
-                gravity: false
+                gravity: false,
+                coeficient: 1,
+                power: 2,
+                glowColor: 0xffffff,
+                coeficientOut: 1,
+                powerOut: 2,
+                glowColorOut: 0xffffff
             };
             this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
-
+            this.sound.gui.add(this.guiParams, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow);
+            this.sound.gui.add(this.guiParams, 'power', 0.0, 5).listen().onChange(this.onChangeGlow);
+            this.sound.gui.addColor(this.guiParams, 'glowColor').listen().onChange(this.onChangeGlow);
+            this.sound.gui.add(this.guiParams, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow);
+            this.sound.gui.add(this.guiParams, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow);
+            this.sound.gui.addColor(this.guiParams, 'glowColorOut').listen().onChange(this.onChangeGlow);
             this.events(true);
+        }
+    }, {
+        key: 'onChangeGlow',
+        value: function onChangeGlow() {
+            this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficient;
+            this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.guiParams.power;
+            this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColor);
+
+            this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficientOut;
+            this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.guiParams.powerOut;
+            this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColorOut);
         }
     }, {
         key: 'events',
@@ -4898,11 +4918,12 @@ var UniversView = function () {
             var SEGMENTS = 32;
             var RINGS = 32;
 
-            var geometry = new _three.SphereGeometry(RADIUS, SEGMENTS, RINGS);
+            // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+            var geometry = new _three.TorusGeometry(6, 1.5, 16, 100);
             var img = _PreloadManager2.default.getResult('texture-asteroid');
             var tex = new _three.Texture(img);
             tex.needsUpdate = true;
-            var material = new _three.MeshBasicMaterial({ color: 0xff6347, shininess: 1, transparent: true, opacity: 0.9, map: tex });
+            var material = new _three.MeshBasicMaterial({ color: 0xffffff, shininess: 1, transparent: true, opacity: 1, map: null });
             var pos = {
                 x: 0,
                 y: 0,
@@ -4921,7 +4942,7 @@ var UniversView = function () {
             // example of customization of the default glowMesh
             // Inside
             symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white');
-            symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 0.5;
+            symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
             symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
 
             // Outside
@@ -5285,7 +5306,7 @@ var UniversView = function () {
             }
 
             // Glow continuously 
-            this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = (Math.sin(this.glow / 20) + 3.5) / 2;
+            this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
             this.glow++;
             // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
 
