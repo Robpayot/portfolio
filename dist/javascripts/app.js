@@ -786,9 +786,31 @@ var Asteroid = function (_AbstractShape) {
             this.force.x = this.initForce.x = -this.initForce.x;
             this.force.y = this.initForce.y = -this.initForce.y;
             this.force.z = this.initForce.z = -this.initForce.z;
+
+            // random x / y coef to have diff direction
+            this.force.x += 1;
+            this.force.y += 1;
+
+            // Slow down force
+            if (this.force.z < -10) {
+                this.force.z += 10;
+                this.initForce.z = this.force.z;
+            }
+
+            if (this.force.z > 10) {
+                this.force.z -= 10;
+                this.initForce.z = this.force.z;
+            }
             setTimeout(function () {
                 _this2.annilled = false;
             }, 2000);
+        }
+    }, {
+        key: 'impulse',
+        value: function impulse() {
+            this.initForce.x = this.force.x;
+            this.initForce.y = this.force.y = -Math.abs(-this.force.y);
+            this.initForce.z = this.force.z = -70;
         }
     }]);
 
@@ -5118,7 +5140,7 @@ var UniversView = function () {
             }
 
             if (this.clickAsteroid === true) {
-                this.onClickAsteroid(this.currentAstClicked);
+                this.currentAstClicked.impulse();
             }
         }
     }, {
@@ -5164,20 +5186,6 @@ var UniversView = function () {
 
                 this.toggle = false;
             }
-        }
-    }, {
-        key: 'onClickAsteroid',
-        value: function onClickAsteroid(el) {
-
-            // console.log(el.force.x);
-            // el.force.x = el.force.x;
-            // console.log(el.force.x);
-
-
-            el.initForce.x = el.force.x;
-            el.initForce.y = el.force.y = -Math.abs(-el.force.y);
-            el.initForce.z = el.force.z = -70;
-            // console.log(el);
         }
     }, {
         key: 'onMouseMove',
