@@ -4790,6 +4790,9 @@ var UniversView = function () {
             // Mouse
             this.mouse = { x: 0, y: 0 };
 
+            // set Depth of Field
+            this.setDOF();
+
             // Set CssRenderer and WebGLRenderer 
 
             this.cssRenderer = new _CSS3DRendererIE2.default();
@@ -5133,6 +5136,17 @@ var UniversView = function () {
             this.cssScene.add(div23d);
 
             this.cssObjects.push(div23d);
+        }
+    }, {
+        key: 'setDOF',
+        value: function setDOF() {
+
+            // depth
+            var depthShader = _three.ShaderLib['depthRGBA'];
+            console.log(_three.ShaderLib);
+            // const depthUniforms = UniformsUtils.clone(depthShader.uniforms);
+
+            // console.log(depthUniforms);
         }
     }, {
         key: 'onClick',

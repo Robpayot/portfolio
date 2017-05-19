@@ -1,4 +1,4 @@
-import { WebGLRenderer, DirectionalLight, SpotLight, Raycaster, PerspectiveCamera, Scene, Mesh, Texture,TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
+import { WebGLRenderer, DirectionalLight, SpotLight, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture,TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
@@ -85,6 +85,9 @@ export default class UniversView {
 
         // Mouse
         this.mouse = { x: 0, y: 0 };
+
+        // set Depth of Field
+        this.setDOF();
 
 
         // Set CssRenderer and WebGLRenderer 
@@ -453,6 +456,16 @@ export default class UniversView {
 
         this.cssObjects.push(div23d);
 
+    }
+
+    setDOF() {
+        
+        // depth
+        const depthShader = ShaderLib['depthRGBA'];
+        console.log(ShaderLib);
+        // const depthUniforms = UniformsUtils.clone(depthShader.uniforms);
+
+        // console.log(depthUniforms);
     }
 
     onClick(e) {
