@@ -270,6 +270,8 @@ export default class UniversView {
         // add physic body to world
         symbol.body = this.world.add(symbol.physics);
 
+        console.log('?');
+
 
         // create a glowMesh
         symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);

@@ -44,19 +44,19 @@ export default class Asteroid extends AbstractShape {
         // random x / y coef to have diff direction
         this.force.x += getRandom(-1,1);
         this.force.y += getRandom(-1,1);
-        console.log();
 
 
         // Slow down force
         if (this.force.z < -10) {
-            this.force.z += 10;
+            this.force.z += 60;
             this.initForce.z = this.force.z;
         }
 
         if (this.force.z > 10) {
-            this.force.z -= 10;
+            this.force.z -= 60;
             this.initForce.z = this.force.z;
         }
+        // console.log(this.force.z);
         setTimeout(() => {
             this.annilled = false;
         }, 2000);

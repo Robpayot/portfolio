@@ -88,7 +88,7 @@ THREEx.dilateGeometry = function(geometry, length) {
             vertexNormals[face.c] = face.vertexNormals[2];
         } else console.assert(false);
     });
-    console.log(geometry);
+
     // modify the vertices according to vertextNormal
     geometry.vertices.forEach(function(vertex, idx) {
         var vertexNormal = vertexNormals[idx];
