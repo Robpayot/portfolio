@@ -1,4 +1,5 @@
-import { WebGLRenderer, DirectionalLight, SpotLight, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture,TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
+import { WebGLRenderer, DirectionalLight, ShaderMaterial, NearestFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
+import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
@@ -12,6 +13,7 @@ import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
 
 import { THREEx } from '../vendors/threex/threex.js'; // glow shader
+import { DoFShader } from '../vendors/DoFShader.js'; // DOF shader
 
 
 
@@ -29,10 +31,14 @@ export default class UniversView {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
+        this.updateCamera = this.updateCamera.bind(this);
+        
 
         this.sound = SoundManager;
 
         this.start();
+
+        console.log(window.devicePixelRatio);
 
 
     }
@@ -86,9 +92,6 @@ export default class UniversView {
         // Mouse
         this.mouse = { x: 0, y: 0 };
 
-        // set Depth of Field
-        this.setDOF();
-
 
         // Set CssRenderer and WebGLRenderer 
 
@@ -117,7 +120,17 @@ export default class UniversView {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = true;
 
+        ////////////////////
+        // POST PROCESSING
+        ////////////////////
+
+        // set Depth of Field
+        this.setDOF();
+
+        /////////////////
         // GUI
+        /////////////////
+
         this.guiParams = {
             gravity: false,
             coeficient: 1,
@@ -128,26 +141,74 @@ export default class UniversView {
             glowColorOut: 0xffffff
         };
         this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
-		this.sound.gui.add( this.guiParams, 'coeficient', 0.0 , 2).listen().onChange( this.onChangeGlow )
-		this.sound.gui.add( this.guiParams, 'power'	, 0.0 , 5).listen().onChange( this.onChangeGlow )
-		this.sound.gui.addColor( this.guiParams, 'glowColor' ).listen().onChange( this.onChangeGlow )
-		this.sound.gui.add( this.guiParams, 'coeficientOut', 0.0 , 2).listen().onChange( this.onChangeGlow )
-		this.sound.gui.add( this.guiParams, 'powerOut'	, 0.0 , 20).listen().onChange( this.onChangeGlow )
-		this.sound.gui.addColor( this.guiParams, 'glowColorOut' ).listen().onChange( this.onChangeGlow )
+        this.sound.gui.add(this.guiParams, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow)
+        this.sound.gui.add(this.guiParams, 'power', 0.0, 5).listen().onChange(this.onChangeGlow)
+        this.sound.gui.addColor(this.guiParams, 'glowColor').listen().onChange(this.onChangeGlow)
+        this.sound.gui.add(this.guiParams, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow)
+        this.sound.gui.add(this.guiParams, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow)
+        this.sound.gui.addColor(this.guiParams, 'glowColorOut').listen().onChange(this.onChangeGlow)
+
+        var gui,
+            cameraFolder,
+            cameraFocalLength,
+            _last;
+
+        cameraFolder = this.sound.gui.addFolder('Camera');
+        cameraFocalLength = cameraFolder.add(this.camera, 'focalLength', 28, 200).name('Focal Length');
+        cameraFocalLength.onChange(this.updateCamera);
+        cameraFolder.open();
+
+        const dofFolder = this.sound.gui.addFolder('Depth of Field');
+        dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 10).name('Focal Depth');
+        dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 22).name('F Stop');
+        dofFolder.add(this.dof.uniforms.maxblur, 'value', 0, 3).name('max blur');
+
+        dofFolder.add(this.dof.uniforms.showFocus, 'value').name('Show Focal Range');
+
+        dofFolder.add(this.dof.uniforms.manualdof, 'value').name('Manual DoF');
+        dofFolder.add(this.dof.uniforms.ndofstart, 'value', 0, 200).name('near start');
+        dofFolder.add(this.dof.uniforms.ndofdist, 'value', 0, 200).name('near falloff');
+        dofFolder.add(this.dof.uniforms.fdofstart, 'value', 0, 200).name('far start');
+        dofFolder.add(this.dof.uniforms.fdofdist, 'value', 0, 200).name('far falloff');
+
+        dofFolder.add(this.dof.uniforms.CoC, 'value', 0, 0.1).step(0.001).name('circle of confusion');
+
+        dofFolder.add(this.dof.uniforms.vignetting, 'value').name('Vignetting');
+        dofFolder.add(this.dof.uniforms.vignout, 'value', 0, 2).name('outer border');
+        dofFolder.add(this.dof.uniforms.vignin, 'value', 0, 1).step(0.01).name('inner border');
+        dofFolder.add(this.dof.uniforms.vignfade, 'value', 0, 22).name('fade at');
+
+        dofFolder.add(this.dof.uniforms.autofocus, 'value').name('Autofocus');
+        dofFolder.add(this.dof.uniforms.focus.value, 'x', 0, 1).name('focus x');
+        dofFolder.add(this.dof.uniforms.focus.value, 'y', 0, 1).name('focus y');
+
+        dofFolder.add(this.dof.uniforms.threshold, 'value', 0, 1).step(0.01).name('threshold');
+        dofFolder.add(this.dof.uniforms.gain, 'value', 0, 100).name('gain');
+
+        dofFolder.add(this.dof.uniforms.bias, 'value', 0, 4).step(0.01).name('bias');
+        dofFolder.add(this.dof.uniforms.fringe, 'value', 0, 5).step(0.01).name('fringe');
+
+        dofFolder.add(this.dof.uniforms.noise, 'value').name('Use Noise');
+        dofFolder.add(this.dof.uniforms.namount, 'value', 0, 0.001).step(0.0001).name('dither');
+
+        dofFolder.add(this.dof.uniforms.depthblur, 'value').name('Blur Depth');
+        dofFolder.add(this.dof.uniforms.dbsize, 'value', 0, 5).name('blur size');
+
+        dofFolder.open();
         this.events(true);
 
 
 
     }
 
-    onChangeGlow () {
-    	this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficient;
-    	this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.guiParams.power;
-    	this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColor);
+    onChangeGlow() {
+        this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficient;
+        this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.guiParams.power;
+        this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColor);
 
-    	this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficientOut;
-    	this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.guiParams.powerOut;
-    	this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColorOut);
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficientOut;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.guiParams.powerOut;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColorOut);
     }
 
     events(method) {
@@ -181,6 +242,10 @@ export default class UniversView {
         this.camera.position.x = 0;
         this.camera.position.y = 0;
         this.camera.position.z = 200;
+
+        this.camera.focalLength = 45;
+        this.camera.frameSize = 32;
+        this.camera.setLens(this.camera.focalLength, this.camera.frameSize);
     }
 
     initPhysics() {
@@ -210,7 +275,8 @@ export default class UniversView {
 
 
         const geometry = new BoxGeometry(width, height, depth);
-        const material = new MeshPhongMaterial({ color: 0x0101010, transparent: true, opacity: 1 });
+        // 0x0101010,
+        const material = new MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 1 });
         this.envelops = [];
 
         const configs = [{
@@ -257,7 +323,7 @@ export default class UniversView {
         const RINGS = 32;
 
         // const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-        const geometry =  new TorusGeometry( 6, 1, 16, 100 );
+        const geometry = new TorusGeometry(6, 1, 16, 100);
         const img = PreloadManager.getResult('texture-asteroid');
         const tex = new Texture(img);
         tex.needsUpdate = true;
@@ -272,8 +338,6 @@ export default class UniversView {
 
         // add physic body to world
         symbol.body = this.world.add(symbol.physics);
-
-        console.log('?');
 
 
         // create a glowMesh
@@ -459,13 +523,115 @@ export default class UniversView {
     }
 
     setDOF() {
-        
-        // depth
-        const depthShader = ShaderLib['depthRGBA'];
-        console.log(ShaderLib);
-        // const depthUniforms = UniformsUtils.clone(depthShader.uniforms);
 
-        // console.log(depthUniforms);
+        // depth RGBA
+        ShaderLib.depthRGBA = {
+            uniforms: {},
+
+            vertexShader: [
+
+                ShaderChunk["morphtarget_pars_vertex"],
+                ShaderChunk["skinning_pars_vertex"],
+
+                "void main() {",
+
+                ShaderChunk["skinbase_vertex"],
+                ShaderChunk["morphtarget_vertex"],
+                ShaderChunk["skinning_vertex"],
+                ShaderChunk["default_vertex"],
+
+                "}"
+
+            ].join("\n"),
+
+            fragmentShader: [
+
+                "vec4 pack_depth( const in float depth ) {",
+
+                "const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );",
+                "const vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );",
+                "vec4 res = fract( depth * bit_shift );",
+                "res -= res.xxyz * bit_mask;",
+                "return res;",
+
+                "}",
+
+                "void main() {",
+
+                "gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );",
+
+                //"gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z / gl_FragCoord.w );",
+                //"float z = ( ( gl_FragCoord.z / gl_FragCoord.w ) - 3.0 ) / ( 4000.0 - 3.0 );",
+                //"gl_FragData[ 0 ] = pack_depth( z );",
+                //"gl_FragData[ 0 ] = vec4( z, z, z, 1.0 );",
+
+                "}"
+
+            ].join("\n")
+        };
+
+        // Set depth RGBA
+        const depthShader = ShaderLib['depthRGBA'];
+        // Set uniforms
+        const depthUniforms = UniformsUtils.clone(depthShader.uniforms);
+        this.depthMaterial = new ShaderMaterial({ fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms });
+        this.depthMaterial.blending = NoBlending;
+
+        this.depthTarget = new WebGLRenderTarget(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio, { minFilter: NearestFilter, magFilter: NearestFilter, format: RGBAFormat });
+
+        // postprocessing
+        // console.log(EffectComposer);
+        this.composer = new EffectComposer(this.renderer);
+        // console.log(this.composer);
+        this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+        // depth of field
+        this.dof = new ShaderPass(DoFShader);
+        this.dof.uniforms['tDepth'].value = this.depthTarget;
+        this.dof.uniforms['size'].value.set(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
+        this.dof.uniforms['textel'].value.set(1.0 / window.innerWidth * window.devicePixelRatio, 1.0 / window.innerHeight) * window.devicePixelRatio;
+
+        //make sure that these two values are the same for your camera, otherwise distances will be wrong.
+        this.dof.uniforms['znear'].value = this.camera.near; //this.camera clipping start
+        this.dof.uniforms['zfar'].value = this.camera.far; //this.camera clipping end
+
+        this.dof.uniforms['focalDepth'].value = 5; //focal distance value in meters, but you may use autofocus option below
+        this.dof.uniforms['focalLength'].value = this.camera.focalLength; //focal length in mm
+        this.dof.uniforms['fstop'].value = 8.0; //f-stop value
+        this.dof.uniforms['showFocus'].value = false; //show debug focus point and focal range (orange = focal point, blue = focal range)
+
+        this.dof.uniforms['manualdof'].value = false; //manual dof calculation
+        this.dof.uniforms['ndofstart'].value = 1.0; //near dof blur start
+        this.dof.uniforms['ndofdist'].value = 2.0; //near dof blur falloff distance	
+        this.dof.uniforms['fdofstart'].value = 2.0; //far dof blur start
+        this.dof.uniforms['fdofdist'].value = 3.0; //far dof blur falloff distance	
+
+        this.dof.uniforms['CoC'].value = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)	
+
+        this.dof.uniforms['vignetting'].value = true; //use optical lens vignetting?
+        this.dof.uniforms['vignout'].value = 1.3; //vignetting outer border
+        this.dof.uniforms['vignin'].value = 0.1; //vignetting inner border
+        this.dof.uniforms['vignfade'].value = 22.0; //f-stops till vignete fades	
+
+        this.dof.uniforms['autofocus'].value = false; //use autofocus in shader? disable if you use external focalDepth value
+        this.dof.uniforms['focus'].value.set(0.5, 0.5); // autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right) 
+        this.dof.uniforms['maxblur'].value = 2.0; //clamp value of max blur (0.0 = no blur,1.0 default)	
+
+        this.dof.uniforms['threshold'].value = 0.5; //highlight threshold;
+        this.dof.uniforms['gain'].value = 2.0; //highlight gain;
+
+        this.dof.uniforms['bias'].value = 0.5; //bokeh edge bias		
+        this.dof.uniforms['fringe'].value = 3.7; //bokeh chromatic aberration/fringing
+
+        this.dof.uniforms['noise'].value = true; //use noise instead of pattern for sample dithering
+        this.dof.uniforms['namount'].value = 0.0001; //dither amount
+
+        this.dof.uniforms['depthblur'].value = false; //blur the depth buffer?
+        this.dof.uniforms['dbsize'].value = 1.25; //depthblursize
+
+        this.composer.addPass(this.dof);
+        this.dof.renderToScreen = true;
+
     }
 
     onClick(e) {
@@ -660,13 +826,13 @@ export default class UniversView {
                 // console.log(this.asteroids[i].body.angularVelocity);
                 // angular Velocity always inferior to 5 (or too much rotations)
 
-                this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x,-1,1);
-                this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y,-1,1);
-                this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z,-1,1);
+                this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
+                this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
+                this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
                 // if (i === 0) {
                 // 	 console.log(this.asteroids[i].body.angularVelocity.x);
                 // }
-               
+
 
                 this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
                 this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
@@ -678,7 +844,7 @@ export default class UniversView {
         }
 
         // Glow continuously 
-        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1 ) / 5;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
         this.glow++;
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
 
@@ -686,10 +852,21 @@ export default class UniversView {
         // Render cssScene
         this.cssRenderer.render(this.cssScene, this.camera);
         // Render scene
-        this.renderer.render(this.scene, this.camera);
+        this.scene.overrideMaterial = this.depthMaterial;
+        this.renderer.render(this.scene, this.camera, this.depthTarget);
+        this.scene.overrideMaterial = null;
+
+        this.composer.render();
 
         this.controls.update();
 
+    }
+
+    updateCamera() {
+    	console.log();
+        this.camera.setLens(this.camera.focalLength, this.camera.frameSize);
+        this.camera.updateProjectionMatrix();
+        this.dof.uniforms['focalLength'].value = this.camera.focalLength;
     }
 
     reset(e) {
