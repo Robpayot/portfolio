@@ -42,7 +42,7 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
     _PreloadManager2.default.load();
 })();
 
-},{"./managers/AppManager":4,"./managers/PreloadManager":6,"gsap":26,"modernizr":18}],2:[function(require,module,exports){
+},{"./managers/AppManager":4,"./managers/PreloadManager":6,"gsap":27,"modernizr":19}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -384,7 +384,7 @@ var AppManager = function () {
 
 exports.default = new AppManager();
 
-},{"../components/GraphicBars":2,"./EmitterManager":5,"./RouterManager":7,"bean":21}],5:[function(require,module,exports){
+},{"../components/GraphicBars":2,"./EmitterManager":5,"./RouterManager":7,"bean":22}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -407,7 +407,7 @@ var EmitterManager = function EmitterManager() {
 
 exports.default = new EmitterManager();
 
-},{"component-emitter":22}],6:[function(require,module,exports){
+},{"component-emitter":23}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -522,7 +522,7 @@ var RouterManager = function () {
 
 exports.default = new RouterManager();
 
-},{"../views/UniversView":20,"./EmitterManager":5,"./PreloadManager":6}],8:[function(require,module,exports){
+},{"../views/UniversView":21,"./EmitterManager":5,"./PreloadManager":6}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -677,7 +677,7 @@ var SoundManager = function () {
 
 exports.default = new SoundManager();
 
-},{"./EmitterManager":5,"dat-gui":23}],9:[function(require,module,exports){
+},{"./EmitterManager":5,"dat-gui":24}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -716,7 +716,7 @@ var AbstractShape = function () {
 
 exports.default = AbstractShape;
 
-},{"three":34}],10:[function(require,module,exports){
+},{"three":35}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -939,6 +939,70 @@ var _Symbol = function (_AbstractShape) {
 exports.default = _Symbol;
 
 },{"./AbstractShape":9}],13:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.BokehShader = undefined;
+
+var _three = require("three");
+
+var BokehShader = {
+
+	uniforms: {
+
+		"textureWidth": { type: "f", value: 1.0 },
+		"textureHeight": { type: "f", value: 1.0 },
+
+		"focalDepth": { type: "f", value: 1.0 },
+		"focalLength": { type: "f", value: 24.0 },
+		"fstop": { type: "f", value: 0.9 },
+
+		"tColor": { type: "t", value: null },
+		"tDepth": { type: "t", value: null },
+
+		"maxblur": { type: "f", value: 1.0 },
+
+		"showFocus": { type: "i", value: 0 },
+		"manualdof": { type: "i", value: 0 },
+		"vignetting": { type: "i", value: 0 },
+		"depthblur": { type: "i", value: 0 },
+
+		"threshold": { type: "f", value: 0.5 },
+		"gain": { type: "f", value: 2.0 },
+		"bias": { type: "f", value: 0.5 },
+		"fringe": { type: "f", value: 0.7 },
+
+		"znear": { type: "f", value: 0.1 },
+		"zfar": { type: "f", value: 100 },
+
+		"noise": { type: "i", value: 1 },
+		"dithering": { type: "f", value: 0.0001 },
+		"pentagon": { type: "i", value: 0 },
+
+		"shaderFocus": { type: "i", value: 1 },
+		"focusCoords": { type: "v2", value: new _three.Vector2() }
+
+	},
+
+	vertexShader: ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+
+	fragmentShader: ["varying vec2 vUv;", "uniform sampler2D tColor;", "uniform sampler2D tDepth;", "uniform float textureWidth;", "uniform float textureHeight;", "const float PI = 3.14159265;", "float width = textureWidth; //texture width", "float height = textureHeight; //texture height", "vec2 texel = vec2(1.0/width,1.0/height);", "uniform float focalDepth;  //focal distance value in meters, but you may use autofocus option below", "uniform float focalLength; //focal length in mm", "uniform float fstop; //f-stop value", "uniform bool showFocus; //show debug focus point and focal range (red = focal point, green = focal range)", "/*", "make sure that these two values are the same for your camera, otherwise distances will be wrong.", "*/", "uniform float znear; // camera clipping start", "uniform float zfar; // camera clipping end", "//------------------------------------------", "//user variables", "const int samples = SAMPLES; //samples on the first ring", "const int rings = RINGS; //ring count", "const int maxringsamples = rings * samples;", "uniform bool manualdof; // manual dof calculation", "float ndofstart = 1.0; // near dof blur start", "float ndofdist = 2.0; // near dof blur falloff distance", "float fdofstart = 1.0; // far dof blur start", "float fdofdist = 3.0; // far dof blur falloff distance", "float CoC = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)", "uniform bool vignetting; // use optical lens vignetting", "float vignout = 1.3; // vignetting outer border", "float vignin = 0.0; // vignetting inner border", "float vignfade = 22.0; // f-stops till vignete fades", "uniform bool shaderFocus;", "bool autofocus = shaderFocus;", "//use autofocus in shader - use with focusCoords", "// disable if you use external focalDepth value", "uniform vec2 focusCoords;", "// autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)", "// if center of screen use vec2(0.5, 0.5);", "uniform float maxblur;", "//clamp value of max blur (0.0 = no blur, 1.0 default)", "uniform float threshold; // highlight threshold;", "uniform float gain; // highlight gain;", "uniform float bias; // bokeh edge bias", "uniform float fringe; // bokeh chromatic aberration / fringing", "uniform bool noise; //use noise instead of pattern for sample dithering", "uniform float dithering;", "float namount = dithering; //dither amount", "uniform bool depthblur; // blur the depth buffer", "float dbsize = 1.25; // depth blur size", "/*", "next part is experimental", "not looking good with small sample and ring count", "looks okay starting from samples = 4, rings = 4", "*/", "uniform bool pentagon; //use pentagon as bokeh shape?", "float feather = 0.4; //pentagon shape feather", "//------------------------------------------", "float penta(vec2 coords) {", "//pentagonal shape", "float scale = float(rings) - 1.3;", "vec4  HS0 = vec4( 1.0,         0.0,         0.0,  1.0);", "vec4  HS1 = vec4( 0.309016994, 0.951056516, 0.0,  1.0);", "vec4  HS2 = vec4(-0.809016994, 0.587785252, 0.0,  1.0);", "vec4  HS3 = vec4(-0.809016994,-0.587785252, 0.0,  1.0);", "vec4  HS4 = vec4( 0.309016994,-0.951056516, 0.0,  1.0);", "vec4  HS5 = vec4( 0.0        ,0.0         , 1.0,  1.0);", "vec4  one = vec4( 1.0 );", "vec4 P = vec4((coords),vec2(scale, scale));", "vec4 dist = vec4(0.0);", "float inorout = -4.0;", "dist.x = dot( P, HS0 );", "dist.y = dot( P, HS1 );", "dist.z = dot( P, HS2 );", "dist.w = dot( P, HS3 );", "dist = smoothstep( -feather, feather, dist );", "inorout += dot( dist, one );", "dist.x = dot( P, HS4 );", "dist.y = HS5.w - abs( P.z );", "dist = smoothstep( -feather, feather, dist );", "inorout += dist.x;", "return clamp( inorout, 0.0, 1.0 );", "}", "float bdepth(vec2 coords) {", "// Depth buffer blur", "float d = 0.0;", "float kernel[9];", "vec2 offset[9];", "vec2 wh = vec2(texel.x, texel.y) * dbsize;", "offset[0] = vec2(-wh.x,-wh.y);", "offset[1] = vec2( 0.0, -wh.y);", "offset[2] = vec2( wh.x -wh.y);", "offset[3] = vec2(-wh.x,  0.0);", "offset[4] = vec2( 0.0,   0.0);", "offset[5] = vec2( wh.x,  0.0);", "offset[6] = vec2(-wh.x, wh.y);", "offset[7] = vec2( 0.0,  wh.y);", "offset[8] = vec2( wh.x, wh.y);", "kernel[0] = 1.0/16.0;   kernel[1] = 2.0/16.0;   kernel[2] = 1.0/16.0;", "kernel[3] = 2.0/16.0;   kernel[4] = 4.0/16.0;   kernel[5] = 2.0/16.0;", "kernel[6] = 1.0/16.0;   kernel[7] = 2.0/16.0;   kernel[8] = 1.0/16.0;", "for( int i=0; i<9; i++ ) {", "float tmp = texture2D(tDepth, coords + offset[i]).r;", "d += tmp * kernel[i];", "}", "return d;", "}", "vec3 color(vec2 coords,float blur) {", "//processing the sample", "vec3 col = vec3(0.0);", "col.r = texture2D(tColor,coords + vec2(0.0,1.0)*texel*fringe*blur).r;", "col.g = texture2D(tColor,coords + vec2(-0.866,-0.5)*texel*fringe*blur).g;", "col.b = texture2D(tColor,coords + vec2(0.866,-0.5)*texel*fringe*blur).b;", "vec3 lumcoeff = vec3(0.299,0.587,0.114);", "float lum = dot(col.rgb, lumcoeff);", "float thresh = max((lum-threshold)*gain, 0.0);", "return col+mix(vec3(0.0),col,thresh*blur);", "}", "vec2 rand(vec2 coord) {", "// generating noise / pattern texture for dithering", "float noiseX = ((fract(1.0-coord.s*(width/2.0))*0.25)+(fract(coord.t*(height/2.0))*0.75))*2.0-1.0;", "float noiseY = ((fract(1.0-coord.s*(width/2.0))*0.75)+(fract(coord.t*(height/2.0))*0.25))*2.0-1.0;", "if (noise) {", "noiseX = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233))) * 43758.5453),0.0,1.0)*2.0-1.0;", "noiseY = clamp(fract(sin(dot(coord ,vec2(12.9898,78.233)*2.0)) * 43758.5453),0.0,1.0)*2.0-1.0;", "}", "return vec2(noiseX,noiseY);", "}", "vec3 debugFocus(vec3 col, float blur, float depth) {", "float edge = 0.002*depth; //distance based edge smoothing", "float m = clamp(smoothstep(0.0,edge,blur),0.0,1.0);", "float e = clamp(smoothstep(1.0-edge,1.0,blur),0.0,1.0);", "col = mix(col,vec3(1.0,0.5,0.0),(1.0-m)*0.6);", "col = mix(col,vec3(0.0,0.5,1.0),((1.0-e)-(1.0-m))*0.2);", "return col;", "}", "float linearize(float depth) {", "return -zfar * znear / (depth * (zfar - znear) - zfar);", "}", "float vignette() {", "float dist = distance(vUv.xy, vec2(0.5,0.5));", "dist = smoothstep(vignout+(fstop/vignfade), vignin+(fstop/vignfade), dist);", "return clamp(dist,0.0,1.0);", "}", "float gather(float i, float j, int ringsamples, inout vec3 col, float w, float h, float blur) {", "float rings2 = float(rings);", "float step = PI*2.0 / float(ringsamples);", "float pw = cos(j*step)*i;", "float ph = sin(j*step)*i;", "float p = 1.0;", "if (pentagon) {", "p = penta(vec2(pw,ph));", "}", "col += color(vUv.xy + vec2(pw*w,ph*h), blur) * mix(1.0, i/rings2, bias) * p;", "return 1.0 * mix(1.0, i /rings2, bias) * p;", "}", "void main() {", "//scene depth calculation", "float depth = linearize(texture2D(tDepth,vUv.xy).x);", "// Blur depth?", "if (depthblur) {", "depth = linearize(bdepth(vUv.xy));", "}", "//focal plane calculation", "float fDepth = focalDepth;", "if (autofocus) {", "fDepth = linearize(texture2D(tDepth,focusCoords).x);", "}", "// dof blur factor calculation", "float blur = 0.0;", "if (manualdof) {", "float a = depth-fDepth; // Focal plane", "float b = (a-fdofstart)/fdofdist; // Far DoF", "float c = (-a-ndofstart)/ndofdist; // Near Dof", "blur = (a>0.0) ? b : c;", "} else {", "float f = focalLength; // focal length in mm", "float d = fDepth*1000.0; // focal plane in mm", "float o = depth*1000.0; // depth in mm", "float a = (o*f)/(o-f);", "float b = (d*f)/(d-f);", "float c = (d-f)/(d*fstop*CoC);", "blur = abs(a-b)*c;", "}", "blur = clamp(blur,0.0,1.0);", "// calculation of pattern for dithering", "vec2 noise = rand(vUv.xy)*namount*blur;", "// getting blur x and y step factor", "float w = (1.0/width)*blur*maxblur+noise.x;", "float h = (1.0/height)*blur*maxblur+noise.y;", "// calculation of final color", "vec3 col = vec3(0.0);", "if(blur < 0.05) {", "//some optimization thingy", "col = texture2D(tColor, vUv.xy).rgb;", "} else {", "col = texture2D(tColor, vUv.xy).rgb;", "float s = 1.0;", "int ringsamples;", "for (int i = 1; i <= rings; i++) {", "/*unboxstart*/", "ringsamples = i * samples;", "for (int j = 0 ; j < maxringsamples ; j++) {", "if (j >= ringsamples) break;", "s += gather(float(i), float(j), ringsamples, col, w, h, blur);", "}", "/*unboxend*/", "}", "col /= s; //divide by sample count", "}", "if (showFocus) {", "col = debugFocus(col, blur, depth);", "}", "if (vignetting) {", "col *= vignette();", "}", "gl_FragColor.rgb = col;", "gl_FragColor.a = 1.0;", "} "].join("\n")
+
+}; /**
+    * @author zz85 / https://github.com/zz85 | twitter.com/blurspline
+    *
+    * Depth-of-field shader with bokeh
+    * ported from GLSL shader by Martins Upitis
+    * http://blenderartists.org/forum/showthread.php?237488-GLSL-depth-of-field-with-bokeh-v2-4-(update)
+    *
+    * Requires #define RINGS and SAMPLES integers
+    */
+
+exports.BokehShader = BokehShader;
+
+},{"three":35}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1151,7 +1215,7 @@ THREE.CSS3DRenderer = function () {
 exports.CSS3DObject = CSS3DObject;
 exports.CSS3DSprite = CSS3DSprite;
 
-},{"three":34}],14:[function(require,module,exports){
+},{"three":35}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1366,7 +1430,7 @@ var CSS3DRendererIE = function () {
 exports.default = CSS3DRendererIE;
 ;
 
-},{"./CSS3DRenderer":13,"./Projector":17,"three":34}],15:[function(require,module,exports){
+},{"./CSS3DRenderer":14,"./Projector":18,"three":35}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1533,7 +1597,7 @@ var DoFShader = {
 
 exports.DoFShader = DoFShader;
 
-},{"three":34}],16:[function(require,module,exports){
+},{"three":35}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2485,7 +2549,7 @@ Object.defineProperties(OrbitControls.prototype, {
 
 exports.default = OrbitControls;
 
-},{"three":34}],17:[function(require,module,exports){
+},{"three":35}],18:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -3316,7 +3380,7 @@ THREE.Projector = function () {
 	}
 };
 
-},{"three":34}],18:[function(require,module,exports){
+},{"three":35}],19:[function(require,module,exports){
 (function (global){
 ; var __browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 'use strict';
@@ -4720,7 +4784,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4831,7 +4895,7 @@ THREEx.GeometricGlowMesh = function (mesh) {
 
 exports.THREEx = THREEx;
 
-},{"three":34}],20:[function(require,module,exports){
+},{"three":35}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4839,6 +4903,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // glow shader
+// DOF shader
 
 
 var _three = require('three');
@@ -4889,11 +4954,13 @@ var _threex = require('../vendors/threex/threex.js');
 
 var _DoFShader = require('../vendors/DoFShader.js');
 
+var _BokehShader = require('../vendors/BokehShader2.js');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// DOF shader
+// DOF2 shader
 
 
 var UniversView = function () {
@@ -4999,7 +5066,9 @@ var UniversView = function () {
             ////////////////////
 
             // set Depth of Field
-            this.setDOF();
+            // this.setDOF();
+            // set Depth of Field 2
+            this.setDOF2();
 
             /////////////////
             // GUI
@@ -5022,51 +5091,136 @@ var UniversView = function () {
             this.sound.gui.add(this.guiParams, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow);
             this.sound.gui.addColor(this.guiParams, 'glowColorOut').listen().onChange(this.onChangeGlow);
 
-            var gui, cameraFolder, cameraFocalLength, _last;
+            this.renderer.autoClear = false;
 
-            cameraFolder = this.sound.gui.addFolder('Camera');
-            cameraFocalLength = cameraFolder.add(this.camera, 'focalLength', 28, 200).name('Focal Length');
-            cameraFocalLength.onChange(this.updateCamera);
-            cameraFolder.open();
+            this.effectController = {
 
-            var dofFolder = this.sound.gui.addFolder('Depth of Field');
-            dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 1000).name('Focal Depth');
-            dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 1000).name('F Stop');
-            dofFolder.add(this.dof.uniforms.maxblur, 'value', 0, 3).name('max blur');
+                enabled: true,
+                jsDepthCalculation: true,
+                shaderFocus: false,
 
-            dofFolder.add(this.dof.uniforms.showFocus, 'value').name('Show Focal Range');
+                fstop: 2.2,
+                maxblur: 1.0,
 
-            dofFolder.add(this.dof.uniforms.manualdof, 'value').name('Manual DoF');
-            dofFolder.add(this.dof.uniforms.ndofstart, 'value', 0, 200).name('near start');
-            dofFolder.add(this.dof.uniforms.ndofdist, 'value', 0, 200).name('near falloff');
-            dofFolder.add(this.dof.uniforms.fdofstart, 'value', 0, 200).name('far start');
-            dofFolder.add(this.dof.uniforms.fdofdist, 'value', 0, 200).name('far falloff');
+                showFocus: false,
+                focalDepth: 2.8,
+                manualdof: false,
+                vignetting: false,
+                depthblur: false,
 
-            dofFolder.add(this.dof.uniforms.CoC, 'value', 0, 0.1).step(0.001).name('circle of confusion');
+                threshold: 0.5,
+                gain: 2.0,
+                bias: 0.5,
+                fringe: 0.7,
 
-            dofFolder.add(this.dof.uniforms.vignetting, 'value').name('Vignetting');
-            dofFolder.add(this.dof.uniforms.vignout, 'value', 0, 2).name('outer border');
-            dofFolder.add(this.dof.uniforms.vignin, 'value', 0, 1).step(0.01).name('inner border');
-            dofFolder.add(this.dof.uniforms.vignfade, 'value', 0, 22).name('fade at');
+                focalLength: 35,
+                noise: true,
+                pentagon: false,
 
-            dofFolder.add(this.dof.uniforms.autofocus, 'value').name('Autofocus');
-            dofFolder.add(this.dof.uniforms.focus.value, 'x', 0, 1).name('focus x');
-            dofFolder.add(this.dof.uniforms.focus.value, 'y', 0, 1).name('focus y');
+                dithering: 0.0001
 
-            dofFolder.add(this.dof.uniforms.threshold, 'value', 0, 1).step(0.01).name('threshold');
-            dofFolder.add(this.dof.uniforms.gain, 'value', 0, 100).name('gain');
+            };
 
-            dofFolder.add(this.dof.uniforms.bias, 'value', 0, 4).step(0.01).name('bias');
-            dofFolder.add(this.dof.uniforms.fringe, 'value', 0, 5).step(0.01).name('fringe');
+            var matChanger = function () {
 
-            dofFolder.add(this.dof.uniforms.noise, 'value').name('Use Noise');
-            dofFolder.add(this.dof.uniforms.namount, 'value', 0, 0.001).step(0.0001).name('dither');
+                for (var e in this.effectController) {
+                    if (e in this.postprocessing.bokeh_uniforms) this.postprocessing.bokeh_uniforms[e].value = this.effectController[e];
+                }
 
-            dofFolder.add(this.dof.uniforms.depthblur, 'value').name('Blur Depth');
-            dofFolder.add(this.dof.uniforms.dbsize, 'value', 0, 5).name('blur size');
+                this.postprocessing.enabled = this.effectController.enabled;
+                this.postprocessing.bokeh_uniforms['znear'].value = this.camera.near;
+                this.postprocessing.bokeh_uniforms['zfar'].value = this.camera.far;
+                this.camera.setLens(this.effectController.focalLength);
+            }.bind(this);
 
-            dofFolder.open();
+            this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
+            this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
+            this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
+            this.sound.gui.add(this.effectController, "focalDepth", 0.0, 200.0).listen().onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "fstop", 0.1, 22, 0.001).onChange(matChanger);
+            this.sound.gui.add(this.effectController, "maxblur", 0.0, 5.0, 0.025).onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
+            this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
+            this.sound.gui.add(this.effectController, "vignetting").onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "depthblur").onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "threshold", 0, 1, 0.001).onChange(matChanger);
+            this.sound.gui.add(this.effectController, "gain", 0, 100, 0.001).onChange(matChanger);
+            this.sound.gui.add(this.effectController, "bias", 0, 3, 0.001).onChange(matChanger);
+            this.sound.gui.add(this.effectController, "fringe", 0, 5, 0.001).onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "focalLength", 16, 80, 0.001).onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "dithering", 0, 0.001, 0.0001).onChange(matChanger);
+
+            this.sound.gui.add(this.effectController, "pentagon").onChange(matChanger);
+
+            this.sound.gui.add(this.shaderSettings, "rings", 1, 8).step(1).onChange(this.shaderUpdate);
+            this.sound.gui.add(this.shaderSettings, "samples", 1, 13).step(1).onChange(this.shaderUpdate);
+
+            matChanger();
+
+            // var gui,
+            //     cameraFolder,
+            //     cameraFocalLength,
+            //     _last;
+
+            // cameraFolder = this.sound.gui.addFolder('Camera');
+            // cameraFocalLength = cameraFolder.add(this.camera, 'focalLength', 28, 200).name('Focal Length');
+            // cameraFocalLength.onChange(this.updateCamera);
+            // cameraFolder.open();
+
+            // const dofFolder = this.sound.gui.addFolder('Depth of Field');
+            // dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 500).name('Focal Depth');
+            // dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 500).name('F Stop');
+            // dofFolder.add(this.dof.uniforms.maxblur, 'value', 0, 5).name('max blur');
+
+            // dofFolder.add(this.dof.uniforms.showFocus, 'value').name('Show Focal Range');
+
+            // dofFolder.add(this.dof.uniforms.manualdof, 'value').name('Manual DoF');
+            // dofFolder.add(this.dof.uniforms.ndofstart, 'value', 0, 200).name('near start');
+            // dofFolder.add(this.dof.uniforms.ndofdist, 'value', 0, 200).name('near falloff');
+            // dofFolder.add(this.dof.uniforms.fdofstart, 'value', 0, 200).name('far start');
+            // dofFolder.add(this.dof.uniforms.fdofdist, 'value', 0, 200).name('far falloff');
+
+            // dofFolder.add(this.dof.uniforms.CoC, 'value', 0, 0.1).step(0.001).name('circle of confusion');
+
+            // dofFolder.add(this.dof.uniforms.vignetting, 'value').name('Vignetting');
+            // dofFolder.add(this.dof.uniforms.vignout, 'value', 0, 2).name('outer border');
+            // dofFolder.add(this.dof.uniforms.vignin, 'value', 0, 1).step(0.01).name('inner border');
+            // dofFolder.add(this.dof.uniforms.vignfade, 'value', 0, 22).name('fade at');
+
+            // dofFolder.add(this.dof.uniforms.autofocus, 'value').name('Autofocus');
+            // dofFolder.add(this.dof.uniforms.focus.value, 'x', 0, 1).name('focus x');
+            // dofFolder.add(this.dof.uniforms.focus.value, 'y', 0, 1).name('focus y');
+
+            // dofFolder.add(this.dof.uniforms.threshold, 'value', 0, 1).step(0.01).name('threshold');
+            // dofFolder.add(this.dof.uniforms.gain, 'value', 0, 100).name('gain');
+
+            // dofFolder.add(this.dof.uniforms.bias, 'value', 0, 4).step(0.01).name('bias');
+            // dofFolder.add(this.dof.uniforms.fringe, 'value', 0, 5).step(0.01).name('fringe');
+
+            // dofFolder.add(this.dof.uniforms.noise, 'value').name('Use Noise');
+            // dofFolder.add(this.dof.uniforms.namount, 'value', 0, 0.001).step(0.0001).name('dither');
+
+            // dofFolder.add(this.dof.uniforms.depthblur, 'value').name('Blur Depth');
+            // dofFolder.add(this.dof.uniforms.dbsize, 'value', 0, 5).name('blur size');
+
+            // dofFolder.open();
             this.events(true);
+        }
+    }, {
+        key: 'shaderUpdate',
+        value: function shaderUpdate() {
+            this.postprocessing.materialBokeh.defines.RINGS = this.shaderSettings.rings;
+            this.postprocessing.materialBokeh.defines.SAMPLES = this.shaderSettings.samples;
+
+            this.postprocessing.materialBokeh.needsUpdate = true;
         }
     }, {
         key: 'onChangeGlow',
@@ -5251,7 +5405,7 @@ var UniversView = function () {
             };
             var material = new _three.MeshBasicMaterial(matPhongParams);
 
-            var initZ = -240;
+            var initZ = 100;
 
             for (var i = 0; i < this.nbAst; i++) {
 
@@ -5267,7 +5421,7 @@ var UniversView = function () {
                     z: initZ
                 };
 
-                initZ += 20;
+                initZ -= 40;
 
                 // Intra perimeter radius
                 var ipRadius = 50;
@@ -5461,6 +5615,63 @@ var UniversView = function () {
 
             this.composer.addPass(this.dof);
             this.dof.renderToScreen = true;
+        }
+    }, {
+        key: 'setDOF2',
+        value: function setDOF2() {
+            console.log('dof2');
+            var height = window.innerHeight;
+
+            this.shaderSettings = {
+                rings: 3,
+                samples: 4
+            };
+
+            this.renderer.sortObjects = false;
+
+            this.material_depth = new _three.MeshDepthMaterial();
+
+            // initPostProcessing
+            this.postprocessing = { enabled: true };
+            this.postprocessing.scene = new _three.Scene();
+
+            this.postprocessing.camera = new _three.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);
+            this.postprocessing.camera.position.z = 100;
+
+            this.postprocessing.scene.add(this.postprocessing.camera);
+
+            var pars = { minFilter: _three.LinearFilter, magFilter: _three.LinearFilter, format: _three.RGBFormat };
+            this.postprocessing.rtTextureDepth = new _three.WebGLRenderTarget(window.innerWidth, height, pars);
+            this.postprocessing.rtTextureColor = new _three.WebGLRenderTarget(window.innerWidth, height, pars);
+
+            var bokeh_shader = _BokehShader.BokehShader;
+
+            this.postprocessing.bokeh_uniforms = _three.UniformsUtils.clone(bokeh_shader.uniforms);
+
+            this.postprocessing.bokeh_uniforms["tColor"].value = this.postprocessing.rtTextureColor;
+            this.postprocessing.bokeh_uniforms["tDepth"].value = this.postprocessing.rtTextureDepth;
+
+            this.postprocessing.bokeh_uniforms["textureWidth"].value = window.innerWidth;
+
+            this.postprocessing.bokeh_uniforms["textureHeight"].value = height;
+
+            this.postprocessing.materialBokeh = new _three.ShaderMaterial({
+
+                uniforms: this.postprocessing.bokeh_uniforms,
+                vertexShader: bokeh_shader.vertexShader,
+                fragmentShader: bokeh_shader.fragmentShader,
+                defines: {
+                    RINGS: this.shaderSettings.rings,
+                    SAMPLES: this.shaderSettings.samples
+                }
+
+            });
+
+            this.postprocessing.quad = new _three.Mesh(new _three.PlaneGeometry(window.innerWidth, window.innerHeight), this.postprocessing.materialBokeh);
+            this.postprocessing.quad.position.z = -500;
+            this.postprocessing.scene.add(this.postprocessing.quad);
+
+            console.log(this.postprocessing);
         }
     }, {
         key: 'onClick',
@@ -5673,11 +5884,35 @@ var UniversView = function () {
             // Render cssScene
             this.cssRenderer.render(this.cssScene, this.camera);
             // Render scene
-            this.scene.overrideMaterial = this.depthMaterial;
-            this.renderer.render(this.scene, this.camera, this.depthTarget); //  this.depthTarget
-            this.scene.overrideMaterial = null;
+            // this.scene.overrideMaterial = this.depthMaterial;
+            // this.renderer.render(this.scene, this.camera); //  this.depthTarget
+            // this.scene.overrideMaterial = null;
 
-            this.composer.render();
+            // this.composer.render();
+            if (this.postprocessing.enabled === true) {
+
+                this.renderer.clear();
+
+                // Render scene into texture
+
+                this.scene.overrideMaterial = null;
+                this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureColor, true);
+
+                // Render depth into texture
+
+                this.scene.overrideMaterial = this.material_depth;
+                this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureDepth, true);
+
+                // Render bokeh composite
+
+                this.renderer.render(this.postprocessing.scene, this.postprocessing.camera);
+            } else {
+
+                this.scene.overrideMaterial = null;
+
+                this.renderer.clear();
+                this.renderer.render(this.scene, this.camera);
+            }
 
             this.controls.update();
         }
@@ -5850,7 +6085,7 @@ var UniversView = function () {
 
 exports.default = UniversView;
 
-},{"../helpers/utils":3,"../managers/EmitterManager":5,"../managers/PreloadManager":6,"../managers/SoundManager":8,"../shapes/Asteroid":10,"../shapes/Envelop":11,"../shapes/Symbol":12,"../vendors/CSS3DRenderer":13,"../vendors/CSS3DRendererIE":14,"../vendors/DoFShader.js":15,"../vendors/OrbitControls":16,"../vendors/threex/threex.js":19,"oimo":27,"three":34,"three-effectcomposer-es6":28}],21:[function(require,module,exports){
+},{"../helpers/utils":3,"../managers/EmitterManager":5,"../managers/PreloadManager":6,"../managers/SoundManager":8,"../shapes/Asteroid":10,"../shapes/Envelop":11,"../shapes/Symbol":12,"../vendors/BokehShader2.js":13,"../vendors/CSS3DRenderer":14,"../vendors/CSS3DRendererIE":15,"../vendors/DoFShader.js":16,"../vendors/OrbitControls":17,"../vendors/threex/threex.js":20,"oimo":28,"three":35,"three-effectcomposer-es6":29}],22:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
@@ -6593,7 +6828,7 @@ exports.default = UniversView;
   return bean
 });
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -6758,10 +6993,10 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 module.exports = require('./vendor/dat.gui')
 module.exports.color = require('./vendor/dat.color')
-},{"./vendor/dat.color":24,"./vendor/dat.gui":25}],24:[function(require,module,exports){
+},{"./vendor/dat.color":25,"./vendor/dat.gui":26}],25:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -7517,7 +7752,7 @@ dat.color.math = (function () {
 })(),
 dat.color.toString,
 dat.utils.common);
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * dat-gui JavaScript Controller Library
  * http://code.google.com/p/dat-gui
@@ -11178,7 +11413,7 @@ dat.dom.CenteredDiv = (function (dom, common) {
 dat.utils.common),
 dat.dom.dom,
 dat.utils.common);
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (global){
 /*!
  * VERSION: 1.19.1
@@ -19039,7 +19274,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 })((typeof(module) !== "undefined" && module.exports && typeof(global) !== "undefined") ? global : this || window, "TweenMax");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -31361,7 +31596,7 @@ if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); } //necessary in case Tween
 
 })));
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -31521,7 +31756,7 @@ EffectComposer.scene = new _three.Scene();
 EffectComposer.scene.add(EffectComposer.quad);
 
 exports.default = EffectComposer;
-},{"./lib/clearmaskpass":29,"./lib/copyshader":30,"./lib/maskpass":31,"./lib/renderpass":32,"./lib/shaderpass":33,"three":34}],29:[function(require,module,exports){
+},{"./lib/clearmaskpass":30,"./lib/copyshader":31,"./lib/maskpass":32,"./lib/renderpass":33,"./lib/shaderpass":34,"three":35}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -31542,7 +31777,7 @@ ClearMaskPass.prototype.render = function (renderer, writeBuffer, readBuffer, de
 };
 
 exports.ClearMaskPass = ClearMaskPass;
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -31564,7 +31799,7 @@ var CopyShader = {
 };
 
 exports.CopyShader = CopyShader;
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -31629,7 +31864,7 @@ MaskPass.prototype.render = function (renderer, writeBuffer, readBuffer, delta) 
 };
 
 exports.MaskPass = MaskPass;
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -31680,7 +31915,7 @@ RenderPass.prototype.render = function (renderer, writeBuffer, readBuffer, delta
 };
 
 exports.RenderPass = RenderPass;
-},{"three":34}],33:[function(require,module,exports){
+},{"three":35}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -31735,7 +31970,7 @@ ShaderPass.prototype.render = function (renderer, writeBuffer, readBuffer, delta
 };
 
 exports.ShaderPass = ShaderPass;
-},{"../index":28,"three":34}],34:[function(require,module,exports){
+},{"../index":29,"three":35}],35:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
