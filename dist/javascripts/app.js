@@ -4978,7 +4978,7 @@ var UniversView = function () {
             this.cssRenderer.domElement.classList.add('container3D');
 
             this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: true });
-            this.renderer.setClearColor(0x000000, 1);
+            this.renderer.setClearColor(0xffffff, 1);
 
             this.renderer.setSize(this.width, this.height);
 
@@ -5030,8 +5030,8 @@ var UniversView = function () {
             cameraFolder.open();
 
             var dofFolder = this.sound.gui.addFolder('Depth of Field');
-            dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 10).name('Focal Depth');
-            dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 22).name('F Stop');
+            dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 1000).name('Focal Depth');
+            dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 1000).name('F Stop');
             dofFolder.add(this.dof.uniforms.maxblur, 'value', 0, 3).name('max blur');
 
             dofFolder.add(this.dof.uniforms.showFocus, 'value').name('Show Focal Range');
@@ -5140,7 +5140,7 @@ var UniversView = function () {
 
             var geometry = new _three.BoxGeometry(width, height, depth);
             // 0x0101010,
-            var material = new _three.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 1 });
+            var material = new _three.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0 });
             this.envelops = [];
 
             var configs = [{
@@ -5249,25 +5249,36 @@ var UniversView = function () {
                 opacity: 1,
                 map: tex
             };
-            var material = new _three.MeshPhongMaterial(matPhongParams);
+            var material = new _three.MeshBasicMaterial(matPhongParams);
+
+            var initZ = -240;
 
             for (var i = 0; i < this.nbAst; i++) {
 
+                // const pos = {
+                //     x: getRandom(-100, 100),
+                //     y: getRandom(-100, 100),
+                //     z: getRandom(-100, 100),
+                // };
+
                 var pos = {
-                    x: (0, _utils.getRandom)(-100, 100),
-                    y: (0, _utils.getRandom)(-100, 100),
-                    z: (0, _utils.getRandom)(-100, 100)
+                    x: 0,
+                    y: 0,
+                    z: initZ
                 };
+
+                initZ += 20;
 
                 // Intra perimeter radius
                 var ipRadius = 50;
 
-                if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-                    console.log(i, ' dans le périmetre !');
-                    pos.x += ipRadius;
-                    pos.y += ipRadius;
-                    pos.z += ipRadius;
-                }
+                // if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+                //     console.log(i, ' dans le périmetre !');
+                //     pos.x += ipRadius;
+                //     pos.y += ipRadius;
+                //     pos.z += ipRadius;
+
+                // }
 
                 //  force impulsion
                 var force = {
@@ -5632,9 +5643,9 @@ var UniversView = function () {
                 if (this.asteroids[_i2].body !== undefined) {
 
                     // APPLY IMPULSE
-                    this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
-                    this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
-                    this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
+                    // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                    // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                    // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
                     // console.log(this.asteroids[i].body.angularVelocity);
                     // angular Velocity always inferior to 5 (or too much rotations)
@@ -5647,8 +5658,9 @@ var UniversView = function () {
                     // }
 
 
-                    this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
-                    this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
+                    // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                    // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+
                 }
             }
 
@@ -5662,7 +5674,7 @@ var UniversView = function () {
             this.cssRenderer.render(this.cssScene, this.camera);
             // Render scene
             this.scene.overrideMaterial = this.depthMaterial;
-            this.renderer.render(this.scene, this.camera, this.depthTarget);
+            this.renderer.render(this.scene, this.camera, this.depthTarget); //  this.depthTarget
             this.scene.overrideMaterial = null;
 
             this.composer.render();

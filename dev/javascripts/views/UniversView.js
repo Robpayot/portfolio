@@ -104,7 +104,7 @@ export default class UniversView {
         this.cssRenderer.domElement.classList.add('container3D');
 
         this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
-        this.renderer.setClearColor(0x000000, 1);
+        this.renderer.setClearColor(0xffffff, 1);
 
         this.renderer.setSize(this.width, this.height);
 
@@ -159,8 +159,8 @@ export default class UniversView {
         cameraFolder.open();
 
         const dofFolder = this.sound.gui.addFolder('Depth of Field');
-        dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 10).name('Focal Depth');
-        dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 22).name('F Stop');
+        dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 1000).name('Focal Depth');
+        dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 1000).name('F Stop');
         dofFolder.add(this.dof.uniforms.maxblur, 'value', 0, 3).name('max blur');
 
         dofFolder.add(this.dof.uniforms.showFocus, 'value').name('Show Focal Range');
@@ -276,7 +276,7 @@ export default class UniversView {
 
         const geometry = new BoxGeometry(width, height, depth);
         // 0x0101010,
-        const material = new MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 1 });
+        const material = new MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0 });
         this.envelops = [];
 
         const configs = [{
@@ -392,26 +392,36 @@ export default class UniversView {
             // emissive: new Color('rgb(255, 255, 255)'),
             // specular: new Color('rgb(255, 255, 255)')
         };
-        const material = new MeshPhongMaterial(matPhongParams);
+        const material = new MeshBasicMaterial(matPhongParams);
+
+        let initZ = -240;
 
         for (let i = 0; i < this.nbAst; i++) {
 
+            // const pos = {
+            //     x: getRandom(-100, 100),
+            //     y: getRandom(-100, 100),
+            //     z: getRandom(-100, 100),
+            // };
+
             const pos = {
-                x: getRandom(-100, 100),
-                y: getRandom(-100, 100),
-                z: getRandom(-100, 100),
+                x: 0,
+                y: 0,
+                z:initZ,
             };
+
+            initZ += 20;
 
             // Intra perimeter radius
             const ipRadius = 50;
 
-            if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-                console.log(i, ' dans le périmetre !');
-                pos.x += ipRadius;
-                pos.y += ipRadius;
-                pos.z += ipRadius;
+            // if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+            //     console.log(i, ' dans le périmetre !');
+            //     pos.x += ipRadius;
+            //     pos.y += ipRadius;
+            //     pos.z += ipRadius;
 
-            }
+            // }
 
             //  force impulsion
             const force = {
@@ -819,9 +829,9 @@ export default class UniversView {
             if (this.asteroids[i].body !== undefined) {
 
                 // APPLY IMPULSE
-                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+                // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
                 // console.log(this.asteroids[i].body.angularVelocity);
                 // angular Velocity always inferior to 5 (or too much rotations)
@@ -834,8 +844,8 @@ export default class UniversView {
                 // }
 
 
-                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+                // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
 
             }
@@ -853,7 +863,7 @@ export default class UniversView {
         this.cssRenderer.render(this.cssScene, this.camera);
         // Render scene
         this.scene.overrideMaterial = this.depthMaterial;
-        this.renderer.render(this.scene, this.camera, this.depthTarget);
+        this.renderer.render(this.scene, this.camera, this.depthTarget); //  this.depthTarget
         this.scene.overrideMaterial = null;
 
         this.composer.render();
