@@ -5137,9 +5137,9 @@ var UniversView = function () {
             this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
             this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
             this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
-            this.sound.gui.add(this.effectController, "focalDepth", 0.0, 400.0).listen().onChange(matChanger);
+            this.sound.gui.add(this.effectController, "focalDepth", 0.0, 800.0).listen().onChange(matChanger);
 
-            this.sound.gui.add(this.effectController, "fstop", 1.8, 22, 0.001).onChange(matChanger);
+            this.sound.gui.add(this.effectController, "fstop", -5, 22, 0.001).onChange(matChanger);
             this.sound.gui.add(this.effectController, "maxblur", 0.0, 7.0, 0.025).onChange(matChanger);
 
             this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
@@ -5153,7 +5153,7 @@ var UniversView = function () {
             this.sound.gui.add(this.effectController, "bias", 0, 3, 0.001).onChange(matChanger);
             this.sound.gui.add(this.effectController, "fringe", 0, 5, 0.001).onChange(matChanger);
 
-            this.sound.gui.add(this.effectController, "focalLength", 16, 80, 0.001).onChange(matChanger);
+            this.sound.gui.add(this.effectController, "focalLength", -5, 80, 0.001).onChange(matChanger);
 
             this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
 
@@ -5254,13 +5254,13 @@ var UniversView = function () {
 
             this.fov = 45;
             this.aspect = this.width / this.height;
-            this.near = 0.1;
-            this.far = 10000;
+            this.near = 1;
+            this.far = 3000;
 
             this.camera = new _three.PerspectiveCamera(this.fov, this.aspect, this.near, this.far);
 
             this.camera.position.x = 0;
-            this.camera.position.y = 0;
+            this.camera.position.y = 10;
             this.camera.position.z = 200;
 
             // this.camera.focalLength = 45;
