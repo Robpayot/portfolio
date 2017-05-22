@@ -34,6 +34,9 @@ export default class UniversView {
         this.onClick = this.onClick.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.updateCamera = this.updateCamera.bind(this);
+        this.shaderUpdate = this.shaderUpdate.bind(this);
+        
+
 
 
         this.sound = SoundManager;
@@ -144,13 +147,13 @@ export default class UniversView {
             powerOut: 2,
             glowColorOut: 0xffffff
         };
-        this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
-        this.sound.gui.add(this.guiParams, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow)
-        this.sound.gui.add(this.guiParams, 'power', 0.0, 5).listen().onChange(this.onChangeGlow)
-        this.sound.gui.addColor(this.guiParams, 'glowColor').listen().onChange(this.onChangeGlow)
-        this.sound.gui.add(this.guiParams, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow)
-        this.sound.gui.add(this.guiParams, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow)
-        this.sound.gui.addColor(this.guiParams, 'glowColorOut').listen().onChange(this.onChangeGlow)
+        // this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
+        // this.sound.gui.add(this.guiParams, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow)
+        // this.sound.gui.add(this.guiParams, 'power', 0.0, 5).listen().onChange(this.onChangeGlow)
+        // this.sound.gui.addColor(this.guiParams, 'glowColor').listen().onChange(this.onChangeGlow)
+        // this.sound.gui.add(this.guiParams, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow)
+        // this.sound.gui.add(this.guiParams, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow)
+        // this.sound.gui.addColor(this.guiParams, 'glowColorOut').listen().onChange(this.onChangeGlow)
 
         this.renderer.autoClear = false;
 
@@ -160,11 +163,11 @@ export default class UniversView {
             jsDepthCalculation: true,
             shaderFocus: false,
 
-            fstop: 1.8,
-            maxblur: 4.0,
+            fstop: 0.02,
+            maxblur: 2.0,
 
             showFocus: false,
-            focalDepth: 200,
+            focalDepth: 125.0,
             manualdof: false,
             vignetting: false,
             depthblur: false,
@@ -174,7 +177,7 @@ export default class UniversView {
             bias: 0.5,
             fringe: 0.7,
 
-            focalLength: 35,
+            focalLength: 18,
             noise: true,
             pentagon: false,
 
@@ -200,14 +203,14 @@ export default class UniversView {
         this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
         this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
         this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "focalDepth", 0.0, 800.0).listen().onChange(matChanger);
+        this.sound.gui.add(this.effectController, "focalDepth", 0.0, 500.0, 0.001).listen().onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "fstop", -5, 22, 0.001).onChange(matChanger);
-        this.sound.gui.add(this.effectController, "maxblur", 0.0, 7.0, 0.025).onChange(matChanger);
+        this.sound.gui.add(this.effectController, "fstop", -5, 12, 0.001).onChange(matChanger);
+        this.sound.gui.add(this.effectController, "maxblur", 0.0, 10.0, 0.025).onChange(matChanger);
 
         this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "vignetting").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "vignetting").onChange(matChanger);
 
         this.sound.gui.add(this.effectController, "depthblur").onChange(matChanger);
 
@@ -218,11 +221,11 @@ export default class UniversView {
 
         this.sound.gui.add(this.effectController, "focalLength", -5, 80, 0.001).onChange(matChanger)
 
-        this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "dithering", 0, 0.001, 0.0001).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "dithering", 0, 0.001, 0.0001).onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "pentagon").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "pentagon").onChange(matChanger);
 
         this.sound.gui.add(this.shaderSettings, "rings", 1, 8).step(1).onChange(this.shaderUpdate);
         this.sound.gui.add(this.shaderSettings, "samples", 1, 13).step(1).onChange(this.shaderUpdate);
@@ -328,8 +331,8 @@ export default class UniversView {
         );
 
         this.camera.position.x = 0;
-        this.camera.position.y = 10;
-        this.camera.position.z = 200;
+        this.camera.position.y = 50;
+        this.camera.position.z = 150;
 
         // this.camera.focalLength = 45;
         // this.camera.frameSize = 32;
