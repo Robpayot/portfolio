@@ -160,11 +160,11 @@ export default class UniversView {
             jsDepthCalculation: true,
             shaderFocus: false,
 
-            fstop: 2.2,
-            maxblur: 1.0,
+            fstop: 1.8,
+            maxblur: 4.0,
 
             showFocus: false,
-            focalDepth: 2.8,
+            focalDepth: 200,
             manualdof: false,
             vignetting: false,
             depthblur: false,
@@ -193,17 +193,17 @@ export default class UniversView {
             this.postprocessing.enabled = this.effectController.enabled;
             this.postprocessing.bokeh_uniforms['znear'].value = this.camera.near;
             this.postprocessing.bokeh_uniforms['zfar'].value = this.camera.far;
-            this.camera.setLens(this.effectController.focalLength);
+            this.camera.setFocalLength(this.effectController.focalLength);
 
         }.bind(this);
 
         this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
         this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
         this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "focalDepth", 0.0, 200.0).listen().onChange(matChanger);
+        this.sound.gui.add(this.effectController, "focalDepth", 0.0, 400.0).listen().onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "fstop", 0.1, 22, 0.001).onChange(matChanger);
-        this.sound.gui.add(this.effectController, "maxblur", 0.0, 5.0, 0.025).onChange(matChanger);
+        this.sound.gui.add(this.effectController, "fstop", 1.8, 22, 0.001).onChange(matChanger);
+        this.sound.gui.add(this.effectController, "maxblur", 0.0, 7.0, 0.025).onChange(matChanger);
 
         this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
         this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
@@ -331,9 +331,9 @@ export default class UniversView {
         this.camera.position.y = 0;
         this.camera.position.z = 200;
 
-        this.camera.focalLength = 45;
-        this.camera.frameSize = 32;
-        this.camera.setLens(this.camera.focalLength, this.camera.frameSize);
+        // this.camera.focalLength = 45;
+        // this.camera.frameSize = 32;
+        // this.camera.setFocalLength(this.camera.focalLength, this.camera.frameSize);
     }
 
     initPhysics() {
@@ -364,7 +364,11 @@ export default class UniversView {
 
         const geometry = new BoxGeometry(width, height, depth);
         // 0x0101010,
-        const material = new MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 0 });
+        const img = PreloadManager.getResult('damier');
+        console.log(img);
+        const tex = new Texture(img);
+        tex.needsUpdate = true;
+        const material = new MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 1, map: tex });
         this.envelops = [];
 
         const configs = [{
@@ -492,11 +496,24 @@ export default class UniversView {
             //     z: getRandom(-100, 100),
             // };
 
-            const pos = {
-                x: 0,
-                y: 0,
-                z: initZ,
-            };
+            let pos;
+
+            if (i === 0) {
+                pos = {
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                };
+
+            } else {
+                pos = {
+                    x: Math.cos(i) * 100,
+                    y: 0,
+                    z: Math.sin(i) * 100,
+                };
+
+            }
+
 
             initZ -= 40;
 
@@ -693,32 +710,32 @@ export default class UniversView {
         this.dof.uniforms['znear'].value = this.camera.near; //this.camera clipping start
         this.dof.uniforms['zfar'].value = this.camera.far; //this.camera clipping end
 
-        this.dof.uniforms['focalDepth'].value = 5; //focal distance value in meters, but you may use autofocus option below
+        this.dof.uniforms['focalDepth'].value = 200; //focal distance value in meters, but you may use autofocus option below
         this.dof.uniforms['focalLength'].value = this.camera.focalLength; //focal length in mm
-        this.dof.uniforms['fstop'].value = 8.0; //f-stop value
+        this.dof.uniforms['fstop'].value = 1.8; //f-stop value
         this.dof.uniforms['showFocus'].value = false; //show debug focus point and focal range (orange = focal point, blue = focal range)
 
         this.dof.uniforms['manualdof'].value = false; //manual dof calculation
         this.dof.uniforms['ndofstart'].value = 1.0; //near dof blur start
-        this.dof.uniforms['ndofdist'].value = 2.0; //near dof blur falloff distance	
+        this.dof.uniforms['ndofdist'].value = 2.0; //near dof blur falloff distance 
         this.dof.uniforms['fdofstart'].value = 2.0; //far dof blur start
-        this.dof.uniforms['fdofdist'].value = 3.0; //far dof blur falloff distance	
+        this.dof.uniforms['fdofdist'].value = 3.0; //far dof blur falloff distance  
 
-        this.dof.uniforms['CoC'].value = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)	
+        this.dof.uniforms['CoC'].value = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)    
 
         this.dof.uniforms['vignetting'].value = true; //use optical lens vignetting?
         this.dof.uniforms['vignout'].value = 1.3; //vignetting outer border
         this.dof.uniforms['vignin'].value = 0.1; //vignetting inner border
-        this.dof.uniforms['vignfade'].value = 22.0; //f-stops till vignete fades	
+        this.dof.uniforms['vignfade'].value = 22.0; //f-stops till vignete fades    
 
         this.dof.uniforms['autofocus'].value = false; //use autofocus in shader? disable if you use external focalDepth value
         this.dof.uniforms['focus'].value.set(0.5, 0.5); // autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right) 
-        this.dof.uniforms['maxblur'].value = 2.0; //clamp value of max blur (0.0 = no blur,1.0 default)	
+        this.dof.uniforms['maxblur'].value = 4.3; //clamp value of max blur (0.0 = no blur,1.0 default) 
 
         this.dof.uniforms['threshold'].value = 0.5; //highlight threshold;
         this.dof.uniforms['gain'].value = 2.0; //highlight gain;
 
-        this.dof.uniforms['bias'].value = 0.5; //bokeh edge bias		
+        this.dof.uniforms['bias'].value = 0.5; //bokeh edge bias        
         this.dof.uniforms['fringe'].value = 3.7; //bokeh chromatic aberration/fringing
 
         this.dof.uniforms['noise'].value = true; //use noise instead of pattern for sample dithering
@@ -986,7 +1003,7 @@ export default class UniversView {
                 this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
                 this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
                 // if (i === 0) {
-                // 	 console.log(this.asteroids[i].body.angularVelocity.x);
+                //   console.log(this.asteroids[i].body.angularVelocity.x);
                 // }
 
 
@@ -1047,7 +1064,7 @@ export default class UniversView {
 
     updateCamera() {
         console.log();
-        this.camera.setLens(this.camera.focalLength, this.camera.frameSize);
+        this.camera.setFocalLength(this.camera.focalLength, this.camera.frameSize);
         this.camera.updateProjectionMatrix();
         this.dof.uniforms['focalLength'].value = this.camera.focalLength;
     }
