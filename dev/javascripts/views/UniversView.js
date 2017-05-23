@@ -298,7 +298,7 @@ export default class UniversView {
 
         this.effectController = {
 
-            blur: 8.0,
+            blur: 4.0,
             horizontalBlur: 0.5,
             enabled: true
             // diffuse: 0.0
@@ -365,8 +365,8 @@ export default class UniversView {
         );
 
         this.camera.position.x = 0;
-        this.camera.position.y = 50;
-        this.camera.position.z = 150;
+        this.camera.position.y = 0;
+        this.camera.position.z = 200;
 
         // this.camera.focalLength = 45;
         // this.camera.frameSize = 32;
