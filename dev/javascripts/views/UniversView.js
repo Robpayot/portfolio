@@ -160,11 +160,11 @@ export default class UniversView {
         this.effectController = {
 
             enabled: true,
-            jsDepthCalculation: true,
+            jsDepthCalculation: false,
             shaderFocus: false,
 
             fstop: 0.02,
-            maxblur: 2.0,
+            maxblur: 0.8,
 
             showFocus: false,
             focalDepth: 125.0,
@@ -173,12 +173,12 @@ export default class UniversView {
             depthblur: false,
 
             threshold: 0.5,
-            gain: 2.0,
-            bias: 0.5,
-            fringe: 0.7,
+            gain: 0.0,
+            bias: 3.0,
+            fringe: 0.8,
 
             focalLength: 18,
-            noise: true,
+            noise: false,
             pentagon: false,
 
             dithering: 0.0001
@@ -758,7 +758,7 @@ export default class UniversView {
 
         this.shaderSettings = {
             rings: 3,
-            samples: 4
+            samples: 1
         };
 
         this.renderer.sortObjects = false;
