@@ -874,7 +874,7 @@ export default class UniversView {
 
         this.vblur.renderToScreen = true;
         this.hblur.renderToScreen = true;
-        // this.effectFXAA.renderToScreen = true;
+        this.effectFXAA.renderToScreen = true;
 
         this.composer = new EffectComposer(this.renderer, this.renderTarget);
 
