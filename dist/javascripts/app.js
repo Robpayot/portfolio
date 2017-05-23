@@ -5955,6 +5955,9 @@ var UniversView = function () {
         key: 'resizeHandler',
         value: function resizeHandler() {
 
+            this.width = window.innerWidth * window.devicePixelRatio;
+            this.height = window.innerHeight * window.devicePixelRatio;
+
             // Update camera
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
@@ -5962,6 +5965,13 @@ var UniversView = function () {
             // Update canvas size
             this.renderer.setSize(window.innerWidth, window.innerHeight);
             this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+
+            this.composer.setSize(this.width, this.height);
+
+            this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+            this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
+
+            this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
         }
     }, {
         key: 'raf',

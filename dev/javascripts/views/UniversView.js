@@ -63,7 +63,7 @@ export default class UniversView {
         this.glow = 1;
         this.nbAst = 20;
 
-        
+
         this.width = window.innerWidth * window.devicePixelRatio;
         this.height = window.innerHeight * window.devicePixelRatio;
 
@@ -302,9 +302,9 @@ export default class UniversView {
             blur: 4.0,
             horizontalBlur: 0.5,
             enabled: true
-            // diffuse: 0.0
-            // verticalBlurR: 0.5,
-            // horizontalBlurR: 0.5
+                // diffuse: 0.0
+                // verticalBlurR: 0.5,
+                // horizontalBlurR: 0.5
 
         };
 
@@ -959,6 +959,9 @@ export default class UniversView {
 
     resizeHandler() {
 
+        this.width = window.innerWidth * window.devicePixelRatio;
+        this.height = window.innerHeight * window.devicePixelRatio;
+
         // Update camera
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
@@ -966,6 +969,13 @@ export default class UniversView {
         // Update canvas size
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+
+        this.composer.setSize(this.width, this.height);
+
+        this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+        this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
+
+        this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
     }
 
