@@ -15,6 +15,9 @@ import PreloadManager from '../managers/PreloadManager';
 import { THREEx } from '../vendors/threex/threex.js'; // glow shader
 import { DoFShader } from '../vendors/DoFShader.js'; // DOF shader
 import { BokehShader } from '../vendors/BokehShader2.js'; // DOF2 shader
+import { FXAAShader } from '../vendors/FXAAShader.js'; // FXAA shader
+import { HorizontalTiltShiftShader } from '../vendors/HorizontalTiltShiftShader.js'; // HorizontalTiltShiftShader shader
+import { VerticalTiltShiftShader } from '../vendors/VerticalTiltShiftShader.js'; // VerticalTiltShiftShader shader
 
 
 
@@ -35,7 +38,7 @@ export default class UniversView {
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.updateCamera = this.updateCamera.bind(this);
         this.shaderUpdate = this.shaderUpdate.bind(this);
-        
+
 
 
 
@@ -159,33 +162,33 @@ export default class UniversView {
 
         this.renderer.autoClear = false;
 
-        this.effectController = {
+        // this.effectController = {
 
-            enabled: true,
-            jsDepthCalculation: false,
-            shaderFocus: false,
+        //     enabled: true,
+        //     jsDepthCalculation: false,
+        //     shaderFocus: false,
 
-            fstop: 0.02,
-            maxblur: 0.8,
+        //     fstop: 0.02,
+        //     maxblur: 0.8,
 
-            showFocus: false,
-            focalDepth: 125.0,
-            manualdof: false,
-            vignetting: false,
-            depthblur: false,
+        //     showFocus: false,
+        //     focalDepth: 125.0,
+        //     manualdof: false,
+        //     vignetting: false,
+        //     depthblur: false,
 
-            threshold: 0.5,
-            gain: 0.0,
-            bias: 3.0,
-            fringe: 0.8,
+        //     threshold: 0.5,
+        //     gain: 0.0,
+        //     bias: 3.0,
+        //     fringe: 0.8,
 
-            focalLength: 18,
-            noise: false,
-            pentagon: false,
+        //     focalLength: 18,
+        //     noise: false,
+        //     pentagon: false,
 
-            dithering: 0.0001
+        //     dithering: 0.0001
 
-        };
+        // };
 
         // var matChanger = function() {
 
@@ -281,6 +284,35 @@ export default class UniversView {
         // dofFolder.add(this.dof.uniforms.dbsize, 'value', 0, 5).name('blur size');
 
         // dofFolder.open();
+
+        var matChanger = (e) => {
+
+            this.hblur.uniforms['h'].value = this.effectController.blur / window.innerWidth;
+            this.vblur.uniforms['v'].value = this.effectController.blur / window.innerHeight;
+
+            this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
+
+            // this.hblur.uniforms['tDiffuse'].value = this.vblur.uniforms['tDiffuse'].value = this.effectController.diffuse;
+
+        }
+
+        this.effectController = {
+
+            blur: 8.0,
+            horizontalBlur: 0.5,
+            enabled: true
+            // diffuse: 0.0
+            // verticalBlurR: 0.5,
+            // horizontalBlurR: 0.5
+
+        };
+
+        this.sound.gui.add(this.effectController, "blur", 0.0, 20.0, 0.001).listen().onChange(matChanger);
+        this.sound.gui.add(this.effectController, "horizontalBlur", 0.0, 1.0, 0.001).listen().onChange(matChanger);
+        this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "verticalBlurR", -1.0, 1.0, 0.001).listen().onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "horizontalBlurR", -1.0, 1.0, 0.001).listen().onChange(matChanger);
+
         this.events(true);
 
 
@@ -813,7 +845,44 @@ export default class UniversView {
     }
 
     setBlur() {
-        console.log('oui');
+
+        // COMPOSER
+
+        this.renderer.autoClear = false;
+
+        var renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
+        this.renderTarget = new WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters);
+
+        this.effectFXAA = new ShaderPass(FXAAShader);
+
+        this.hblur = new ShaderPass(HorizontalTiltShiftShader);
+        this.vblur = new ShaderPass(VerticalTiltShiftShader);
+
+        var bluriness = 8;
+
+        this.hblur.uniforms['h'].value = bluriness / window.innerWidth;
+        this.vblur.uniforms['v'].value = bluriness / window.innerHeight;
+
+        this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = 0.5;
+
+        this.effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+
+        this.composer = new EffectComposer(this.renderer, this.renderTarget);
+
+        var renderModel = new RenderPass(this.scene, this.camera);
+
+        this.vblur.renderToScreen = true;
+        this.hblur.renderToScreen = true;
+        // this.effectFXAA.renderToScreen = true;
+
+        this.composer = new EffectComposer(this.renderer, this.renderTarget);
+
+        this.composer.addPass(renderModel);
+
+        this.composer.addPass(this.effectFXAA);
+
+        this.composer.addPass(this.hblur);
+        this.composer.addPass(this.vblur);
     }
 
     onClick(e) {
@@ -1060,10 +1129,20 @@ export default class UniversView {
 
         // } else {
 
-            this.scene.overrideMaterial = null;
+        // this.scene.overrideMaterial = null;
 
+        // this.renderer.clear();
+        // this.renderer.render(this.scene, this.camera);
+
+        if (this.effectController.enabled === true) {
+            this.composer.render(this.scene, this.camera);
+        } else {
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
+
+        }
+
+
 
         // }
 
