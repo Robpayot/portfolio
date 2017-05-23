@@ -341,20 +341,25 @@ body {
   top: 0;
   z-index: 20;
   display: -webkit-box;
+  display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
   display: none; }
   .jauge .frequencies {
     margin: 0px auto;
     display: -webkit-box;
+    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
+    -webkit-align-self: center;
     -ms-flex-item-align: center;
     align-self: center;
+    -webkit-justify-content: space-around;
     -ms-flex-pack: distribute;
     justify-content: space-around;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
     width: 100%;
