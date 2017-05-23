@@ -5871,7 +5871,7 @@ var UniversView = function () {
 
             this.vblur.renderToScreen = true;
             this.hblur.renderToScreen = true;
-            // this.effectFXAA.renderToScreen = true;
+            this.effectFXAA.renderToScreen = true;
 
             this.composer = new _threeEffectcomposerEs2.default(this.renderer, this.renderTarget);
 
