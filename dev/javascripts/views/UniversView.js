@@ -63,9 +63,9 @@ export default class UniversView {
         this.glow = 1;
         this.nbAst = 20;
 
-        // Set the canvas size.
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        
+        this.width = window.innerWidth * window.devicePixelRatio;
+        this.height = window.innerHeight * window.devicePixelRatio;
 
         // Set Camera.
         this.setCamera();
@@ -104,7 +104,8 @@ export default class UniversView {
         // Set CssRenderer and WebGLRenderer 
 
         this.cssRenderer = new CSS3DRendererIE();
-        this.cssRenderer.setSize(this.width, this.height);
+        // Set the canvas size.
+        this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
         this.cssRenderer.domElement.style.position = 'absolute';
         this.cssRenderer.domElement.style.top = 0;
         this.cssRenderer.domElement.style.left = 0;
@@ -114,7 +115,7 @@ export default class UniversView {
         this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setClearColor(0xffffff, 1);
 
-        this.renderer.setSize(this.width, this.height);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
 
         this.renderer.domElement.style.position = 'absolute';
         this.renderer.domElement.style.top = 0;
@@ -287,8 +288,8 @@ export default class UniversView {
 
         var matChanger = (e) => {
 
-            this.hblur.uniforms['h'].value = this.effectController.blur / window.innerWidth;
-            this.vblur.uniforms['v'].value = this.effectController.blur / window.innerHeight;
+            this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+            this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
             this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
 
@@ -353,7 +354,7 @@ export default class UniversView {
     setCamera() {
 
         this.fov = 45;
-        this.aspect = this.width / this.height;
+        this.aspect = window.innerWidth / window.innerHeight;
         this.near = 1;
         this.far = 3000;
 
@@ -851,7 +852,7 @@ export default class UniversView {
         this.renderer.autoClear = false;
 
         var renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
-        this.renderTarget = new WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters);
+        this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
 
         this.effectFXAA = new ShaderPass(FXAAShader);
 
@@ -860,12 +861,12 @@ export default class UniversView {
 
         var bluriness = 8;
 
-        this.hblur.uniforms['h'].value = bluriness / window.innerWidth;
-        this.vblur.uniforms['v'].value = bluriness / window.innerHeight;
+        this.hblur.uniforms['h'].value = bluriness / this.width;
+        this.vblur.uniforms['v'].value = bluriness / this.height;
 
         this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = 0.5;
 
-        this.effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
         this.composer = new EffectComposer(this.renderer, this.renderTarget);
 
@@ -951,8 +952,8 @@ export default class UniversView {
 
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
-        this.mouse.x = (event.clientX / this.width) * 2 - 1;
-        this.mouse.y = -(event.clientY / this.height) * 2 + 1;
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         // console.log(this.mouse);
     }
 
