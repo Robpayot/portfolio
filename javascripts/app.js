@@ -5300,7 +5300,7 @@ var UniversView = function () {
             console.log(img);
             var tex = new _three.Texture(img);
             tex.needsUpdate = true;
-            var material = new _three.MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 1, map: tex });
+            var material = new _three.MeshPhongMaterial({ color: 0x010101, transparent: true, opacity: 1 });
             this.envelops = [];
 
             var configs = [{
@@ -5409,33 +5409,36 @@ var UniversView = function () {
                 opacity: 1,
                 map: tex
             };
-            var material = new _three.MeshBasicMaterial(matPhongParams);
+            var material = new _three.MeshLambertMaterial(matPhongParams);
 
             var initZ = 100;
 
             for (var i = 0; i < this.nbAst; i++) {
 
-                // const pos = {
-                //     x: getRandom(-100, 100),
-                //     y: getRandom(-100, 100),
-                //     z: getRandom(-100, 100),
-                // };
+                var pos = {
+                    x: (0, _utils.getRandom)(-100, 100),
+                    y: (0, _utils.getRandom)(-100, 100),
+                    z: (0, _utils.getRandom)(-100, 100)
+                };
 
-                var pos = void 0;
+                // let pos;
 
-                if (i === 0) {
-                    pos = {
-                        x: 0,
-                        y: 0,
-                        z: 0
-                    };
-                } else {
-                    pos = {
-                        x: Math.cos(i) * 100,
-                        y: 0,
-                        z: Math.sin(i) * 100
-                    };
-                }
+                // if (i === 0) {
+                //     pos = {
+                //         x: 0,
+                //         y: 0,
+                //         z: 0,
+                //     };
+
+                // } else {
+                //     pos = {
+                //         x: Math.cos(i) * 100,
+                //         y: 0,
+                //         z: Math.sin(i) * 100,
+                //     };
+
+                // }
+
 
                 initZ -= 40;
 
@@ -5639,7 +5642,7 @@ var UniversView = function () {
             var height = window.innerHeight;
 
             this.shaderSettings = {
-                rings: 3,
+                rings: 2,
                 samples: 1
             };
 
@@ -5870,12 +5873,12 @@ var UniversView = function () {
                 if (this.asteroids[_i2].body !== undefined) {
 
                     // APPLY IMPULSE
-                    // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                    // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                    // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+                    this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
+                    this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
+                    this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
 
                     // console.log(this.asteroids[i].body.angularVelocity);
-                    // angular Velocity always inferior to 5 (or too much rotations)
+                    // angular Velocity always inferior to 1 (or too much rotations)
 
                     this.asteroids[_i2].body.angularVelocity.x = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.x, -1, 1);
                     this.asteroids[_i2].body.angularVelocity.y = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.y, -1, 1);
@@ -5885,9 +5888,8 @@ var UniversView = function () {
                     // }
 
 
-                    // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                    // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
-
+                    this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
+                    this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
                 }
             }
 
