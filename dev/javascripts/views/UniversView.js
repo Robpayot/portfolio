@@ -132,7 +132,9 @@ export default class UniversView {
         // set Depth of Field
         // this.setDOF();
         // set Depth of Field 2
-        this.setDOF2();
+        // this.setDOF2();
+        // Set BLUR EFFECT
+        this.setBlur();
 
         /////////////////
         // GUI
@@ -185,52 +187,52 @@ export default class UniversView {
 
         };
 
-        var matChanger = function() {
+        // var matChanger = function() {
 
 
-            for (var e in this.effectController) {
-                if (e in this.postprocessing.bokeh_uniforms)
-                    this.postprocessing.bokeh_uniforms[e].value = this.effectController[e];
-            }
+        //     for (var e in this.effectController) {
+        //         if (e in this.postprocessing.bokeh_uniforms)
+        //             this.postprocessing.bokeh_uniforms[e].value = this.effectController[e];
+        //     }
 
-            this.postprocessing.enabled = this.effectController.enabled;
-            this.postprocessing.bokeh_uniforms['znear'].value = this.camera.near;
-            this.postprocessing.bokeh_uniforms['zfar'].value = this.camera.far;
-            this.camera.setFocalLength(this.effectController.focalLength);
+        //     this.postprocessing.enabled = this.effectController.enabled;
+        //     this.postprocessing.bokeh_uniforms['znear'].value = this.camera.near;
+        //     this.postprocessing.bokeh_uniforms['zfar'].value = this.camera.far;
+        //     this.camera.setFocalLength(this.effectController.focalLength);
 
-        }.bind(this);
+        // }.bind(this);
 
-        this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
-        this.sound.gui.add(this.effectController, "focalDepth", 0.0, 500.0, 0.001).listen().onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "focalDepth", 0.0, 500.0, 0.001).listen().onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "fstop", -5, 12, 0.001).onChange(matChanger);
-        this.sound.gui.add(this.effectController, "maxblur", 0.0, 10.0, 0.025).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "fstop", -5, 12, 0.001).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "maxblur", 0.0, 10.0, 0.025).onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "vignetting").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
+        // // this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
+        // // this.sound.gui.add(this.effectController, "vignetting").onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "depthblur").onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "depthblur").onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "threshold", 0, 1, 0.001).onChange(matChanger);
-        this.sound.gui.add(this.effectController, "gain", 0, 100, 0.001).onChange(matChanger);
-        this.sound.gui.add(this.effectController, "bias", 0, 3, 0.001).onChange(matChanger);
-        this.sound.gui.add(this.effectController, "fringe", 0, 5, 0.001).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "threshold", 0, 1, 0.001).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "gain", 0, 100, 0.001).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "bias", 0, 3, 0.001).onChange(matChanger);
+        // this.sound.gui.add(this.effectController, "fringe", 0, 5, 0.001).onChange(matChanger);
 
-        this.sound.gui.add(this.effectController, "focalLength", -5, 80, 0.001).onChange(matChanger)
+        // this.sound.gui.add(this.effectController, "focalLength", -5, 80, 0.001).onChange(matChanger)
 
-        // this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
+        // // this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
 
-        // this.sound.gui.add(this.effectController, "dithering", 0, 0.001, 0.0001).onChange(matChanger);
+        // // this.sound.gui.add(this.effectController, "dithering", 0, 0.001, 0.0001).onChange(matChanger);
 
-        // this.sound.gui.add(this.effectController, "pentagon").onChange(matChanger);
+        // // this.sound.gui.add(this.effectController, "pentagon").onChange(matChanger);
 
-        this.sound.gui.add(this.shaderSettings, "rings", 1, 8).step(1).onChange(this.shaderUpdate);
-        this.sound.gui.add(this.shaderSettings, "samples", 1, 13).step(1).onChange(this.shaderUpdate);
+        // this.sound.gui.add(this.shaderSettings, "rings", 1, 8).step(1).onChange(this.shaderUpdate);
+        // this.sound.gui.add(this.shaderSettings, "samples", 1, 13).step(1).onChange(this.shaderUpdate);
 
-        matChanger();
+        // matChanger();
 
         // var gui,
         //     cameraFolder,
@@ -810,6 +812,10 @@ export default class UniversView {
         console.log(this.postprocessing);
     }
 
+    setBlur() {
+        console.log('oui');
+    }
+
     onClick(e) {
 
         if (this.clickSymbol === true) {
@@ -1033,33 +1039,33 @@ export default class UniversView {
         // this.scene.overrideMaterial = null;
 
         // this.composer.render();
-        if (this.postprocessing.enabled === true) {
+        // if (this.postprocessing.enabled === true) {
 
-            this.renderer.clear();
+        //     this.renderer.clear();
 
-            // Render scene into texture
+        //     // Render scene into texture
 
-            this.scene.overrideMaterial = null;
-            this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureColor, true);
+        //     this.scene.overrideMaterial = null;
+        //     this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureColor, true);
 
-            // Render depth into texture
+        //     // Render depth into texture
 
-            this.scene.overrideMaterial = this.material_depth;
-            this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureDepth, true);
+        //     this.scene.overrideMaterial = this.material_depth;
+        //     this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureDepth, true);
 
-            // Render bokeh composite
+        //     // Render bokeh composite
 
-            this.renderer.render(this.postprocessing.scene, this.postprocessing.camera);
+        //     this.renderer.render(this.postprocessing.scene, this.postprocessing.camera);
 
 
-        } else {
+        // } else {
 
             this.scene.overrideMaterial = null;
 
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
 
-        }
+        // }
 
         this.controls.update();
 
