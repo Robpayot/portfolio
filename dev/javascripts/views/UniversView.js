@@ -371,7 +371,7 @@ export default class UniversView {
         console.log(img);
         const tex = new Texture(img);
         tex.needsUpdate = true;
-        const material = new MeshPhongMaterial({ color: 0x00ffff, transparent: true, opacity: 1, map: tex });
+        const material = new MeshPhongMaterial({ color: 0x010101, transparent: true, opacity: 1 });
         this.envelops = [];
 
         const configs = [{
@@ -487,35 +487,35 @@ export default class UniversView {
             // emissive: new Color('rgb(255, 255, 255)'),
             // specular: new Color('rgb(255, 255, 255)')
         };
-        const material = new MeshBasicMaterial(matPhongParams);
+        const material = new MeshLambertMaterial(matPhongParams);
 
         let initZ = 100;
 
         for (let i = 0; i < this.nbAst; i++) {
 
-            // const pos = {
-            //     x: getRandom(-100, 100),
-            //     y: getRandom(-100, 100),
-            //     z: getRandom(-100, 100),
-            // };
+            const pos = {
+                x: getRandom(-100, 100),
+                y: getRandom(-100, 100),
+                z: getRandom(-100, 100),
+            };
 
-            let pos;
+            // let pos;
 
-            if (i === 0) {
-                pos = {
-                    x: 0,
-                    y: 0,
-                    z: 0,
-                };
+            // if (i === 0) {
+            //     pos = {
+            //         x: 0,
+            //         y: 0,
+            //         z: 0,
+            //     };
 
-            } else {
-                pos = {
-                    x: Math.cos(i) * 100,
-                    y: 0,
-                    z: Math.sin(i) * 100,
-                };
+            // } else {
+            //     pos = {
+            //         x: Math.cos(i) * 100,
+            //         y: 0,
+            //         z: Math.sin(i) * 100,
+            //     };
 
-            }
+            // }
 
 
             initZ -= 40;
@@ -757,7 +757,7 @@ export default class UniversView {
         let height = window.innerHeight;
 
         this.shaderSettings = {
-            rings: 3,
+            rings: 2,
             samples: 1
         };
 
@@ -995,12 +995,12 @@ export default class UniversView {
             if (this.asteroids[i].body !== undefined) {
 
                 // APPLY IMPULSE
-                // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
                 // console.log(this.asteroids[i].body.angularVelocity);
-                // angular Velocity always inferior to 5 (or too much rotations)
+                // angular Velocity always inferior to 1 (or too much rotations)
 
                 this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
                 this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
@@ -1010,8 +1010,8 @@ export default class UniversView {
                 // }
 
 
-                // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
 
             }
