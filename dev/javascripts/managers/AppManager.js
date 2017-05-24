@@ -93,7 +93,7 @@ class AppManager {
         // if (window.innerWidth > 1024) {
         //     Device.size = 'desktop';
         // }
-        console.log('resize');
+        // console.log('resize');
 
         EmitterManager.emit('resize', window.innerWidth, window.innerHeight);
 
