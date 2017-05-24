@@ -1,0 +1,19 @@
+/* ------------------------------------------------------------------ */
+/*        TITLE DECLARATION
+/* ------------------------------------------------------------------ */
+
+.title {
+    // @extend %smooth; // Optionnal
+    // @extend %Regular;
+
+    // Variants, can be .title--1 or .title--main
+    // if your prefer order your titles by slugs
+
+    &--1 {
+
+    }
+
+    &--2 {
+
+    }
+}

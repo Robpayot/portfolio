@@ -1,0 +1,63 @@
+{
+  "name": "Xp-son",
+  "author": "Robin Payot - robpayot@gmail.com",
+  "description": "xp-son folio",
+  "version": "0.0.2",
+  "scripts": {
+    "watch": "gulp",
+    "build": "gulp --env=production"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "~6.18.0",
+    "babelify": "^7.3.0",
+    "bean": "^1.0.15",
+    "browser-sync": "~2.18.5",
+    "browserify": "~13.1.1",
+    "browserify-shim": "~3.8.12",
+    "component-emitter": "^1.2.1",
+    "create-js": "0.0.1",
+    "dat-gui": "^0.5.0",
+    "deamdify": "~0.2.0",
+    "del": "~2.2.2",
+    "extfs": "~0.0.7",
+    "gsap": "^1.19.1",
+    "gulp": "~3.9.1",
+    "gulp-autoprefixer": "~3.1.0",
+    "gulp-changed": "~1.3.0",
+    "gulp-clean-css": "~2.3.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-if": "~2.0.0",
+    "gulp-jsonminify": "~1.0.0",
+    "gulp-notify": "~2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sass": "~3.0.0",
+    "gulp-shell": "~0.5.2",
+    "gulp-sourcemaps": "~1.9.1",
+    "gulp-strip-debug": "~1.1.0",
+    "gulp-uglify": "~2.0.0",
+    "gulp-util": "3.0.8",
+    "gulp-yaml": "~1.0.1",
+    "lodash.assign": "~4.2.0",
+    "oimo": "^1.0.9",
+    "preload-js": "^0.6.3",
+    "shimify": "0.0.0",
+    "sono": "^0.1.85",
+    "three": "^0.84.0",
+    "three-effectcomposer": "0.0.1",
+    "three-effectcomposer-es6": "0.0.4",
+    "vinyl-buffer": "~1.0.0",
+    "vinyl-source-stream": "~1.1.0",
+    "watchify": "~3.8.0"
+  },
+  "dependencies": {
+    "@84paris/84.tools": "~0.0.2",
+    "babel": "~6.5.2",
+    "babel-polyfill": "~6.20.0"
+  },
+  "browser": {
+    "modernizr": "./dev/javascripts/vendors/modernizr.js"
+  },
+  "browserify-shim": {
+    "modernizr": "Modernizr"
+  }
+}

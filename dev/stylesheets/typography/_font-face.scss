@@ -1,0 +1,62 @@
+/* ------------------------------------------------------------------ */
+/*        FONT FACE DECLARATION
+/* ------------------------------------------------------------------ */
+
+@font-face {
+    font-family: 'Avenir-black';
+    src: url('../fonts/AvenirLTStd-Black.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*
+
+@font-face {
+    font-family: 'regular';
+    src: font-url('regular.eot');
+    src: font-url('regular.eot?#iefix') format('embedded-opentype'),
+         font-url('regular.woff') format('woff'),
+         font-url('regular.ttf') format('truetype'),
+         font-url('regular.svg#futura_std_bookregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'italic';
+    src: font-url('italic.eot');
+    src: font-url('italic.eot?#iefix') format('embedded-opentype'),
+         font-url('italic.woff') format('woff'),
+         font-url('italic.ttf') format('truetype'),
+         font-url('italic.svg#futura_std_bookregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+*/
+
+
+/* ------------------------------------------------------------------ */
+/*        VARIABLES DECLARATION
+/* ------------------------------------------------------------------ */
+
+// %Regular {
+// @extend %smooth; // Optionnal
+// font-family: 'regular';
+// }
+//
+// %Italic {
+// @extend %smooth; // Optionnal
+// font-family: 'italic';
+// }
+
+
+/* ------------------------------------------------------------------ */
+/*        GLOBAL
+/* ------------------------------------------------------------------ */
+
+body {
+    // @extend %Regular;
+    font-size:$base-font-size;
+    line-height:$base-line-height;
+}

@@ -1,0 +1,12 @@
+/* ------------------------------------------------------------------ */
+/*        ARROW
+/* ------------------------------------------------------------------ */
+
+@mixin arrow($size: 10px, $colors: black null null null){
+    $colors: unpack($colors);
+    border-color: nth($colors, 1) nth($colors, 2) nth($colors, 3) nth($colors, 4);
+    border-style:solid;
+    border-width:$size;
+    width:0;
+    height:0;
+}

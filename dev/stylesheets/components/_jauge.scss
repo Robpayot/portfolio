@@ -1,0 +1,62 @@
+.jauge {
+	position: absolute;
+	width: 100px;
+	height: 100vh;
+	left: 10px; 
+	opacity: 0.5;
+	top: 0;
+	z-index: 20;
+	display: flex;
+	display: none;
+    .frequencies {
+        margin: 0px auto;
+        display: flex;
+        align-self: center;
+        justify-content: space-around;
+        flex-direction: column;
+        width: 100%;
+        max-width: 900px;
+        height: 300px;
+        li {
+            display: inline-block;
+            text-align: center;
+            position: relative;
+        }
+        .circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0px auto;
+            position: absolute;
+            transform-origin: center center;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .hight {
+            // margin: 50px;
+            .circle {
+                background-color: tomato;
+            }
+        }
+        h1 {
+        	z-index: 10;
+        	position: relative;
+        	text-align: center;
+        	// transform: translate(-50%, -50%);
+
+        }
+        .medium {
+            // margin: 50px;
+            .circle {
+                background-color: lime;
+            }
+        }
+        .low {
+            // margin: 50px;
+            .circle {
+                background-color: Steelblue;
+            }
+        }
+    }
+}

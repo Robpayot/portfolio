@@ -1,0 +1,41 @@
+/* ------------------------------------------------------------------ */
+/*        ATTENTION
+/* ------------------------------------------------------------------ */
+
+@mixin attention($href:false, $others:false) {
+
+    @if $others != false {
+        @if $href == false {
+            &.#{$others},
+            &:hover,
+            &:focus {
+                @content;
+            }
+        }
+
+        @if $href == true {
+            &[href].#{$others},
+            &[href]:hover,
+            &[href]:focus {
+                @content;
+            }
+        }
+    }
+
+    @else {
+        @if $href == false {
+            &:hover,
+            &:focus {
+                @content;
+            }
+        }
+
+        @if $href == true {
+            &[href]:hover,
+            &[href]:focus {
+                @content;
+            }
+        }
+    }
+
+}
