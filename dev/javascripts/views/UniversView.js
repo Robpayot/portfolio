@@ -1,23 +1,24 @@
+import EmitterManager from '../managers/EmitterManager';
+import SoundManager from '../managers/SoundManager';
+import { getRandom, toRadian, clamp } from '../helpers/utils';
+import Envelop from '../shapes/Envelop';
+import Symbol from '../shapes/Symbol';
+import Asteroid from '../shapes/Asteroid';
+import PreloadManager from '../managers/PreloadManager';
+
+// THREE JS
 import { WebGLRenderer, DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
 import { World } from 'oimo';
-import { getRandom, toRadian, clamp } from '../helpers/utils';
-import EmitterManager from '../managers/EmitterManager';
-import SoundManager from '../managers/SoundManager';
-import Envelop from '../shapes/Envelop';
-import Symbol from '../shapes/Symbol';
-import Asteroid from '../shapes/Asteroid';
-import PreloadManager from '../managers/PreloadManager';
 
-import { THREEx } from '../vendors/threex/threex.js'; // glow shader
-import { DoFShader } from '../vendors/DoFShader.js'; // DOF shader
-import { BokehShader } from '../vendors/BokehShader2.js'; // DOF2 shader
-import { FXAAShader } from '../vendors/FXAAShader.js'; // FXAA shader
-import { HorizontalTiltShiftShader } from '../vendors/HorizontalTiltShiftShader.js'; // HorizontalTiltShiftShader shader
-import { VerticalTiltShiftShader } from '../vendors/VerticalTiltShiftShader.js'; // VerticalTiltShiftShader shader
+// POSTPROCESSING
+import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
+import { FXAAShader } from '../shaders/FXAAShader'; // FXAA shader
+import { HorizontalTiltShiftShader } from '../shaders/HorizontalTiltShiftShader'; // HorizontalTiltShiftShader shader
+import { VerticalTiltShiftShader } from '../shaders/VerticalTiltShiftShader'; // VerticalTiltShiftShader shader
 
 
 
@@ -36,17 +37,13 @@ export default class UniversView {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
-        this.updateCamera = this.updateCamera.bind(this);
-        this.shaderUpdate = this.shaderUpdate.bind(this);
-
+        this.onChangeBlur = this.onChangeBlur.bind(this);
 
 
 
         this.sound = SoundManager;
 
         this.start();
-
-        console.log(window.devicePixelRatio);
 
 
     }
@@ -63,7 +60,7 @@ export default class UniversView {
         this.glow = 1;
         this.nbAst = 20;
 
-
+        // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
         this.height = window.innerHeight * window.devicePixelRatio;
 
@@ -76,8 +73,6 @@ export default class UniversView {
 
         // Set physics
         this.initPhysics();
-
-
 
         // Set symbol
         this.setSymbol();
@@ -112,7 +107,7 @@ export default class UniversView {
         this.cssRenderer.domElement.style.zIndex = 1;
         this.cssRenderer.domElement.classList.add('container3D');
 
-        this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
         this.renderer.setClearColor(0xffffff, 1);
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -123,29 +118,23 @@ export default class UniversView {
         this.renderer.domElement.classList.add('webGl');
         this.cssRenderer.domElement.appendChild(this.renderer.domElement);
 
+
         this.ui.el.appendChild(this.cssRenderer.domElement);
 
         // Camera controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = true;
 
-        ////////////////////
-        // POST PROCESSING
-        ////////////////////
-
-        // set Depth of Field
-        // this.setDOF();
-        // set Depth of Field 2
-        // this.setDOF2();
-        // Set BLUR EFFECT
-        this.setBlur();
-
         /////////////////
         // GUI
         /////////////////
 
-        this.guiParams = {
-            gravity: false,
+        this.effectController = {
+            // blur
+            blur: 4.0,
+            horizontalBlur: 0.5,
+            enabled: true,
+            // glow
             coeficient: 1,
             power: 2,
             glowColor: 0xffffff,
@@ -153,188 +142,55 @@ export default class UniversView {
             powerOut: 2,
             glowColorOut: 0xffffff
         };
-        // this.sound.gui.add(this.guiParams, 'gravity').onChange(this.reset);
-        // this.sound.gui.add(this.guiParams, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow)
-        // this.sound.gui.add(this.guiParams, 'power', 0.0, 5).listen().onChange(this.onChangeGlow)
-        // this.sound.gui.addColor(this.guiParams, 'glowColor').listen().onChange(this.onChangeGlow)
-        // this.sound.gui.add(this.guiParams, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow)
-        // this.sound.gui.add(this.guiParams, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow)
-        // this.sound.gui.addColor(this.guiParams, 'glowColorOut').listen().onChange(this.onChangeGlow)
 
-        this.renderer.autoClear = false;
+        // Blur
+        const blurFolder = this.sound.gui.addFolder('Blur');
+        blurFolder.add(this.effectController, "blur", 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
+        blurFolder.add(this.effectController, "horizontalBlur", 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
+        blurFolder.add(this.effectController, "enabled").onChange(this.onChangeBlur);
+        blurFolder.open();
 
-        // this.effectController = {
+        // Glow
+        const glowFolder = this.sound.gui.addFolder('Glow');
+        glowFolder.add(this.effectController, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow);
+        glowFolder.add(this.effectController, 'power', 0.0, 5).listen().onChange(this.onChangeGlow);
+        glowFolder.addColor(this.effectController, 'glowColor').listen().onChange(this.onChangeGlow);
+        glowFolder.add(this.effectController, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow);
+        glowFolder.add(this.effectController, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow);
+        glowFolder.addColor(this.effectController, 'glowColorOut').listen().onChange(this.onChangeGlow);
 
-        //     enabled: true,
-        //     jsDepthCalculation: false,
-        //     shaderFocus: false,
+        ////////////////////
+        // POST PROCESSING
+        ////////////////////
 
-        //     fstop: 0.02,
-        //     maxblur: 0.8,
-
-        //     showFocus: false,
-        //     focalDepth: 125.0,
-        //     manualdof: false,
-        //     vignetting: false,
-        //     depthblur: false,
-
-        //     threshold: 0.5,
-        //     gain: 0.0,
-        //     bias: 3.0,
-        //     fringe: 0.8,
-
-        //     focalLength: 18,
-        //     noise: false,
-        //     pentagon: false,
-
-        //     dithering: 0.0001
-
-        // };
-
-        // var matChanger = function() {
+        // Set BLUR EFFECT
+        this.setBlur();
 
 
-        //     for (var e in this.effectController) {
-        //         if (e in this.postprocessing.bokeh_uniforms)
-        //             this.postprocessing.bokeh_uniforms[e].value = this.effectController[e];
-        //     }
 
-        //     this.postprocessing.enabled = this.effectController.enabled;
-        //     this.postprocessing.bokeh_uniforms['znear'].value = this.camera.near;
-        //     this.postprocessing.bokeh_uniforms['zfar'].value = this.camera.far;
-        //     this.camera.setFocalLength(this.effectController.focalLength);
-
-        // }.bind(this);
-
-        // this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "jsDepthCalculation").onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "shaderFocus").onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "focalDepth", 0.0, 500.0, 0.001).listen().onChange(matChanger);
-
-        // this.sound.gui.add(this.effectController, "fstop", -5, 12, 0.001).onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "maxblur", 0.0, 10.0, 0.025).onChange(matChanger);
-
-        // this.sound.gui.add(this.effectController, "showFocus").onChange(matChanger);
-        // // this.sound.gui.add(this.effectController, "manualdof").onChange(matChanger);
-        // // this.sound.gui.add(this.effectController, "vignetting").onChange(matChanger);
-
-        // this.sound.gui.add(this.effectController, "depthblur").onChange(matChanger);
-
-        // this.sound.gui.add(this.effectController, "threshold", 0, 1, 0.001).onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "gain", 0, 100, 0.001).onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "bias", 0, 3, 0.001).onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "fringe", 0, 5, 0.001).onChange(matChanger);
-
-        // this.sound.gui.add(this.effectController, "focalLength", -5, 80, 0.001).onChange(matChanger)
-
-        // // this.sound.gui.add(this.effectController, "noise").onChange(matChanger);
-
-        // // this.sound.gui.add(this.effectController, "dithering", 0, 0.001, 0.0001).onChange(matChanger);
-
-        // // this.sound.gui.add(this.effectController, "pentagon").onChange(matChanger);
-
-        // this.sound.gui.add(this.shaderSettings, "rings", 1, 8).step(1).onChange(this.shaderUpdate);
-        // this.sound.gui.add(this.shaderSettings, "samples", 1, 13).step(1).onChange(this.shaderUpdate);
-
-        // matChanger();
-
-        // var gui,
-        //     cameraFolder,
-        //     cameraFocalLength,
-        //     _last;
-
-        // cameraFolder = this.sound.gui.addFolder('Camera');
-        // cameraFocalLength = cameraFolder.add(this.camera, 'focalLength', 28, 200).name('Focal Length');
-        // cameraFocalLength.onChange(this.updateCamera);
-        // cameraFolder.open();
-
-        // const dofFolder = this.sound.gui.addFolder('Depth of Field');
-        // dofFolder.add(this.dof.uniforms.focalDepth, 'value', 0, 500).name('Focal Depth');
-        // dofFolder.add(this.dof.uniforms.fstop, 'value', 0, 500).name('F Stop');
-        // dofFolder.add(this.dof.uniforms.maxblur, 'value', 0, 5).name('max blur');
-
-        // dofFolder.add(this.dof.uniforms.showFocus, 'value').name('Show Focal Range');
-
-        // dofFolder.add(this.dof.uniforms.manualdof, 'value').name('Manual DoF');
-        // dofFolder.add(this.dof.uniforms.ndofstart, 'value', 0, 200).name('near start');
-        // dofFolder.add(this.dof.uniforms.ndofdist, 'value', 0, 200).name('near falloff');
-        // dofFolder.add(this.dof.uniforms.fdofstart, 'value', 0, 200).name('far start');
-        // dofFolder.add(this.dof.uniforms.fdofdist, 'value', 0, 200).name('far falloff');
-
-        // dofFolder.add(this.dof.uniforms.CoC, 'value', 0, 0.1).step(0.001).name('circle of confusion');
-
-        // dofFolder.add(this.dof.uniforms.vignetting, 'value').name('Vignetting');
-        // dofFolder.add(this.dof.uniforms.vignout, 'value', 0, 2).name('outer border');
-        // dofFolder.add(this.dof.uniforms.vignin, 'value', 0, 1).step(0.01).name('inner border');
-        // dofFolder.add(this.dof.uniforms.vignfade, 'value', 0, 22).name('fade at');
-
-        // dofFolder.add(this.dof.uniforms.autofocus, 'value').name('Autofocus');
-        // dofFolder.add(this.dof.uniforms.focus.value, 'x', 0, 1).name('focus x');
-        // dofFolder.add(this.dof.uniforms.focus.value, 'y', 0, 1).name('focus y');
-
-        // dofFolder.add(this.dof.uniforms.threshold, 'value', 0, 1).step(0.01).name('threshold');
-        // dofFolder.add(this.dof.uniforms.gain, 'value', 0, 100).name('gain');
-
-        // dofFolder.add(this.dof.uniforms.bias, 'value', 0, 4).step(0.01).name('bias');
-        // dofFolder.add(this.dof.uniforms.fringe, 'value', 0, 5).step(0.01).name('fringe');
-
-        // dofFolder.add(this.dof.uniforms.noise, 'value').name('Use Noise');
-        // dofFolder.add(this.dof.uniforms.namount, 'value', 0, 0.001).step(0.0001).name('dither');
-
-        // dofFolder.add(this.dof.uniforms.depthblur, 'value').name('Blur Depth');
-        // dofFolder.add(this.dof.uniforms.dbsize, 'value', 0, 5).name('blur size');
-
-        // dofFolder.open();
-
-        var matChanger = (e) => {
-
-            this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
-            this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
-
-            this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
-
-            // this.hblur.uniforms['tDiffuse'].value = this.vblur.uniforms['tDiffuse'].value = this.effectController.diffuse;
-
-        }
-
-        this.effectController = {
-
-            blur: 4.0,
-            horizontalBlur: 0.5,
-            enabled: true
-                // diffuse: 0.0
-                // verticalBlurR: 0.5,
-                // horizontalBlurR: 0.5
-
-        };
-
-        this.sound.gui.add(this.effectController, "blur", 0.0, 20.0, 0.001).listen().onChange(matChanger);
-        this.sound.gui.add(this.effectController, "horizontalBlur", 0.0, 1.0, 0.001).listen().onChange(matChanger);
-        this.sound.gui.add(this.effectController, "enabled").onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "verticalBlurR", -1.0, 1.0, 0.001).listen().onChange(matChanger);
-        // this.sound.gui.add(this.effectController, "horizontalBlurR", -1.0, 1.0, 0.001).listen().onChange(matChanger);
+        ////////////////////
+        // EVENTS
+        ////////////////////
 
         this.events(true);
 
-
-
     }
 
-    shaderUpdate() {
-        this.postprocessing.materialBokeh.defines.RINGS = this.shaderSettings.rings;
-        this.postprocessing.materialBokeh.defines.SAMPLES = this.shaderSettings.samples;
+    onChangeBlur() {
+        this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+        this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
-        this.postprocessing.materialBokeh.needsUpdate = true;
+        this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
     }
 
     onChangeGlow() {
-        this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficient;
-        this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.guiParams.power;
-        this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColor);
+        this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.effectController.coeficient;
+        this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.effectController.power;
+        this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColor);
 
-        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.guiParams.coeficientOut;
-        this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.guiParams.powerOut;
-        this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.guiParams.glowColorOut);
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
     }
 
     events(method) {
@@ -353,25 +209,15 @@ export default class UniversView {
 
     setCamera() {
 
-        this.fov = 45;
-        this.aspect = window.innerWidth / window.innerHeight;
-        this.near = 1;
-        this.far = 3000;
-
         this.camera = new PerspectiveCamera(
-            this.fov,
-            this.aspect,
-            this.near,
-            this.far
+            45, // fov
+            window.innerWidth / window.innerHeight, // aspect
+            1, // near
+            3000 // far
         );
 
-        this.camera.position.x = 0;
-        this.camera.position.y = 0;
-        this.camera.position.z = 200;
+        this.camera.position.set(0, 0, 200);
 
-        // this.camera.focalLength = 45;
-        // this.camera.frameSize = 32;
-        // this.camera.setFocalLength(this.camera.focalLength, this.camera.frameSize);
     }
 
     initPhysics() {
@@ -383,11 +229,10 @@ export default class UniversView {
             worldscale: 1, // scale full world 
             random: true, // randomize sample
             info: false, // calculate statistic or not
-            gravity: [0, 0, 0]
+            gravity: [0, 0, 0] // 0 gravity
         });
 
         this.world.gravity.y = 0;
-
 
     }
 
@@ -403,7 +248,6 @@ export default class UniversView {
         const geometry = new BoxGeometry(width, height, depth);
         // 0x0101010,
         const img = PreloadManager.getResult('damier');
-        console.log(img);
         const tex = new Texture(img);
         tex.needsUpdate = true;
         const material = new MeshPhongMaterial({ color: 0x010101, transparent: true, opacity: 1 });
@@ -512,7 +356,7 @@ export default class UniversView {
 
         const matPhongParams = {
             // specular: 0xFFFFFF,
-            shininess: 3000,
+            // shininess: 3000,
             // color: 0x4682b4,
             transparent: true,
             opacity: 1,
@@ -524,8 +368,6 @@ export default class UniversView {
         };
         const material = new MeshLambertMaterial(matPhongParams);
 
-        let initZ = 100;
-
         for (let i = 0; i < this.nbAst; i++) {
 
             const pos = {
@@ -534,37 +376,16 @@ export default class UniversView {
                 z: getRandom(-100, 100),
             };
 
-            // let pos;
-
-            // if (i === 0) {
-            //     pos = {
-            //         x: 0,
-            //         y: 0,
-            //         z: 0,
-            //     };
-
-            // } else {
-            //     pos = {
-            //         x: Math.cos(i) * 100,
-            //         y: 0,
-            //         z: Math.sin(i) * 100,
-            //     };
-
-            // }
-
-
-            initZ -= 40;
-
             // Intra perimeter radius
             const ipRadius = 50;
 
-            // if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-            //     console.log(i, ' dans le périmetre !');
-            //     pos.x += ipRadius;
-            //     pos.y += ipRadius;
-            //     pos.z += ipRadius;
+            if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+                console.log(i, ' dans le périmetre !');
+                pos.x += ipRadius;
+                pos.y += ipRadius;
+                pos.z += ipRadius;
 
-            // }
+            }
 
             //  force impulsion
             const force = {
@@ -675,176 +496,6 @@ export default class UniversView {
 
     }
 
-    setDOF() {
-
-        // depth RGBA
-        ShaderLib.depthRGBA = {
-            uniforms: {},
-
-            vertexShader: [
-
-                ShaderChunk["morphtarget_pars_vertex"],
-                ShaderChunk["skinning_pars_vertex"],
-
-                "void main() {",
-
-                ShaderChunk["skinbase_vertex"],
-                ShaderChunk["morphtarget_vertex"],
-                ShaderChunk["skinning_vertex"],
-                ShaderChunk["default_vertex"],
-
-                "}"
-
-            ].join("\n"),
-
-            fragmentShader: [
-
-                "vec4 pack_depth( const in float depth ) {",
-
-                "const vec4 bit_shift = vec4( 256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0 );",
-                "const vec4 bit_mask  = vec4( 0.0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0 );",
-                "vec4 res = fract( depth * bit_shift );",
-                "res -= res.xxyz * bit_mask;",
-                "return res;",
-
-                "}",
-
-                "void main() {",
-
-                "gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );",
-
-                //"gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z / gl_FragCoord.w );",
-                //"float z = ( ( gl_FragCoord.z / gl_FragCoord.w ) - 3.0 ) / ( 4000.0 - 3.0 );",
-                //"gl_FragData[ 0 ] = pack_depth( z );",
-                //"gl_FragData[ 0 ] = vec4( z, z, z, 1.0 );",
-
-                "}"
-
-            ].join("\n")
-        };
-
-        // Set depth RGBA
-        const depthShader = ShaderLib['depthRGBA'];
-        // Set uniforms
-        const depthUniforms = UniformsUtils.clone(depthShader.uniforms);
-        this.depthMaterial = new ShaderMaterial({ fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms });
-        this.depthMaterial.blending = NoBlending;
-
-        this.depthTarget = new WebGLRenderTarget(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio, { minFilter: NearestFilter, magFilter: NearestFilter, format: RGBAFormat });
-
-        // postprocessing
-        // console.log(EffectComposer);
-        this.composer = new EffectComposer(this.renderer);
-        // console.log(this.composer);
-        this.composer.addPass(new RenderPass(this.scene, this.camera));
-
-        // depth of field
-        this.dof = new ShaderPass(DoFShader);
-        this.dof.uniforms['tDepth'].value = this.depthTarget;
-        this.dof.uniforms['size'].value.set(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
-        this.dof.uniforms['textel'].value.set(1.0 / window.innerWidth * window.devicePixelRatio, 1.0 / window.innerHeight) * window.devicePixelRatio;
-
-        //make sure that these two values are the same for your camera, otherwise distances will be wrong.
-        this.dof.uniforms['znear'].value = this.camera.near; //this.camera clipping start
-        this.dof.uniforms['zfar'].value = this.camera.far; //this.camera clipping end
-
-        this.dof.uniforms['focalDepth'].value = 200; //focal distance value in meters, but you may use autofocus option below
-        this.dof.uniforms['focalLength'].value = this.camera.focalLength; //focal length in mm
-        this.dof.uniforms['fstop'].value = 1.8; //f-stop value
-        this.dof.uniforms['showFocus'].value = false; //show debug focus point and focal range (orange = focal point, blue = focal range)
-
-        this.dof.uniforms['manualdof'].value = false; //manual dof calculation
-        this.dof.uniforms['ndofstart'].value = 1.0; //near dof blur start
-        this.dof.uniforms['ndofdist'].value = 2.0; //near dof blur falloff distance 
-        this.dof.uniforms['fdofstart'].value = 2.0; //far dof blur start
-        this.dof.uniforms['fdofdist'].value = 3.0; //far dof blur falloff distance  
-
-        this.dof.uniforms['CoC'].value = 0.03; //circle of confusion size in mm (35mm film = 0.03mm)    
-
-        this.dof.uniforms['vignetting'].value = true; //use optical lens vignetting?
-        this.dof.uniforms['vignout'].value = 1.3; //vignetting outer border
-        this.dof.uniforms['vignin'].value = 0.1; //vignetting inner border
-        this.dof.uniforms['vignfade'].value = 22.0; //f-stops till vignete fades    
-
-        this.dof.uniforms['autofocus'].value = false; //use autofocus in shader? disable if you use external focalDepth value
-        this.dof.uniforms['focus'].value.set(0.5, 0.5); // autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right) 
-        this.dof.uniforms['maxblur'].value = 4.3; //clamp value of max blur (0.0 = no blur,1.0 default) 
-
-        this.dof.uniforms['threshold'].value = 0.5; //highlight threshold;
-        this.dof.uniforms['gain'].value = 2.0; //highlight gain;
-
-        this.dof.uniforms['bias'].value = 0.5; //bokeh edge bias        
-        this.dof.uniforms['fringe'].value = 3.7; //bokeh chromatic aberration/fringing
-
-        this.dof.uniforms['noise'].value = true; //use noise instead of pattern for sample dithering
-        this.dof.uniforms['namount'].value = 0.0001; //dither amount
-
-        this.dof.uniforms['depthblur'].value = false; //blur the depth buffer?
-        this.dof.uniforms['dbsize'].value = 1.25; //depthblursize
-
-        this.composer.addPass(this.dof);
-        this.dof.renderToScreen = true;
-
-    }
-
-    setDOF2() {
-        console.log('dof2');
-        let height = window.innerHeight;
-
-        this.shaderSettings = {
-            rings: 2,
-            samples: 1
-        };
-
-        this.renderer.sortObjects = false;
-
-        this.material_depth = new MeshDepthMaterial();
-
-        // initPostProcessing
-        this.postprocessing = { enabled: true };
-        this.postprocessing.scene = new Scene();
-
-        this.postprocessing.camera = new OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);
-        this.postprocessing.camera.position.z = 100;
-
-        this.postprocessing.scene.add(this.postprocessing.camera);
-
-        var pars = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat };
-        this.postprocessing.rtTextureDepth = new WebGLRenderTarget(window.innerWidth, height, pars);
-        this.postprocessing.rtTextureColor = new WebGLRenderTarget(window.innerWidth, height, pars);
-
-
-
-        var bokeh_shader = BokehShader;
-
-        this.postprocessing.bokeh_uniforms = UniformsUtils.clone(bokeh_shader.uniforms);
-
-        this.postprocessing.bokeh_uniforms["tColor"].value = this.postprocessing.rtTextureColor;
-        this.postprocessing.bokeh_uniforms["tDepth"].value = this.postprocessing.rtTextureDepth;
-
-        this.postprocessing.bokeh_uniforms["textureWidth"].value = window.innerWidth;
-
-        this.postprocessing.bokeh_uniforms["textureHeight"].value = height;
-
-        this.postprocessing.materialBokeh = new ShaderMaterial({
-
-            uniforms: this.postprocessing.bokeh_uniforms,
-            vertexShader: bokeh_shader.vertexShader,
-            fragmentShader: bokeh_shader.fragmentShader,
-            defines: {
-                RINGS: this.shaderSettings.rings,
-                SAMPLES: this.shaderSettings.samples
-            }
-
-        });
-
-        this.postprocessing.quad = new Mesh(new PlaneGeometry(window.innerWidth, window.innerHeight), this.postprocessing.materialBokeh);
-        this.postprocessing.quad.position.z = -500;
-        this.postprocessing.scene.add(this.postprocessing.quad);
-
-        console.log(this.postprocessing);
-    }
-
     setBlur() {
 
         // COMPOSER
@@ -855,16 +506,14 @@ export default class UniversView {
         this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
 
         this.effectFXAA = new ShaderPass(FXAAShader);
-
         this.hblur = new ShaderPass(HorizontalTiltShiftShader);
         this.vblur = new ShaderPass(VerticalTiltShiftShader);
 
-        var bluriness = 8;
 
-        this.hblur.uniforms['h'].value = bluriness / this.width;
-        this.vblur.uniforms['v'].value = bluriness / this.height;
+        this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+        this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
-        this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = 0.5;
+        this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = this.effectController.horizontalBlur;
 
         this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
@@ -879,11 +528,10 @@ export default class UniversView {
         this.composer = new EffectComposer(this.renderer, this.renderTarget);
 
         this.composer.addPass(renderModel);
-
         this.composer.addPass(this.effectFXAA);
-
         this.composer.addPass(this.hblur);
         this.composer.addPass(this.vblur);
+
     }
 
     onClick(e) {
@@ -970,7 +618,7 @@ export default class UniversView {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 
-        this.composer.setSize(this.width, this.height);
+        // this.composer.setSize(window.innerWidth, window.innerHeight);
 
         this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
         this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
@@ -980,8 +628,6 @@ export default class UniversView {
     }
 
     raf() {
-
-
 
         //////////////////
         // Raycasters
@@ -1113,86 +759,47 @@ export default class UniversView {
 
         // Render cssScene
         this.cssRenderer.render(this.cssScene, this.camera);
-        // Render scene
-        // this.scene.overrideMaterial = this.depthMaterial;
-        // this.renderer.render(this.scene, this.camera); //  this.depthTarget
-        // this.scene.overrideMaterial = null;
-
-        // this.composer.render();
-        // if (this.postprocessing.enabled === true) {
-
-        //     this.renderer.clear();
-
-        //     // Render scene into texture
-
-        //     this.scene.overrideMaterial = null;
-        //     this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureColor, true);
-
-        //     // Render depth into texture
-
-        //     this.scene.overrideMaterial = this.material_depth;
-        //     this.renderer.render(this.scene, this.camera, this.postprocessing.rtTextureDepth, true);
-
-        //     // Render bokeh composite
-
-        //     this.renderer.render(this.postprocessing.scene, this.postprocessing.camera);
-
-
-        // } else {
-
-        // this.scene.overrideMaterial = null;
-
-        // this.renderer.clear();
-        // this.renderer.render(this.scene, this.camera);
-
+        
         if (this.effectController.enabled === true) {
+            // Render scene composer
             this.composer.render(this.scene, this.camera);
         } else {
+            // Render scene
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
 
         }
 
 
-
-        // }
-
         this.controls.update();
 
     }
 
-    updateCamera() {
-        console.log();
-        this.camera.setFocalLength(this.camera.focalLength, this.camera.frameSize);
-        this.camera.updateProjectionMatrix();
-        this.dof.uniforms['focalLength'].value = this.camera.focalLength;
-    }
-
-    reset(e) {
+    reset() {
 
         this.destroy();
 
-        // Set symbol
-        this.setSymbol();
+        // // Set symbol
+        // this.setSymbol();
 
-        // Set asteroid
-        this.setAsteroids();
+        // // Set asteroid
+        // this.setAsteroids();
 
-        // Set envelop
-        this.setEnvelop();
+        // // Set envelop
+        // this.setEnvelop();
 
-        // Set Context
-        this.setContext();
+        // // Set Context
+        // this.setContext();
 
-        // set Light
-        this.setLight();
+        // // set Light
+        // this.setLight();
 
-        // Raycaster
-        this.raycaster = new Raycaster();
+        // // Raycaster
+        // this.raycaster = new Raycaster();
 
-        // Mouse
-        this.mouse = { x: 0, y: 0 };
-        this.initPhysics();
+        // // Mouse
+        // this.mouse = { x: 0, y: 0 };
+        // this.initPhysics();
 
         // if (this.guiParams.gravity === true) {
         //     this.world.gravity.y = -90;
@@ -1280,6 +887,12 @@ export default class UniversView {
         }
 
         this.cssObjects = [];
+
+        // Wait destroy scene before stop js events
+        setTimeout(()=> {
+            this.events(false);
+        }, 500);
+        
     }
 
 
