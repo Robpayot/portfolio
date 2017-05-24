@@ -591,7 +591,7 @@ var SceneManager = function () {
             // Render cssScene
             this.cssRenderer.render(opts.cssScene, opts.camera);
 
-            if (opts.effectController.enabled === true) {
+            if (opts.effectController !== null && opts.effectController.enabled === true) {
                 // Render scene composer
                 opts.composer.render(opts.scene, opts.camera);
             } else {
