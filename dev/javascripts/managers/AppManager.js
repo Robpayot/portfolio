@@ -5,7 +5,7 @@ import RouterManager from './RouterManager';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
-
+import SceneManager from './SceneManager';
 
 import bean from 'bean';
 
@@ -29,6 +29,7 @@ class AppManager {
 
         this.graphicBars = new GraphicBars();
 
+        SceneManager.start();
         RouterManager.start();
     }
 
