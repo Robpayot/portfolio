@@ -5,12 +5,12 @@ import Envelop from '../shapes/Envelop';
 import Symbol from '../shapes/Symbol';
 import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
+import SceneManager from '../managers/SceneManager';
 
 // THREE JS
-import { WebGLRenderer, DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
+import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
-import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 import OrbitControls from '../vendors/OrbitControls';
 import { World } from 'oimo';
 
@@ -19,7 +19,6 @@ import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 import { FXAAShader } from '../shaders/FXAAShader'; // FXAA shader
 import { HorizontalTiltShiftShader } from '../shaders/HorizontalTiltShiftShader'; // HorizontalTiltShiftShader shader
 import { VerticalTiltShiftShader } from '../shaders/VerticalTiltShiftShader'; // VerticalTiltShiftShader shader
-
 
 
 
@@ -96,33 +95,8 @@ export default class UniversView {
         this.mouse = { x: 0, y: 0 };
 
 
-        // Set CssRenderer and WebGLRenderer 
-
-        this.cssRenderer = new CSS3DRendererIE();
-        // Set the canvas size.
-        this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
-        this.cssRenderer.domElement.style.position = 'absolute';
-        this.cssRenderer.domElement.style.top = 0;
-        this.cssRenderer.domElement.style.left = 0;
-        this.cssRenderer.domElement.style.zIndex = 1;
-        this.cssRenderer.domElement.classList.add('container3D');
-
-        this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
-        this.renderer.setClearColor(0xffffff, 1);
-
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-        this.renderer.domElement.style.position = 'absolute';
-        this.renderer.domElement.style.top = 0;
-        this.renderer.domElement.style.left = 0;
-        this.renderer.domElement.classList.add('webGl');
-        this.cssRenderer.domElement.appendChild(this.renderer.domElement);
-
-
-        this.ui.el.appendChild(this.cssRenderer.domElement);
-
         // Camera controls
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
         this.controls.enableZoom = true;
 
         /////////////////
@@ -232,7 +206,7 @@ export default class UniversView {
             gravity: [0, 0, 0] // 0 gravity
         });
 
-        this.world.gravity.y = 0;
+        // this.world.gravity.y = 0;
 
     }
 
@@ -499,8 +473,8 @@ export default class UniversView {
     setBlur() {
 
         // COMPOSER
-
-        this.renderer.autoClear = false;
+        // IMPORTANT CAREFUL HERE (when changing scene)
+        SceneManager.renderer.autoClear = false;
 
         var renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
         this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
@@ -517,15 +491,13 @@ export default class UniversView {
 
         this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
-        this.composer = new EffectComposer(this.renderer, this.renderTarget);
-
         var renderModel = new RenderPass(this.scene, this.camera);
 
         this.vblur.renderToScreen = true;
         this.hblur.renderToScreen = true;
         this.effectFXAA.renderToScreen = true;
 
-        this.composer = new EffectComposer(this.renderer, this.renderTarget);
+        this.composer = new EffectComposer(SceneManager.renderer, this.renderTarget);
 
         this.composer.addPass(renderModel);
         this.composer.addPass(this.effectFXAA);
@@ -610,13 +582,9 @@ export default class UniversView {
         this.width = window.innerWidth * window.devicePixelRatio;
         this.height = window.innerHeight * window.devicePixelRatio;
 
-        // Update camera
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-
-        // Update canvas size
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+        SceneManager.resizeHandler({
+            camera: this.camera
+        });
 
         // this.composer.setSize(window.innerWidth, window.innerHeight);
 
@@ -757,19 +725,14 @@ export default class UniversView {
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
 
 
-        // Render cssScene
-        this.cssRenderer.render(this.cssScene, this.camera);
-        
-        if (this.effectController.enabled === true) {
-            // Render scene composer
-            this.composer.render(this.scene, this.camera);
-        } else {
-            // Render scene
-            this.renderer.clear();
-            this.renderer.render(this.scene, this.camera);
-
-        }
-
+        // Render Scenes 
+        SceneManager.render({
+            camera: this.camera,
+            scene: this.scene,
+            cssScene: this.cssScene,
+            effectController: this.effectController,
+            composer: this.composer
+        });
 
         this.controls.update();
 
@@ -889,10 +852,10 @@ export default class UniversView {
         this.cssObjects = [];
 
         // Wait destroy scene before stop js events
-        setTimeout(()=> {
+        setTimeout(() => {
             this.events(false);
         }, 500);
-        
+
     }
 
 
