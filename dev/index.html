@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>ProjectName</title>
+    <title>Robin xp Sound</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -13,33 +13,69 @@
 </head>
 
 <body>
-    <canvas class="canvas"></canvas>
-    <audio controls>
-        <!-- <source src="sounds/hiphop_ldd.mp3" type="audio/ogg"> -->
-        <source src="sounds/hiphop_ldd.mp3" type="audio/mp3">
-        <p>Browser too old to support HTML5 audio? How depressing!</p>
-    </audio>
     <section class="xp">
-        <ul>
-            <li class="frequency">
-                <h1>Frequency</h1>
-                <div class="block"></div>
-            </li>
-            <li class="amplitude">
-                <h1>Amplitude</h1>
-                <div class="block"></div>
-            </li>
-            <li class="waveForm">
-                <h1>Wave Form</h1>
-                <div class="block"></div>
-            </li>
-            <li class="pitch">
-                <h1>Pitch</h1>
-                <div class="block"></div>
-            </li>
-        </ul>
+        <!-- Helper -->
+        <section class="jauge">
+            <ul class="frequencies">
+                <li class="hight">
+                    <h1>Hight</h1>
+                    <div class="circle"></div>
+                </li>
+                <li class="medium">
+                    <h1>Medium</h1>
+                    <div class="circle"></div>
+                </li>
+                <li class="low">
+                    <h1>Low</h1>
+                    <div class="circle"></div>
+                </li>
+            </ul>
+        </section>
+        <!-- Bars -->
+        <section class="graphicBars">
+            <canvas class="graphicBars__canvas"></canvas>
+            <audio class="audio" controls>
+                <!--  // autoplay -->
+                <!-- <source src="sounds/hiphop_ldd.mp3" type="audio/ogg"> -->
+                <!-- eery_her.mp3 
+			snailshouse_ra-mu-ne.mp3
+			fox_doubleup.mp3
+			fluxpav_cracks.mp3
+			-->
+                <source src="sounds/eery_her.mp3" type="audio/mp3">
+                <p>Browser too old to support HTML5 audio? How depressing!</p>
+            </audio>
+        </section>
+        <!-- 3D -->
+        <section class="graphic3D">
+        </section>
     </section>
+    <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
+    <!-- <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script> -->
+    <script>
+    // SC.initialize({
+    //     client_id: 'YOUR_CLIENT_ID'
+    // });
+
+    // // stream track id 293
+    // SC.stream('/tracks/293').then(function(player) {
+    //     player.play();
+    // });
+    </script>
     <script src="javascripts/app.js"></script>
+    <script>
+    var script = document.createElement('script');
+    script.onload = function() {
+        var stats = new Stats();
+        document.body.appendChild(stats.dom);
+        requestAnimationFrame(function loop() {
+            stats.update();
+            requestAnimationFrame(loop)
+        });
+    };
+    script.src = '//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
+    document.head.appendChild(script);
+    </script>
 </body>
 
 </html>

@@ -109,7 +109,7 @@ function compile(watch) {
 
 
 	function rebundle() {
-		gulp.start('lint');
+		// gulp.start('lint');
 
 		return bundler.bundle()
 		.on('error', notify.onError({
@@ -148,8 +148,8 @@ function watch() {
 
 gulp.task('javascripts:build', function() { return compile(); });
 gulp.task('javascripts:watch', function() { return watch(); });
-gulp.task('javascripts', [ 'lint', minify === true ? 'javascripts:build' : 'javascripts:watch' ]);
-
+// gulp.task('javascripts', [ 'lint', minify === true ? 'javascripts:build' : 'javascripts:watch' ]);
+gulp.task('javascripts', [ minify === true ? 'javascripts:build' : 'javascripts:watch' ]);
 
 //---------------------------------------------------------------------------------------------
 //    SASS
@@ -240,8 +240,29 @@ gulp.task('copy:root', function() {
 		.pipe(gulp.dest('./dist'))
 });
 
+// IMAGES FILE
+gulp.task('copy:image', function() {
+	return gulp.src('./dev/images/**')
+		// Concat all errors
+		.pipe(gulp.dest('./dist/images'))
+});
+
+
+// sound files
+gulp.task('copy:sound', function() {
+	return gulp.src('./dev/sounds/**')
+		// Concat all errors
+		.pipe(plumber({ errorHandler: copyNotify }))
+		.pipe(gulp.dest('./dist/sounds'))
+});
+
 // Registering main copy task
 gulp.task('copy', ['copy:root']);
+
+// Registering main copy task
+gulp.task('copy', ['copy:sound']);
+
+gulp.task('copy', ['copy:image']);
 
 
 //---------------------------------------------------------------------------------------------
@@ -252,11 +273,13 @@ gulp.task('watch', function() {
 	gulp.watch('./dev/stylesheets/**', ['stylesheets']);
 	gulp.watch('./dev/datas/**', ['datas']);
 	gulp.watch(copyRoot, ['copy:root']);
+	gulp.watch('./dev/sounds/**', ['copy:sound']);
 
 	browserSync.watch([
 		'./dist/datas/**',
 		'./dist/stylesheets/**',
-		'./dist/javascripts/**'
+		'./dist/javascripts/**',
+		copyRoot
 	], {
 		ignored: '**/*.map'
 	}).on('change', browserSync.reload);
@@ -270,7 +293,7 @@ gulp.task('default', ['clean'], function() {
 
 	if (minify === false) {
 		browserSync.init({
-			port: 8080,
+			port: 1234,
 			ui: false,
 			// This is if you need PHP execution on your BrowserSync server
 			// proxy: 'myproxy.dev',
