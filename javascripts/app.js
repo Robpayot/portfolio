@@ -5050,7 +5050,7 @@ var UniversView = function () {
                 gravity: [0, 0, 0] // 0 gravity
             });
 
-            this.world.gravity.y = 0;
+            // this.world.gravity.y = 0;
         }
     }, {
         key: 'setEnvelop',
