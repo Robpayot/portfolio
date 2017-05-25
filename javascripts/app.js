@@ -780,19 +780,24 @@ exports.default = new SoundManager();
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var BrightnessShader = {
 
-    uniforms: {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BrightnessShader = function BrightnessShader() {
+    _classCallCheck(this, BrightnessShader);
+
+    this.uniforms = {
         brightness: { type: "f", value: 0 },
         contrast: { type: "f", value: 1 },
         tInput: { type: "sampler2D", value: null }
-    },
+    };
 
-    vertexShader: ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+    this.vertexShader = ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n");
 
-    fragmentShader: ["uniform float brightness;", "uniform float contrast;", "uniform sampler2D tInput;", "varying vec2 vUv;", "void main() {", "vec3 color = texture2D(tInput, vUv).rgb;", "vec3 colorContrasted = (color) * contrast;", "vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);", "gl_FragColor.rgb = bright;", "gl_FragColor.a = 1.;", "}"].join("\n")
-
+    this.fragmentShader = ["uniform float brightness;", "uniform float contrast;", "uniform sampler2D tInput;", "varying vec2 vUv;", "void main() {", "vec3 color = texture2D(tInput, vUv).rgb;", "vec3 colorContrasted = (color) * contrast;", "vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);", "gl_FragColor.rgb = bright;", "gl_FragColor.a = 1.;", "}"].join("\n");
 };
+
+;
 
 exports.BrightnessShader = BrightnessShader;
 
@@ -5081,7 +5086,7 @@ var UniversView = function () {
 
             // Brightness
             var brightnessFolder = this.sound.gui.addFolder('Brightness');
-            brightnessFolder.add(this.effectController, 'brightness', 0.0, 10).listen().onChange(this.onChangeBrightness);
+            brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
             brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
             brightnessFolder.open();
 
@@ -5290,14 +5295,25 @@ var UniversView = function () {
                 map: tex
             };
             // const material = new MeshLambertMaterial(matPhongParams);
-            this.brightness = _BrightnessShader.BrightnessShader;
+            this.brightness = new _BrightnessShader.BrightnessShader();
+
+            this.brightness2 = new _BrightnessShader.BrightnessShader();
 
             this.brightness.uniforms.tInput.value = tex;
+            this.brightness2.uniforms.tInput.value = tex;
 
-            var material = new _three.ShaderMaterial({
+            this.materialAst1 = new _three.ShaderMaterial({
                 uniforms: this.brightness.uniforms,
                 vertexShader: this.brightness.vertexShader,
                 fragmentShader: this.brightness.fragmentShader,
+                transparent: true,
+                opacity: 0.5
+            });
+
+            this.materialAst2 = new _three.ShaderMaterial({
+                uniforms: this.brightness2.uniforms,
+                vertexShader: this.brightness2.vertexShader,
+                fragmentShader: this.brightness2.fragmentShader,
                 transparent: true,
                 opacity: 0.5
             });
@@ -5338,11 +5354,26 @@ var UniversView = function () {
                     z: (0, _utils.getRandom)(-10, 10)
                 };
 
-                var asteroid = new _Asteroid2.default(geometry, material, pos, rot, force);
+                var finalMat = void 0;
+
+                if (i % 2 == 0) {
+                    finalMat = this.materialAst1;
+                    // console.log(i);
+                } else {
+                    // console.log(i);
+                    finalMat = this.materialAst2;
+                }
+
+                var asteroid = new _Asteroid2.default(geometry, finalMat, pos, rot, force);
 
                 // add physic body to world
                 asteroid.body = this.world.add(asteroid.physics);
                 asteroid.mesh.index = i;
+
+                // Set rotation impulsion
+                asteroid.body.angularVelocity.x = (0, _utils.getRandom)(-0.3, 0.3);
+                asteroid.body.angularVelocity.y = (0, _utils.getRandom)(-0.3, 0.3);
+                asteroid.body.angularVelocity.z = (0, _utils.getRandom)(-0.3, 0.3);
 
                 this.asteroids.push(asteroid);
                 this.asteroidsM.push(asteroid.mesh);
@@ -5678,7 +5709,8 @@ var UniversView = function () {
 
             // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
             // Glow brightness material
-            this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 3.5;
+            this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
+            this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
             // console.log(this.brightness.uniforms['contrast'].value);
 
             this.glow++;
