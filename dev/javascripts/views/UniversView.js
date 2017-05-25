@@ -96,10 +96,14 @@ export default class UniversView {
         // Mouse
         this.mouse = { x: 0, y: 0 };
 
+        this.cameraTarget = new Vector3(0,0,0);
+
+        this.camera.lookAt(this.cameraTarget);
+
 
         // Camera controls
-        this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
-        this.controls.enableZoom = true;
+        // this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
+        // this.controls.enableZoom = true;
 
         /////////////////
         // GUI
@@ -142,7 +146,7 @@ export default class UniversView {
         const brightnessFolder = this.sound.gui.addFolder('Brightness');
         brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
         brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
-        brightnessFolder.open();
+        // brightnessFolder.open();
 
         ////////////////////
         // POST PROCESSING
@@ -643,6 +647,15 @@ export default class UniversView {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         // console.log(this.mouse);
+
+        // Update camera
+        console.log(this.mouse.x);
+        this.cameraTarget.x = this.mouse.x * 5;
+        this.cameraTarget.y = this.mouse.y * 5;
+        // TweenMax.to(this.cameraTarget, 0, {x : this.mouse.x * 5, y: this.mouse.y * 5});
+        this.camera.lookAt(this.cameraTarget);
+        this.camera.updateProjectionMatrix();
+
     }
 
     resizeHandler() {
@@ -808,7 +821,7 @@ export default class UniversView {
             composer: this.composer
         });
 
-        this.controls.update();
+        // this.controls.update();
 
     }
 
