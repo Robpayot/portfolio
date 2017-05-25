@@ -1,0 +1,50 @@
+html,
+body {
+    width:100%;
+    height:100%;
+}
+
+body {
+    background-color: #000;
+    color: #ccc;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+a:link, a:visited{
+	color: #777;
+}
+
+a:hover{
+	color: #999;
+}
+
+.wrapper{
+    display: table;
+    width:100%;
+    height:100%;
+}
+
+.viewport{
+    display: table-cell;
+    vertical-align: middle;
+    width:100%;
+    height:100%;
+}
+
+.info{
+    background: #000000;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    position: absolute;
+        z-index: 10;
+    width: 400px;
+}
+
+.info p{
+    margin: 25px;
+}

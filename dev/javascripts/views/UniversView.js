@@ -37,6 +37,7 @@ export default class UniversView {
         this.onClick = this.onClick.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
+        this.onChangeBrightness = this.onChangeBrightness.bind(this);
 
 
 
@@ -57,7 +58,7 @@ export default class UniversView {
 
         this.cssObjects = [];
         this.glow = 1;
-        this.nbAst = 20;
+        this.nbAst = 15;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -114,7 +115,10 @@ export default class UniversView {
             glowColor: 0xffffff,
             coeficientOut: 1,
             powerOut: 2,
-            glowColorOut: 0xffffff
+            glowColorOut: 0xffffff,
+            // brightness
+            brightness: 0,
+            contrast: 0,
         };
 
         // Blur
@@ -132,6 +136,12 @@ export default class UniversView {
         glowFolder.add(this.effectController, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow);
         glowFolder.add(this.effectController, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow);
         glowFolder.addColor(this.effectController, 'glowColorOut').listen().onChange(this.onChangeGlow);
+
+        // Brightness
+        const brightnessFolder = this.sound.gui.addFolder('Brightness');
+        brightnessFolder.add(this.effectController, 'brightness', 0.0, 10).listen().onChange(this.onChangeBrightness);
+        brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
+        brightnessFolder.open();
 
         ////////////////////
         // POST PROCESSING
@@ -165,6 +175,11 @@ export default class UniversView {
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
         this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
+    }
+
+    onChangeBrightness() {
+        this.brightness.uniforms['brightness'].value = this.effectController.brightness;
+        this.brightness.uniforms['contrast'].value = this.effectController.contrast;
     }
 
     events(method) {
@@ -340,7 +355,49 @@ export default class UniversView {
             // emissive: new Color('rgb(255, 255, 255)'),
             // specular: new Color('rgb(255, 255, 255)')
         };
-        const material = new MeshLambertMaterial(matPhongParams);
+        // const material = new MeshLambertMaterial(matPhongParams);
+        this.brightness = {};
+        this.brightness.uniforms = {
+            brightness: { type: "f", value: 0 },
+            contrast: { type: "f", value: 1},
+            tInput: { type: "sampler2D", value: tex},
+        };
+
+        const vertexShader = [
+			"varying vec2 vUv;",
+			"void main() {",
+
+			"vUv = uv;",
+			"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+			"}"
+
+		].join("\n");
+
+        const fragmentShader = [
+			"uniform float brightness;",
+			"uniform float contrast;",
+			"uniform sampler2D tInput;",
+
+			"varying vec2 vUv;",
+
+			"void main() {",
+
+				"vec3 color = texture2D(tInput, vUv).rgb;",
+				"vec3 colorContrasted = (color) * contrast;",
+				"vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);",
+				"gl_FragColor.rgb = bright;",
+				"gl_FragColor.a = 1.;",
+
+			"}"
+
+		].join("\n");
+
+        const material = new ShaderMaterial({
+            uniforms: this.brightness.uniforms,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+        });
 
         for (let i = 0; i < this.nbAst; i++) {
 
@@ -349,6 +406,11 @@ export default class UniversView {
                 y: getRandom(-100, 100),
                 z: getRandom(-100, 100),
             };
+            // const pos = {
+            //     x: 0,
+            //     y: 0,
+            //     z: 0,
+            // };
 
             // Intra perimeter radius
             const ipRadius = 50;
@@ -721,8 +783,13 @@ export default class UniversView {
 
         // Glow continuously 
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
-        this.glow++;
+        
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+        // Glow brightness material
+        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 4;
+        // console.log(this.brightness.uniforms['contrast'].value);
+
+        this.glow++;
 
 
         // Render Scenes 
