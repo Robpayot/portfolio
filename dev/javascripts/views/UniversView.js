@@ -96,7 +96,7 @@ export default class UniversView {
         // Mouse
         this.mouse = { x: 0, y: 0 };
 
-        this.cameraTarget = new Vector3(0,0,0);
+        this.cameraTarget = new Vector3(0, 0, 0);
 
         this.camera.lookAt(this.cameraTarget);
 
@@ -428,7 +428,7 @@ export default class UniversView {
                 finalMat = this.materialAst1;
                 // console.log(i);
             } else {
-            	// console.log(i);
+                // console.log(i);
                 finalMat = this.materialAst2;
             }
 
@@ -642,10 +642,12 @@ export default class UniversView {
         const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
         const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
 
+        console.log(e, event);
+
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        this.mouse.x = (eventX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
         // console.log(this.mouse);
 
         // Update camera
@@ -654,8 +656,11 @@ export default class UniversView {
         // this.cameraTarget.y = this.mouse.y * 5;
         // TweenMax.to(this.cameraTarget, 0, {x : this.mouse.x * 5, y: this.mouse.y * 5});
         this.camera.lookAt(this.cameraTarget);
-        this.camera.position.x = this.mouse.x * 50;
-        this.camera.position.y = this.mouse.y * 50;
+        // this.camera.position.x = this.mouse.x * 50;
+        // this.camera.position.y = this.mouse.y * 50;
+
+        this.camera.position.x += Math.max(Math.min((this.mouse.x) * 50, 0.2), -0.2);
+        this.camera.position.y += Math.max(Math.min((this.mouse.y ) * 50, 0.2), -0.2);
         this.camera.updateProjectionMatrix();
 
     }
