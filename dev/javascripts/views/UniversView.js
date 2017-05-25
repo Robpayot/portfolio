@@ -649,11 +649,13 @@ export default class UniversView {
         // console.log(this.mouse);
 
         // Update camera
-        console.log(this.mouse.x);
-        this.cameraTarget.x = this.mouse.x * 5;
-        this.cameraTarget.y = this.mouse.y * 5;
+        // console.log(this.mouse.x);
+        // this.cameraTarget.x = this.mouse.x * 5;
+        // this.cameraTarget.y = this.mouse.y * 5;
         // TweenMax.to(this.cameraTarget, 0, {x : this.mouse.x * 5, y: this.mouse.y * 5});
         this.camera.lookAt(this.cameraTarget);
+        this.camera.position.x = this.mouse.x * 50;
+        this.camera.position.y = this.mouse.y * 50;
         this.camera.updateProjectionMatrix();
 
     }
