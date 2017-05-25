@@ -19,6 +19,7 @@ import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 import { FXAAShader } from '../shaders/FXAAShader'; // FXAA shader
 import { HorizontalTiltShiftShader } from '../shaders/HorizontalTiltShiftShader'; // HorizontalTiltShiftShader shader
 import { VerticalTiltShiftShader } from '../shaders/VerticalTiltShiftShader'; // VerticalTiltShiftShader shader
+import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltShiftShader shader
 
 
 
@@ -139,7 +140,7 @@ export default class UniversView {
 
         // Brightness
         const brightnessFolder = this.sound.gui.addFolder('Brightness');
-        brightnessFolder.add(this.effectController, 'brightness', 0.0, 10).listen().onChange(this.onChangeBrightness);
+        brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
         brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
         brightnessFolder.open();
 
@@ -356,53 +357,37 @@ export default class UniversView {
             // specular: new Color('rgb(255, 255, 255)')
         };
         // const material = new MeshLambertMaterial(matPhongParams);
-        this.brightness = {};
-        this.brightness.uniforms = {
-            brightness: { type: "f", value: 0 },
-            contrast: { type: "f", value: 1},
-            tInput: { type: "sampler2D", value: tex},
-        };
+        this.brightness = new BrightnessShader();
 
-        const vertexShader = [
-			"varying vec2 vUv;",
-			"void main() {",
+        this.brightness2 = new BrightnessShader();
 
-			"vUv = uv;",
-			"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+        this.brightness.uniforms.tInput.value = tex;
+        this.brightness2.uniforms.tInput.value = tex;
 
-			"}"
 
-		].join("\n");
-
-        const fragmentShader = [
-			"uniform float brightness;",
-			"uniform float contrast;",
-			"uniform sampler2D tInput;",
-
-			"varying vec2 vUv;",
-
-			"void main() {",
-
-				"vec3 color = texture2D(tInput, vUv).rgb;",
-				"vec3 colorContrasted = (color) * contrast;",
-				"vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);",
-				"gl_FragColor.rgb = bright;",
-				"gl_FragColor.a = 1.;",
-
-			"}"
-
-		].join("\n");
-
-        const material = new ShaderMaterial({
+        this.materialAst1 = new ShaderMaterial({
             uniforms: this.brightness.uniforms,
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
+            vertexShader: this.brightness.vertexShader,
+            fragmentShader: this.brightness.fragmentShader,
             transparent: true,
             opacity: 0.5
         });
 
+        this.materialAst2 = new ShaderMaterial({
+            uniforms: this.brightness2.uniforms,
+            vertexShader: this.brightness2.vertexShader,
+            fragmentShader: this.brightness2.fragmentShader,
+            transparent: true,
+            opacity: 0.5
+        });
 
         for (let i = 0; i < this.nbAst; i++) {
+
+            const rot = {
+                x: getRandom(-180, 180),
+                y: getRandom(-180, 180),
+                z: getRandom(-180, 180),
+            }
 
             const pos = {
                 x: getRandom(-100, 100),
@@ -433,11 +418,29 @@ export default class UniversView {
                 z: getRandom(-10, 10)
             };
 
-            const asteroid = new Asteroid(geometry, material, pos, force);
+            let finalMat;
+
+            if (i % 2 == 0) {
+                finalMat = this.materialAst1;
+                // console.log(i);
+            } else {
+            	// console.log(i);
+                finalMat = this.materialAst2;
+            }
+
+
+
+
+            const asteroid = new Asteroid(geometry, finalMat, pos, rot, force);
 
             // add physic body to world
             asteroid.body = this.world.add(asteroid.physics);
             asteroid.mesh.index = i;
+
+            // Set rotation impulsion
+            asteroid.body.angularVelocity.x = getRandom(-0.3, 0.3);
+            asteroid.body.angularVelocity.y = getRandom(-0.3, 0.3);
+            asteroid.body.angularVelocity.z = getRandom(-0.3, 0.3);
 
             this.asteroids.push(asteroid);
             this.asteroidsM.push(asteroid.mesh);
@@ -786,10 +789,11 @@ export default class UniversView {
 
         // Glow continuously 
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
-        
+
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         // Glow brightness material
-        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 3.5;
+        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
+        this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
         // console.log(this.brightness.uniforms['contrast'].value);
 
         this.glow++;
