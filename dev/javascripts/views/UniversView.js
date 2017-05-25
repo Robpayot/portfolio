@@ -58,7 +58,7 @@ export default class UniversView {
 
         this.cssObjects = [];
         this.glow = 1;
-        this.nbAst = 1;
+        this.nbAst = 20;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -140,7 +140,7 @@ export default class UniversView {
         // Brightness
         const brightnessFolder = this.sound.gui.addFolder('Brightness');
         brightnessFolder.add(this.effectController, 'brightness', 0.0, 10).listen().onChange(this.onChangeBrightness);
-        brightnessFolder.add(this.effectController, 'contrast', 0.0, 10).listen().onChange(this.onChangeBrightness);
+        brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
         brightnessFolder.open();
 
         ////////////////////
@@ -205,7 +205,7 @@ export default class UniversView {
             3000 // far
         );
 
-        this.camera.position.set(0, 0, 100);
+        this.camera.position.set(0, 0, 200);
 
     }
 
@@ -239,7 +239,7 @@ export default class UniversView {
         const img = PreloadManager.getResult('damier');
         const tex = new Texture(img);
         tex.needsUpdate = true;
-        const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: tex });
+        const material = new MeshPhongMaterial({ color: 0x010101, transparent: true, opacity: 1 });
         this.envelops = [];
 
         const configs = [{
@@ -355,10 +355,10 @@ export default class UniversView {
             // emissive: new Color('rgb(255, 255, 255)'),
             // specular: new Color('rgb(255, 255, 255)')
         };
-        // const material = new MeshLambertMaterial(matPhongParams);
+        const material = new MeshLambertMaterial(matPhongParams);
         this.brightness = {};
         this.brightness.uniforms = {
-            brightness: { type: "f", value: 0.5 },
+            brightness: { type: "f", value: 0 },
             contrast: { type: "f", value: 1},
             tInput: { type: "sampler2D", value: tex},
         };
@@ -393,35 +393,35 @@ export default class UniversView {
 
 		].join("\n");
 
-        const material = new ShaderMaterial({
-            uniforms: this.brightness.uniforms,
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-        });
+        // const material = new ShaderMaterial({
+        //     uniforms: this.brightness.uniforms,
+        //     vertexShader: vertexShader,
+        //     fragmentShader: fragmentShader,
+        // });
 
         for (let i = 0; i < this.nbAst; i++) {
 
-            // const pos = {
-            //     x: getRandom(-100, 100),
-            //     y: getRandom(-100, 100),
-            //     z: getRandom(-100, 100),
-            // };
             const pos = {
-                x: 0,
-                y: 0,
-                z: 0,
+                x: getRandom(-100, 100),
+                y: getRandom(-100, 100),
+                z: getRandom(-100, 100),
             };
+            // const pos = {
+            //     x: 0,
+            //     y: 0,
+            //     z: 0,
+            // };
 
             // Intra perimeter radius
             const ipRadius = 50;
 
-            // if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-            //     console.log(i, ' dans le périmetre !');
-            //     pos.x += ipRadius;
-            //     pos.y += ipRadius;
-            //     pos.z += ipRadius;
+            if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+                console.log(i, ' dans le périmetre !');
+                pos.x += ipRadius;
+                pos.y += ipRadius;
+                pos.z += ipRadius;
 
-            // }
+            }
 
             //  force impulsion
             const force = {
@@ -757,23 +757,23 @@ export default class UniversView {
             if (this.asteroids[i].body !== undefined) {
 
                 // APPLY IMPULSE
-                // this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                // this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                // this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                // // console.log(this.asteroids[i].body.angularVelocity);
-                // // angular Velocity always inferior to 1 (or too much rotations)
+                // console.log(this.asteroids[i].body.angularVelocity);
+                // angular Velocity always inferior to 1 (or too much rotations)
 
-                // this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
-                // this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
-                // this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
-                // // if (i === 0) {
-                // //   console.log(this.asteroids[i].body.angularVelocity.x);
-                // // }
+                this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
+                this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
+                this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
+                // if (i === 0) {
+                //   console.log(this.asteroids[i].body.angularVelocity.x);
+                // }
 
 
-                // this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                // this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
 
             }
@@ -783,8 +783,13 @@ export default class UniversView {
 
         // Glow continuously 
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
-        this.glow++;
+        
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+        // Glow brightness material
+        // this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 5;
+        // console.log(this.brightness.uniforms['contrast'].value);
+
+        this.glow++;
 
 
         // Render Scenes 
