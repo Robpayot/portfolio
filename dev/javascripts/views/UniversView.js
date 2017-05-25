@@ -140,7 +140,7 @@ export default class UniversView {
 
         // Brightness
         const brightnessFolder = this.sound.gui.addFolder('Brightness');
-        brightnessFolder.add(this.effectController, 'brightness', 0.0, 10).listen().onChange(this.onChangeBrightness);
+        brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
         brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
         brightnessFolder.open();
 
@@ -357,12 +357,15 @@ export default class UniversView {
             // specular: new Color('rgb(255, 255, 255)')
         };
         // const material = new MeshLambertMaterial(matPhongParams);
-        this.brightness = BrightnessShader;
+        this.brightness = new BrightnessShader();
+
+        this.brightness2 = new BrightnessShader();
 
         this.brightness.uniforms.tInput.value = tex;
+        this.brightness2.uniforms.tInput.value = tex;
 
 
-        const material = new ShaderMaterial({
+        this.materialAst1 = new ShaderMaterial({
             uniforms: this.brightness.uniforms,
             vertexShader: this.brightness.vertexShader,
             fragmentShader: this.brightness.fragmentShader,
@@ -370,6 +373,13 @@ export default class UniversView {
             opacity: 0.5
         });
 
+        this.materialAst2 = new ShaderMaterial({
+            uniforms: this.brightness2.uniforms,
+            vertexShader: this.brightness2.vertexShader,
+            fragmentShader: this.brightness2.fragmentShader,
+            transparent: true,
+            opacity: 0.5
+        });
 
         for (let i = 0; i < this.nbAst; i++) {
 
@@ -408,11 +418,29 @@ export default class UniversView {
                 z: getRandom(-10, 10)
             };
 
-            const asteroid = new Asteroid(geometry, material, pos, rot, force);
+            let finalMat;
+
+            if (i % 2 == 0) {
+                finalMat = this.materialAst1;
+                // console.log(i);
+            } else {
+            	// console.log(i);
+                finalMat = this.materialAst2;
+            }
+
+
+
+
+            const asteroid = new Asteroid(geometry, finalMat, pos, rot, force);
 
             // add physic body to world
             asteroid.body = this.world.add(asteroid.physics);
             asteroid.mesh.index = i;
+
+            // Set rotation impulsion
+            asteroid.body.angularVelocity.x = getRandom(-0.3, 0.3);
+            asteroid.body.angularVelocity.y = getRandom(-0.3, 0.3);
+            asteroid.body.angularVelocity.z = getRandom(-0.3, 0.3);
 
             this.asteroids.push(asteroid);
             this.asteroidsM.push(asteroid.mesh);
@@ -764,7 +792,8 @@ export default class UniversView {
 
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         // Glow brightness material
-        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 3.5;
+        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
+        this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
         // console.log(this.brightness.uniforms['contrast'].value);
 
         this.glow++;
