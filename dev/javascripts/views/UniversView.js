@@ -58,7 +58,7 @@ export default class UniversView {
 
         this.cssObjects = [];
         this.glow = 1;
-        this.nbAst = 20;
+        this.nbAst = 15;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -355,7 +355,7 @@ export default class UniversView {
             // emissive: new Color('rgb(255, 255, 255)'),
             // specular: new Color('rgb(255, 255, 255)')
         };
-        const material = new MeshLambertMaterial(matPhongParams);
+        // const material = new MeshLambertMaterial(matPhongParams);
         this.brightness = {};
         this.brightness.uniforms = {
             brightness: { type: "f", value: 0 },
@@ -393,11 +393,11 @@ export default class UniversView {
 
 		].join("\n");
 
-        // const material = new ShaderMaterial({
-        //     uniforms: this.brightness.uniforms,
-        //     vertexShader: vertexShader,
-        //     fragmentShader: fragmentShader,
-        // });
+        const material = new ShaderMaterial({
+            uniforms: this.brightness.uniforms,
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+        });
 
         for (let i = 0; i < this.nbAst; i++) {
 
@@ -786,7 +786,7 @@ export default class UniversView {
         
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         // Glow brightness material
-        // this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 5;
+        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 4;
         // console.log(this.brightness.uniforms['contrast'].value);
 
         this.glow++;
