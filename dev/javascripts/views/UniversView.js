@@ -397,7 +397,10 @@ export default class UniversView {
             uniforms: this.brightness.uniforms,
             vertexShader: vertexShader,
             fragmentShader: fragmentShader,
+            transparent: true,
+            opacity: 0.5
         });
+
 
         for (let i = 0; i < this.nbAst; i++) {
 
@@ -786,7 +789,7 @@ export default class UniversView {
         
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         // Glow brightness material
-        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 4;
+        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 30) + 1) * 3.5;
         // console.log(this.brightness.uniforms['contrast'].value);
 
         this.glow++;
