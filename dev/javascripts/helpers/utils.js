@@ -70,3 +70,8 @@ export function clamp(value, min, max) {
 
 	return Math.min(Math.max(value, min), max);
 }
+
+export function round(value, dec) {
+
+	return Math.round(value * dec)/dec;
+}
