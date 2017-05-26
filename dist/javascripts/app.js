@@ -595,6 +595,7 @@ var SceneManager = function () {
             // Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)
 
             // Render cssScene
+            // this.cssRenderer.clear();
             this.cssRenderer.render(opts.cssScene, opts.camera);
 
             if (opts.effectController !== null && opts.effectController.enabled === true) {
@@ -602,7 +603,7 @@ var SceneManager = function () {
                 opts.composer.render(opts.scene, opts.camera);
             } else {
                 // Render scene
-                this.renderer.clear();
+                // this.renderer.clear();
                 this.renderer.render(opts.scene, opts.camera);
             }
         }
@@ -5048,6 +5049,8 @@ var UniversView = function () {
 
             // Mouse
             this.mouse = { x: 0, y: 0 };
+            this.cameraRot = new _three.Vector3(0, 0, 0);
+            this.cameraPos = new _three.Vector3(0, 0, 0);
 
             this.cameraTarget = new _three.Vector3(0, 0, 0);
 
@@ -5478,7 +5481,7 @@ var UniversView = function () {
 
             // COMPOSER
             // IMPORTANT CAREFUL HERE (when changing scene)
-            _SceneManager2.default.renderer.autoClear = false;
+            // SceneManager.renderer.autoClear = false;
 
             var renderTargetParameters = { minFilter: _three.LinearFilter, magFilter: _three.LinearFilter, format: _three.RGBFormat, stencilBuffer: false };
             this.renderTarget = new _three.WebGLRenderTarget(this.width, this.height, renderTargetParameters);
@@ -5566,6 +5569,7 @@ var UniversView = function () {
     }, {
         key: 'onMouseMove',
         value: function onMouseMove(e) {
+            var _this = this;
 
             var eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
             var eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
@@ -5577,24 +5581,27 @@ var UniversView = function () {
             // console.log(this.mouse);
 
             // Update camera
-            // console.log(this.mouse.x);
-            // this.cameraTarget.x = this.mouse.x * 5;
-            // this.cameraTarget.y = this.mouse.y * 5;
-            // TweenMax.to(this.cameraTarget, 0, {x : this.mouse.x * 5, y: this.mouse.y * 5});
 
-            this.camera.position.x = (0, _utils.round)(this.mouse.x * 30, 100); // decimal 2
-            this.camera.position.y = (0, _utils.round)(this.mouse.y * 10, 100);
+            // this.camera.position.x = round(this.mouse.x * 30 , 100); // decimal 2
+            // this.camera.position.y = round(this.mouse.y * 10 , 100);
 
             // this.cameraTarget.x = round(this.mouse.x * 30 , 100); 
-            // this.cameraTarget.y =round(this.mouse.y * 10 , 100);
+            // this.cameraTarget.y = round(this.mouse.y * 10 , 100);
 
-            this.camera.lookAt(this.cameraTarget);
+            // this.camera.lookAt(this.cameraTarget);
+            // this.camera.updateProjectionMatrix();
+            TweenMax.to(this.camera.rotation, 2, {
+                x: (0, _utils.toRadian)((0, _utils.round)(this.mouse.y * 4, 100)),
+                y: -(0, _utils.toRadian)((0, _utils.round)(this.mouse.x * 8, 100)),
+                ease: Expo.easeOut,
+                onUpdate: function onUpdate() {
+                    // recall cssRenderer to update the cssRender camera matrix
+                    _SceneManager2.default.cssRenderer.render(_this.cssScene, _this.camera);
+                }
+            });
 
-            // console.log(this.camera.position.x);
+            // this.camera.updateProjectionMatrix();
 
-            // this.camera.position.x += Math.max(Math.min((this.mouse.x) * 50, 0.2), -0.2);
-            // this.camera.position.y += Math.max(Math.min((this.mouse.y ) * 50, 0.2), -0.2);
-            this.camera.updateProjectionMatrix();
         }
     }, {
         key: 'resizeHandler',
@@ -5795,7 +5802,7 @@ var UniversView = function () {
     }, {
         key: 'destroy',
         value: function destroy() {
-            var _this = this;
+            var _this2 = this;
 
             this.scene.traverse(function (obj) {
 
@@ -5913,7 +5920,7 @@ var UniversView = function () {
 
             // Wait destroy scene before stop js events
             setTimeout(function () {
-                _this.events(false);
+                _this2.events(false);
             }, 500);
         }
     }]);

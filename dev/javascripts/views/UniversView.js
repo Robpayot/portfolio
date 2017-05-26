@@ -95,6 +95,8 @@ export default class UniversView {
 
         // Mouse
         this.mouse = { x: 0, y: 0 };
+        this.cameraRot = new Vector3(0, 0, 0);
+        this.cameraPos = new Vector3(0, 0, 0);
 
         this.cameraTarget = new Vector3(0, 0, 0);
 
@@ -546,7 +548,7 @@ export default class UniversView {
 
         // COMPOSER
         // IMPORTANT CAREFUL HERE (when changing scene)
-        SceneManager.renderer.autoClear = false;
+        // SceneManager.renderer.autoClear = false;
 
         var renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
         this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
@@ -649,24 +651,31 @@ export default class UniversView {
         // console.log(this.mouse);
 
         // Update camera
-        // console.log(this.mouse.x);
-        // this.cameraTarget.x = this.mouse.x * 5;
-        // this.cameraTarget.y = this.mouse.y * 5;
-        // TweenMax.to(this.cameraTarget, 0, {x : this.mouse.x * 5, y: this.mouse.y * 5});
 
-        this.camera.position.x = round(this.mouse.x * 30 , 100); // decimal 2
-        this.camera.position.y = round(this.mouse.y * 10 , 100);
+        // this.camera.position.x = round(this.mouse.x * 30 , 100); // decimal 2
+        // this.camera.position.y = round(this.mouse.y * 10 , 100);
 
         // this.cameraTarget.x = round(this.mouse.x * 30 , 100); 
-        // this.cameraTarget.y =round(this.mouse.y * 10 , 100);
+        // this.cameraTarget.y = round(this.mouse.y * 10 , 100);
 
-        this.camera.lookAt(this.cameraTarget);
+        // this.camera.lookAt(this.cameraTarget);
+        // this.camera.updateProjectionMatrix();
+        TweenMax.to(this.camera.rotation, 2, {
+            x: toRadian(round(this.mouse.y * 4, 100)),
+            y: -toRadian(round(this.mouse.x * 8, 100)),
+            ease: Expo.easeOut,
+            onUpdate: () => {
+                // recall cssRenderer to update the cssRender camera matrix
+                SceneManager.cssRenderer.render(this.cssScene, this.camera);
+            }
+        });
 
-        // console.log(this.camera.position.x);
+        // this.camera.updateProjectionMatrix();
 
-        // this.camera.position.x += Math.max(Math.min((this.mouse.x) * 50, 0.2), -0.2);
-        // this.camera.position.y += Math.max(Math.min((this.mouse.y ) * 50, 0.2), -0.2);
-        this.camera.updateProjectionMatrix();
+
+
+
+
 
     }
 
