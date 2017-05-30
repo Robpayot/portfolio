@@ -1,7 +1,7 @@
 // import PreloadManager from './PreloadManager';
 import EmitterManager from './EmitterManager';
 import RouterManager from './RouterManager';
-// import Device from '../helpers/Device';
+import { Device } from '../helpers/Device';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
@@ -68,13 +68,13 @@ class AppManager {
 
     resizeHandler() {
 
-        // const touch = document.querySelector('html').classList.contains('touchevents');
+        const touch = document.querySelector('html').classList.contains('touchevents');
 
-        // if (touch) {
-        //     Device.touch = true;
-        // } else {
-        //     Device.touch = false;
-        // }
+        if (touch) {
+            Device.touch = true;
+        } else {
+            Device.touch = false;
+        }
 
         // // Device.browser = Detect.browser();
 
@@ -85,16 +85,15 @@ class AppManager {
 
 
 
-        // Device.size = 'mobile';
+        Device.size = 'mobile';
 
-        // if (window.innerWidth >= 768) {
-        //     Device.size = 'tablet';
-        // }
+        if (window.innerWidth >= 768) {
+            Device.size = 'tablet';
+        }
 
-        // if (window.innerWidth > 1024) {
-        //     Device.size = 'desktop';
-        // }
-        // console.log('resize');
+        if (window.innerWidth > 1024) {
+            Device.size = 'desktop';
+        }
 
         EmitterManager.emit('resize', window.innerWidth, window.innerHeight);
 

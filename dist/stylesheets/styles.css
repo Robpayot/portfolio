@@ -126,9 +126,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* ------------------------------------------------------------------ */
 /*        DEFAULT GRID
 /* ------------------------------------------------------------------ */
-body {
-  min-width: 728px; }
-
 .row, .row-fluid {
   position: relative;
   width: 100%;
