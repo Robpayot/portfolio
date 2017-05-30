@@ -6,6 +6,9 @@ import Symbol from '../shapes/Symbol';
 import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
+import { Device } from '../helpers/Device';
+
+
 
 // THREE JS
 import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
@@ -103,6 +106,8 @@ export default class UniversView {
         this.camera.lookAt(this.cameraTarget);
 
 
+
+
         // Camera controls
         // this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
         // this.controls.enableZoom = true;
@@ -193,8 +198,15 @@ export default class UniversView {
 
         let listen = method === false ? 'removeEventListener' : 'addEventListener';
 
-        document[listen]('mousemove', this.onMouseMove);
-        document[listen]('click', this.onClick);
+        if (Device.touch === false) {
+            // move camera
+            document[listen]('mousemove', this.onMouseMove);
+            document.body[listen]('click', this.onClick);
+        } else {
+        	document.body[listen]('touchstart', this.onClick);
+        }
+
+        
 
         listen = method === false ? 'off' : 'on';
 
@@ -213,6 +225,10 @@ export default class UniversView {
         );
 
         this.camera.position.set(0, 0, 160);
+
+        if (Device.size === 'mobile') {
+        	this.camera.position.set(0, 0, 200);
+        }
 
     }
 
@@ -582,6 +598,19 @@ export default class UniversView {
 
     onClick(e) {
 
+        // update Mouse position for touch devices
+        if (Device.touch === true) {
+            const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+            const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+
+            this.mouse.x = (eventX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
+
+            // U/!\ Important / dangerous
+            // update raf for trigger intersect on mobile
+            this.raf();
+        }
+
         if (this.clickSymbol === true) {
             this.onClickSymbol();
         }
@@ -698,38 +727,6 @@ export default class UniversView {
     }
 
     raf() {
-
-        //////////////////
-        // Raycasters
-        //////////////////
-
-        this.ui.body.style.cursor = 'auto';
-
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-
-        const intersects = this.raycaster.intersectObjects(this.symbolsM);
-
-        if (intersects.length > 0) {
-            this.ui.body.style.cursor = 'pointer';
-            this.clickSymbol = true;
-
-        } else {
-
-            this.clickSymbol = false;
-        }
-
-        const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-
-        if (intersectsAst.length > 0) {
-            this.ui.body.style.cursor = 'pointer';
-            this.clickAsteroid = true;
-            this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-        } else {
-            // this.ui.body.style.cursor = 'auto';
-            this.clickAsteroid = false;
-        }
-
-
         // // Update meth size
 
         // ////////////
@@ -768,6 +765,36 @@ export default class UniversView {
         //     this.cubes[i].scale.y = lowAvg;
         //     this.cubes[i].scale.z = lowAvg;
         // }
+
+        //////////////////
+        // Raycasters
+        //////////////////
+
+        this.ui.body.style.cursor = 'auto';
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+        const intersects = this.raycaster.intersectObjects(this.symbolsM);
+
+        if (intersects.length > 0) {
+            this.ui.body.style.cursor = 'pointer';
+            this.clickSymbol = true;
+
+        } else {
+
+            this.clickSymbol = false;
+        }
+
+        const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+
+        if (intersectsAst.length > 0) {
+            this.ui.body.style.cursor = 'pointer';
+            this.clickAsteroid = true;
+            this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+        } else {
+            // this.ui.body.style.cursor = 'auto';
+            this.clickAsteroid = false;
+        }
 
         // update world 
         this.world.step();
