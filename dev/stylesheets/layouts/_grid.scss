@@ -27,9 +27,6 @@ $grid-max-width   : 1140px + $grid-gutter;
 $grid-width       : 100%;
 $grid-min-width   : 728px;
 
-body {
-    min-width: $grid-min-width;
-}
 
 %row {
     @include position();
