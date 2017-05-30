@@ -39,6 +39,7 @@ export default class UniversView {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.mouseWheel = this.mouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
@@ -63,6 +64,7 @@ export default class UniversView {
         this.cssObjects = [];
         this.glow = 1;
         this.nbAst = 10;
+        this.finalFov = 45;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -82,7 +84,7 @@ export default class UniversView {
         this.setSymbol();
 
         // Set asteroid
-        this.setAsteroids();
+        // this.setAsteroids();
 
         // Set envelop
         this.setEnvelop();
@@ -202,11 +204,13 @@ export default class UniversView {
             // move camera
             document[listen]('mousemove', this.onMouseMove);
             document.body[listen]('click', this.onClick);
+            document[listen]('mousewheel', this.mouseWheel);
+            document[listen]('MozMousePixelScroll', this.mouseWheel);
         } else {
-        	document.body[listen]('touchstart', this.onClick);
+            document.body[listen]('touchstart', this.onClick);
         }
 
-        
+
 
         listen = method === false ? 'off' : 'on';
 
@@ -224,10 +228,12 @@ export default class UniversView {
             3000 // far
         );
 
+        
+
         this.camera.position.set(0, 0, 160);
 
         if (Device.size === 'mobile') {
-        	this.camera.position.set(0, 0, 200);
+            this.camera.position.set(0, 0, 200);
         }
 
     }
@@ -327,19 +333,19 @@ export default class UniversView {
 
 
         // create a glowMesh
-        symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
-        symbol.mesh.add(symbol.glowMesh.object3d);
+        // symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
+        // symbol.mesh.add(symbol.glowMesh.object3d);
 
-        // example of customization of the default glowMesh
-        // Inside
-        symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white')
-        symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
-        symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
+        // // example of customization of the default glowMesh
+        // // Inside
+        // symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white')
+        // symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
+        // symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
 
-        // Outside
-        symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white')
-        symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
-        symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
+        // // Outside
+        // symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white')
+        // symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
+        // symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
 
         this.symbols = [symbol];
         this.symbolsM = [symbol.mesh];
@@ -596,6 +602,10 @@ export default class UniversView {
 
     }
 
+    ////////////
+    // EVENTS
+    ////////////
+
     onClick(e) {
 
         // update Mouse position for touch devices
@@ -708,6 +718,27 @@ export default class UniversView {
 
     }
 
+    mouseWheel(event) {
+
+        event.preventDefault();
+
+
+
+        if (event.wheelDeltaY) {
+
+            this.finalFov -= event.wheelDeltaY * 0.05;
+        } else if (event.wheelDelta) {
+
+            this.finalFov -= event.wheelDelta * 0.05;
+        } else if (event.detail) {
+
+            this.finalFov += event.detail * 1;
+        }
+
+        this.finalFov = clamp(this.finalFov, 35, 70);
+
+    }
+
     resizeHandler() {
 
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -785,16 +816,16 @@ export default class UniversView {
             this.clickSymbol = false;
         }
 
-        const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+        // const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
-        if (intersectsAst.length > 0) {
-            this.ui.body.style.cursor = 'pointer';
-            this.clickAsteroid = true;
-            this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-        } else {
-            // this.ui.body.style.cursor = 'auto';
-            this.clickAsteroid = false;
-        }
+        // if (intersectsAst.length > 0) {
+        //     this.ui.body.style.cursor = 'pointer';
+        //     this.clickAsteroid = true;
+        //     this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+        // } else {
+        //     // this.ui.body.style.cursor = 'auto';
+        //     this.clickAsteroid = false;
+        // }
 
         // update world 
         this.world.step();
@@ -809,56 +840,70 @@ export default class UniversView {
             this.symbols[i].mesh.position.copy(this.symbols[i].body.getPosition());
             this.symbols[i].mesh.quaternion.copy(this.symbols[i].body.getQuaternion());
         }
-        // Asteroids bodies
-        for (let i = 0; i < this.asteroids.length; i++) {
+        // // Asteroids bodies
+        // for (let i = 0; i < this.asteroids.length; i++) {
 
-            if (this.asteroids[i].mesh.position.x > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.x < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.y > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.y < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.z > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.z < -this.envelopSize / 2 + 50) {
-                // Reverse Force Vector
-                if (this.asteroids[i].annilled !== true) {
+        //     if (this.asteroids[i].mesh.position.x > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.x < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.y > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.y < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.z > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.z < -this.envelopSize / 2 + 50) {
+        //         // Reverse Force Vector
+        //         if (this.asteroids[i].annilled !== true) {
 
-                    this.asteroids[i].changeDirection();
-                    this.asteroids[i].annilled = true;
-                }
-            }
+        //             this.asteroids[i].changeDirection();
+        //             this.asteroids[i].annilled = true;
+        //         }
+        //     }
 
-            if (this.asteroids[i].body !== undefined) {
+        //     if (this.asteroids[i].body !== undefined) {
 
-                // APPLY IMPULSE
-                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+        //         // APPLY IMPULSE
+        //         this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+        //         this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+        //         this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
 
-                // console.log(this.asteroids[i].body.angularVelocity);
-                // angular Velocity always inferior to 1 (or too much rotations)
+        //         // console.log(this.asteroids[i].body.angularVelocity);
+        //         // angular Velocity always inferior to 1 (or too much rotations)
 
-                this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
-                this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
-                this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
-                // if (i === 0) {
-                //   console.log(this.asteroids[i].body.angularVelocity.x);
-                // }
-
-
-                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+        //         this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
+        //         this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
+        //         this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
+        //         // if (i === 0) {
+        //         //   console.log(this.asteroids[i].body.angularVelocity.x);
+        //         // }
 
 
-            }
+        //         this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+        //         this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
 
 
+        //     }
+
+
+        // }
+
+        // // Glow continuously 
+        // this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
+
+        // // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+        // // Glow brightness material
+        // this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
+        // this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
+        // // console.log(this.brightness.uniforms['contrast'].value);
+
+        // this.glow++;
+
+        // Zoom ??
+
+        const delta = (this.finalFov - this.camera.fov) * 0.25;
+
+        if (Math.abs(delta) > 0.01) {
+
+            this.camera.fov += delta;
+            this.camera.updateProjectionMatrix();
+
+            // console.log(this.camera.fov);
+
+            // FOV : 70 : zoom middle
+            // FOV : 60 : zoom max
         }
-
-        // Glow continuously 
-        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
-
-        // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
-        // Glow brightness material
-        this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
-        this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
-        // console.log(this.brightness.uniforms['contrast'].value);
-
-        this.glow++;
-
 
         // Render Scenes 
         SceneManager.render({
