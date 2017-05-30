@@ -589,6 +589,8 @@ var SceneManager = function () {
 
             this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: false });
             this.renderer.setClearColor(0xffffff, 1);
+            // this.renderer.setPixelRatio( window.devicePixelRatio );
+            // setScissor ??
 
             this.renderer.setSize(window.innerWidth, window.innerHeight);
 
