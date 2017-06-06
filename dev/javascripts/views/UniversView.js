@@ -7,6 +7,7 @@ import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
+import bean from 'bean';
 
 
 
@@ -15,7 +16,9 @@ import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import OrbitControls from '../vendors/OrbitControls';
+import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import { World } from 'oimo';
+
 
 // POSTPROCESSING
 import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -39,10 +42,12 @@ export default class UniversView {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
-        this.mouseWheel = this.mouseWheel.bind(this);
+        this.showGallery = this.showGallery.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
+        this.onChangeDolly = this.onChangeDolly.bind(this);
 
 
 
@@ -70,12 +75,12 @@ export default class UniversView {
         this.width = window.innerWidth * window.devicePixelRatio;
         this.height = window.innerHeight * window.devicePixelRatio;
 
-        // Set Camera.
-        this.setCamera();
-
         // Set scenes
         this.scene = new Scene();
         this.cssScene = new Scene();
+
+        // Set Camera.
+        this.setCamera();
 
         // Set physics
         this.initPhysics();
@@ -122,7 +127,7 @@ export default class UniversView {
             // blur
             blur: 4.0,
             horizontalBlur: 0.5,
-            enabled: true,
+            enabled: false,
             // glow
             coeficient: 1,
             power: 2,
@@ -133,14 +138,18 @@ export default class UniversView {
             // brightness
             brightness: 0,
             contrast: 0,
+            // Camera dolly
+            position: 0,
+            lookAt: 0
+
         };
 
         // Blur
         const blurFolder = this.sound.gui.addFolder('Blur');
-        blurFolder.add(this.effectController, "blur", 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
-        blurFolder.add(this.effectController, "horizontalBlur", 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
-        blurFolder.add(this.effectController, "enabled").onChange(this.onChangeBlur);
-        blurFolder.open();
+        blurFolder.add(this.effectController, 'blur', 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
+        blurFolder.add(this.effectController, 'horizontalBlur', 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
+        blurFolder.add(this.effectController, 'enabled').onChange(this.onChangeBlur);
+        // blurFolder.open();
 
         // Glow
         const glowFolder = this.sound.gui.addFolder('Glow');
@@ -156,6 +165,13 @@ export default class UniversView {
         brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
         brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
         // brightnessFolder.open();
+
+        // Camera Dolly
+        // const dollyFolder = this.sound.gui.addFolder('Camera Dolly');
+        // dollyFolder.add(this.effectController, 'position', 0.0, 1).listen().onChange(this.onChangeDolly);
+        // dollyFolder.add(this.effectController, 'lookAt', 0.0, 1).listen().onChange(this.onChangeDolly);
+        // dollyFolder.open();
+
 
         ////////////////////
         // POST PROCESSING
@@ -196,6 +212,12 @@ export default class UniversView {
         this.brightness.uniforms['contrast'].value = this.effectController.contrast;
     }
 
+    onChangeDolly() {
+        this.dolly.cameraPosition = this.effectController.position;
+        this.dolly.lookatPosition = this.effectController.lookAt;
+        this.dolly.update();
+    }
+
     events(method) {
 
         let listen = method === false ? 'removeEventListener' : 'addEventListener';
@@ -204,18 +226,27 @@ export default class UniversView {
             // move camera
             document[listen]('mousemove', this.onMouseMove);
             document.body[listen]('click', this.onClick);
-            document[listen]('mousewheel', this.mouseWheel);
-            document[listen]('MozMousePixelScroll', this.mouseWheel);
+            document[listen]('mousewheel', this.onMouseWheel);
+            document[listen]('MozMousePixelScroll', this.onMouseWheel);
         } else {
             document.body[listen]('touchstart', this.onClick);
         }
 
+        // When context is ready 
+        setTimeout(() => {
+            console.log(listen);
+            const btn = document.querySelector('.project__btn');
+            btn[listen]('click', this.showGallery);
+        }, 1000);
 
 
-        listen = method === false ? 'off' : 'on';
 
-        EmitterManager[listen]('resize', this.resizeHandler);
-        EmitterManager[listen]('raf', this.raf);
+
+        let listenO = method === false ? 'off' : 'on';
+        EmitterManager[listenO]('resize', this.resizeHandler);
+        EmitterManager[listenO]('raf', this.raf);
+
+
 
     }
 
@@ -228,13 +259,70 @@ export default class UniversView {
             3000 // far
         );
 
-        
+        const initPos = {
+            'x': 0,
+            'y': 0,
+            'z': 160
+        }
 
+        this.pathRadius = 160;
         this.camera.position.set(0, 0, 160);
-
         if (Device.size === 'mobile') {
             this.camera.position.set(0, 0, 200);
         }
+
+        // Formules coordonnée d'un cercle
+        // x = x0 + r * cos(t)
+        // y = y0 + r * sin(t)
+
+        // // Set camera Dolly
+        // const points = {
+        //     'camera': [{
+        //         'x': radius * Math.cos(Math.PI / 2),
+        //         'y': 0,
+        //         'z': radius * Math.sin(Math.PI / 2)
+        //     }, {
+        //         'x': radius * Math.cos(3 * Math.PI / 4),
+        //         'y': 0,
+        //         'z': radius * Math.sin(3 * Math.PI / 4)
+        //     }, {
+        //         'x': radius * Math.cos(Math.PI),
+        //         'y': 0,
+        //         'z': radius * Math.sin(Math.PI)
+        //     }],
+        //     'lookat': [{
+        //         'x': 0,
+        //         'y': 0,
+        //         'z': 0
+        //     }, {
+        //         'x': 180,
+        //         'y': -87,
+        //         'z': -66
+        //     }, {
+        //         'x': 280,
+        //         'y': -87,
+        //         'z': -66
+        //     }, {
+        //         'x': 280,
+        //         'y': -87,
+        //         'z': 36
+        //     }]
+        // };
+
+        // this.dolly = new CameraDolly(this.camera, this.scene, points, null, true);
+
+        // this.dolly.cameraPosition = 0;
+        // this.dolly.lookatPosition = 0;
+        // this.dolly.range = [0, 1];
+        // this.dolly.both = 0;
+
+        // TweenMax.to(this.dolly, 10, {
+        // 	cameraPosition: 1,
+        // 	onUpdate: () => {
+        // 		this.dolly.update();
+        // 	}
+        // })
+
 
     }
 
@@ -564,6 +652,19 @@ export default class UniversView {
 
         this.cssObjects.push(div23d);
 
+        let btn = document.createElement('div');
+        btn.classList.add('css-container');
+
+        btn.innerHTML = `<div class='project__btn'>Click here</div>`;
+
+        const btn3d = new CSS3DObject(btn);
+        btn3d.position.set(0, -15, 0);
+        btn3d.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(btn3d);
+
+        this.cssObjects.push(btn3d);
+
     }
 
     setBlur() {
@@ -605,6 +706,26 @@ export default class UniversView {
     ////////////
     // EVENTS
     ////////////
+
+    showGallery() {
+        console.log('show gallery');
+        
+        // Turn around the perimeter of a circle
+
+        const trigo = {angle: 1};
+        TweenMax.to(trigo, 7, {
+        	angle: 3,
+        	ease: window.Power3.easeInOut,
+        	onUpdate: () => {
+        		// Math.PI / 2 start rotation at 90deg
+        		this.camera.position.x = this.pathRadius * Math.cos( Math.PI / 2 * trigo.angle );
+        		this.camera.position.z = this.pathRadius * Math.sin( Math.PI / 2 * trigo.angle );
+        		this.camera.lookAt(this.cameraTarget);
+
+        		this.camera.updateProjectionMatrix();
+        	}
+        });
+    }
 
     onClick(e) {
 
@@ -699,26 +820,23 @@ export default class UniversView {
 
         // this.camera.lookAt(this.cameraTarget);
         // this.camera.updateProjectionMatrix();
-        TweenMax.to(this.camera.rotation, 2, {
-            x: toRadian(round(this.mouse.y * 4, 100)),
-            y: -toRadian(round(this.mouse.x * 8, 100)),
-            ease: Expo.easeOut,
-            onUpdate: () => {
-                // recall cssRenderer to update the cssRender camera matrix
-                SceneManager.cssRenderer.render(this.cssScene, this.camera);
-            }
-        });
+
+        // Camera move
+        // TweenMax.to(this.camera.rotation, 2, {
+        //     x: toRadian(round(this.mouse.y * 4, 100)),
+        //     y: -toRadian(round(this.mouse.x * 8, 100)),
+        //     ease: Expo.easeOut,
+        //     onUpdate: () => {
+        //         // recall cssRenderer to update the cssRender camera matrix
+        //         SceneManager.cssRenderer.render(this.cssScene, this.camera);
+        //     }
+        // });
 
         // this.camera.updateProjectionMatrix();
 
-
-
-
-
-
     }
 
-    mouseWheel(event) {
+    onMouseWheel(event) {
 
         event.preventDefault();
 
@@ -905,6 +1023,34 @@ export default class UniversView {
             // FOV : 60 : zoom max
         }
 
+        // Camera Dolly
+        // if (_.get(this).moveIn === true) {
+
+        // 	if (_.get(this).dolly.cameraPosition <= 0.239) {
+
+        // 		_.get(this).coefMoveIn = _.get(this).coefMoveIn * 0.96;
+        // 		_.get(this).dolly.cameraPosition += _.get(this).coefMoveIn;
+        // 		_.get(this).dolly.lookatPosition += _.get(this).coefMoveIn;
+        // 		_.get(this).dolly.update();
+
+        // 	} else {
+
+        // 		_.get(this).finalCoord.cam = _.get(this).dolly.cameraPosition;
+        // 		_.get(this).finalCoord.look = _.get(this).dolly.lookatPosition;
+        // 		_.get(this).moveIn = false;
+        // 		_.get(this).canDrag = true;
+        // 	}
+        // }
+
+        // const deltaCam = (_.get(this).finalCoord.cam - _.get(this).dolly.cameraPosition) * 0.05;
+        // const deltaLook = (_.get(this).finalCoord.look - _.get(this).dolly.lookatPosition) * 0.05;
+
+        // if (Math.abs(deltaCam) > 0.0001) _.get(this).dolly.cameraPosition += (_.get(this).finalCoord.cam - _.get(this).dolly.cameraPosition) * 0.05;
+        // if (Math.abs(deltaLook) > 0.0001) _.get(this).dolly.lookatPosition += (_.get(this).finalCoord.look - _.get(this).dolly.lookatPosition) * 0.05;
+
+        // if (_.get(this).finalCoord.cam >= 0 && _.get(this).finalCoord.cam <= 1) {
+        // 	if (Math.abs(deltaCam) > 0.0001 || Math.abs(deltaLook) > 0.0001) _.get(this).dolly.update();
+        // }
         // Render Scenes 
         SceneManager.render({
             camera: this.camera,
