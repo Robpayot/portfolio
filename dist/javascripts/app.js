@@ -589,6 +589,8 @@ var SceneManager = function () {
 
             this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: false });
             this.renderer.setClearColor(0xffffff, 1);
+            this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
+            // setScissor ??
 
             this.renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -3665,6 +3667,7 @@ var UniversView = function () {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.mouseWheel = this.mouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
@@ -3687,6 +3690,7 @@ var UniversView = function () {
             this.cssObjects = [];
             this.glow = 1;
             this.nbAst = 10;
+            this.finalFov = 45;
 
             // retina screen size
             this.width = window.innerWidth * window.devicePixelRatio;
@@ -3824,6 +3828,8 @@ var UniversView = function () {
                 // move camera
                 document[listen]('mousemove', this.onMouseMove);
                 document.body[listen]('click', this.onClick);
+                document[listen]('mousewheel', this.mouseWheel);
+                document[listen]('MozMousePixelScroll', this.mouseWheel);
             } else {
                 document.body[listen]('touchstart', this.onClick);
             }
@@ -4192,6 +4198,11 @@ var UniversView = function () {
             this.composer.addPass(this.hblur);
             this.composer.addPass(this.vblur);
         }
+
+        ////////////
+        // EVENTS
+        ////////////
+
     }, {
         key: 'onClick',
         value: function onClick(e) {
@@ -4297,6 +4308,25 @@ var UniversView = function () {
 
             // this.camera.updateProjectionMatrix();
 
+        }
+    }, {
+        key: 'mouseWheel',
+        value: function mouseWheel(event) {
+
+            event.preventDefault();
+
+            if (event.wheelDeltaY) {
+
+                this.finalFov -= event.wheelDeltaY * 0.05;
+            } else if (event.wheelDelta) {
+
+                this.finalFov -= event.wheelDelta * 0.05;
+            } else if (event.detail) {
+
+                this.finalFov += event.detail * 1;
+            }
+
+            this.finalFov = (0, _utils.clamp)(this.finalFov, 35, 70);
         }
     }, {
         key: 'resizeHandler',
@@ -4445,6 +4475,21 @@ var UniversView = function () {
             // console.log(this.brightness.uniforms['contrast'].value);
 
             this.glow++;
+
+            // Zoom ??
+
+            var delta = (this.finalFov - this.camera.fov) * 0.25;
+
+            if (Math.abs(delta) > 0.01) {
+
+                this.camera.fov += delta;
+                this.camera.updateProjectionMatrix();
+
+                // console.log(this.camera.fov);
+
+                // FOV : 70 : zoom middle
+                // FOV : 60 : zoom max
+            }
 
             // Render Scenes 
             _SceneManager2.default.render({

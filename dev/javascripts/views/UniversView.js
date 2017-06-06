@@ -39,6 +39,7 @@ export default class UniversView {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.mouseWheel = this.mouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
@@ -63,6 +64,7 @@ export default class UniversView {
         this.cssObjects = [];
         this.glow = 1;
         this.nbAst = 10;
+        this.finalFov = 45;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -202,11 +204,13 @@ export default class UniversView {
             // move camera
             document[listen]('mousemove', this.onMouseMove);
             document.body[listen]('click', this.onClick);
+            document[listen]('mousewheel', this.mouseWheel);
+            document[listen]('MozMousePixelScroll', this.mouseWheel);
         } else {
-        	document.body[listen]('touchstart', this.onClick);
+            document.body[listen]('touchstart', this.onClick);
         }
 
-        
+
 
         listen = method === false ? 'off' : 'on';
 
@@ -224,10 +228,12 @@ export default class UniversView {
             3000 // far
         );
 
+        
+
         this.camera.position.set(0, 0, 160);
 
         if (Device.size === 'mobile') {
-        	this.camera.position.set(0, 0, 200);
+            this.camera.position.set(0, 0, 200);
         }
 
     }
@@ -596,6 +602,10 @@ export default class UniversView {
 
     }
 
+    ////////////
+    // EVENTS
+    ////////////
+
     onClick(e) {
 
         // update Mouse position for touch devices
@@ -705,6 +715,27 @@ export default class UniversView {
 
 
 
+
+    }
+
+    mouseWheel(event) {
+
+        event.preventDefault();
+
+
+
+        if (event.wheelDeltaY) {
+
+            this.finalFov -= event.wheelDeltaY * 0.05;
+        } else if (event.wheelDelta) {
+
+            this.finalFov -= event.wheelDelta * 0.05;
+        } else if (event.detail) {
+
+            this.finalFov += event.detail * 1;
+        }
+
+        this.finalFov = clamp(this.finalFov, 35, 70);
 
     }
 
@@ -859,6 +890,20 @@ export default class UniversView {
 
         this.glow++;
 
+        // Zoom ??
+
+        const delta = (this.finalFov - this.camera.fov) * 0.25;
+
+        if (Math.abs(delta) > 0.01) {
+
+            this.camera.fov += delta;
+            this.camera.updateProjectionMatrix();
+
+            // console.log(this.camera.fov);
+
+            // FOV : 70 : zoom middle
+            // FOV : 60 : zoom max
+        }
 
         // Render Scenes 
         SceneManager.render({
