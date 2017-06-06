@@ -291,9 +291,11 @@ body {
 
 .graphic3D {
   position: relative; }
+  .graphic3D .container3D .css-container {
+    font-size: 38px;
+    color: white; }
   .graphic3D .container3D .project__context {
     max-width: 900px;
-    font-size: 38px;
     line-height: 1.4em;
     z-index: 10;
     opacity: 0;
@@ -312,6 +314,8 @@ body {
     user-select: none; }
     .graphic3D .container3D .project__image img {
       width: 100%; }
+  .graphic3D .container3D .project__btn {
+    cursor: pointer; }
 
 .graphicBars {
   background-color: transparent;
