@@ -68,7 +68,7 @@ export default class UniversView {
 
         this.cssObjects = [];
         this.glow = 1;
-        this.nbAst = 10;
+        this.nbAst = 1;
         this.finalFov = 45;
 
         // retina screen size
@@ -235,8 +235,11 @@ export default class UniversView {
         // When context is ready 
         setTimeout(() => {
             console.log(listen);
-            const btn = document.querySelector('.project__btn');
-            btn[listen]('click', this.showGallery);
+            this.ui.btn = document.querySelector('.project__btn');
+            this.ui.arrowL = document.querySelector('.project__arrow-l');
+            this.ui.arrowR = document.querySelector('.project__arrow-r');
+            // console.log(this.ui.arrowL);
+            this.ui.arrowL[listen]('click', this.showGallery);
         }, 1000);
 
 
@@ -574,7 +577,9 @@ export default class UniversView {
 
         let paramsLight = [
             // { x: 70, y: 70, z: 0 },
-            { x: -50, y: -50, z: 100 },
+            { x: -100, y: 0, z: 0 },
+            { x: 100, y: 0, z: 0 },
+            { x: 0, y: 0, z: 100 },
             { x: 0, y: -0, z: 0 }
         ];
 
@@ -584,7 +589,7 @@ export default class UniversView {
         for (var i = 0; i < paramsLight.length; i++) {
 
             // create a point light
-            let pointLight = new PointLight(0xFFFFFF, 1.5, 600, 2);
+            let pointLight = new PointLight(0xFFFFFF, 0.8, 600, 2);
             // set its position
             pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
             // pointLight.power = 20;
@@ -625,46 +630,83 @@ export default class UniversView {
 
         let div = document.createElement('div');
         div.classList.add('css-container');
-
         div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
 
         this.text = new CSS3DObject(div);
-        this.text.position.set(50, 5, 20);
-        this.text.rotation.set(0, toRadian(-35), 0);
+        this.text.position.set(40, 0, 0);
+        this.text.rotation.set(0, toRadian(90), 0);
         this.text.scale.multiplyScalar(1 / 14);
 
         this.cssScene.add(this.text);
         this.cssObjects.push(this.text);
 
+        // Title
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__title'>BMW Paris Motorshow 2016 <a class="link" href="http://mondialautomobile.bmw.fr/" target="_blank"><img src="images/icons/link.svg" alt="link"></a></div>`;
+
+        const title = new CSS3DObject(div);
+        title.position.set(0, 20, 0);
+        title.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(title);
+        this.cssObjects.push(title);
+
+        // Arrows
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__arrow project__arrow-l'><img src="images/icons/chevron.svg" alt="link"></div>`;
+
+        const arrowL = new CSS3DObject(div);
+        arrowL.position.set(-25, 0, 0);
+        arrowL.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(arrowL);
+        this.cssObjects.push(arrowL);
+
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__arrow project__arrow-r'><img src="images/icons/chevron.svg" alt="link"></div>`;
+
+        const arrowR = new CSS3DObject(div);
+        arrowR.position.set(25, 0, 0);
+        arrowR.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(arrowR);
+        this.cssObjects.push(arrowR);
 
 
-        let div2 = document.createElement('div');
-        div2.classList.add('css-container');
+        // Gallery
+        this.gallery = new Object3D(); // DESTROY CONTAINER ????
+        this.gallery.position.set(-40, 0, 0);
+        this.gallery.rotation.set(0, toRadian(-90), 0);
+        this.cssScene.add(this.gallery);
+        
+        // image 1
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__image'><img src="images/bmw-1.jpg" alt="project image" /></div>`;
 
-        div2.innerHTML = `<div class='project__image'><img src="images/bmw.jpg" alt="project image" /></div>`;
+        const image1 = new CSS3DObject(div);
+        // image1.position.set(-40, 0, 0);
+        // image1.rotation.set(0, toRadian(-90), 0);
+        image1.scale.multiplyScalar(1 / 14);
 
-        const div23d = new CSS3DObject(div2);
-        div23d.position.set(-50, 5, 20);
-        div23d.rotation.set(0, toRadian(35), 0);
-        div23d.scale.multiplyScalar(1 / 14);
+        this.gallery.add(image1);
+        this.cssObjects.push(image1);
 
-        this.cssScene.add(div23d);
+        // image 2
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__image'><img src="images/bmw-2.jpg" alt="project image" /></div>`;
 
-        this.cssObjects.push(div23d);
+        const image2 = new CSS3DObject(div);
+        image2.position.set(0, 40, 0);
+        image2.rotation.set(toRadian(-45), 0, 0);
+        image2.scale.multiplyScalar(1 / 14);
 
-        let btn = document.createElement('div');
-        btn.classList.add('css-container');
-
-        btn.innerHTML = `<div class='project__btn'>Click here</div>`;
-
-        const btn3d = new CSS3DObject(btn);
-        btn3d.position.set(0, -15, 0);
-        btn3d.scale.multiplyScalar(1 / 14);
-
-        this.cssScene.add(btn3d);
-
-        this.cssObjects.push(btn3d);
-
+        this.gallery.add(image2);
+        this.cssObjects.push(image2);
     }
 
     setBlur() {
@@ -709,24 +751,84 @@ export default class UniversView {
 
     showGallery() {
         console.log('show gallery');
-        
+
         // Turn around the perimeter of a circle
 
-        const trigo = {angle: 1};
-        TweenMax.to(trigo, 7, {
-        	angle: 3,
-        	ease: window.Power3.easeInOut,
-        	onUpdate: () => {
-        		// Math.PI / 2 start rotation at 90deg
-        		this.camera.position.x = this.pathRadius * Math.cos( Math.PI / 2 * trigo.angle );
-        		this.camera.position.z = this.pathRadius * Math.sin( Math.PI / 2 * trigo.angle );
-        		this.camera.lookAt(this.cameraTarget);
+        const trigo = { angle: 1 };
+        const tl = new TimelineMax();
 
-        		this.camera.updateProjectionMatrix();
-        	}
+        tl.to(trigo, 0.5, { // 3.5
+            angle: 2,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+
+                this.camera.updateProjectionMatrix();
+            }
         });
+
+        tl.fromTo('.project__image', 0.5, { // 1.2
+            opacity: 0,
+            y: 40
+        }, {
+            opacity: 0.8,
+            y: 0,
+            ease: window.Power4.easeOut
+        });
+
+        tl.to(this.gallery.position, 4, {
+        	y: -40,
+        	ease: window.Power4.easeOut
+        });
+
+        // tl.to(this.gallery.rotation, 4, {
+        // 	z: toRadian(-45),
+        // 	ease: window.Power4.easeOut
+        // },'-=4');
+        tl.add(()=> {
+        	this.gallery.rotateOnAxis ( new Vector3(1,0,0), toRadian(45) );
+        });
+        
     }
 
+    slide(dir) {
+
+    }
+
+    showDescription() {
+        console.log('show gallery');
+
+        // Turn around the perimeter of a circle
+
+        const trigo = { angle: 1 };
+        const tl = new TimelineMax();
+
+        tl.to(trigo, 3.5, {
+            angle: 0,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+
+                this.camera.updateProjectionMatrix();
+            }
+        });
+
+        tl.fromTo('.project__context', 1.2, {
+            opacity: 0,
+            y: 40
+        }, {
+            opacity: 0.8,
+            y: 0,
+            ease: window.Power4.easeOut
+        });
+
+    }
     onClick(e) {
 
         // update Mouse position for touch devices
@@ -768,15 +870,6 @@ export default class UniversView {
                 z: 1.5,
                 ease: window.Power4.easeInOut
             });
-
-            tl.staggerFromTo(['.project__image', '.project__context'], 0.8, {
-                opacity: 0,
-                y: 30
-            }, {
-                opacity: 1,
-                y: 0,
-                ease: window.Power4.easeOut
-            }, 0.1, 0.4);
 
             this.toggle = true;
 
@@ -1000,11 +1093,21 @@ export default class UniversView {
         // Glow continuously 
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
 
+        // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
+        // Glow arrows
+        if (this.ui.arrowL !== undefined && this.ui.arrowL !== null ) {
+            this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
+            this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
+            // console.log(5 + (Math.sin(this.glow / 30) + 1) / 5);
+        }
+
+
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         // Glow brightness material
         this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
         this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
         // console.log(this.brightness.uniforms['contrast'].value);
+
 
         this.glow++;
 

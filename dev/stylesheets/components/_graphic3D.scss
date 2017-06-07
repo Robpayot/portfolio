@@ -7,31 +7,53 @@
         // height: 100%;
         // pointer-events: none;
         .css-container {
-        	// default settings
-        	font-size: 38px;
-        	color: white;
-
+            // default settings
+            font-size: 38px;
+            color: white;
         }
         .project__context {
-        	max-width: 900px;
-        	line-height: 1.4em;
-        	z-index: 10;
-        	opacity: 0;
+            max-width: 900px;
+            line-height: 1.4em;
+            z-index: 10;
+            opacity: 0;
             color: white;
             user-select: none;
         }
         .project__image {
-        	max-width: 900px;
-        	// max-height: 300px;
-        	border: 1px solid rgba(128, 128, 128, 0.15);
-        	opacity: 0;
+            max-width: 900px;
+            // max-height: 300px;
+            border: 1px solid rgba(128, 128, 128, 0.15);
+            opacity: 0;
             user-select: none;
-        	img {
-        		width: 100%;
-        	}
+            img {
+                width: 100%;
+            }
         }
         .project__btn {
-        	cursor: pointer;
+            cursor: pointer;
+        }
+        .project__arrow {
+            img {
+                width: 40px;
+            }
+            transition: transform 0.3s ease-out;
+            cursor: pointer;
+            &:hover {
+                transform: scale(1.05) translateX(10px);
+            }
+            &-l {
+                transform: rotate(180deg);
+                &:hover {
+                    transform: scale(1.05) rotate(180deg) translateX(10px);
+                }
+            }
+        }
+        .link {
+            img {
+                width: 40px;
+                margin-left: 20px;
+                margin-bottom: -5px;
+            }
         }
     }
 }
