@@ -43,6 +43,7 @@ export default class UniversView {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.showGallery = this.showGallery.bind(this);
+        this.showDescription = this.showDescription.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
@@ -240,6 +241,8 @@ export default class UniversView {
             this.ui.arrowR = document.querySelector('.project__arrow-r');
             // console.log(this.ui.arrowL);
             this.ui.arrowL[listen]('click', this.showGallery);
+            this.ui.arrowR[listen]('click', this.showDescription);
+
         }, 1000);
 
 
