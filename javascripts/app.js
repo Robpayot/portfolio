@@ -3932,6 +3932,7 @@ var UniversView = function () {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.showGallery = this.showGallery.bind(this);
+        this.showDescription = this.showDescription.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
@@ -4127,6 +4128,7 @@ var UniversView = function () {
                 _this.ui.arrowR = document.querySelector('.project__arrow-r');
                 // console.log(this.ui.arrowL);
                 _this.ui.arrowL[listen]('click', _this.showGallery);
+                _this.ui.arrowR[listen]('click', _this.showDescription);
             }, 1000);
 
             var listenO = method === false ? 'off' : 'on';
