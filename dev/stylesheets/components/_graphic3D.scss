@@ -10,6 +10,7 @@
             // default settings
             font-size: 38px;
             color: white;
+            user-select: none;
         }
         .project__context {
             max-width: 750px;
@@ -18,6 +19,7 @@
             opacity: 0;
             color: white;
             user-select: none;
+            font-size: 32px;
         }
         .project__image {
             max-width: 750px;
@@ -63,12 +65,20 @@
                 cursor: pointer;
                 display: none;
                 opacity: 0;
+                transition: transform 0.3s ease-out;
                 &-t {
                     transform: rotate(-90deg);
                     margin-bottom: 10px;
+                    opacity: 0.2;
+                }
+                &:hover {
+                    transform: scale(1.05) translateY(-10px) rotate(-90deg)  !important;
                 }
                 &-b {
                     transform: rotate(90deg);
+                    &:hover {
+                        transform: scale(1.05) rotate(90deg) translateX(10px) !important;
+                    }
                 }
             }
             &__back {
@@ -79,6 +89,10 @@
                 cursor: pointer;
                 display: none;
                 opacity: 0;
+                transition: transform 0.3s ease-out;
+                &:hover {
+                    transform: scale(1.05) translateX(10px)  !important;
+                }
                 img {
                     display: inline-block;
                     vertical-align: middle;
@@ -96,6 +110,10 @@
                 cursor: pointer;
                 display: none;
                 opacity: 0;
+                transition: transform 0.3s ease-out;
+                &:hover {
+                    transform: scale(1.05) translateX(-10px)  !important;;
+                }
                 img {
                     display: inline-block;
                     vertical-align: middle;
