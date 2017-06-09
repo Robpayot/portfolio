@@ -4170,55 +4170,6 @@ var UniversView = function () {
 			if (_Device.Device.size === 'mobile') {
 				this.camera.position.set(0, 0, 200);
 			}
-
-			// // Set camera Dolly
-			// const points = {
-			//     'camera': [{
-			//         'x': radius * Math.cos(Math.PI / 2),
-			//         'y': 0,
-			//         'z': radius * Math.sin(Math.PI / 2)
-			//     }, {
-			//         'x': radius * Math.cos(3 * Math.PI / 4),
-			//         'y': 0,
-			//         'z': radius * Math.sin(3 * Math.PI / 4)
-			//     }, {
-			//         'x': radius * Math.cos(Math.PI),
-			//         'y': 0,
-			//         'z': radius * Math.sin(Math.PI)
-			//     }],
-			//     'lookat': [{
-			//         'x': 0,
-			//         'y': 0,
-			//         'z': 0
-			//     }, {
-			//         'x': 180,
-			//         'y': -87,
-			//         'z': -66
-			//     }, {
-			//         'x': 280,
-			//         'y': -87,
-			//         'z': -66
-			//     }, {
-			//         'x': 280,
-			//         'y': -87,
-			//         'z': 36
-			//     }]
-			// };
-
-			// this.dolly = new CameraDolly(this.camera, this.scene, points, null, true);
-
-			// this.dolly.cameraPosition = 0;
-			// this.dolly.lookatPosition = 0;
-			// this.dolly.range = [0, 1];
-			// this.dolly.both = 0;
-
-			// TweenMax.to(this.dolly, 10, {
-			// 	cameraPosition: 1,
-			// 	onUpdate: () => {
-			// 		this.dolly.update();
-			// 	}
-			// })
-
 		}
 	}, {
 		key: 'initPhysics',
@@ -4681,9 +4632,64 @@ var UniversView = function () {
 		////////////
 
 	}, {
+		key: 'transitionIn',
+		value: function transitionIn() {
+			var _this2 = this;
+
+			this.cameraMove = true;
+
+			// Set camera Dolly
+			var points = {
+				'camera': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 180,
+					'y': -87,
+					'z': -66
+				}, {
+					'x': 280,
+					'y': -87,
+					'z': -66
+				}, {
+					'x': 280,
+					'y': -87,
+					'z': 36
+				}]
+			};
+
+			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, true);
+
+			this.dolly.cameraPosition = 0;
+			this.dolly.lookatPosition = 0;
+			this.dolly.range = [0, 1];
+			this.dolly.both = 0;
+
+			TweenMax.to(this.dolly, 10, {
+				cameraPosition: 1,
+				onUpdate: function onUpdate() {
+					_this2.dolly.update();
+				}
+			});
+		}
+	}, {
 		key: 'showGallery',
 		value: function showGallery() {
-			var _this2 = this;
+			var _this3 = this;
 
 			console.log('show gallery');
 
@@ -4692,12 +4698,12 @@ var UniversView = function () {
 			var trigo = { angle: 1 };
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this2.cameraMove = true;
+					_this3.cameraMove = true;
 				},
 				onUpdate: function onUpdate() {
 					// recall cssRenderer to update the cssRender camera matrix
-					_this2.camera.updateProjectionMatrix();
-					_SceneManager2.default.cssRenderer.render(_this2.cssScene, _this2.camera);
+					_this3.camera.updateProjectionMatrix();
+					_SceneManager2.default.cssRenderer.render(_this3.cssScene, _this3.camera);
 				}
 			});
 
@@ -4714,9 +4720,9 @@ var UniversView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this2.camera.position.x = _this2.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this2.camera.position.z = _this2.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this2.camera.lookAt(_this2.cameraTarget);
+					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this3.camera.lookAt(_this3.cameraTarget);
 				}
 			}, 0);
 
@@ -4734,13 +4740,13 @@ var UniversView = function () {
 	}, {
 		key: 'backFromGallery',
 		value: function backFromGallery() {
-			var _this3 = this;
+			var _this4 = this;
 
 			this.cameraMove = true;
 
 			var trigo = { angle: 2 };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
-					_this3.cameraMove = false;
+					_this4.cameraMove = false;
 				} });
 			this.cameraMove = true;
 
@@ -4756,11 +4762,11 @@ var UniversView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this3.camera.lookAt(_this3.cameraTarget);
+					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this4.camera.lookAt(_this4.cameraTarget);
 
-					_this3.camera.updateProjectionMatrix();
+					_this4.camera.updateProjectionMatrix();
 				}
 			}, 0.5);
 		}
@@ -4770,7 +4776,7 @@ var UniversView = function () {
 	}, {
 		key: 'slideUp',
 		value: function slideUp() {
-			var _this4 = this;
+			var _this5 = this;
 
 			if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
 
@@ -4784,15 +4790,15 @@ var UniversView = function () {
 				z: this.galleryAngle * (this.currentSlide + 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this4.currentSlide++;
-					_this4.isSliding = false;
+					_this5.currentSlide++;
+					_this5.isSliding = false;
 				}
 			});
 		}
 	}, {
 		key: 'slideDown',
 		value: function slideDown() {
-			var _this5 = this;
+			var _this6 = this;
 
 			if (this.isSliding === true || this.currentSlide === 0) return false;
 
@@ -4806,15 +4812,15 @@ var UniversView = function () {
 				z: this.galleryAngle * (this.currentSlide - 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this5.currentSlide--;
-					_this5.isSliding = false;
+					_this6.currentSlide--;
+					_this6.isSliding = false;
 				}
 			});
 		}
 	}, {
 		key: 'showContext',
 		value: function showContext() {
-			var _this6 = this;
+			var _this7 = this;
 
 			console.log('show gallery');
 
@@ -4823,12 +4829,12 @@ var UniversView = function () {
 			var trigo = { angle: 1 };
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this6.cameraMove = true;
+					_this7.cameraMove = true;
 				},
 				onUpdate: function onUpdate() {
 					// recall cssRenderer to update the cssRender camera matrix
-					_this6.camera.updateProjectionMatrix();
-					_SceneManager2.default.cssRenderer.render(_this6.cssScene, _this6.camera);
+					_this7.camera.updateProjectionMatrix();
+					_SceneManager2.default.cssRenderer.render(_this7.cssScene, _this7.camera);
 				}
 			});
 
@@ -4845,9 +4851,9 @@ var UniversView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this6.camera.position.x = _this6.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this6.camera.position.z = _this6.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this6.camera.lookAt(_this6.cameraTarget);
+					_this7.camera.position.x = _this7.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this7.camera.position.z = _this7.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this7.camera.lookAt(_this7.cameraTarget);
 				}
 			}, 0);
 
@@ -4865,11 +4871,11 @@ var UniversView = function () {
 	}, {
 		key: 'backFromContext',
 		value: function backFromContext() {
-			var _this7 = this;
+			var _this8 = this;
 
 			var trigo = { angle: 0 };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
-					_this7.cameraMove = false;
+					_this8.cameraMove = false;
 				} });
 			this.cameraMove = true;
 
@@ -4885,11 +4891,11 @@ var UniversView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this7.camera.position.x = _this7.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this7.camera.position.z = _this7.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this7.camera.lookAt(_this7.cameraTarget);
+					_this8.camera.position.x = _this8.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this8.camera.position.z = _this8.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this8.camera.lookAt(_this8.cameraTarget);
 
-					_this7.camera.updateProjectionMatrix();
+					_this8.camera.updateProjectionMatrix();
 				}
 			}, 0.5);
 		}
@@ -4959,7 +4965,7 @@ var UniversView = function () {
 	}, {
 		key: 'onMouseMove',
 		value: function onMouseMove(e) {
-			var _this8 = this;
+			var _this9 = this;
 
 			var eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
 			var eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
@@ -4990,7 +4996,7 @@ var UniversView = function () {
 					ease: Expo.easeOut,
 					onUpdate: function onUpdate() {
 						// recall cssRenderer to update the cssRender camera matrix
-						_SceneManager2.default.cssRenderer.render(_this8.cssScene, _this8.camera);
+						_SceneManager2.default.cssRenderer.render(_this9.cssScene, _this9.camera);
 					}
 				});
 			}
@@ -5266,7 +5272,7 @@ var UniversView = function () {
 	}, {
 		key: 'destroy',
 		value: function destroy() {
-			var _this9 = this;
+			var _this10 = this;
 
 			this.scene.traverse(function (obj) {
 
@@ -5384,7 +5390,7 @@ var UniversView = function () {
 
 			// Wait destroy scene before stop js events
 			setTimeout(function () {
-				_this9.events(false);
+				_this10.events(false);
 			}, 500);
 		}
 	}]);
