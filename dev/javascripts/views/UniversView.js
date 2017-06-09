@@ -841,9 +841,22 @@ export default class UniversView {
 		// Turn around the perimeter of a circle
 
 		const trigo = { angle: 1 };
-		const tl = new TimelineMax({onComplete:()=>{this.cameraMove = true; }});
+		const tl = new TimelineMax({
+			onComplete: () => { this.cameraMove = true; },
+			onUpdate: () => {
+				// recall cssRenderer to update the cssRender camera matrix
+				this.camera.updateProjectionMatrix();
+				SceneManager.cssRenderer.render(this.cssScene, this.camera);
+			}
+		});
+
 		this.cameraMove = true;
 
+		tl.to(this.camera.rotation, 0.5, {
+			x: 0,
+			y: 0,
+			ease: Power2.easeOut
+		});
 
 		tl.to(trigo, 3, { // 3.5
 			angle: 2,
@@ -853,11 +866,8 @@ export default class UniversView {
 				this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
 				this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 				this.camera.lookAt(this.cameraTarget);
-
-				this.camera.updateProjectionMatrix();
-				SceneManager.cssRenderer.render(this.cssScene, this.camera);
 			}
-		});
+		},0);
 
 		tl.set(['.project__image', '.gallery__arrow', '.gallery__back'], { display: 'block' }, 3);
 
@@ -868,7 +878,7 @@ export default class UniversView {
 			opacity: 0.8,
 			y: 0,
 			ease: window.Power4.easeOut
-		}, 0.2, 3);
+		}, 0.2, 2.8);
 
 	}
 
@@ -877,7 +887,7 @@ export default class UniversView {
 		this.cameraMove = true;
 
 		const trigo = { angle: 2 };
-		const tl = new TimelineMax({onComplete:()=>{this.cameraMove = false; }});
+		const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
 		this.cameraMove = true;
 
 		tl.staggerTo(['.project__image', '.gallery__arrow', '.gallery__back'], 1.2, {
@@ -915,7 +925,7 @@ export default class UniversView {
 		this.ui.galArrowB.style.opacity = 1;
 		this.ui.galArrowT.style.opacity = 1;
 
-		if (this.currentSlide === this.nbSlides - 2) TweenMax.to(this.ui.galArrowT, 1.5, {opacity: 0.2});
+		if (this.currentSlide === this.nbSlides - 2) TweenMax.to(this.ui.galArrowT, 1.5, { opacity: 0.2 });
 
 		TweenMax.to(this.galleryPivot.rotation, 1.5, {
 			z: this.galleryAngle * (this.currentSlide + 1),
@@ -937,7 +947,7 @@ export default class UniversView {
 		this.ui.galArrowT.style.opacity = 1;
 
 
-		if (this.currentSlide === 1) TweenMax.to(this.ui.galArrowB, 1.5, {opacity: 0.2});
+		if (this.currentSlide === 1) TweenMax.to(this.ui.galArrowB, 1.5, { opacity: 0.2 });
 
 		TweenMax.to(this.galleryPivot.rotation, 1.5, {
 			z: this.galleryAngle * (this.currentSlide - 1),
@@ -955,10 +965,24 @@ export default class UniversView {
 		// Turn around the perimeter of a circle
 
 		const trigo = { angle: 1 };
-		const tl = new TimelineMax({onComplete:()=>{this.cameraMove = true; }});
+		const tl = new TimelineMax({
+			onComplete: () => { this.cameraMove = true; },
+			onUpdate: () => {
+				// recall cssRenderer to update the cssRender camera matrix
+				this.camera.updateProjectionMatrix();
+				SceneManager.cssRenderer.render(this.cssScene, this.camera);
+			}
+		});
+
 		this.cameraMove = true;
 
-		tl.to(trigo, 3, {
+		tl.to(this.camera.rotation, 0.5, {
+			x: 0,
+			y: 0,
+			ease: Power2.easeOut
+		});
+
+		tl.to(trigo, 3, { // 3.5
 			angle: 0,
 			ease: window.Power3.easeInOut,
 			onUpdate: () => {
@@ -966,29 +990,26 @@ export default class UniversView {
 				this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
 				this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 				this.camera.lookAt(this.cameraTarget);
-
-				this.camera.updateProjectionMatrix();
-				SceneManager.cssRenderer.render(this.cssScene, this.camera);
 			}
-		});
+		},0);
 
-		tl.set(['.context__back', '.project__context' ], { display: 'block' }, 3);
+		tl.set(['.context__back', '.project__context'], { display: 'block' }, 3);
 
-		tl.staggerFromTo(['.context__back', '.project__context' ], 1.2, {
+		tl.staggerFromTo(['.context__back', '.project__context'], 1.2, {
 			opacity: 0,
 			y: 80
 		}, {
 			opacity: 0.8,
 			y: 0,
 			ease: window.Power4.easeOut
-		}, 0.1, 3);
+		}, 0.1, 2.8);
 
 	}
 
 	backFromContext() {
 
 		const trigo = { angle: 0 };
-		const tl = new TimelineMax({onComplete:()=>{this.cameraMove = false; }});
+		const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
 		this.cameraMove = true;
 
 		tl.staggerTo(['.project__context', '.context__back'], 1.2, {
@@ -1041,40 +1062,40 @@ export default class UniversView {
 
 	onClickSymbol() {
 
-		const tl = new TimelineMax();
+		// const tl = new TimelineMax();
 
-		// this.reset();
+		// // this.reset();
 
-		if (this.toggle !== true) {
-
-
-
-			tl.to(this.symbols[0].mesh.scale, 0.7, {
-				x: 1.5,
-				y: 1.5,
-				z: 1.5,
-				ease: window.Power4.easeInOut
-			});
-
-			this.toggle = true;
-
-		} else {
-
-			tl.to(['.project__context', '.project__image'], 0.8, {
-				opacity: 0,
-				ease: window.Power4.easeInOut
-			});
+		// if (this.toggle !== true) {
 
 
-			tl.to(this.symbols[0].mesh.scale, 0.5, {
-				x: 1,
-				y: 1,
-				z: 1,
-				ease: window.Power4.easeInOut
-			}, 0.1);
 
-			this.toggle = false;
-		}
+		// 	tl.to(this.symbols[0].mesh.scale, 0.7, {
+		// 		x: 1.5,
+		// 		y: 1.5,
+		// 		z: 1.5,
+		// 		ease: window.Power4.easeInOut
+		// 	});
+
+		// 	this.toggle = true;
+
+		// } else {
+
+		// 	tl.to(['.project__context', '.project__image'], 0.8, {
+		// 		opacity: 0,
+		// 		ease: window.Power4.easeInOut
+		// 	});
+
+
+		// 	tl.to(this.symbols[0].mesh.scale, 0.5, {
+		// 		x: 1,
+		// 		y: 1,
+		// 		z: 1,
+		// 		ease: window.Power4.easeInOut
+		// 	}, 0.1);
+
+		// 	this.toggle = false;
+		// }
 	}
 
 	onMouseMove(e) {

@@ -4690,10 +4690,24 @@ var UniversView = function () {
 			// Turn around the perimeter of a circle
 
 			var trigo = { angle: 1 };
-			var tl = new TimelineMax({ onComplete: function onComplete() {
+			var tl = new TimelineMax({
+				onComplete: function onComplete() {
 					_this2.cameraMove = true;
-				} });
+				},
+				onUpdate: function onUpdate() {
+					// recall cssRenderer to update the cssRender camera matrix
+					_this2.camera.updateProjectionMatrix();
+					_SceneManager2.default.cssRenderer.render(_this2.cssScene, _this2.camera);
+				}
+			});
+
 			this.cameraMove = true;
+
+			tl.to(this.camera.rotation, 0.5, {
+				x: 0,
+				y: 0,
+				ease: Power2.easeOut
+			});
 
 			tl.to(trigo, 3, { // 3.5
 				angle: 2,
@@ -4703,11 +4717,8 @@ var UniversView = function () {
 					_this2.camera.position.x = _this2.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
 					_this2.camera.position.z = _this2.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 					_this2.camera.lookAt(_this2.cameraTarget);
-
-					_this2.camera.updateProjectionMatrix();
-					_SceneManager2.default.cssRenderer.render(_this2.cssScene, _this2.camera);
 				}
-			});
+			}, 0);
 
 			tl.set(['.project__image', '.gallery__arrow', '.gallery__back'], { display: 'block' }, 3);
 
@@ -4718,7 +4729,7 @@ var UniversView = function () {
 				opacity: 0.8,
 				y: 0,
 				ease: window.Power4.easeOut
-			}, 0.2, 3);
+			}, 0.2, 2.8);
 		}
 	}, {
 		key: 'backFromGallery',
@@ -4810,12 +4821,26 @@ var UniversView = function () {
 			// Turn around the perimeter of a circle
 
 			var trigo = { angle: 1 };
-			var tl = new TimelineMax({ onComplete: function onComplete() {
+			var tl = new TimelineMax({
+				onComplete: function onComplete() {
 					_this6.cameraMove = true;
-				} });
+				},
+				onUpdate: function onUpdate() {
+					// recall cssRenderer to update the cssRender camera matrix
+					_this6.camera.updateProjectionMatrix();
+					_SceneManager2.default.cssRenderer.render(_this6.cssScene, _this6.camera);
+				}
+			});
+
 			this.cameraMove = true;
 
-			tl.to(trigo, 3, {
+			tl.to(this.camera.rotation, 0.5, {
+				x: 0,
+				y: 0,
+				ease: Power2.easeOut
+			});
+
+			tl.to(trigo, 3, { // 3.5
 				angle: 0,
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
@@ -4823,11 +4848,8 @@ var UniversView = function () {
 					_this6.camera.position.x = _this6.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
 					_this6.camera.position.z = _this6.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 					_this6.camera.lookAt(_this6.cameraTarget);
-
-					_this6.camera.updateProjectionMatrix();
-					_SceneManager2.default.cssRenderer.render(_this6.cssScene, _this6.camera);
 				}
-			});
+			}, 0);
 
 			tl.set(['.context__back', '.project__context'], { display: 'block' }, 3);
 
@@ -4838,7 +4860,7 @@ var UniversView = function () {
 				opacity: 0.8,
 				y: 0,
 				ease: window.Power4.easeOut
-			}, 0.1, 3);
+			}, 0.1, 2.8);
 		}
 	}, {
 		key: 'backFromContext',
@@ -4900,36 +4922,39 @@ var UniversView = function () {
 		key: 'onClickSymbol',
 		value: function onClickSymbol() {
 
-			var tl = new TimelineMax();
+			// const tl = new TimelineMax();
 
-			// this.reset();
+			// // this.reset();
 
-			if (this.toggle !== true) {
+			// if (this.toggle !== true) {
 
-				tl.to(this.symbols[0].mesh.scale, 0.7, {
-					x: 1.5,
-					y: 1.5,
-					z: 1.5,
-					ease: window.Power4.easeInOut
-				});
 
-				this.toggle = true;
-			} else {
+			// 	tl.to(this.symbols[0].mesh.scale, 0.7, {
+			// 		x: 1.5,
+			// 		y: 1.5,
+			// 		z: 1.5,
+			// 		ease: window.Power4.easeInOut
+			// 	});
 
-				tl.to(['.project__context', '.project__image'], 0.8, {
-					opacity: 0,
-					ease: window.Power4.easeInOut
-				});
+			// 	this.toggle = true;
 
-				tl.to(this.symbols[0].mesh.scale, 0.5, {
-					x: 1,
-					y: 1,
-					z: 1,
-					ease: window.Power4.easeInOut
-				}, 0.1);
+			// } else {
 
-				this.toggle = false;
-			}
+			// 	tl.to(['.project__context', '.project__image'], 0.8, {
+			// 		opacity: 0,
+			// 		ease: window.Power4.easeInOut
+			// 	});
+
+
+			// 	tl.to(this.symbols[0].mesh.scale, 0.5, {
+			// 		x: 1,
+			// 		y: 1,
+			// 		z: 1,
+			// 		ease: window.Power4.easeInOut
+			// 	}, 0.1);
+
+			// 	this.toggle = false;
+			// }
 		}
 	}, {
 		key: 'onMouseMove',
