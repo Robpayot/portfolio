@@ -293,7 +293,11 @@ body {
   position: relative; }
   .graphic3D .container3D .css-container {
     font-size: 38px;
-    color: white; }
+    color: white;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
   .graphic3D .container3D .project__context {
     max-width: 750px;
     line-height: 1.4em;
@@ -303,7 +307,8 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none; }
+    user-select: none;
+    font-size: 32px; }
   .graphic3D .container3D .project__image {
     max-width: 750px;
     border: 1px solid rgba(128, 128, 128, 0.15);
@@ -345,16 +350,28 @@ body {
     display: block;
     cursor: pointer;
     display: none;
-    opacity: 0; }
+    opacity: 0;
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
     .graphic3D .container3D .gallery__arrow-t {
       -webkit-transform: rotate(-90deg);
       -ms-transform: rotate(-90deg);
       transform: rotate(-90deg);
-      margin-bottom: 10px; }
+      margin-bottom: 10px;
+      opacity: 0.2; }
+    .graphic3D .container3D .gallery__arrow:hover {
+      -webkit-transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
+      -ms-transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
+      transform: scale(1.05) translateY(-10px) rotate(-90deg) !important; }
     .graphic3D .container3D .gallery__arrow-b {
       -webkit-transform: rotate(90deg);
       -ms-transform: rotate(90deg);
       transform: rotate(90deg); }
+      .graphic3D .container3D .gallery__arrow-b:hover {
+        -webkit-transform: scale(1.05) rotate(90deg) translateX(10px) !important;
+        -ms-transform: scale(1.05) rotate(90deg) translateX(10px) !important;
+        transform: scale(1.05) rotate(90deg) translateX(10px) !important; }
   .graphic3D .container3D .gallery__back {
     display: inline-block;
     vertical-align: middle;
@@ -362,7 +379,14 @@ body {
     text-transform: uppercase;
     cursor: pointer;
     display: none;
-    opacity: 0; }
+    opacity: 0;
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
+    .graphic3D .container3D .gallery__back:hover {
+      -webkit-transform: scale(1.05) translateX(10px) !important;
+      -ms-transform: scale(1.05) translateX(10px) !important;
+      transform: scale(1.05) translateX(10px) !important; }
     .graphic3D .container3D .gallery__back img {
       display: inline-block;
       vertical-align: middle;
@@ -375,7 +399,14 @@ body {
     text-transform: uppercase;
     cursor: pointer;
     display: none;
-    opacity: 0; }
+    opacity: 0;
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
+    .graphic3D .container3D .context__back:hover {
+      -webkit-transform: scale(1.05) translateX(-10px) !important;
+      -ms-transform: scale(1.05) translateX(-10px) !important;
+      transform: scale(1.05) translateX(-10px) !important; }
     .graphic3D .container3D .context__back img {
       display: inline-block;
       vertical-align: middle;
