@@ -44,11 +44,17 @@ export default class UniversView {
         this.onClick = this.onClick.bind(this);
         this.showGallery = this.showGallery.bind(this);
         this.showDescription = this.showDescription.bind(this);
+        this.slideUp = this.slideUp.bind(this);
+        this.slideDown = this.slideDown.bind(this);
+        this.backFromGallery = this.backFromGallery.bind(this);
+        this.backFromContext = this.backFromContext.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
         this.onChangeDolly = this.onChangeDolly.bind(this);
+
+
 
 
 
@@ -117,7 +123,7 @@ export default class UniversView {
 
 
         // Camera controls
-        // this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
+        this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
         // this.controls.enableZoom = true;
 
         /////////////////
@@ -239,9 +245,19 @@ export default class UniversView {
             this.ui.btn = document.querySelector('.project__btn');
             this.ui.arrowL = document.querySelector('.project__arrow-l');
             this.ui.arrowR = document.querySelector('.project__arrow-r');
+            this.ui.galArrowT = document.querySelector('.gallery__arrow-t');
+            this.ui.galArrowB = document.querySelector('.gallery__arrow-b');
+            this.ui.galBack = document.querySelector('.gallery__back');
+            this.ui.conBack = document.querySelector('.context__back');
+
             // console.log(this.ui.arrowL);
             this.ui.arrowL[listen]('click', this.showGallery);
             this.ui.arrowR[listen]('click', this.showDescription);
+            this.ui.galArrowT[listen]('click', this.slideUp);
+            this.ui.galArrowB[listen]('click', this.slideDown);
+            this.ui.galBack[listen]('click', this.backFromGallery);
+            this.ui.conBack[listen]('click', this.backFromContext);
+            
 
         }, 1000);
 
@@ -277,9 +293,7 @@ export default class UniversView {
             this.camera.position.set(0, 0, 200);
         }
 
-        // Formules coordonnée d'un cercle
-        // x = x0 + r * cos(t)
-        // y = y0 + r * sin(t)
+
 
         // // Set camera Dolly
         // const points = {
@@ -629,19 +643,39 @@ export default class UniversView {
 
         console.log('createText');
 
-        // Text
-
+        // Context
         let div = document.createElement('div');
         div.classList.add('css-container');
-        div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
+        div.innerHTML = `<div class='project__context'>
+                <h1>84.Paris - 2016</h1>
+                <br>
+                <p>360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.</p>
+                <br>
+                <p>Technos : WebGL, Three.js</p>
+                <br>
+                <p>1 x SOTD FWA, 1 x SOTD AWWWARDS</p>
+            </div>`;
 
-        this.text = new CSS3DObject(div);
-        this.text.position.set(40, 0, 0);
-        this.text.rotation.set(0, toRadian(90), 0);
-        this.text.scale.multiplyScalar(1 / 14);
+        const context = new CSS3DObject(div);
+        context.position.set(80, 0, 0);
+        context.rotation.set(0, toRadian(90), 0);
+        context.scale.multiplyScalar(1 / 14);
 
-        this.cssScene.add(this.text);
-        this.cssObjects.push(this.text);
+        this.cssScene.add(context);
+        this.cssObjects.push(context);
+
+        // context back
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='context__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`;
+
+        const contextBack = new CSS3DObject(div);
+        contextBack.position.set(80, 0, 40);
+        contextBack.rotation.set(0, toRadian(90), 0);
+        contextBack.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(contextBack);
+        this.cssObjects.push(contextBack);
 
         // Title
         div = document.createElement('div');
@@ -658,7 +692,7 @@ export default class UniversView {
         // Arrows
         div = document.createElement('div');
         div.classList.add('css-container');
-        div.innerHTML = `<div class='project__arrow project__arrow-l'><img src="images/icons/chevron.svg" alt="link"></div>`;
+        div.innerHTML = `<div class='project__arrow project__arrow-l'><img src="images/icons/chevron.svg" alt="arrow"></div>`;
 
         const arrowL = new CSS3DObject(div);
         arrowL.position.set(-25, 0, 0);
@@ -669,7 +703,7 @@ export default class UniversView {
 
         div = document.createElement('div');
         div.classList.add('css-container');
-        div.innerHTML = `<div class='project__arrow project__arrow-r'><img src="images/icons/chevron.svg" alt="link"></div>`;
+        div.innerHTML = `<div class='project__arrow project__arrow-r'><img src="images/icons/chevron.svg" alt="arrow"></div>`;
 
         const arrowR = new CSS3DObject(div);
         arrowR.position.set(25, 0, 0);
@@ -680,19 +714,30 @@ export default class UniversView {
 
 
         // Gallery
+        const radius = 80; // radius circonference of gallery circle
+        this.galleryAngle = Math.PI / 6 // Space of 30 degree PI / 6
         this.gallery = new Object3D(); // DESTROY CONTAINER ????
-        this.gallery.position.set(-40, 0, 0);
+        this.gallery.position.set(0, 0, 0);
         this.gallery.rotation.set(0, toRadian(-90), 0);
+        console.log(this.gallery);
         this.cssScene.add(this.gallery);
-        
+        this.currentSlide = 0;
+        this.nbSlides = 2;
+
+        // Formules coordonnée d'un cercle
+        // x = x0 + r * cos(t)
+        // y = y0 + r * sin(t)
+
+
         // image 1
         div = document.createElement('div');
         div.classList.add('css-container');
         div.innerHTML = `<div class='project__image'><img src="images/bmw-1.jpg" alt="project image" /></div>`;
 
         const image1 = new CSS3DObject(div);
-        // image1.position.set(-40, 0, 0);
-        // image1.rotation.set(0, toRadian(-90), 0);
+
+        image1.position.set(0, radius * Math.sin(0), radius * Math.cos(0));
+        image1.rotation.set(0, 0, 0);
         image1.scale.multiplyScalar(1 / 14);
 
         this.gallery.add(image1);
@@ -704,12 +749,50 @@ export default class UniversView {
         div.innerHTML = `<div class='project__image'><img src="images/bmw-2.jpg" alt="project image" /></div>`;
 
         const image2 = new CSS3DObject(div);
-        image2.position.set(0, 40, 0);
-        image2.rotation.set(toRadian(-45), 0, 0);
+        image2.position.set(0, radius * Math.sin(this.galleryAngle), radius * Math.cos(this.galleryAngle));
+        image2.rotation.set(-this.galleryAngle, 0, 0);
         image2.scale.multiplyScalar(1 / 14);
 
         this.gallery.add(image2);
         this.cssObjects.push(image2);
+
+        this.galleryPivot = new Object3D();
+        this.galleryPivot.add(this.gallery);
+
+        this.cssScene.add(this.galleryPivot);
+
+        // TweenMax.to(this.pivotGallery.rotation, 5, {
+        //     z: toRadian(360),
+        //     repeat: -1,
+        //     ease: window.Linear.easeNone
+        // })
+
+        // gallery arrows
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='gallery__arrows'><img class='gallery__arrow gallery__arrow-t' src="images/icons/chevron.svg" alt="link"><img class='gallery__arrow gallery__arrow-b' src="images/icons/chevron.svg" alt="link"></div>`;
+
+        const galleryArrows = new CSS3DObject(div);
+        galleryArrows.position.set(-radius, 0, -40);
+        galleryArrows.rotation.set(0, toRadian(-90), 0);
+        galleryArrows.scale.multiplyScalar(1 / 14);
+
+
+        this.cssScene.add(galleryArrows);
+        this.cssObjects.push(galleryArrows);
+
+        // gallery back
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='gallery__back'>Back <img src="images/icons/chevron.svg" alt="link"></div>`;
+
+        const galleryBack = new CSS3DObject(div);
+        galleryBack.position.set(-radius, 0, 40);
+        galleryBack.rotation.set(0, toRadian(-90), 0);
+        galleryBack.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(galleryBack);
+        this.cssObjects.push(galleryBack);
     }
 
     setBlur() {
@@ -760,7 +843,7 @@ export default class UniversView {
         const trigo = { angle: 1 };
         const tl = new TimelineMax();
 
-        tl.to(trigo, 0.5, { // 3.5
+        tl.to(trigo, 3.5, { // 3.5
             angle: 2,
             ease: window.Power3.easeInOut,
             onUpdate: () => {
@@ -773,32 +856,83 @@ export default class UniversView {
             }
         });
 
-        tl.fromTo('.project__image', 0.5, { // 1.2
+        tl.set(['.project__image', '.gallery__arrow', '.gallery__back'], { display: 'block' }, 3);
+
+        tl.staggerFromTo(['.gallery__arrow', '.project__image', '.gallery__back'], 1.2, { // 1.2
             opacity: 0,
             y: 40
         }, {
             opacity: 0.8,
             y: 0,
             ease: window.Power4.easeOut
-        });
+        }, 0.2, 3);
 
-        tl.to(this.gallery.position, 4, {
-        	y: -40,
-        	ease: window.Power4.easeOut
-        });
+    }
 
-        // tl.to(this.gallery.rotation, 4, {
-        // 	z: toRadian(-45),
-        // 	ease: window.Power4.easeOut
-        // },'-=4');
-        tl.add(()=> {
-        	this.gallery.rotateOnAxis ( new Vector3(1,0,0), toRadian(45) );
-        });
-        
+    backFromGallery() {
+
+        const trigo = { angle: 2 };
+        const tl = new TimelineMax();
+
+        tl.staggerTo(['.project__image', '.gallery__arrow', '.gallery__back'], 1.2, {
+            opacity: 0,
+            y: 40,
+            ease: window.Power4.easeOut
+        }, 0.2);
+
+        tl.set(['.project__image', '.gallery__arrow', '.gallery__back'], { display: 'none' });
+
+
+        tl.to(trigo, 3.5, { // 3.5
+            angle: 1,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+
+                this.camera.updateProjectionMatrix();
+            }
+        }, 0.5);
+
     }
 
     slide(dir) {
 
+    }
+
+    slideUp() {
+
+        if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
+
+        this.isSliding = true;
+
+        TweenMax.to(this.galleryPivot.rotation, 1.5, {
+            z: this.galleryAngle * (this.currentSlide + 1),
+            ease: window.Expo.easeInOut,
+            onComplete: () => {
+                this.currentSlide++;
+                this.isSliding = false;
+            }
+        });
+
+    }
+
+    slideDown() {
+
+        if (this.isSliding === true || this.currentSlide === 0) return false;
+
+        this.isSliding = true;
+
+        TweenMax.to(this.galleryPivot.rotation, 1.5, {
+            z: this.galleryAngle * (this.currentSlide - 1),
+            ease: window.Expo.easeInOut,
+            onComplete: () => {
+                this.currentSlide--;
+                this.isSliding = false;
+            }
+        });
     }
 
     showDescription() {
@@ -822,16 +956,48 @@ export default class UniversView {
             }
         });
 
-        tl.fromTo('.project__context', 1.2, {
+        tl.set(['.project__context', '.context__back'], { display: 'block' }, 3);
+
+        tl.staggerFromTo(['.project__context', '.context__back'], 1.2, {
             opacity: 0,
             y: 40
         }, {
             opacity: 0.8,
             y: 0,
             ease: window.Power4.easeOut
-        });
+        }, 0.2, 3);
 
     }
+
+    backFromContext() {
+
+        const trigo = { angle: 0 };
+        const tl = new TimelineMax();
+
+        tl.staggerTo(['.project__context', '.context__back'], 1.2, {
+            opacity: 0,
+            y: 40,
+            ease: window.Power4.easeOut
+        }, 0.2);
+
+        tl.set(['.project__context', '.context__back'], { display: 'none' });
+
+
+        tl.to(trigo, 3.5, { // 3.5
+            angle: 1,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+
+                this.camera.updateProjectionMatrix();
+            }
+        }, 0.5);
+
+    }
+
     onClick(e) {
 
         // update Mouse position for touch devices
@@ -1098,7 +1264,7 @@ export default class UniversView {
 
         // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
         // Glow arrows
-        if (this.ui.arrowL !== undefined && this.ui.arrowL !== null ) {
+        if (this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
             this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
             this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
             // console.log(5 + (Math.sin(this.glow / 30) + 1) / 5);
@@ -1166,7 +1332,7 @@ export default class UniversView {
             composer: this.composer
         });
 
-        // this.controls.update();
+        this.controls.update();
 
     }
 

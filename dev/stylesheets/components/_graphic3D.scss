@@ -12,7 +12,7 @@
             color: white;
         }
         .project__context {
-            max-width: 900px;
+            max-width: 750px;
             line-height: 1.4em;
             z-index: 10;
             opacity: 0;
@@ -20,11 +20,12 @@
             user-select: none;
         }
         .project__image {
-            max-width: 900px;
+            max-width: 750px;
             // max-height: 300px;
             border: 1px solid rgba(128, 128, 128, 0.15);
-            opacity: 0;
+            opacity: 0.8;
             user-select: none;
+            display: none;
             img {
                 width: 100%;
             }
@@ -53,6 +54,55 @@
                 width: 40px;
                 margin-left: 20px;
                 margin-bottom: -5px;
+            }
+        }
+        .gallery {
+            &__arrow {
+                width: 30px;
+                display: block;
+                cursor: pointer;
+                display: none;
+                opacity: 0;
+                &-t {
+                    transform: rotate(-90deg);
+                    margin-bottom: 10px;
+                }
+                &-b {
+                    transform: rotate(90deg);
+                }
+            }
+            &__back {
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 20px;
+                text-transform: uppercase;
+                cursor: pointer;
+                display: none;
+                opacity: 0;
+                img {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-left: 10px;
+                    width: 20px;
+                }
+            }
+        }
+        .context {
+            &__back {
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 20px;
+                text-transform: uppercase;
+                cursor: pointer;
+                display: none;
+                opacity: 0;
+                img {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-right: 10px;
+                    width: 20px;
+                    transform: rotate(180deg);
+                }
             }
         }
     }
