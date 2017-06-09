@@ -294,56 +294,6 @@ export default class UniversView {
 		}
 
 
-
-		// // Set camera Dolly
-		// const points = {
-		//     'camera': [{
-		//         'x': radius * Math.cos(Math.PI / 2),
-		//         'y': 0,
-		//         'z': radius * Math.sin(Math.PI / 2)
-		//     }, {
-		//         'x': radius * Math.cos(3 * Math.PI / 4),
-		//         'y': 0,
-		//         'z': radius * Math.sin(3 * Math.PI / 4)
-		//     }, {
-		//         'x': radius * Math.cos(Math.PI),
-		//         'y': 0,
-		//         'z': radius * Math.sin(Math.PI)
-		//     }],
-		//     'lookat': [{
-		//         'x': 0,
-		//         'y': 0,
-		//         'z': 0
-		//     }, {
-		//         'x': 180,
-		//         'y': -87,
-		//         'z': -66
-		//     }, {
-		//         'x': 280,
-		//         'y': -87,
-		//         'z': -66
-		//     }, {
-		//         'x': 280,
-		//         'y': -87,
-		//         'z': 36
-		//     }]
-		// };
-
-		// this.dolly = new CameraDolly(this.camera, this.scene, points, null, true);
-
-		// this.dolly.cameraPosition = 0;
-		// this.dolly.lookatPosition = 0;
-		// this.dolly.range = [0, 1];
-		// this.dolly.both = 0;
-
-		// TweenMax.to(this.dolly, 10, {
-		// 	cameraPosition: 1,
-		// 	onUpdate: () => {
-		// 		this.dolly.update();
-		// 	}
-		// })
-
-
 	}
 
 	initPhysics() {
@@ -834,6 +784,59 @@ export default class UniversView {
 	////////////
 	// EVENTS
 	////////////
+
+	transitionIn() {
+
+		this.cameraMove = true;
+
+		// Set camera Dolly
+		const points = {
+			'camera': [{
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}],
+			'lookat': [{
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 180,
+				'y': -87,
+				'z': -66
+			}, {
+				'x': 280,
+				'y': -87,
+				'z': -66
+			}, {
+				'x': 280,
+				'y': -87,
+				'z': 36
+			}]
+		};
+
+		this.dolly = new CameraDolly(this.camera, this.scene, points, null, true);
+
+		this.dolly.cameraPosition = 0;
+		this.dolly.lookatPosition = 0;
+		this.dolly.range = [0, 1];
+		this.dolly.both = 0;
+
+		TweenMax.to(this.dolly, 10, {
+			cameraPosition: 1,
+			onUpdate: () => {
+				this.dolly.update();
+			}
+		})
+	}
 
 	showGallery() {
 		console.log('show gallery');
