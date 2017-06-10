@@ -41,15 +41,19 @@
             }
             transition: transform 0.3s ease-out;
             cursor: pointer;
+            opacity: 0;
             &:hover {
-                transform: scale(1.05) translateX(10px);
+                transform: scale(1.05) translateX(10px) !important;
             }
             &-l {
                 transform: rotate(180deg);
                 &:hover {
-                    transform: scale(1.05) rotate(180deg) translateX(10px);
+                    transform: scale(1.05) rotate(180deg) translateX(10px) !important;
                 }
             }
+        }
+        .project__title {
+            opacity: 0;
         }
         .link {
             img {
@@ -72,7 +76,7 @@
                     opacity: 0.2;
                 }
                 &:hover {
-                    transform: scale(1.05) translateY(-10px) rotate(-90deg)  !important;
+                    transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
                 }
                 &-b {
                     transform: rotate(90deg);
@@ -91,7 +95,7 @@
                 opacity: 0;
                 transition: transform 0.3s ease-out;
                 &:hover {
-                    transform: scale(1.05) translateX(10px)  !important;
+                    transform: scale(1.05) translateX(10px) !important;
                 }
                 img {
                     display: inline-block;
@@ -112,7 +116,8 @@
                 opacity: 0;
                 transition: transform 0.3s ease-out;
                 &:hover {
-                    transform: scale(1.05) translateX(-10px)  !important;;
+                    transform: scale(1.05) translateX(-10px) !important;
+                    ;
                 }
                 img {
                     display: inline-block;
