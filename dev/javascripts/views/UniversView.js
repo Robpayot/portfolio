@@ -7,6 +7,7 @@ import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
+import bean from 'bean';
 
 
 
@@ -15,7 +16,9 @@ import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
 import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import OrbitControls from '../vendors/OrbitControls';
+import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import { World } from 'oimo';
+
 
 // POSTPROCESSING
 import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -39,9 +42,19 @@ export default class UniversView {
         this.destroy = this.destroy.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
+        this.showGallery = this.showGallery.bind(this);
+        this.showContext = this.showContext.bind(this);
+        this.slideUp = this.slideUp.bind(this);
+        this.slideDown = this.slideDown.bind(this);
+        this.backFromGallery = this.backFromGallery.bind(this);
+        this.backFromContext = this.backFromContext.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
+        this.onChangeDolly = this.onChangeDolly.bind(this);
+
+
 
 
 
@@ -63,17 +76,19 @@ export default class UniversView {
         this.cssObjects = [];
         this.glow = 1;
         this.nbAst = 10;
+        this.finalFov = 45;
+        this.cameraMove = true;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
         this.height = window.innerHeight * window.devicePixelRatio;
 
-        // Set Camera.
-        this.setCamera();
-
         // Set scenes
         this.scene = new Scene();
         this.cssScene = new Scene();
+
+        // Set Camera.
+        this.setCamera();
 
         // Set physics
         this.initPhysics();
@@ -102,6 +117,8 @@ export default class UniversView {
         this.cameraPos = new Vector3(0, 0, 0);
 
         this.cameraTarget = new Vector3(0, 0, 0);
+        this.camRotTarget = new Vector3(0, 0, 0);
+        this.camRotSmooth = new Vector3(0, 0, 0);
 
         this.camera.lookAt(this.cameraTarget);
 
@@ -109,8 +126,8 @@ export default class UniversView {
 
 
         // Camera controls
-        // this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
-        // this.controls.enableZoom = true;
+        this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
+        this.controls.enableZoom = true;
 
         /////////////////
         // GUI
@@ -120,7 +137,7 @@ export default class UniversView {
             // blur
             blur: 4.0,
             horizontalBlur: 0.5,
-            enabled: true,
+            enabled: false,
             // glow
             coeficient: 1,
             power: 2,
@@ -131,14 +148,18 @@ export default class UniversView {
             // brightness
             brightness: 0,
             contrast: 0,
+            // Camera dolly
+            position: 0,
+            lookAt: 0
+
         };
 
         // Blur
         const blurFolder = this.sound.gui.addFolder('Blur');
-        blurFolder.add(this.effectController, "blur", 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
-        blurFolder.add(this.effectController, "horizontalBlur", 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
-        blurFolder.add(this.effectController, "enabled").onChange(this.onChangeBlur);
-        blurFolder.open();
+        blurFolder.add(this.effectController, 'blur', 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
+        blurFolder.add(this.effectController, 'horizontalBlur', 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
+        blurFolder.add(this.effectController, 'enabled').onChange(this.onChangeBlur);
+        // blurFolder.open();
 
         // Glow
         const glowFolder = this.sound.gui.addFolder('Glow');
@@ -155,6 +176,13 @@ export default class UniversView {
         brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
         // brightnessFolder.open();
 
+        // Camera Dolly
+        // const dollyFolder = this.sound.gui.addFolder('Camera Dolly');
+        // dollyFolder.add(this.effectController, 'position', 0.0, 1).listen().onChange(this.onChangeDolly);
+        // dollyFolder.add(this.effectController, 'lookAt', 0.0, 1).listen().onChange(this.onChangeDolly);
+        // dollyFolder.open();
+
+
         ////////////////////
         // POST PROCESSING
         ////////////////////
@@ -169,6 +197,8 @@ export default class UniversView {
         ////////////////////
 
         this.events(true);
+
+
 
     }
 
@@ -194,6 +224,12 @@ export default class UniversView {
         this.brightness.uniforms['contrast'].value = this.effectController.contrast;
     }
 
+    onChangeDolly() {
+        this.dolly.cameraPosition = this.effectController.position;
+        this.dolly.lookatPosition = this.effectController.lookAt;
+        this.dolly.update();
+    }
+
     events(method) {
 
         let listen = method === false ? 'removeEventListener' : 'addEventListener';
@@ -202,16 +238,44 @@ export default class UniversView {
             // move camera
             document[listen]('mousemove', this.onMouseMove);
             document.body[listen]('click', this.onClick);
+            // document[listen]('mousewheel', this.onMouseWheel);
+            // document[listen]('MozMousePixelScroll', this.onMouseWheel);
         } else {
-        	document.body[listen]('touchstart', this.onClick);
+            document.body[listen]('touchstart', this.onClick);
         }
 
-        
+        // When context is ready
+        setTimeout(() => {
+            console.log(listen);
+            this.ui.btn = document.querySelector('.project__btn');
+            this.ui.arrowL = document.querySelector('.project__arrow-l');
+            this.ui.arrowR = document.querySelector('.project__arrow-r');
+            this.ui.galArrowT = document.querySelector('.gallery__arrow-t');
+            this.ui.galArrowB = document.querySelector('.gallery__arrow-b');
+            this.ui.galBack = document.querySelector('.gallery__back');
+            this.ui.conBack = document.querySelector('.context__back');
 
-        listen = method === false ? 'off' : 'on';
+            // console.log(this.ui.arrowL);
+            this.ui.arrowL[listen]('click', this.showGallery);
+            this.ui.arrowR[listen]('click', this.showContext);
+            this.ui.galArrowT[listen]('click', this.slideUp);
+            this.ui.galArrowB[listen]('click', this.slideDown);
+            this.ui.galBack[listen]('click', this.backFromGallery);
+            this.ui.conBack[listen]('click', this.backFromContext);
 
-        EmitterManager[listen]('resize', this.resizeHandler);
-        EmitterManager[listen]('raf', this.raf);
+            // Start transition In
+            this.transitionIn();
+
+        }, 1000);
+
+
+
+
+        let listenO = method === false ? 'off' : 'on';
+        EmitterManager[listenO]('resize', this.resizeHandler);
+        EmitterManager[listenO]('raf', this.raf);
+
+
 
     }
 
@@ -224,11 +288,18 @@ export default class UniversView {
             3000 // far
         );
 
-        this.camera.position.set(0, 0, 160);
+        const initPos = {
+            'x': 0,
+            'y': 0,
+            'z': 160
+        };
 
+        this.pathRadius = 160;
+        this.camera.position.set(-60, 170, 70);
         if (Device.size === 'mobile') {
-        	this.camera.position.set(0, 0, 200);
+            this.camera.position.set(0, 0, 200);
         }
+
 
     }
 
@@ -480,7 +551,9 @@ export default class UniversView {
 
         let paramsLight = [
             // { x: 70, y: 70, z: 0 },
-            { x: -50, y: -50, z: 100 },
+            { x: -100, y: 0, z: 0 },
+            { x: 100, y: 0, z: 0 },
+            { x: 0, y: 0, z: 100 },
             { x: 0, y: -0, z: 0 }
         ];
 
@@ -490,7 +563,7 @@ export default class UniversView {
         for (var i = 0; i < paramsLight.length; i++) {
 
             // create a point light
-            let pointLight = new PointLight(0xFFFFFF, 1.5, 600, 2);
+            let pointLight = new PointLight(0xFFFFFF, 0.8, 600, 2);
             // set its position
             pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
             // pointLight.power = 20;
@@ -527,37 +600,156 @@ export default class UniversView {
 
         console.log('createText');
 
-        // Text
-
+        // Context
         let div = document.createElement('div');
         div.classList.add('css-container');
+        div.innerHTML = `<div class='project__context'>
+				<h1>84.Paris - 2016</h1>
+				<br>
+				<p>360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.</p>
+				<br>
+				<p>Technos : WebGL, Three.js</p>
+				<br>
+				<p>1 x SOTD FWA, 1 x SOTD AWWWARDS</p>
+			</div>`;
 
-        div.innerHTML = `<div class='project__context'><h1>BMW Paris Motorshow 2016</h1><br><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sagittis erat sit amet enim pulvinar, et cursus diam fermentum. Sed dictum ligula semper sem volutpat ornare. Integer id enim vitae turpis accumsan ultrices at at urna. Fusce sit amet vestibulum turpis, sit amet interdum neque.</p></div>`;
+        const context = new CSS3DObject(div);
+        context.position.set(80, 0, 0);
+        context.rotation.set(0, toRadian(90), 0);
+        context.scale.multiplyScalar(1 / 14);
 
-        this.text = new CSS3DObject(div);
-        this.text.position.set(50, 5, 20);
-        this.text.rotation.set(0, toRadian(-35), 0);
-        this.text.scale.multiplyScalar(1 / 14);
+        this.cssScene.add(context);
+        this.cssObjects.push(context);
 
-        this.cssScene.add(this.text);
-        this.cssObjects.push(this.text);
+        // context back
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='context__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`;
+
+        const contextBack = new CSS3DObject(div);
+        contextBack.position.set(80, 0, 40);
+        contextBack.rotation.set(0, toRadian(90), 0);
+        contextBack.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(contextBack);
+        this.cssObjects.push(contextBack);
+
+        // Title
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__title'>BMW Paris Motorshow 2016 <a class="link" href="http://mondialautomobile.bmw.fr/" target="_blank"><img src="images/icons/link.svg" alt="link"></a></div>`;
+
+        const title = new CSS3DObject(div);
+        title.position.set(0, 20, 0);
+        title.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(title);
+        this.cssObjects.push(title);
+
+        // Arrows
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__arrow project__arrow-l'><img src="images/icons/chevron.svg" alt="arrow"></div>`;
+
+        const arrowL = new CSS3DObject(div);
+        arrowL.position.set(-25, 0, 0);
+        arrowL.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(arrowL);
+        this.cssObjects.push(arrowL);
+
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__arrow project__arrow-r'><img src="images/icons/chevron.svg" alt="arrow"></div>`;
+
+        const arrowR = new CSS3DObject(div);
+        arrowR.position.set(25, 0, 0);
+        arrowR.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(arrowR);
+        this.cssObjects.push(arrowR);
 
 
+        // Gallery
+        const radius = 80; // radius circonference of gallery circle
+        this.galleryAngle = Math.PI / 6 // Space of 30 degree PI / 6
+        this.gallery = new Object3D(); // DESTROY CONTAINER ????
+        this.gallery.position.set(0, 0, 0);
+        this.gallery.rotation.set(0, toRadian(-90), 0);
+        console.log(this.gallery);
+        this.cssScene.add(this.gallery);
+        this.currentSlide = 0;
+        this.nbSlides = 2;
 
-        let div2 = document.createElement('div');
-        div2.classList.add('css-container');
+        // Formules coordonnée d'un cercle
+        // x = x0 + r * cos(t)
+        // y = y0 + r * sin(t)
 
-        div2.innerHTML = `<div class='project__image'><img src="images/bmw.jpg" alt="project image" /></div>`;
 
-        const div23d = new CSS3DObject(div2);
-        div23d.position.set(-50, 5, 20);
-        div23d.rotation.set(0, toRadian(35), 0);
-        div23d.scale.multiplyScalar(1 / 14);
+        // image 1
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__image'><img src="images/bmw-1.jpg" alt="project image" /></div>`;
 
-        this.cssScene.add(div23d);
+        const image1 = new CSS3DObject(div);
 
-        this.cssObjects.push(div23d);
+        image1.position.set(0, radius * Math.sin(0), radius * Math.cos(0));
+        image1.rotation.set(0, 0, 0);
+        image1.scale.multiplyScalar(1 / 14);
 
+        this.gallery.add(image1);
+        this.cssObjects.push(image1);
+
+        // image 2
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='project__image'><img src="images/bmw-2.jpg" alt="project image" /></div>`;
+
+        const image2 = new CSS3DObject(div);
+        image2.position.set(0, radius * Math.sin(this.galleryAngle), radius * Math.cos(this.galleryAngle));
+        image2.rotation.set(-this.galleryAngle, 0, 0);
+        image2.scale.multiplyScalar(1 / 14);
+
+        this.gallery.add(image2);
+        this.cssObjects.push(image2);
+
+        this.galleryPivot = new Object3D();
+        this.galleryPivot.add(this.gallery);
+
+        this.cssScene.add(this.galleryPivot);
+
+        // TweenMax.to(this.pivotGallery.rotation, 5, {
+        //     z: toRadian(360),
+        //     repeat: -1,
+        //     ease: window.Linear.easeNone
+        // })
+
+        // gallery arrows
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='gallery__arrows'><img class='gallery__arrow gallery__arrow-t' src="images/icons/chevron.svg" alt="link"><img class='gallery__arrow gallery__arrow-b' src="images/icons/chevron.svg" alt="link"></div>`;
+
+        const galleryArrows = new CSS3DObject(div);
+        galleryArrows.position.set(-radius, 0, -40);
+        galleryArrows.rotation.set(0, toRadian(-90), 0);
+        galleryArrows.scale.multiplyScalar(1 / 14);
+
+
+        this.cssScene.add(galleryArrows);
+        this.cssObjects.push(galleryArrows);
+
+        // gallery back
+        div = document.createElement('div');
+        div.classList.add('css-container');
+        div.innerHTML = `<div class='gallery__back'>Back <img src="images/icons/chevron.svg" alt="link"></div>`;
+
+        const galleryBack = new CSS3DObject(div);
+        galleryBack.position.set(-radius, 0, 40);
+        galleryBack.rotation.set(0, toRadian(-90), 0);
+        galleryBack.scale.multiplyScalar(1 / 14);
+
+        this.cssScene.add(galleryBack);
+        this.cssObjects.push(galleryBack);
     }
 
     setBlur() {
@@ -596,6 +788,286 @@ export default class UniversView {
 
     }
 
+    ////////////
+    // EVENTS
+    ////////////
+
+    transitionIn() {
+
+        // this.cameraMove = true;
+
+        // Set camera Dolly
+        const points = {
+            'camera': [{
+                'x': -60,
+                'y': 170,
+                'z': 70
+            }, {
+                'x': -40,
+                'y': 100,
+                'z': 100
+            }, {
+                'x': -20,
+                'y': 50,
+                'z': 130
+            }, {
+                'x': 0,
+                'y': 0,
+                'z': 160
+            }],
+            'lookat': [{
+                'x': 0,
+                'y': 0,
+                'z': 0
+            }, {
+                'x': 0,
+                'y': -3,
+                'z': 3
+            }, {
+                'x': 0,
+                'y': -3,
+                'z': 3
+            }, {
+                'x': 0,
+                'y': 0,
+                'z': 0
+            }]
+        };
+
+        this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+
+        this.dolly.cameraPosition = 0;
+        this.dolly.lookatPosition = 0;
+        this.dolly.range = [0, 1];
+        this.dolly.both = 0;
+
+        const tl = new TimelineMax({
+            onComplete: () => {
+            	this.camera.position.set(0, 0, 160);
+                this.cameraMove = false;
+            }
+        });
+
+        tl.to(this.dolly, 5, {
+            cameraPosition: 1,
+            lookatPosition: 1,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                this.dolly.update();
+            }
+        });
+
+        tl.staggerFromTo(['.project__arrow-l', '.project__title', '.project__arrow-r'], 1.2, { // 1.2
+            opacity: 0,
+            y: 80
+        }, {
+            opacity: 0.8,
+            y: 0,
+            ease: window.Power4.easeOut
+        }, 0.1, 3.5);
+
+    }
+
+    showGallery() {
+        console.log('show gallery');
+
+        // Turn around the perimeter of a circle
+
+        const trigo = { angle: 1 };
+        const tl = new TimelineMax({
+            onComplete: () => { this.cameraMove = true; },
+            onUpdate: () => {
+                // recall cssRenderer to update the cssRender camera matrix
+                this.camera.updateProjectionMatrix();
+                SceneManager.cssRenderer.render(this.cssScene, this.camera);
+            }
+        });
+
+        this.cameraMove = true;
+
+        tl.to(this.camera.rotation, 0.8, {
+            x: 0,
+            y: 0,
+            ease: Power2.easeOut
+        });
+
+        tl.to(trigo, 3, { // 3.5
+            angle: 2,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+            }
+        });
+
+        tl.set(['.project__image', '.gallery__arrow', '.gallery__back'], { display: 'block' }, 3);
+
+        tl.staggerFromTo(['.gallery__arrow', '.project__image', '.gallery__back'], 1.2, { // 1.2
+            opacity: 0,
+            y: 80
+        }, {
+            opacity: 0.8,
+            y: 0,
+            ease: window.Power4.easeOut
+        }, 0.2, 2.8);
+
+    }
+
+    backFromGallery() {
+
+        this.cameraMove = true;
+
+        const trigo = { angle: 2 };
+        const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
+        this.cameraMove = true;
+
+        tl.staggerTo(['.project__image', '.gallery__arrow', '.gallery__back'], 1.2, {
+            opacity: 0,
+            ease: window.Power4.easeOut
+        }, 0.1);
+
+        tl.set(['.project__image', '.gallery__arrow', '.gallery__back'], { display: 'none' });
+
+
+        tl.to(trigo, 3, { // 3.5
+            angle: 1,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+
+                this.camera.updateProjectionMatrix();
+            }
+        }, 0.5);
+
+    }
+
+    slide(dir) {
+
+    }
+
+    slideUp() {
+
+        if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
+
+        this.isSliding = true;
+        this.ui.galArrowB.style.opacity = 1;
+        this.ui.galArrowT.style.opacity = 1;
+
+        if (this.currentSlide === this.nbSlides - 2) TweenMax.to(this.ui.galArrowT, 1.5, { opacity: 0.2 });
+
+        TweenMax.to(this.galleryPivot.rotation, 1.5, {
+            z: this.galleryAngle * (this.currentSlide + 1),
+            ease: window.Expo.easeInOut,
+            onComplete: () => {
+                this.currentSlide++;
+                this.isSliding = false;
+            }
+        });
+
+    }
+
+    slideDown() {
+
+        if (this.isSliding === true || this.currentSlide === 0) return false;
+
+        this.isSliding = true;
+        this.ui.galArrowB.style.opacity = 1;
+        this.ui.galArrowT.style.opacity = 1;
+
+
+        if (this.currentSlide === 1) TweenMax.to(this.ui.galArrowB, 1.5, { opacity: 0.2 });
+
+        TweenMax.to(this.galleryPivot.rotation, 1.5, {
+            z: this.galleryAngle * (this.currentSlide - 1),
+            ease: window.Expo.easeInOut,
+            onComplete: () => {
+                this.currentSlide--;
+                this.isSliding = false;
+            }
+        });
+    }
+
+    showContext() {
+        console.log('show gallery');
+
+        // Turn around the perimeter of a circle
+
+        const trigo = { angle: 1 };
+        const tl = new TimelineMax({
+            onComplete: () => { this.cameraMove = true; },
+            onUpdate: () => {
+                // recall cssRenderer to update the cssRender camera matrix
+                this.camera.updateProjectionMatrix();
+                SceneManager.cssRenderer.render(this.cssScene, this.camera);
+            }
+        });
+
+        this.cameraMove = true;
+
+        tl.to(this.camera.rotation, 0.8, {
+            x: 0,
+            y: 0,
+            ease: Power2.easeOut
+        });
+
+        tl.to(trigo, 3, { // 3.5
+            angle: 0,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+            }
+        });
+
+        tl.set(['.context__back', '.project__context'], { display: 'block' }, 3);
+
+        tl.staggerFromTo(['.context__back', '.project__context'], 1.2, {
+            opacity: 0,
+            y: 80
+        }, {
+            opacity: 0.8,
+            y: 0,
+            ease: window.Power4.easeOut
+        }, 0.1, 2.8);
+
+    }
+
+    backFromContext() {
+
+        const trigo = { angle: 0 };
+        const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
+        this.cameraMove = true;
+
+        tl.staggerTo(['.project__context', '.context__back'], 1.2, {
+            opacity: 0,
+            ease: window.Power4.easeOut
+        }, 0.1);
+
+        tl.set(['.project__context', '.context__back'], { display: 'none' });
+
+
+        tl.to(trigo, 3, { // 3.5
+            angle: 1,
+            ease: window.Power3.easeInOut,
+            onUpdate: () => {
+                // Math.PI / 2 start rotation at 90deg
+                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+                this.camera.lookAt(this.cameraTarget);
+
+                this.camera.updateProjectionMatrix();
+            }
+        }, 0.5);
+
+    }
+
     onClick(e) {
 
         // update Mouse position for touch devices
@@ -623,49 +1095,40 @@ export default class UniversView {
 
     onClickSymbol() {
 
-        const tl = new TimelineMax();
+        // const tl = new TimelineMax();
 
-        // this.reset();
+        // // this.reset();
 
-        if (this.toggle !== true) {
-
-
-
-            tl.to(this.symbols[0].mesh.scale, 0.7, {
-                x: 1.5,
-                y: 1.5,
-                z: 1.5,
-                ease: window.Power4.easeInOut
-            });
-
-            tl.staggerFromTo(['.project__image', '.project__context'], 0.8, {
-                opacity: 0,
-                y: 30
-            }, {
-                opacity: 1,
-                y: 0,
-                ease: window.Power4.easeOut
-            }, 0.1, 0.4);
-
-            this.toggle = true;
-
-        } else {
-
-            tl.to(['.project__context', '.project__image'], 0.8, {
-                opacity: 0,
-                ease: window.Power4.easeInOut
-            });
+        // if (this.toggle !== true) {
 
 
-            tl.to(this.symbols[0].mesh.scale, 0.5, {
-                x: 1,
-                y: 1,
-                z: 1,
-                ease: window.Power4.easeInOut
-            }, 0.1);
 
-            this.toggle = false;
-        }
+        // 	tl.to(this.symbols[0].mesh.scale, 0.7, {
+        // 		x: 1.5,
+        // 		y: 1.5,
+        // 		z: 1.5,
+        // 		ease: window.Power4.easeInOut
+        // 	});
+
+        // 	this.toggle = true;
+
+        // } else {
+
+        // 	tl.to(['.project__context', '.project__image'], 0.8, {
+        // 		opacity: 0,
+        // 		ease: window.Power4.easeInOut
+        // 	});
+
+
+        // 	tl.to(this.symbols[0].mesh.scale, 0.5, {
+        // 		x: 1,
+        // 		y: 1,
+        // 		z: 1,
+        // 		ease: window.Power4.easeInOut
+        // 	}, 0.1);
+
+        // 	this.toggle = false;
+        // }
     }
 
     onMouseMove(e) {
@@ -689,22 +1152,29 @@ export default class UniversView {
 
         // this.camera.lookAt(this.cameraTarget);
         // this.camera.updateProjectionMatrix();
-        TweenMax.to(this.camera.rotation, 2, {
-            x: toRadian(round(this.mouse.y * 4, 100)),
-            y: -toRadian(round(this.mouse.x * 8, 100)),
-            ease: Expo.easeOut,
-            onUpdate: () => {
-                // recall cssRenderer to update the cssRender camera matrix
-                SceneManager.cssRenderer.render(this.cssScene, this.camera);
-            }
-        });
 
         // this.camera.updateProjectionMatrix();
 
+    }
+
+    onMouseWheel(event) {
+
+        event.preventDefault();
 
 
 
+        if (event.wheelDeltaY) {
 
+            this.finalFov -= event.wheelDeltaY * 0.05;
+        } else if (event.wheelDelta) {
+
+            this.finalFov -= event.wheelDelta * 0.05;
+        } else if (event.detail) {
+
+            this.finalFov += event.detail * 1;
+        }
+
+        this.finalFov = clamp(this.finalFov, 35, 70);
 
     }
 
@@ -848,8 +1318,17 @@ export default class UniversView {
 
         }
 
-        // Glow continuously 
+        // Glow continuously
         this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
+
+        // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
+        // Glow arrows
+        if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
+            this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
+            this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
+            // console.log(5 + (Math.sin(this.glow / 30) + 1) / 5);
+        }
+
 
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         // Glow brightness material
@@ -857,10 +1336,76 @@ export default class UniversView {
         this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
         // console.log(this.brightness.uniforms['contrast'].value);
 
+
         this.glow++;
 
+        // Zoom ??
 
-        // Render Scenes 
+        const delta = (this.finalFov - this.camera.fov) * 0.25;
+
+        if (Math.abs(delta) > 0.01) {
+
+            this.camera.fov += delta;
+            this.camera.updateProjectionMatrix();
+
+            // console.log(this.camera.fov);
+
+            // FOV : 70 : zoom middle
+            // FOV : 60 : zoom max
+        }
+
+        // Camera Dolly
+        // if (_.get(this).moveIn === true) {
+
+        // 	if (_.get(this).dolly.cameraPosition <= 0.239) {
+
+        // 		_.get(this).coefMoveIn = _.get(this).coefMoveIn * 0.96;
+        // 		_.get(this).dolly.cameraPosition += _.get(this).coefMoveIn;
+        // 		_.get(this).dolly.lookatPosition += _.get(this).coefMoveIn;
+        // 		_.get(this).dolly.update();
+
+        // 	} else {
+
+        // 		_.get(this).finalCoord.cam = _.get(this).dolly.cameraPosition;
+        // 		_.get(this).finalCoord.look = _.get(this).dolly.lookatPosition;
+        // 		_.get(this).moveIn = false;
+        // 		_.get(this).canDrag = true;
+        // 	}
+        // }
+
+        // const deltaCam = (_.get(this).finalCoord.cam - _.get(this).dolly.cameraPosition) * 0.05;
+        // const deltaLook = (_.get(this).finalCoord.look - _.get(this).dolly.lookatPosition) * 0.05;
+
+        // if (Math.abs(deltaCam) > 0.0001) _.get(this).dolly.cameraPosition += (_.get(this).finalCoord.cam - _.get(this).dolly.cameraPosition) * 0.05;
+        // if (Math.abs(deltaLook) > 0.0001) _.get(this).dolly.lookatPosition += (_.get(this).finalCoord.look - _.get(this).dolly.lookatPosition) * 0.05;
+
+        // if (_.get(this).finalCoord.cam >= 0 && _.get(this).finalCoord.cam <= 1) {
+        // 	if (Math.abs(deltaCam) > 0.0001 || Math.abs(deltaLook) > 0.0001) _.get(this).dolly.update();
+        // }
+
+
+        // On mouse Move Camera movement
+
+        // deceleration
+        if (this.cameraMove === false) {
+
+            // Specify target we want
+            this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+            this.camRotTarget.y = -toRadian(round(this.mouse.x * 8, 100));
+
+            // Smooth it with deceleration
+            this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+            this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+            // Apply rotation
+
+            this.camera.rotation.x = this.camRotSmooth.x;
+            this.camera.rotation.y = this.camRotSmooth.y;
+
+        }
+
+        SceneManager.cssRenderer.render(this.cssScene, this.camera);
+        // Render Scenes
         SceneManager.render({
             camera: this.camera,
             scene: this.scene,
@@ -869,7 +1414,7 @@ export default class UniversView {
             composer: this.composer
         });
 
-        // this.controls.update();
+        this.controls.update();
 
     }
 

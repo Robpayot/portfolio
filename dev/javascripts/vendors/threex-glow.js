@@ -11,7 +11,7 @@ THREEx.createAtmosphereMaterial = function() {
         'varying vec3	vVertexWorldPosition;',
         'varying vec3	vVertexNormal;',
 
-        'varying vec4	vFragColor;',
+        // 'varying vec4	vFragColor;',
 
         'void main(){',
         '	vVertexNormal	= normalize(normalMatrix * normal);',
@@ -31,7 +31,7 @@ THREEx.createAtmosphereMaterial = function() {
         'varying vec3	vVertexNormal;',
         'varying vec3	vVertexWorldPosition;',
 
-        'varying vec4	vFragColor;',
+        // 'varying vec4	vFragColor;',
 
         'void main(){',
         '	vec3 worldCameraToVertex= vVertexWorldPosition - cameraPosition;',

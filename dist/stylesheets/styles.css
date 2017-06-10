@@ -291,9 +291,15 @@ body {
 
 .graphic3D {
   position: relative; }
-  .graphic3D .container3D .project__context {
-    max-width: 900px;
+  .graphic3D .container3D .css-container {
     font-size: 38px;
+    color: white;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
+  .graphic3D .container3D .project__context {
+    max-width: 750px;
     line-height: 1.4em;
     z-index: 10;
     opacity: 0;
@@ -301,17 +307,117 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none; }
+    user-select: none;
+    font-size: 32px; }
   .graphic3D .container3D .project__image {
-    max-width: 900px;
+    max-width: 750px;
     border: 1px solid rgba(128, 128, 128, 0.15);
-    opacity: 0;
+    opacity: 0.8;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none; }
+    user-select: none;
+    display: none; }
     .graphic3D .container3D .project__image img {
       width: 100%; }
+  .graphic3D .container3D .project__btn {
+    cursor: pointer; }
+  .graphic3D .container3D .project__arrow {
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
+    cursor: pointer;
+    opacity: 0; }
+    .graphic3D .container3D .project__arrow img {
+      width: 40px; }
+    .graphic3D .container3D .project__arrow:hover {
+      -webkit-transform: scale(1.05) translateX(10px) !important;
+      -ms-transform: scale(1.05) translateX(10px) !important;
+      transform: scale(1.05) translateX(10px) !important; }
+    .graphic3D .container3D .project__arrow-l {
+      -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      transform: rotate(180deg); }
+      .graphic3D .container3D .project__arrow-l:hover {
+        -webkit-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
+        -ms-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
+        transform: scale(1.05) rotate(180deg) translateX(10px) !important; }
+  .graphic3D .container3D .project__title {
+    opacity: 0; }
+  .graphic3D .container3D .link img {
+    width: 40px;
+    margin-left: 20px;
+    margin-bottom: -5px; }
+  .graphic3D .container3D .gallery__arrow {
+    width: 30px;
+    display: block;
+    cursor: pointer;
+    display: none;
+    opacity: 0;
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
+    .graphic3D .container3D .gallery__arrow-t {
+      -webkit-transform: rotate(-90deg);
+      -ms-transform: rotate(-90deg);
+      transform: rotate(-90deg);
+      margin-bottom: 10px;
+      opacity: 0.2; }
+    .graphic3D .container3D .gallery__arrow:hover {
+      -webkit-transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
+      -ms-transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
+      transform: scale(1.05) translateY(-10px) rotate(-90deg) !important; }
+    .graphic3D .container3D .gallery__arrow-b {
+      -webkit-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg); }
+      .graphic3D .container3D .gallery__arrow-b:hover {
+        -webkit-transform: scale(1.05) rotate(90deg) translateX(10px) !important;
+        -ms-transform: scale(1.05) rotate(90deg) translateX(10px) !important;
+        transform: scale(1.05) rotate(90deg) translateX(10px) !important; }
+  .graphic3D .container3D .gallery__back {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: none;
+    opacity: 0;
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
+    .graphic3D .container3D .gallery__back:hover {
+      -webkit-transform: scale(1.05) translateX(10px) !important;
+      -ms-transform: scale(1.05) translateX(10px) !important;
+      transform: scale(1.05) translateX(10px) !important; }
+    .graphic3D .container3D .gallery__back img {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 10px;
+      width: 20px; }
+  .graphic3D .container3D .context__back {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: none;
+    opacity: 0;
+    transition: -webkit-transform 0.3s ease-out;
+    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
+    .graphic3D .container3D .context__back:hover {
+      -webkit-transform: scale(1.05) translateX(-10px) !important;
+      -ms-transform: scale(1.05) translateX(-10px) !important;
+      transform: scale(1.05) translateX(-10px) !important; }
+    .graphic3D .container3D .context__back img {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+      width: 20px;
+      -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      transform: rotate(180deg); }
 
 .graphicBars {
   background-color: transparent;

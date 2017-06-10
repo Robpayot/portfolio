@@ -274,11 +274,13 @@ gulp.task('watch', function() {
 	gulp.watch('./dev/datas/**', ['datas']);
 	gulp.watch(copyRoot, ['copy:root']);
 	gulp.watch('./dev/sounds/**', ['copy:sound']);
-
+	gulp.watch('./dev/images/**', ['copy:image']);
+	
 	browserSync.watch([
 		'./dist/datas/**',
 		'./dist/stylesheets/**',
 		'./dist/javascripts/**',
+		'./dist/images/**',
 		copyRoot
 	], {
 		ignored: '**/*.map'
