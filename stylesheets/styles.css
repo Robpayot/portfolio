@@ -326,21 +326,24 @@ body {
     transition: -webkit-transform 0.3s ease-out;
     transition: transform 0.3s ease-out;
     transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
-    cursor: pointer; }
+    cursor: pointer;
+    opacity: 0; }
     .graphic3D .container3D .project__arrow img {
       width: 40px; }
     .graphic3D .container3D .project__arrow:hover {
-      -webkit-transform: scale(1.05) translateX(10px);
-      -ms-transform: scale(1.05) translateX(10px);
-      transform: scale(1.05) translateX(10px); }
+      -webkit-transform: scale(1.05) translateX(10px) !important;
+      -ms-transform: scale(1.05) translateX(10px) !important;
+      transform: scale(1.05) translateX(10px) !important; }
     .graphic3D .container3D .project__arrow-l {
       -webkit-transform: rotate(180deg);
       -ms-transform: rotate(180deg);
       transform: rotate(180deg); }
       .graphic3D .container3D .project__arrow-l:hover {
-        -webkit-transform: scale(1.05) rotate(180deg) translateX(10px);
-        -ms-transform: scale(1.05) rotate(180deg) translateX(10px);
-        transform: scale(1.05) rotate(180deg) translateX(10px); }
+        -webkit-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
+        -ms-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
+        transform: scale(1.05) rotate(180deg) translateX(10px) !important; }
+  .graphic3D .container3D .project__title {
+    opacity: 0; }
   .graphic3D .container3D .link img {
     width: 40px;
     margin-left: 20px;
