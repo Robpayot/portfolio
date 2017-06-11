@@ -4008,8 +4008,8 @@ var UniversView = function () {
             this.camera.lookAt(this.cameraTarget);
 
             // Camera controls
-            this.controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
-            this.controls.enableZoom = true;
+            // this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
+            // this.controls.enableZoom = true;
 
             /////////////////
             // GUI
@@ -5265,7 +5265,7 @@ var UniversView = function () {
                 composer: this.composer
             });
 
-            this.controls.update();
+            // this.controls.update();
         }
     }, {
         key: 'reset',

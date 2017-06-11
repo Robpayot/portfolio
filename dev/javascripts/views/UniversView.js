@@ -126,8 +126,8 @@ export default class UniversView {
 
 
         // Camera controls
-        this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
-        this.controls.enableZoom = true;
+        // this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
+        // this.controls.enableZoom = true;
 
         /////////////////
         // GUI
@@ -1414,7 +1414,7 @@ export default class UniversView {
             composer: this.composer
         });
 
-        this.controls.update();
+        // this.controls.update();
 
     }
 
