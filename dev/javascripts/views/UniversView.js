@@ -8,6 +8,8 @@ import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
 import bean from 'bean';
+import ease from '../helpers/ease';
+import CssContainer from '../components/CssContainer';
 
 
 
@@ -103,7 +105,7 @@ export default class UniversView {
         this.setEnvelop();
 
         // Set Context
-        this.setContext();
+        this.setCssContainers();
 
         // set Light
         this.setLight();
@@ -596,14 +598,10 @@ export default class UniversView {
 
     }
 
-    setContext() {
-
-        console.log('createText');
+    setCssContainers() {
 
         // Context
-        let div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='project__context'>
+        const context = new CssContainer(`<div class='project__context'>
 				<h1>84.Paris - 2016</h1>
 				<br>
 				<p>360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.</p>
@@ -611,64 +609,30 @@ export default class UniversView {
 				<p>Technos : WebGL, Three.js</p>
 				<br>
 				<p>1 x SOTD FWA, 1 x SOTD AWWWARDS</p>
-			</div>`;
-
-        const context = new CSS3DObject(div);
+			</div>`, this.cssScene, this.cssObjects);
         context.position.set(80, 0, 0);
         context.rotation.set(0, toRadian(90), 0);
         context.scale.multiplyScalar(1 / 14);
 
-        this.cssScene.add(context);
-        this.cssObjects.push(context);
-
         // context back
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='context__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`;
-
-        const contextBack = new CSS3DObject(div);
+        const contextBack = new CssContainer(`<div class='context__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`, this.cssScene, this.cssObjects);
         contextBack.position.set(80, 0, 40);
         contextBack.rotation.set(0, toRadian(90), 0);
         contextBack.scale.multiplyScalar(1 / 14);
 
-        this.cssScene.add(contextBack);
-        this.cssObjects.push(contextBack);
-
         // Title
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='project__title'>BMW Paris Motorshow 2016 <a class="link" href="http://mondialautomobile.bmw.fr/" target="_blank"><img src="images/icons/link.svg" alt="link"></a></div>`;
-
-        const title = new CSS3DObject(div);
+        const title = new CssContainer(`<div class='project__title'>BMW Paris Motorshow 2016 <a class="link" href="http://mondialautomobile.bmw.fr/" target="_blank"><img src="images/icons/link.svg" alt="link"></a></div>`, this.cssScene, this.cssObjects);
         title.position.set(0, 20, 0);
         title.scale.multiplyScalar(1 / 14);
 
-        this.cssScene.add(title);
-        this.cssObjects.push(title);
-
         // Arrows
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='project__arrow project__arrow-l'><img src="images/icons/chevron.svg" alt="arrow"></div>`;
-
-        const arrowL = new CSS3DObject(div);
+        const arrowL = new CssContainer(`<div class='project__arrow project__arrow-l'><img src="images/icons/chevron.svg" alt="arrow"></div>`, this.cssScene, this.cssObjects);
         arrowL.position.set(-25, 0, 0);
         arrowL.scale.multiplyScalar(1 / 14);
 
-        this.cssScene.add(arrowL);
-        this.cssObjects.push(arrowL);
-
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='project__arrow project__arrow-r'><img src="images/icons/chevron.svg" alt="arrow"></div>`;
-
-        const arrowR = new CSS3DObject(div);
+        const arrowR = new CssContainer(`<div class='project__arrow project__arrow-r'><img src="images/icons/chevron.svg" alt="arrow"></div>`, this.cssScene, this.cssObjects);
         arrowR.position.set(25, 0, 0);
         arrowR.scale.multiplyScalar(1 / 14);
-
-        this.cssScene.add(arrowR);
-        this.cssObjects.push(arrowR);
-
 
         // Gallery
         const radius = 80; // radius circonference of gallery circle
@@ -676,7 +640,6 @@ export default class UniversView {
         this.gallery = new Object3D(); // DESTROY CONTAINER ????
         this.gallery.position.set(0, 0, 0);
         this.gallery.rotation.set(0, toRadian(-90), 0);
-        console.log(this.gallery);
         this.cssScene.add(this.gallery);
         this.currentSlide = 0;
         this.nbSlides = 2;
@@ -685,71 +648,35 @@ export default class UniversView {
         // x = x0 + r * cos(t)
         // y = y0 + r * sin(t)
 
-
         // image 1
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='project__image'><img src="images/bmw-1.jpg" alt="project image" /></div>`;
-
-        const image1 = new CSS3DObject(div);
-
+        const image1 = new CssContainer(`<div class='project__image'><img src="images/bmw-1.jpg" alt="project image" /></div>`, this.gallery, this.cssObjects);
         image1.position.set(0, radius * Math.sin(0), radius * Math.cos(0));
         image1.rotation.set(0, 0, 0);
         image1.scale.multiplyScalar(1 / 14);
 
-        this.gallery.add(image1);
-        this.cssObjects.push(image1);
-
         // image 2
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='project__image'><img src="images/bmw-2.jpg" alt="project image" /></div>`;
-
-        const image2 = new CSS3DObject(div);
+        const image2 = new CssContainer(`<div class='project__image'><img src="images/bmw-2.jpg" alt="project image" /></div>`, this.gallery, this.cssObjects);
         image2.position.set(0, radius * Math.sin(this.galleryAngle), radius * Math.cos(this.galleryAngle));
         image2.rotation.set(-this.galleryAngle, 0, 0);
         image2.scale.multiplyScalar(1 / 14);
-
-        this.gallery.add(image2);
-        this.cssObjects.push(image2);
 
         this.galleryPivot = new Object3D();
         this.galleryPivot.add(this.gallery);
 
         this.cssScene.add(this.galleryPivot);
 
-        // TweenMax.to(this.pivotGallery.rotation, 5, {
-        //     z: toRadian(360),
-        //     repeat: -1,
-        //     ease: window.Linear.easeNone
-        // })
-
         // gallery arrows
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='gallery__arrows'><img class='gallery__arrow gallery__arrow-t' src="images/icons/chevron.svg" alt="link"><img class='gallery__arrow gallery__arrow-b' src="images/icons/chevron.svg" alt="link"></div>`;
-
-        const galleryArrows = new CSS3DObject(div);
+        const galleryArrows = new CssContainer(`<div class='gallery__arrows'><img class='gallery__arrow gallery__arrow-t' src="images/icons/chevron.svg" alt="link"><img class='gallery__arrow gallery__arrow-b' src="images/icons/chevron.svg" alt="link"></div>`, this.cssScene, this.cssObjects);
         galleryArrows.position.set(-radius, 0, -40);
         galleryArrows.rotation.set(0, toRadian(-90), 0);
         galleryArrows.scale.multiplyScalar(1 / 14);
 
-
-        this.cssScene.add(galleryArrows);
-        this.cssObjects.push(galleryArrows);
-
         // gallery back
-        div = document.createElement('div');
-        div.classList.add('css-container');
-        div.innerHTML = `<div class='gallery__back'>Back <img src="images/icons/chevron.svg" alt="link"></div>`;
-
-        const galleryBack = new CSS3DObject(div);
+        const galleryBack = new CssContainer(`<div class='gallery__back'>Back <img src="images/icons/chevron.svg" alt="link"></div>`, this.cssScene, this.cssObjects);
         galleryBack.position.set(-radius, 0, 40);
         galleryBack.rotation.set(0, toRadian(-90), 0);
         galleryBack.scale.multiplyScalar(1 / 14);
 
-        this.cssScene.add(galleryBack);
-        this.cssObjects.push(galleryBack);
     }
 
     setBlur() {
@@ -843,7 +770,7 @@ export default class UniversView {
 
         const tl = new TimelineMax({
             onComplete: () => {
-            	this.camera.position.set(0, 0, 160);
+                this.camera.position.set(0, 0, 160);
                 this.cameraMove = false;
             }
         });
@@ -1432,7 +1359,7 @@ export default class UniversView {
         // this.setEnvelop();
 
         // // Set Context
-        // this.setContext();
+        // this.setCssContainers();
 
         // // set Light
         // this.setLight();
