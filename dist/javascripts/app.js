@@ -847,13 +847,8 @@ var SceneManager = function () {
         key: 'render',
         value: function render(opts) {
 
-            // Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)
-
-            // Render cssScene
-            // this.cssRenderer.clear();
-            this.cssRenderer.render(opts.cssScene, opts.camera);
-
-            if (opts.effectController !== null && opts.effectController.enabled === true) {
+            // Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)        
+            if (opts.composer !== null && opts.effectController.enabled === true) {
                 // Render scene composer
                 opts.composer.render(opts.scene, opts.camera);
             } else {
@@ -861,6 +856,9 @@ var SceneManager = function () {
                 // this.renderer.clear();
                 this.renderer.render(opts.scene, opts.camera);
             }
+
+            // Render cssScene
+            this.cssRenderer.render(opts.cssScene, opts.camera);
         }
     }, {
         key: 'resizeHandler',
@@ -4212,6 +4210,7 @@ var UniversView = function () {
             this.nbAst = 10;
             this.finalFov = 45;
             this.cameraMove = true;
+            this.composer = null;
 
             // retina screen size
             this.width = window.innerWidth * window.devicePixelRatio;
@@ -4905,7 +4904,6 @@ var UniversView = function () {
                 onUpdate: function onUpdate() {
                     // recall cssRenderer to update the cssRender camera matrix
                     _this3.camera.updateProjectionMatrix();
-                    _SceneManager2.default.cssRenderer.render(_this3.cssScene, _this3.camera);
                 }
             });
 
@@ -5036,7 +5034,6 @@ var UniversView = function () {
                 onUpdate: function onUpdate() {
                     // recall cssRenderer to update the cssRender camera matrix
                     _this7.camera.updateProjectionMatrix();
-                    _SceneManager2.default.cssRenderer.render(_this7.cssScene, _this7.camera);
                 }
             });
 
@@ -5273,7 +5270,7 @@ var UniversView = function () {
             // Raycasters
             //////////////////
 
-            this.ui.body.style.cursor = 'auto';
+            if (this.ui.body.style.cursor !== 'auto') this.ui.body.style.cursor = 'auto';
 
             this.raycaster.setFromCamera(this.mouse, this.camera);
 
@@ -5361,55 +5358,23 @@ var UniversView = function () {
             // Glow brightness material
             this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
             this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
-            // console.log(this.brightness.uniforms['contrast'].value);
-
 
             this.glow++;
 
             // Zoom ??
 
-            var delta = (this.finalFov - this.camera.fov) * 0.25;
+            // const delta = (this.finalFov - this.camera.fov) * 0.25;
 
-            if (Math.abs(delta) > 0.01) {
+            // if (Math.abs(delta) > 0.01) {
 
-                this.camera.fov += delta;
-                this.camera.updateProjectionMatrix();
+            //     this.camera.fov += delta;
+            //     this.camera.updateProjectionMatrix();
 
-                // console.log(this.camera.fov);
+            //     // console.log(this.camera.fov);
 
-                // FOV : 70 : zoom middle
-                // FOV : 60 : zoom max
-            }
-
-            // Camera Dolly
-            // if (_.get(this).moveIn === true) {
-
-            // 	if (_.get(this).dolly.cameraPosition <= 0.239) {
-
-            // 		_.get(this).coefMoveIn = _.get(this).coefMoveIn * 0.96;
-            // 		_.get(this).dolly.cameraPosition += _.get(this).coefMoveIn;
-            // 		_.get(this).dolly.lookatPosition += _.get(this).coefMoveIn;
-            // 		_.get(this).dolly.update();
-
-            // 	} else {
-
-            // 		_.get(this).finalCoord.cam = _.get(this).dolly.cameraPosition;
-            // 		_.get(this).finalCoord.look = _.get(this).dolly.lookatPosition;
-            // 		_.get(this).moveIn = false;
-            // 		_.get(this).canDrag = true;
-            // 	}
+            //     // FOV : 70 : zoom middle
+            //     // FOV : 60 : zoom max
             // }
-
-            // const deltaCam = (_.get(this).finalCoord.cam - _.get(this).dolly.cameraPosition) * 0.05;
-            // const deltaLook = (_.get(this).finalCoord.look - _.get(this).dolly.lookatPosition) * 0.05;
-
-            // if (Math.abs(deltaCam) > 0.0001) _.get(this).dolly.cameraPosition += (_.get(this).finalCoord.cam - _.get(this).dolly.cameraPosition) * 0.05;
-            // if (Math.abs(deltaLook) > 0.0001) _.get(this).dolly.lookatPosition += (_.get(this).finalCoord.look - _.get(this).dolly.lookatPosition) * 0.05;
-
-            // if (_.get(this).finalCoord.cam >= 0 && _.get(this).finalCoord.cam <= 1) {
-            // 	if (Math.abs(deltaCam) > 0.0001 || Math.abs(deltaLook) > 0.0001) _.get(this).dolly.update();
-            // }
-
 
             // On mouse Move Camera movement
 
@@ -5430,7 +5395,6 @@ var UniversView = function () {
                 this.camera.rotation.y = this.camRotSmooth.y;
             }
 
-            _SceneManager2.default.cssRenderer.render(this.cssScene, this.camera);
             // Render Scenes
             _SceneManager2.default.render({
                 camera: this.camera,
