@@ -46,21 +46,18 @@ class SceneManager {
 
     render(opts) {
 
-        // Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)
-
-        // Render cssScene
-        // this.cssRenderer.clear();
-        this.cssRenderer.render(opts.cssScene, opts.camera);
-
-        if (opts.effectController !== null && opts.effectController.enabled === true) {
+        // Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)        
+        if (opts.composer !== null && opts.effectController.enabled === true) {
             // Render scene composer
             opts.composer.render(opts.scene, opts.camera);
         } else {
             // Render scene
             // this.renderer.clear();
             this.renderer.render(opts.scene, opts.camera);
-
         }
+
+        // Render cssScene
+        this.cssRenderer.render(opts.cssScene, opts.camera);
 
     }
 
