@@ -9,7 +9,6 @@ import 'gsap';
 // import './vendors/preloadjs-0.6.2.min.js';
 
 
- 
 
 // import * as tools from '@84paris/84.tools';
 
@@ -26,20 +25,20 @@ import PreloadManager from './managers/PreloadManager';
 
 (() => {
 
-    PreloadManager.on('complete', () => {
+	PreloadManager.on('complete', () => {
 
-        AppManager.start();
+		AppManager.start();
 
-    }, this, true);
-
-
-
-    PreloadManager.loadFile({ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' });
-    PreloadManager.loadFile({ id: 'damier', src: 'images/textures/damier.jpg' });
+	}, this, true);
 
 
 
-    PreloadManager.load();
+	PreloadManager.loadFile({ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' });
+	PreloadManager.loadFile({ id: 'damier', src: 'images/textures/damier.jpg' });
+
+
+
+	PreloadManager.load();
 
 
 

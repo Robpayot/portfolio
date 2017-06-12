@@ -7,71 +7,71 @@ import UniversView from '../views/UniversView';
 
 class RouterManager {
 
-    constructor() {
+	constructor() {
 
-        this.switchView = this.switchView.bind(this);
-        this.initView = this.initView.bind(this);
+		this.switchView = this.switchView.bind(this);
+		this.initView = this.initView.bind(this);
 
-    }
+	}
 
-    start() {
+	start() {
 
-        this.currentPage = null;
-        this.currentRoute = null;
-        
-        const url = window.location.href;
+		this.currentPage = null;
+		this.currentRoute = null;
 
-        if (/\/#list/.test(url) === true) {
-            this.switchView('/list');
-        } else {
-            this.switchView('/home');
-        }
+		const url = window.location.href;
 
-        EmitterManager.on('router:switch', this.switchView);
-    }
+		if (/\/#list/.test(url) === true) {
+			this.switchView('/list');
+		} else {
+			this.switchView('/home');
+		}
 
-    switchView(goToPage, index) {
+		EmitterManager.on('router:switch', this.switchView);
+	}
 
-        if (this.currentPage !== null) {
+	switchView(goToPage, index) {
 
-            if (goToPage === '/home') {
-                this.currentPage.destroy(true);
-            } else {
-                this.currentPage.destroy(false);
-            }
+		if (this.currentPage !== null) {
 
-            EmitterManager.once('view:transition:out', () => {
+			if (goToPage === '/home') {
+				this.currentPage.destroy(true);
+			} else {
+				this.currentPage.destroy(false);
+			}
 
-                this.initView(goToPage, index);
+			EmitterManager.once('view:transition:out', () => {
 
-            });
+				this.initView(goToPage, index);
 
-        } else {
+			});
 
-            this.initView(goToPage, index);
+		} else {
 
-        }
+			this.initView(goToPage, index);
 
-    }
+		}
 
-    initView(goToPage, index = null) {
+	}
 
-        let slug;
+	initView(goToPage, index = null) {
 
-        switch (goToPage) {
-            case '/home':
-                this.currentPage = new UniversView();
-                window.location = '#home';
-                break;
-            case '/list':
-                this.currentPage = new ListView();
-                window.location = '#list';
-                break;
-        }
+		let slug;
 
-        this.fromLoad = false;
+		switch (goToPage) {
+			case '/home':
+				this.currentPage = new UniversView();
+				window.location = '#home';
+				break;
+			// case '/list':
+			// 	this.currentPage = new ListView();
+			// 	window.location = '#list';
+			// 	break;
+		}
 
-    }
+		this.fromLoad = false;
+
+	}
 }
 
 export default new RouterManager();
