@@ -21,10 +21,10 @@ class RouterManager {
 
 		const url = window.location.href;
 
-		if (/\/#list/.test(url) === true) {
-			this.switchView('/list');
+		if (/\/#project-1/.test(url) === true) {
+			this.switchView('/project-1');
 		} else {
-			this.switchView('/home');
+			this.switchView('/project-0');
 		}
 
 		EmitterManager.on('router:switch', this.switchView);
@@ -34,7 +34,7 @@ class RouterManager {
 
 		if (this.currentPage !== null) {
 
-			if (goToPage === '/home') {
+			if (goToPage === '/project-0') {
 				this.currentPage.destroy(true);
 			} else {
 				this.currentPage.destroy(false);
@@ -59,14 +59,14 @@ class RouterManager {
 		let slug;
 
 		switch (goToPage) {
-			case '/home':
-				this.currentPage = new UniversView();
-				window.location = '#home';
+			case '/project-0':
+				this.currentPage = new UniversView(0);
+				window.location = '#project-0';
 				break;
-			// case '/list':
-			// 	this.currentPage = new ListView();
-			// 	window.location = '#list';
-			// 	break;
+			case '/project-1':
+				this.currentPage = new UniversView(1);
+				window.location = '#project-1';
+				break;
 		}
 
 		this.fromLoad = false;

@@ -13,13 +13,17 @@
             user-select: none;
         }
         .project__context {
-            max-width: 750px;
+            max-width: 300px;
             line-height: 1.4em;
             z-index: 10;
+            text-align: left;
             opacity: 0;
             color: white;
             user-select: none;
-            font-size: 32px;
+            font-size: 20px;
+            h1 {
+            	font-size: 30px;
+            }
         }
         .project__image {
             max-width: 750px;
@@ -51,9 +55,21 @@
                     transform: scale(1.05) rotate(180deg) translateX(10px) !important;
                 }
             }
+            &-r {
+                width: 30px;
+                display: inline-block;
+                vertical-align: middle;
+                margin-left: 25px;
+            }
         }
         .project__title {
-            opacity: 0;
+            font-size: 80px;
+            display: inline-block;
+            vertical-align: middle;
+            cursor: pointer;
+            span {
+                opacity: 0;
+            }
         }
         .link {
             img {
@@ -105,7 +121,7 @@
                 }
             }
         }
-        .context {
+        .details {
             &__back {
                 display: inline-block;
                 vertical-align: middle;
