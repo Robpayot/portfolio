@@ -60,11 +60,25 @@ class RouterManager {
 
 		switch (goToPage) {
 			case '/project-0':
-				this.currentPage = new UniversView(0);
+				this.currentPage = new UniversView({
+					id: 0,
+					bkg: 0x0101010,
+					astd: 'spheres',
+					gravity: true,
+					pointsLight: true,
+					glow: true
+				});
 				window.location = '#project-0';
 				break;
 			case '/project-1':
-				this.currentPage = new UniversView(1);
+				this.currentPage = new UniversView({
+					id: 1,
+					bkg: 0xcafefd,
+					astd: 'cubes',
+					gravity: false,
+					pointsLight: false,
+					glow: false
+				});
 				window.location = '#project-1';
 				break;
 		}

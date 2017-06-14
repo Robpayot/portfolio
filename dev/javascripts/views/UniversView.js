@@ -34,7 +34,7 @@ import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltS
 
 export default class UniversView {
 
-    constructor(type) {
+    constructor(obj) {
 
         this.raf = this.raf.bind(this);
         this.events = this.events.bind(this);
@@ -45,20 +45,22 @@ export default class UniversView {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.showDetails = this.showDetails.bind(this);
-        this.showContext = this.showContext.bind(this);
         this.slideUp = this.slideUp.bind(this);
         this.slideDown = this.slideDown.bind(this);
         this.backFromDetails = this.backFromDetails.bind(this);
-        this.backFromContext = this.backFromContext.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
         this.onChangeDolly = this.onChangeDolly.bind(this);
 
-
-
-
+        // properties
+        this.id = obj.id;
+        this.bkg = obj.bkg;
+        this.astd = obj.astd;
+        this.gravity = obj.gravity;
+        this.pointsLight = obj.pointsLight;
+        this.glow = obj.glow;
 
         this.sound = SoundManager;
 
@@ -78,11 +80,12 @@ export default class UniversView {
         this.isControls = true;
 
         this.cssObjects = [];
-        this.glow = 1;
-        this.nbAst = 1;
+        this.glowInc = 1;
+        this.nbAst = 10;
         this.finalFov = 45;
         this.cameraMove = true;
         this.composer = null;
+        this.bounceArea = 400;
 
         // retina screen size
         this.width = window.innerWidth * window.devicePixelRatio;
@@ -90,13 +93,15 @@ export default class UniversView {
 
         // Set scenes
         this.scene = new Scene();
+        this.scene.background = new Color(this.bkg);
         this.cssScene = new Scene();
 
         // Set Camera.
         this.setCamera();
 
+
         // Set physics
-        this.initPhysics();
+        if (this.gravity === true) this.initPhysics();
 
         // Set symbol
         this.setSymbol();
@@ -104,14 +109,17 @@ export default class UniversView {
         // Set asteroid
         this.setAsteroids();
 
-        // Set envelop
-        this.setEnvelop();
-
         // Set Context
         this.setCssContainers();
+        console.log(this.pointsLight);
+        if (this.pointsLight === true) {
+            console.log('trueeee');
+            // Set envelop
+            this.setEnvelop();
+        }
+            // set Light
+            this.setLight();
 
-        // set Light
-        this.setLight();
 
         // Raycaster
         this.raycaster = new Raycaster();
@@ -332,19 +340,16 @@ export default class UniversView {
 
     setEnvelop() {
         // Set up the sphere vars
-        const width = 400;
-        const height = 400;
+        const width = this.bounceArea;
+        const height = this.bounceArea;
         const depth = 2;
-
-        this.envelopSize = width;
-
 
         const geometry = new BoxGeometry(width, height, depth);
         // 0x0101010,
-        const img = PreloadManager.getResult('damier');
-        const tex = new Texture(img);
-        tex.needsUpdate = true;
-        const material = new MeshPhongMaterial({ color: 0x010101, transparent: true, opacity: 1 });
+        // const img = PreloadManager.getResult('damier');
+        // const tex = new Texture(img);
+        // tex.needsUpdate = true;
+        const material = new MeshPhongMaterial({ color: this.bkg, transparent: true, opacity: 1 });
         this.envelops = [];
 
         const configs = [{
@@ -371,8 +376,6 @@ export default class UniversView {
 
             const envelop = new Envelop(geometry, material, configs[i].pos, configs[i].rot);
 
-            // add physic body to world
-            envelop.body = this.world.add(envelop.physics);
             this.envelops.push(envelop);
 
             // add mesh to the scene
@@ -404,8 +407,12 @@ export default class UniversView {
 
         const symbol = new Symbol(geometry, material, pos);
 
-        // add physic body to world
-        symbol.body = this.world.add(symbol.physics);
+
+        if (this.gravity === true) {
+            // add physic body to world
+            symbol.body = this.world.add(symbol.physics);
+        }
+
 
 
         // create a glowMesh
@@ -437,11 +444,26 @@ export default class UniversView {
         this.asteroidsM = [];
 
         // Set up the sphere vars
-        const RADIUS = 5;
-        const SEGMENTS = 32;
-        const RINGS = 32;
+        const props = {
+            RADIUS: 5,
+            SEGMENTS: 32,
+            RINGS: 32,
+            geometry: null,
+            glow: this.glow
+        }
 
-        const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+
+        let geometry;
+
+        switch (this.astd) {
+            case 'spheres':
+                geometry = new SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
+                break;
+            case 'cubes':
+                geometry = new BoxGeometry(props.RADIUS, props.RADIUS, props.RADIUS);
+                break;
+        }
+
         // const material = new MeshLambertMaterial({ color: 0x4682b4 });
         const img = PreloadManager.getResult('texture-asteroid');
 
@@ -461,29 +483,46 @@ export default class UniversView {
             // specular: new Color('rgb(255, 255, 255)')
         };
         // const material = new MeshLambertMaterial(matPhongParams);
-        this.brightness = new BrightnessShader();
 
-        this.brightness2 = new BrightnessShader();
+        if (this.glow === true) {
+            this.brightness = new BrightnessShader();
 
-        this.brightness.uniforms.tInput.value = tex;
-        this.brightness2.uniforms.tInput.value = tex;
+            this.brightness2 = new BrightnessShader();
+
+            this.brightness.uniforms.tInput.value = tex;
+            this.brightness2.uniforms.tInput.value = tex;
 
 
-        this.materialAst1 = new ShaderMaterial({
-            uniforms: this.brightness.uniforms,
-            vertexShader: this.brightness.vertexShader,
-            fragmentShader: this.brightness.fragmentShader,
-            transparent: true,
-            opacity: 0.5
-        });
+            this.materialAst1 = new ShaderMaterial({
+                uniforms: this.brightness.uniforms,
+                vertexShader: this.brightness.vertexShader,
+                fragmentShader: this.brightness.fragmentShader,
+                transparent: true,
+                opacity: 0.5
+            });
 
-        this.materialAst2 = new ShaderMaterial({
-            uniforms: this.brightness2.uniforms,
-            vertexShader: this.brightness2.vertexShader,
-            fragmentShader: this.brightness2.fragmentShader,
-            transparent: true,
-            opacity: 0.5
-        });
+            this.materialAst2 = new ShaderMaterial({
+                uniforms: this.brightness2.uniforms,
+                vertexShader: this.brightness2.vertexShader,
+                fragmentShader: this.brightness2.fragmentShader,
+                transparent: true,
+                opacity: 0.5
+            });
+
+        } else {
+            this.materialAst1 = new MeshLambertMaterial({
+                color: 0xfee4e4,
+                transparent: true,
+                opacity: 0.5
+            });
+
+            this.materialAst2 = new MeshLambertMaterial({
+                color: 0xfee4c0,
+                transparent: true,
+                opacity: 0.5
+            });
+        }
+
 
         for (let i = 0; i < this.nbAst; i++) {
 
@@ -531,20 +570,20 @@ export default class UniversView {
                 // console.log(i);
                 finalMat = this.materialAst2;
             }
-
-
-
-
             const asteroid = new Asteroid(geometry, finalMat, pos, rot, force);
 
-            // add physic body to world
-            asteroid.body = this.world.add(asteroid.physics);
-            asteroid.mesh.index = i;
 
-            // Set rotation impulsion
-            asteroid.body.angularVelocity.x = getRandom(-0.3, 0.3);
-            asteroid.body.angularVelocity.y = getRandom(-0.3, 0.3);
-            asteroid.body.angularVelocity.z = getRandom(-0.3, 0.3);
+            if (this.gravity === true) {
+                // add physic body to world
+                asteroid.body = this.world.add(asteroid.physics);
+
+                // Set rotation impulsion
+                asteroid.body.angularVelocity.x = getRandom(-0.3, 0.3);
+                asteroid.body.angularVelocity.y = getRandom(-0.3, 0.3);
+                asteroid.body.angularVelocity.z = getRandom(-0.3, 0.3);
+            }
+
+            asteroid.mesh.index = i;
 
             this.asteroids.push(asteroid);
             this.asteroidsM.push(asteroid.mesh);
@@ -911,81 +950,6 @@ export default class UniversView {
         });
     }
 
-    showContext() {
-        console.log('show gallery');
-
-        // Turn around the perimeter of a circle
-
-        const trigo = { angle: 1 };
-        const tl = new TimelineMax({
-            onComplete: () => { this.cameraMove = true; },
-            onUpdate: () => {
-                // recall cssRenderer to update the cssRender camera matrix
-                this.camera.updateProjectionMatrix();
-            }
-        });
-
-        this.cameraMove = true;
-
-        tl.to(this.camera.rotation, 0.8, {
-            x: 0,
-            y: 0,
-            ease: Power2.easeOut
-        });
-
-        tl.to(trigo, 3, { // 3.5
-            angle: 0,
-            ease: window.Power3.easeInOut,
-            onUpdate: () => {
-                // Math.PI / 2 start rotation at 90deg
-                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-                this.camera.lookAt(this.cameraTarget);
-            }
-        });
-
-        tl.set(['.details__back', '.project__context'], { display: 'block' }, 3);
-
-        tl.staggerFromTo(['.details__back', '.project__context'], 1.2, {
-            opacity: 0,
-            y: 80
-        }, {
-            opacity: 0.8,
-            y: 0,
-            ease: window.Power4.easeOut
-        }, 0.1, 2.8);
-
-    }
-
-    backFromContext() {
-
-        const trigo = { angle: 0 };
-        const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
-        this.cameraMove = true;
-
-        tl.staggerTo(['.project__context', '.details__back'], 1.2, {
-            opacity: 0,
-            ease: window.Power4.easeOut
-        }, 0.1);
-
-        tl.set(['.project__context', '.details__back'], { display: 'none' });
-
-
-        tl.to(trigo, 3, { // 3.5
-            angle: 1,
-            ease: window.Power3.easeInOut,
-            onUpdate: () => {
-                // Math.PI / 2 start rotation at 90deg
-                this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-                this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-                this.camera.lookAt(this.cameraTarget);
-
-                this.camera.updateProjectionMatrix();
-            }
-        }, 0.5);
-
-    }
-
     onClick(e) {
 
         // update Mouse position for touch devices
@@ -1184,75 +1148,78 @@ export default class UniversView {
             this.clickAsteroid = false;
         }
 
+
+
         // update world
-        this.world.step();
+        if (this.gravity === true) {
+            this.world.step();
+            // Symbol body
+            for (let i = 0; i < this.symbols.length; i++) {
+                this.symbols[i].mesh.position.copy(this.symbols[i].body.getPosition());
+                this.symbols[i].mesh.quaternion.copy(this.symbols[i].body.getQuaternion());
+            }
+            // Asteroids bodies
+            for (let i = 0; i < this.asteroids.length; i++) {
 
-        // Envelop body
-        for (let i = 0; i < this.envelops.length; i++) {
-            this.envelops[i].position.copy(this.envelops[i].body.getPosition());
-            this.envelops[i].quaternion.copy(this.envelops[i].body.getQuaternion());
-        }
-        // Symbol body
-        for (let i = 0; i < this.symbols.length; i++) {
-            this.symbols[i].mesh.position.copy(this.symbols[i].body.getPosition());
-            this.symbols[i].mesh.quaternion.copy(this.symbols[i].body.getQuaternion());
-        }
-        // Asteroids bodies
-        for (let i = 0; i < this.asteroids.length; i++) {
+                if (this.asteroids[i].mesh.position.x > this.bounceArea / 2 - 50 || this.asteroids[i].mesh.position.x < -this.bounceArea / 2 + 50 || this.asteroids[i].mesh.position.y > this.bounceArea / 2 - 50 || this.asteroids[i].mesh.position.y < -this.bounceArea / 2 + 50 || this.asteroids[i].mesh.position.z > this.bounceArea / 2 - 50 || this.asteroids[i].mesh.position.z < -this.bounceArea / 2 + 50) {
+                    // Reverse Force Vector
+                    if (this.asteroids[i].annilled !== true) {
 
-            if (this.asteroids[i].mesh.position.x > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.x < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.y > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.y < -this.envelopSize / 2 + 50 || this.asteroids[i].mesh.position.z > this.envelopSize / 2 - 50 || this.asteroids[i].mesh.position.z < -this.envelopSize / 2 + 50) {
-                // Reverse Force Vector
-                if (this.asteroids[i].annilled !== true) {
+                        this.asteroids[i].changeDirection();
+                        this.asteroids[i].annilled = true;
+                    }
+                }
 
-                    this.asteroids[i].changeDirection();
-                    this.asteroids[i].annilled = true;
+                if (this.asteroids[i].body !== undefined) {
+
+                    // APPLY IMPULSE
+                    this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+                    this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+                    this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+
+                    // console.log(this.asteroids[i].body.angularVelocity);
+                    // angular Velocity always inferior to 1 (or too much rotations)
+
+                    this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
+                    this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
+                    this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
+                    // if (i === 0) {
+                    //   console.log(this.asteroids[i].body.angularVelocity.x);
+                    // }
+
+
+                    this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+                    this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+
+
                 }
             }
-
-            if (this.asteroids[i].body !== undefined) {
-
-                // APPLY IMPULSE
-                this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-                this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-                this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
-
-                // console.log(this.asteroids[i].body.angularVelocity);
-                // angular Velocity always inferior to 1 (or too much rotations)
-
-                this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
-                this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
-                this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
-                // if (i === 0) {
-                //   console.log(this.asteroids[i].body.angularVelocity.x);
-                // }
-
-
-                this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-                this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
-
-
-            }
         }
 
-        // // Glow continuously
-        // this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
-
-        // // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
-        // // Glow arrows
-        // if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-        // 	this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
-        // 	this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
-        // 	// console.log(5 + (Math.sin(this.glow / 30) + 1) / 5);
-        // }
 
 
-        // // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
-        // // Glow brightness material
-        // this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
-        // this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
+
+        // Glow continuously
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glowInc / 30) + 1) / 5;
+
+        // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
+        // Glow arrows
+        if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
+            this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glowInc / 30) + 1) / 5;
+            this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glowInc / 30) + 1) / 5;
+            // console.log(5 + (Math.sin(this.glowInc / 30) + 1) / 5);
+        }
 
 
-        // this.glow++;
+        // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+        if (this.glow === true) {
+            // Glow brightness material Asteroids
+            this.brightness.uniforms['contrast'].value = (Math.sin(this.glowInc / 40) + 1.2) * 3;
+            this.brightness2.uniforms['contrast'].value = (Math.cos(this.glowInc / 40) + 1.2) * 3;
+        }
+
+
+        this.glowInc++;
 
         // Zoom ??
 
