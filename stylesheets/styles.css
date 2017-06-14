@@ -354,7 +354,8 @@ body {
     font-size: 80px;
     display: inline-block;
     vertical-align: middle;
-    cursor: pointer; }
+    cursor: pointer;
+    white-space: nowrap; }
     .graphic3D .container3D .project__title span {
       opacity: 0; }
   .graphic3D .container3D .link img {

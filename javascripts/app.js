@@ -769,11 +769,25 @@ var RouterManager = function () {
 
 			switch (goToPage) {
 				case '/project-0':
-					this.currentPage = new _UniversView2.default(0);
+					this.currentPage = new _UniversView2.default({
+						id: 0,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: true,
+						pointsLight: true,
+						glow: true
+					});
 					window.location = '#project-0';
 					break;
 				case '/project-1':
-					this.currentPage = new _UniversView2.default(1);
+					this.currentPage = new _UniversView2.default({
+						id: 1,
+						bkg: 0xcafefd,
+						astd: 'cubes',
+						gravity: false,
+						pointsLight: false,
+						glow: false
+					});
 					window.location = '#project-1';
 					break;
 			}
@@ -4167,7 +4181,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
 var UniversView = function () {
-    function UniversView(type) {
+    function UniversView(obj) {
         _classCallCheck(this, UniversView);
 
         this.raf = this.raf.bind(this);
@@ -4179,16 +4193,22 @@ var UniversView = function () {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.showDetails = this.showDetails.bind(this);
-        this.showContext = this.showContext.bind(this);
         this.slideUp = this.slideUp.bind(this);
         this.slideDown = this.slideDown.bind(this);
         this.backFromDetails = this.backFromDetails.bind(this);
-        this.backFromContext = this.backFromContext.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
         this.onChangeGlow = this.onChangeGlow.bind(this);
         this.onChangeBlur = this.onChangeBlur.bind(this);
         this.onChangeBrightness = this.onChangeBrightness.bind(this);
         this.onChangeDolly = this.onChangeDolly.bind(this);
+
+        // properties
+        this.id = obj.id;
+        this.bkg = obj.bkg;
+        this.astd = obj.astd;
+        this.gravity = obj.gravity;
+        this.pointsLight = obj.pointsLight;
+        this.glow = obj.glow;
 
         this.sound = _SoundManager2.default;
 
@@ -4208,11 +4228,12 @@ var UniversView = function () {
             this.isControls = true;
 
             this.cssObjects = [];
-            this.glow = 1;
-            this.nbAst = 1;
+            this.glowInc = 1;
+            this.nbAst = 10;
             this.finalFov = 45;
             this.cameraMove = true;
             this.composer = null;
+            this.bounceArea = 400;
 
             // retina screen size
             this.width = window.innerWidth * window.devicePixelRatio;
@@ -4220,13 +4241,14 @@ var UniversView = function () {
 
             // Set scenes
             this.scene = new _three.Scene();
+            this.scene.background = new _three.Color(this.bkg);
             this.cssScene = new _three.Scene();
 
             // Set Camera.
             this.setCamera();
 
             // Set physics
-            this.initPhysics();
+            if (this.gravity === true) this.initPhysics();
 
             // Set symbol
             this.setSymbol();
@@ -4234,12 +4256,14 @@ var UniversView = function () {
             // Set asteroid
             this.setAsteroids();
 
-            // Set envelop
-            this.setEnvelop();
-
             // Set Context
             this.setCssContainers();
-
+            console.log(this.pointsLight);
+            if (this.pointsLight === true) {
+                console.log('trueeee');
+                // Set envelop
+                this.setEnvelop();
+            }
             // set Light
             this.setLight();
 
@@ -4454,18 +4478,16 @@ var UniversView = function () {
         key: 'setEnvelop',
         value: function setEnvelop() {
             // Set up the sphere vars
-            var width = 400;
-            var height = 400;
+            var width = this.bounceArea;
+            var height = this.bounceArea;
             var depth = 2;
-
-            this.envelopSize = width;
 
             var geometry = new _three.BoxGeometry(width, height, depth);
             // 0x0101010,
-            var img = _PreloadManager2.default.getResult('damier');
-            var tex = new _three.Texture(img);
-            tex.needsUpdate = true;
-            var material = new _three.MeshPhongMaterial({ color: 0x010101, transparent: true, opacity: 1 });
+            // const img = PreloadManager.getResult('damier');
+            // const tex = new Texture(img);
+            // tex.needsUpdate = true;
+            var material = new _three.MeshPhongMaterial({ color: this.bkg, transparent: true, opacity: 1 });
             this.envelops = [];
 
             var configs = [{
@@ -4492,8 +4514,6 @@ var UniversView = function () {
 
                 var envelop = new _Envelop2.default(geometry, material, configs[i].pos, configs[i].rot);
 
-                // add physic body to world
-                envelop.body = this.world.add(envelop.physics);
                 this.envelops.push(envelop);
 
                 // add mesh to the scene
@@ -4523,8 +4543,10 @@ var UniversView = function () {
 
             var symbol = new _Symbol3.default(geometry, material, pos);
 
-            // add physic body to world
-            symbol.body = this.world.add(symbol.physics);
+            if (this.gravity === true) {
+                // add physic body to world
+                symbol.body = this.world.add(symbol.physics);
+            }
 
             // create a glowMesh
             symbol.glowMesh = new _threexGlow.THREEx.GeometricGlowMesh(symbol.mesh);
@@ -4555,11 +4577,25 @@ var UniversView = function () {
             this.asteroidsM = [];
 
             // Set up the sphere vars
-            var RADIUS = 5;
-            var SEGMENTS = 32;
-            var RINGS = 32;
+            var props = {
+                RADIUS: 5,
+                SEGMENTS: 32,
+                RINGS: 32,
+                geometry: null,
+                glow: this.glow
+            };
 
-            var geometry = new _three.SphereGeometry(RADIUS, SEGMENTS, RINGS);
+            var geometry = void 0;
+
+            switch (this.astd) {
+                case 'spheres':
+                    geometry = new _three.SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
+                    break;
+                case 'cubes':
+                    geometry = new _three.BoxGeometry(props.RADIUS, props.RADIUS, props.RADIUS);
+                    break;
+            }
+
             // const material = new MeshLambertMaterial({ color: 0x4682b4 });
             var img = _PreloadManager2.default.getResult('texture-asteroid');
 
@@ -4575,28 +4611,43 @@ var UniversView = function () {
                 map: tex
             };
             // const material = new MeshLambertMaterial(matPhongParams);
-            this.brightness = new _BrightnessShader.BrightnessShader();
 
-            this.brightness2 = new _BrightnessShader.BrightnessShader();
+            if (this.glow === true) {
+                this.brightness = new _BrightnessShader.BrightnessShader();
 
-            this.brightness.uniforms.tInput.value = tex;
-            this.brightness2.uniforms.tInput.value = tex;
+                this.brightness2 = new _BrightnessShader.BrightnessShader();
 
-            this.materialAst1 = new _three.ShaderMaterial({
-                uniforms: this.brightness.uniforms,
-                vertexShader: this.brightness.vertexShader,
-                fragmentShader: this.brightness.fragmentShader,
-                transparent: true,
-                opacity: 0.5
-            });
+                this.brightness.uniforms.tInput.value = tex;
+                this.brightness2.uniforms.tInput.value = tex;
 
-            this.materialAst2 = new _three.ShaderMaterial({
-                uniforms: this.brightness2.uniforms,
-                vertexShader: this.brightness2.vertexShader,
-                fragmentShader: this.brightness2.fragmentShader,
-                transparent: true,
-                opacity: 0.5
-            });
+                this.materialAst1 = new _three.ShaderMaterial({
+                    uniforms: this.brightness.uniforms,
+                    vertexShader: this.brightness.vertexShader,
+                    fragmentShader: this.brightness.fragmentShader,
+                    transparent: true,
+                    opacity: 0.5
+                });
+
+                this.materialAst2 = new _three.ShaderMaterial({
+                    uniforms: this.brightness2.uniforms,
+                    vertexShader: this.brightness2.vertexShader,
+                    fragmentShader: this.brightness2.fragmentShader,
+                    transparent: true,
+                    opacity: 0.5
+                });
+            } else {
+                this.materialAst1 = new _three.MeshLambertMaterial({
+                    color: 0xfee4e4,
+                    transparent: true,
+                    opacity: 0.5
+                });
+
+                this.materialAst2 = new _three.MeshLambertMaterial({
+                    color: 0xfee4c0,
+                    transparent: true,
+                    opacity: 0.5
+                });
+            }
 
             for (var i = 0; i < this.nbAst; i++) {
 
@@ -4643,17 +4694,19 @@ var UniversView = function () {
                     // console.log(i);
                     finalMat = this.materialAst2;
                 }
-
                 var asteroid = new _Asteroid2.default(geometry, finalMat, pos, rot, force);
 
-                // add physic body to world
-                asteroid.body = this.world.add(asteroid.physics);
-                asteroid.mesh.index = i;
+                if (this.gravity === true) {
+                    // add physic body to world
+                    asteroid.body = this.world.add(asteroid.physics);
 
-                // Set rotation impulsion
-                asteroid.body.angularVelocity.x = (0, _utils.getRandom)(-0.3, 0.3);
-                asteroid.body.angularVelocity.y = (0, _utils.getRandom)(-0.3, 0.3);
-                asteroid.body.angularVelocity.z = (0, _utils.getRandom)(-0.3, 0.3);
+                    // Set rotation impulsion
+                    asteroid.body.angularVelocity.x = (0, _utils.getRandom)(-0.3, 0.3);
+                    asteroid.body.angularVelocity.y = (0, _utils.getRandom)(-0.3, 0.3);
+                    asteroid.body.angularVelocity.z = (0, _utils.getRandom)(-0.3, 0.3);
+                }
+
+                asteroid.mesh.index = i;
 
                 this.asteroids.push(asteroid);
                 this.asteroidsM.push(asteroid.mesh);
@@ -5011,87 +5064,6 @@ var UniversView = function () {
             });
         }
     }, {
-        key: 'showContext',
-        value: function showContext() {
-            var _this7 = this;
-
-            console.log('show gallery');
-
-            // Turn around the perimeter of a circle
-
-            var trigo = { angle: 1 };
-            var tl = new TimelineMax({
-                onComplete: function onComplete() {
-                    _this7.cameraMove = true;
-                },
-                onUpdate: function onUpdate() {
-                    // recall cssRenderer to update the cssRender camera matrix
-                    _this7.camera.updateProjectionMatrix();
-                }
-            });
-
-            this.cameraMove = true;
-
-            tl.to(this.camera.rotation, 0.8, {
-                x: 0,
-                y: 0,
-                ease: Power2.easeOut
-            });
-
-            tl.to(trigo, 3, { // 3.5
-                angle: 0,
-                ease: window.Power3.easeInOut,
-                onUpdate: function onUpdate() {
-                    // Math.PI / 2 start rotation at 90deg
-                    _this7.camera.position.x = _this7.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-                    _this7.camera.position.z = _this7.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-                    _this7.camera.lookAt(_this7.cameraTarget);
-                }
-            });
-
-            tl.set(['.details__back', '.project__context'], { display: 'block' }, 3);
-
-            tl.staggerFromTo(['.details__back', '.project__context'], 1.2, {
-                opacity: 0,
-                y: 80
-            }, {
-                opacity: 0.8,
-                y: 0,
-                ease: window.Power4.easeOut
-            }, 0.1, 2.8);
-        }
-    }, {
-        key: 'backFromContext',
-        value: function backFromContext() {
-            var _this8 = this;
-
-            var trigo = { angle: 0 };
-            var tl = new TimelineMax({ onComplete: function onComplete() {
-                    _this8.cameraMove = false;
-                } });
-            this.cameraMove = true;
-
-            tl.staggerTo(['.project__context', '.details__back'], 1.2, {
-                opacity: 0,
-                ease: window.Power4.easeOut
-            }, 0.1);
-
-            tl.set(['.project__context', '.details__back'], { display: 'none' });
-
-            tl.to(trigo, 3, { // 3.5
-                angle: 1,
-                ease: window.Power3.easeInOut,
-                onUpdate: function onUpdate() {
-                    // Math.PI / 2 start rotation at 90deg
-                    _this8.camera.position.x = _this8.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-                    _this8.camera.position.z = _this8.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-                    _this8.camera.lookAt(_this8.cameraTarget);
-
-                    _this8.camera.updateProjectionMatrix();
-                }
-            }, 0.5);
-        }
-    }, {
         key: 'onClick',
         value: function onClick(e) {
 
@@ -5289,72 +5261,68 @@ var UniversView = function () {
             }
 
             // update world
-            this.world.step();
+            if (this.gravity === true) {
+                this.world.step();
+                // Symbol body
+                for (var i = 0; i < this.symbols.length; i++) {
+                    this.symbols[i].mesh.position.copy(this.symbols[i].body.getPosition());
+                    this.symbols[i].mesh.quaternion.copy(this.symbols[i].body.getQuaternion());
+                }
+                // Asteroids bodies
+                for (var _i = 0; _i < this.asteroids.length; _i++) {
 
-            // Envelop body
-            for (var i = 0; i < this.envelops.length; i++) {
-                this.envelops[i].position.copy(this.envelops[i].body.getPosition());
-                this.envelops[i].quaternion.copy(this.envelops[i].body.getQuaternion());
-            }
-            // Symbol body
-            for (var _i = 0; _i < this.symbols.length; _i++) {
-                this.symbols[_i].mesh.position.copy(this.symbols[_i].body.getPosition());
-                this.symbols[_i].mesh.quaternion.copy(this.symbols[_i].body.getQuaternion());
-            }
-            // Asteroids bodies
-            for (var _i2 = 0; _i2 < this.asteroids.length; _i2++) {
+                    if (this.asteroids[_i].mesh.position.x > this.bounceArea / 2 - 50 || this.asteroids[_i].mesh.position.x < -this.bounceArea / 2 + 50 || this.asteroids[_i].mesh.position.y > this.bounceArea / 2 - 50 || this.asteroids[_i].mesh.position.y < -this.bounceArea / 2 + 50 || this.asteroids[_i].mesh.position.z > this.bounceArea / 2 - 50 || this.asteroids[_i].mesh.position.z < -this.bounceArea / 2 + 50) {
+                        // Reverse Force Vector
+                        if (this.asteroids[_i].annilled !== true) {
 
-                if (this.asteroids[_i2].mesh.position.x > this.envelopSize / 2 - 50 || this.asteroids[_i2].mesh.position.x < -this.envelopSize / 2 + 50 || this.asteroids[_i2].mesh.position.y > this.envelopSize / 2 - 50 || this.asteroids[_i2].mesh.position.y < -this.envelopSize / 2 + 50 || this.asteroids[_i2].mesh.position.z > this.envelopSize / 2 - 50 || this.asteroids[_i2].mesh.position.z < -this.envelopSize / 2 + 50) {
-                    // Reverse Force Vector
-                    if (this.asteroids[_i2].annilled !== true) {
+                            this.asteroids[_i].changeDirection();
+                            this.asteroids[_i].annilled = true;
+                        }
+                    }
 
-                        this.asteroids[_i2].changeDirection();
-                        this.asteroids[_i2].annilled = true;
+                    if (this.asteroids[_i].body !== undefined) {
+
+                        // APPLY IMPULSE
+                        this.asteroids[_i].body.linearVelocity.x = this.asteroids[_i].force.x;
+                        this.asteroids[_i].body.linearVelocity.y = this.asteroids[_i].force.y;
+                        this.asteroids[_i].body.linearVelocity.z = this.asteroids[_i].force.z;
+
+                        // console.log(this.asteroids[i].body.angularVelocity);
+                        // angular Velocity always inferior to 1 (or too much rotations)
+
+                        this.asteroids[_i].body.angularVelocity.x = (0, _utils.clamp)(this.asteroids[_i].body.angularVelocity.x, -1, 1);
+                        this.asteroids[_i].body.angularVelocity.y = (0, _utils.clamp)(this.asteroids[_i].body.angularVelocity.y, -1, 1);
+                        this.asteroids[_i].body.angularVelocity.z = (0, _utils.clamp)(this.asteroids[_i].body.angularVelocity.z, -1, 1);
+                        // if (i === 0) {
+                        //   console.log(this.asteroids[i].body.angularVelocity.x);
+                        // }
+
+
+                        this.asteroids[_i].mesh.position.copy(this.asteroids[_i].body.getPosition());
+                        this.asteroids[_i].mesh.quaternion.copy(this.asteroids[_i].body.getQuaternion());
                     }
                 }
-
-                if (this.asteroids[_i2].body !== undefined) {
-
-                    // APPLY IMPULSE
-                    this.asteroids[_i2].body.linearVelocity.x = this.asteroids[_i2].force.x;
-                    this.asteroids[_i2].body.linearVelocity.y = this.asteroids[_i2].force.y;
-                    this.asteroids[_i2].body.linearVelocity.z = this.asteroids[_i2].force.z;
-
-                    // console.log(this.asteroids[i].body.angularVelocity);
-                    // angular Velocity always inferior to 1 (or too much rotations)
-
-                    this.asteroids[_i2].body.angularVelocity.x = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.x, -1, 1);
-                    this.asteroids[_i2].body.angularVelocity.y = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.y, -1, 1);
-                    this.asteroids[_i2].body.angularVelocity.z = (0, _utils.clamp)(this.asteroids[_i2].body.angularVelocity.z, -1, 1);
-                    // if (i === 0) {
-                    //   console.log(this.asteroids[i].body.angularVelocity.x);
-                    // }
-
-
-                    this.asteroids[_i2].mesh.position.copy(this.asteroids[_i2].body.getPosition());
-                    this.asteroids[_i2].mesh.quaternion.copy(this.asteroids[_i2].body.getQuaternion());
-                }
             }
 
-            // // Glow continuously
-            // this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glow / 30) + 1) / 5;
+            // Glow continuously
+            this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glowInc / 30) + 1) / 5;
 
-            // // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
-            // // Glow arrows
-            // if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-            // 	this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
-            // 	this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glow / 30) + 1) / 5;
-            // 	// console.log(5 + (Math.sin(this.glow / 30) + 1) / 5);
-            // }
+            // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
+            // Glow arrows
+            if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
+                this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glowInc / 30) + 1) / 5;
+                this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glowInc / 30) + 1) / 5;
+                // console.log(5 + (Math.sin(this.glowInc / 30) + 1) / 5);
+            }
 
+            // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+            if (this.glow === true) {
+                // Glow brightness material Asteroids
+                this.brightness.uniforms['contrast'].value = (Math.sin(this.glowInc / 40) + 1.2) * 3;
+                this.brightness2.uniforms['contrast'].value = (Math.cos(this.glowInc / 40) + 1.2) * 3;
+            }
 
-            // // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
-            // // Glow brightness material
-            // this.brightness.uniforms['contrast'].value = (Math.sin(this.glow / 40) + 1.2) * 3;
-            // this.brightness2.uniforms['contrast'].value = (Math.cos(this.glow / 40) + 1.2) * 3;
-
-
-            // this.glow++;
+            this.glowInc++;
 
             // Zoom ??
 
@@ -5442,7 +5410,7 @@ var UniversView = function () {
     }, {
         key: 'destroy',
         value: function destroy() {
-            var _this9 = this;
+            var _this7 = this;
 
             this.scene.traverse(function (obj) {
 
@@ -5544,23 +5512,23 @@ var UniversView = function () {
                 }
             });
 
-            for (var _i3 = this.scene.children.length - 1; _i3 >= 0; _i3--) {
+            for (var _i2 = this.scene.children.length - 1; _i2 >= 0; _i2--) {
 
-                this.cssScene.remove(this.scene.children[_i3]);
+                this.cssScene.remove(this.scene.children[_i2]);
             }
 
             var cssContainers = document.querySelectorAll('.css-container');
-            for (var _i4 = 0; _i4 < cssContainers.length; _i4++) {
+            for (var _i3 = 0; _i3 < cssContainers.length; _i3++) {
 
-                this.cssObjects[_i4].element = null;
-                cssContainers[_i4].remove();
+                this.cssObjects[_i3].element = null;
+                cssContainers[_i3].remove();
             }
 
             this.cssObjects = [];
 
             // Wait destroy scene before stop js events
             setTimeout(function () {
-                _this9.events(false);
+                _this7.events(false);
             }, 500);
         }
     }]);
