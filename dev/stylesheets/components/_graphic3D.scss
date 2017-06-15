@@ -2,6 +2,10 @@
     // border: 1px solid grey;
     position: relative;
     // margin-top: 100px;
+    color: $color-white;
+    .icon {
+        fill: $color-white;
+    }
     .container3D {
         // width: 100%;
         // height: 100%;
@@ -9,7 +13,6 @@
         .css-container {
             // default settings
             font-size: 38px;
-            color: white;
             user-select: none;
         }
         .project__context {
@@ -18,18 +21,17 @@
             z-index: 10;
             text-align: left;
             opacity: 0;
-            color: white;
             user-select: none;
             font-size: 20px;
             h1 {
-            	font-size: 30px;
+                font-size: 30px;
             }
         }
         .project__image {
             max-width: 750px;
             // max-height: 300px;
             border: 1px solid rgba(128, 128, 128, 0.15);
-            opacity: 0.8;
+            opacity: 0.9;
             user-select: none;
             display: none;
             img {
@@ -136,7 +138,7 @@
                     transform: scale(1.05) translateX(-10px) !important;
                     ;
                 }
-                img {
+                .icon {
                     display: inline-block;
                     vertical-align: middle;
                     margin-right: 10px;
@@ -144,6 +146,12 @@
                     transform: rotate(180deg);
                 }
             }
+        }
+    }
+    &.alt {
+        color: $color-black;
+        .icon {
+            fill: $color-black;
         }
     }
 }

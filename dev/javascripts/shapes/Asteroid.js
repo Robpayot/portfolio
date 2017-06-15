@@ -1,10 +1,10 @@
 import AbstractShape from './AbstractShape';
-// import { SphereGeometry, MeshLambertMaterial } from 'three';
+import { Vector3 } from 'three';
 import { getRandom, toRadian } from '../helpers/utils';
 
 export default class Asteroid extends AbstractShape {
 
-	constructor(geometry, material, pos, rot, force) {
+	constructor(geometry, material, pos, rot, force, scale = 1, range, speed, speedRotate) {
 
 		super();
 
@@ -17,21 +17,30 @@ export default class Asteroid extends AbstractShape {
 
 		// physic body
 		this.physics = {
-				type: 'sphere', // type of shape : sphere, box, cylinder 
-				size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-				pos: [pos.x, pos.y, pos.z], // start position in degree
-				rot: [rot.x, rot.y, rot.z], // start rotation in degree
-				move: true, // dynamic or statique
-				density: 1,
-				friction: 0.2,
-				restitution: 0.2,
-				belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-				collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-			};
-			// Impulse force
-		this.force = force;
+			type: 'sphere', // type of shape : sphere, box, cylinder 
+			size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
+			pos: [pos.x, pos.y, pos.z], // start position in degree
+			rot: [rot.x, rot.y, rot.z], // start rotation in degree
+			move: true, // dynamic or statique
+			density: 1,
+			friction: 0.2,
+			restitution: 0.2,
+			belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+			collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+		}
 
+		// for normal asts
+		this.mesh.rotation.set(toRadian(rot.x), toRadian(rot.y), toRadian(rot.z));
+		this.mesh.scale.set(scale, scale, scale);
+
+		// Impulse force
+		this.force = force;
 		this.initForce = force;
+		this.speed = speed;
+		this.range = range;
+		this.endY = pos.y - range / 2;
+		this.initRotateY = rot.y;
+		this.speedRotate = speedRotate;
 
 	}
 
@@ -42,8 +51,8 @@ export default class Asteroid extends AbstractShape {
 		this.force.z = this.initForce.z = -this.initForce.z;
 
 		// random x / y coef to have diff direction
-		this.force.x += getRandom(-1,1);
-		this.force.y += getRandom(-1,1);
+		this.force.x += getRandom(-1, 1);
+		this.force.y += getRandom(-1, 1);
 
 
 		// Slow down force

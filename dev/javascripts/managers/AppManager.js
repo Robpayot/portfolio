@@ -6,7 +6,6 @@ import { Device } from '../helpers/Device';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
-
 import bean from 'bean';
 
 class AppManager {

@@ -1,6 +1,7 @@
 import EmitterManager from './EmitterManager';
 import PreloadManager from './PreloadManager';
 import UniversView from '../views/UniversView';
+import data from '../../datas/data.json';
 
 // console.log(ListView);
 
@@ -60,13 +61,16 @@ class RouterManager {
 
 		switch (goToPage) {
 			case '/project-0':
+
 				this.currentPage = new UniversView({
 					id: 0,
 					bkg: 0x0101010,
 					astd: 'spheres',
 					gravity: true,
 					pointsLight: true,
-					glow: true
+					glow: true,
+					alt: false,
+					data: data.projects[0]
 				});
 				window.location = '#project-0';
 				break;
@@ -77,7 +81,9 @@ class RouterManager {
 					astd: 'cubes',
 					gravity: false,
 					pointsLight: false,
-					glow: false
+					glow: false,
+					alt: true,
+					data: data.projects[1]
 				});
 				window.location = '#project-1';
 				break;

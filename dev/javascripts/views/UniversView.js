@@ -56,11 +56,20 @@ export default class UniversView {
 
         // properties
         this.id = obj.id;
+        this.data = obj.data;
         this.bkg = obj.bkg;
         this.astd = obj.astd;
         this.gravity = obj.gravity;
         this.pointsLight = obj.pointsLight;
         this.glow = obj.glow;
+        this.alt = obj.alt ? 'alt' : '';
+        const elGraphics3D = document.querySelector('.graphic3D');
+
+        if (obj.alt === true) {
+            elGraphics3D.classList.add('alt');
+        } else {
+            elGraphics3D.classList.remove('alt');
+        }
 
         this.sound = SoundManager;
 
@@ -80,7 +89,7 @@ export default class UniversView {
         this.isControls = true;
 
         this.cssObjects = [];
-        this.glowInc = 1;
+        this.incr = 1;
         this.nbAst = 10;
         this.finalFov = 45;
         this.cameraMove = true;
@@ -117,8 +126,8 @@ export default class UniversView {
             // Set envelop
             this.setEnvelop();
         }
-            // set Light
-            this.setLight();
+        // set Light
+        this.setLight();
 
 
         // Raycaster
@@ -511,15 +520,15 @@ export default class UniversView {
 
         } else {
             this.materialAst1 = new MeshLambertMaterial({
-                color: 0xfee4e4,
+                color: 0xffb732,
                 transparent: true,
-                opacity: 0.5
+                opacity: 0.9
             });
 
             this.materialAst2 = new MeshLambertMaterial({
                 color: 0xfee4c0,
                 transparent: true,
-                opacity: 0.5
+                opacity: 0.9
             });
         }
 
@@ -533,15 +542,15 @@ export default class UniversView {
             };
 
             const pos = {
-                x: getRandom(-100, 100),
-                y: getRandom(-100, 100),
-                z: getRandom(-100, 100),
+                x: getRandom(-80, 80),
+                y: getRandom(-80, 80),
+                z: getRandom(-80, 80),
             };
-            // const pos = {
-            //     x: 0,
-            //     y: 0,
-            //     z: 0,
-            // };
+
+            const scale = this.astd === 'spheres' ? 1 : getRandom(1, 4);
+            const speed = getRandom(500, 800); // more is slower
+            const range = getRandom(3, 8);
+            const speedRotate = getRandom(15000, 17000);
 
             // Intra perimeter radius
             const ipRadius = 50;
@@ -570,7 +579,7 @@ export default class UniversView {
                 // console.log(i);
                 finalMat = this.materialAst2;
             }
-            const asteroid = new Asteroid(geometry, finalMat, pos, rot, force);
+            const asteroid = new Asteroid(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
 
 
             if (this.gravity === true) {
@@ -648,7 +657,7 @@ export default class UniversView {
 
     setCssContainers() {
 
-
+    	const data = this.data;
 
         // // context back
         // const contextBack = new CssContainer(`<div class='details__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`, this.cssScene, this.cssObjects);
@@ -657,7 +666,12 @@ export default class UniversView {
         // contextBack.scale.multiplyScalar(1 / 14);
 
         // Title
-        const title = new CssContainer(`<div class='project__title'><span>BMW Paris Motorshow 2016</span><img class="project__arrow-r" src="images/icons/chevron.svg" alt="arrow"></div>`, this.cssScene, this.cssObjects);
+        const title = new CssContainer(`<div class="project__title"><span>${data.title}</span><svg class="icon project__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+    <g transform="translate(0,-952.36218)">
+        <path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		L404.9,1271.9L404.9,1271.9z" />
+    </g>
+</svg></div>`, this.cssScene, this.cssObjects);
         title.position.set(60, 0, 0);
         title.scale.multiplyScalar(1 / 14);
 
@@ -669,23 +683,19 @@ export default class UniversView {
         this.gallery.rotation.set(0, toRadian(90), 0);
         this.cssScene.add(this.gallery);
         this.currentSlide = 0;
-        this.nbSlides = 2;
+        this.nbSlides = data.imgs.length;
 
         // Formules coordonnée d'un cercle
         // x = x0 + r * cos(t)
         // y = y0 + r * sin(t)
 
-        // image 1
-        const image1 = new CssContainer(`<div class='project__image'><img src="images/bmw-1.jpg" alt="project image" /></div>`, this.gallery, this.cssObjects);
-        image1.position.set(0, radius * Math.sin(0), radius * Math.cos(0));
-        image1.rotation.set(0, 0, 0);
-        image1.scale.multiplyScalar(1 / 14);
-
-        // image 2
-        const image2 = new CssContainer(`<div class='project__image'><img src="images/bmw-2.jpg" alt="project image" /></div>`, this.gallery, this.cssObjects);
-        image2.position.set(0, radius * Math.sin(this.galleryAngle), radius * Math.cos(this.galleryAngle));
-        image2.rotation.set(-this.galleryAngle, 0, 0);
-        image2.scale.multiplyScalar(1 / 14);
+        for (let i = 0; i < this.nbSlides; i++) {
+	        // image 1
+	        const image = new CssContainer(`<div class="project__image"><img src="images/projects/${data.imgs[i]}" alt="project image" /></div>`, this.gallery, this.cssObjects);
+	        image.position.set(0, radius * Math.sin(this.galleryAngle * i), radius * Math.cos(this.galleryAngle * i));
+	        image.rotation.set(-this.galleryAngle * i, 0, 0);
+	        image.scale.multiplyScalar(1 / 14);
+        }
 
         this.galleryPivot = new Object3D();
         this.galleryPivot.add(this.gallery);
@@ -693,26 +703,41 @@ export default class UniversView {
         this.cssScene.add(this.galleryPivot);
 
         // gallery arrows
-        const galleryArrows = new CssContainer(`<div class='gallery__arrows'><img class='gallery__arrow gallery__arrow-t' src="images/icons/chevron.svg" alt="link"><img class='gallery__arrow gallery__arrow-b' src="images/icons/chevron.svg" alt="link"></div>`, this.cssScene, this.cssObjects);
+        const galleryArrows = new CssContainer(`<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-t" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+    <g transform="translate(0,-952.36218)">
+        <path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		L404.9,1271.9L404.9,1271.9z" />
+    </g>
+</svg><svg class="icon gallery__arrow gallery__arrow-b" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+    <g transform="translate(0,-952.36218)">
+        <path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		L404.9,1271.9L404.9,1271.9z" />
+    </g>
+</svg></div>`, this.cssScene, this.cssObjects);
         galleryArrows.position.set(radius, 0, 40);
         galleryArrows.rotation.set(0, toRadian(90), 0);
         galleryArrows.scale.multiplyScalar(1 / 14);
 
         // gallery back
-        const galleryBack = new CssContainer(`<div class='details__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`, this.cssScene, this.cssObjects);
+        const galleryBack = new CssContainer(`<div class="details__back"><svg class="icon" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+    <g transform="translate(0,-952.36218)">
+        <path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		L404.9,1271.9L404.9,1271.9z" />
+    </g>
+</svg> Back </div>`, this.cssScene, this.cssObjects);
         galleryBack.position.set(radius, 0, 50);
         galleryBack.rotation.set(0, toRadian(90), 0);
         galleryBack.scale.multiplyScalar(1 / 14);
 
         // Context
-        const context = new CssContainer(`<div class='project__context'>
-				<h1>84.Paris - 2016</h1>
+        const context = new CssContainer(`<div class="project__context">
+				<h1>${data.title} - ${data.date}</h1>
 				<br>
-				<p>360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.</p>
+				<p>${data.descr}</p>
 				<br>
-				<p>Technos : WebGL, Three.js</p>
+				<p>Technos : ${data.technos}</p>
 				<br>
-				<p>1 x SOTD FWA, 1 x SOTD AWWWARDS</p>
+				<p>${data.awards}</p>
 			</div>`, this.cssScene, this.cssObjects);
         context.position.set(radius, 0, -45);
         context.rotation.set(0, toRadian(90), 0);
@@ -1194,32 +1219,48 @@ export default class UniversView {
 
                 }
             }
+        } else {
+            // Asteroids bodies
+            for (let i = 0; i < this.asteroids.length; i++) {
+                // Move top and bottom --> Float effect
+                // Start Number + Math.sin(this.incr*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
+                this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speed) * (this.asteroids[i].range / 2) + (this.asteroids[i].range / 2)
+                    // rotate
+                    // console.log(Math.sin(this.incr * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
+                this.asteroids[i].mesh.rotation.y = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + (360 / 2));
+                this.asteroids[i].mesh.rotation.x = toRadian(this.asteroids[i].initRotateY + Math.cos(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + (360 / 2));
+                this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + (360 / 2));
+            }
         }
 
 
 
 
+
+
+
+
         // Glow continuously
-        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.glowInc / 30) + 1) / 5;
+        this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.incr / 30) + 1) / 5;
 
         // console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
         // Glow arrows
         if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-            this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.glowInc / 30) + 1) / 5;
-            this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.glowInc / 30) + 1) / 5;
-            // console.log(5 + (Math.sin(this.glowInc / 30) + 1) / 5);
+            this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.incr / 30) + 1) / 5;
+            this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.incr / 30) + 1) / 5;
+            // console.log(5 + (Math.sin(this.incr / 30) + 1) / 5);
         }
 
 
         // console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
         if (this.glow === true) {
             // Glow brightness material Asteroids
-            this.brightness.uniforms['contrast'].value = (Math.sin(this.glowInc / 40) + 1.2) * 3;
-            this.brightness2.uniforms['contrast'].value = (Math.cos(this.glowInc / 40) + 1.2) * 3;
+            this.brightness.uniforms['contrast'].value = (Math.sin(this.incr / 40) + 1.2) * 3;
+            this.brightness2.uniforms['contrast'].value = (Math.cos(this.incr / 40) + 1.2) * 3;
         }
 
 
-        this.glowInc++;
+        this.incr++;
 
         // Zoom ??
 
