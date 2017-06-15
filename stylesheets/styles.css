@@ -290,10 +290,12 @@ body {
   text-align: center; }
 
 .graphic3D {
-  position: relative; }
+  position: relative;
+  color: #FFFFFF; }
+  .graphic3D .icon {
+    fill: #FFFFFF; }
   .graphic3D .container3D .css-container {
     font-size: 38px;
-    color: white;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -304,7 +306,6 @@ body {
     z-index: 10;
     text-align: left;
     opacity: 0;
-    color: white;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -315,7 +316,7 @@ body {
   .graphic3D .container3D .project__image {
     max-width: 750px;
     border: 1px solid rgba(128, 128, 128, 0.15);
-    opacity: 0.8;
+    opacity: 0.9;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -424,7 +425,7 @@ body {
       -webkit-transform: scale(1.05) translateX(-10px) !important;
       -ms-transform: scale(1.05) translateX(-10px) !important;
       transform: scale(1.05) translateX(-10px) !important; }
-    .graphic3D .container3D .details__back img {
+    .graphic3D .container3D .details__back .icon {
       display: inline-block;
       vertical-align: middle;
       margin-right: 10px;
@@ -432,6 +433,10 @@ body {
       -webkit-transform: rotate(180deg);
       -ms-transform: rotate(180deg);
       transform: rotate(180deg); }
+  .graphic3D.alt {
+    color: #000000; }
+    .graphic3D.alt .icon {
+      fill: #000000; }
 
 .graphicBars {
   background-color: transparent;
