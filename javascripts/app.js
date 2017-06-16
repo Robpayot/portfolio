@@ -96,7 +96,7 @@ exports.default = CssContainer;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -114,111 +114,111 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GraphicBars = function () {
-    function GraphicBars() {
-        _classCallCheck(this, GraphicBars);
+	function GraphicBars() {
+		_classCallCheck(this, GraphicBars);
 
-        this.sound = _SoundManager2.default;
+		this.sound = _SoundManager2.default;
 
-        this.bind();
+		this.bind();
 
-        this.init();
-    }
+		this.init();
+	}
 
-    _createClass(GraphicBars, [{
-        key: 'bind',
-        value: function bind() {
+	_createClass(GraphicBars, [{
+		key: 'bind',
+		value: function bind() {
 
-            this.init = this.init.bind(this);
-            this.raf = this.raf.bind(this);
-            this.events = this.events.bind(this);
-            this.resizeHandler = this.resizeHandler.bind(this);
-        }
-    }, {
-        key: 'init',
-        value: function init() {
+			this.init = this.init.bind(this);
+			this.raf = this.raf.bind(this);
+			this.events = this.events.bind(this);
+			this.resizeHandler = this.resizeHandler.bind(this);
+		}
+	}, {
+		key: 'init',
+		value: function init() {
 
-            this.el = document.querySelector('.xp');
+			this.el = document.querySelector('.xp');
 
-            this.ui = {
-                frequencies: this.el.querySelector('.frequencies'),
-                hight: this.el.querySelector('.frequencies .hight .circle'),
-                medium: this.el.querySelector('.frequencies .medium .circle'),
-                low: this.el.querySelector('.frequencies .low .circle')
-            };
+			this.ui = {
+				frequencies: this.el.querySelector('.frequencies'),
+				hight: this.el.querySelector('.frequencies .hight .circle'),
+				medium: this.el.querySelector('.frequencies .medium .circle'),
+				low: this.el.querySelector('.frequencies .low .circle')
+			};
 
-            this.canvas = document.querySelector('.graphicBars__canvas');
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = 300;
-            this.canvasCtx = this.canvas.getContext('2d');
-            this.canvasCtx.clearRect(0, 0, 500, 500);
+			this.canvas = document.querySelector('.graphicBars__canvas');
+			this.canvas.width = window.innerWidth;
+			this.canvas.height = 300;
+			this.canvasCtx = this.canvas.getContext('2d');
+			this.canvasCtx.clearRect(0, 0, 500, 500);
 
-            this.events(true);
-        }
-    }, {
-        key: 'events',
-        value: function events(method) {
+			this.events(true);
+		}
+	}, {
+		key: 'events',
+		value: function events(method) {
 
-            var listen = method === false ? 'removeEventListener' : 'addEventListener';
-            listen = method === false ? 'off' : 'on';
+			var listen = method === false ? 'removeEventListener' : 'addEventListener';
+			listen = method === false ? 'off' : 'on';
 
-            _EmitterManager2.default[listen]('resize', this.resizeHandler);
-            _EmitterManager2.default[listen]('raf', this.raf);
-        }
-    }, {
-        key: 'resizeHandler',
-        value: function resizeHandler(w, h) {
+			_EmitterManager2.default[listen]('resize', this.resizeHandler);
+			_EmitterManager2.default[listen]('raf', this.raf);
+		}
+	}, {
+		key: 'resizeHandler',
+		value: function resizeHandler(w, h) {
 
-            this.canvas.width = w;
-        }
-    }, {
-        key: 'raf',
-        value: function raf() {
+			this.canvas.width = w;
+		}
+	}, {
+		key: 'raf',
+		value: function raf() {
 
-            // Create background
-            this.canvasCtx.fillStyle = 'rgb(255, 255, 255)';
-            this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+			// Create background
+			this.canvasCtx.fillStyle = 'rgb(255, 255, 255)';
+			this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            var barWidth = this.canvas.width / this.sound.bufferLength;
-            var barHeight = void 0;
-            var x = 0;
+			var barWidth = this.canvas.width / this.sound.bufferLength;
+			var barHeight = void 0;
+			var x = 0;
 
-            // Bars anim
+			// Bars anim
 
-            for (var i = 0; i < this.sound.bufferLength; i++) {
+			for (var i = 0; i < this.sound.bufferLength; i++) {
 
-                barHeight = this.sound.dataArray[i] * (3 / 4);
+				barHeight = this.sound.dataArray[i] * (3 / 4);
 
-                var hue = i / this.sound.bufferLength * 360;
-                this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-                this.canvasCtx.fillRect(x, this.canvas.height - barHeight, barWidth, barHeight);
+				var hue = i / this.sound.bufferLength * 360;
+				this.canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+				this.canvasCtx.fillRect(x, this.canvas.height - barHeight, barWidth, barHeight);
 
-                x += barWidth + 1;
-            }
+				x += barWidth + 1;
+			}
 
-            // Update circles size
+			// Update circles size
 
-            ////////////
-            // hight
-            ///////////
-            var scale = this.sound.hightAvg * 0.8 + 20;
+			////////////
+			// hight
+			///////////
+			var scale = this.sound.hightAvg * 0.8 + 20;
 
-            TweenMax.to(this.ui.hight, 0, { width: scale, height: scale });
+			TweenMax.to(this.ui.hight, 0, { width: scale, height: scale });
 
-            ////////////
-            // medium
-            ///////////
-            scale = this.sound.mediumAvg * 0.8 + 20;
-            TweenMax.to(this.ui.medium, 0, { width: scale, height: scale });
+			////////////
+			// medium
+			///////////
+			scale = this.sound.mediumAvg * 0.8 + 20;
+			TweenMax.to(this.ui.medium, 0, { width: scale, height: scale });
 
-            ////////////
-            // low
-            ///////////
-            scale = this.sound.lowAvg * 0.8 + 20;
-            TweenMax.to(this.ui.low, 0, { width: scale, height: scale });
-        }
-    }]);
+			////////////
+			// low
+			///////////
+			scale = this.sound.lowAvg * 0.8 + 20;
+			TweenMax.to(this.ui.low, 0, { width: scale, height: scale });
+		}
+	}]);
 
-    return GraphicBars;
+	return GraphicBars;
 }();
 
 exports.default = GraphicBars;
@@ -227,12 +227,12 @@ exports.default = GraphicBars;
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 var Device = exports.Device = {
-    size: 'mobile',
-    touch: false,
-    browser: null
+	size: 'mobile',
+	touch: false,
+	browser: null
 };
 
 },{}],6:[function(require,module,exports){
@@ -489,7 +489,7 @@ function elementInViewport(el) {
 
 function browser() {
 	var ua = navigator.userAgent,
-	    tem,
+	    tem = void 0,
 	    M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
 	if (/trident/i.test(M[1])) {
 		tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
@@ -497,7 +497,7 @@ function browser() {
 	}
 	if (M[1] === 'Chrome') {
 		tem = ua.match(/\b(OPR|Edge)\/(\d+)/);
-		if (tem != null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+		if (tem !== null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
 	}
 	M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
 	if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
@@ -539,7 +539,7 @@ function round(value, dec) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // import PreloadManager from './PreloadManager';
@@ -575,97 +575,97 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var AppManager = function () {
-    function AppManager() {
-        _classCallCheck(this, AppManager);
+	function AppManager() {
+		_classCallCheck(this, AppManager);
 
-        this.start = this.start.bind(this);
-        this.resizeHandler = this.resizeHandler.bind(this);
-        this.raf = this.raf.bind(this);
-    }
+		this.start = this.start.bind(this);
+		this.resizeHandler = this.resizeHandler.bind(this);
+		this.raf = this.raf.bind(this);
+	}
 
-    _createClass(AppManager, [{
-        key: 'start',
-        value: function start() {
+	_createClass(AppManager, [{
+		key: 'start',
+		value: function start() {
 
-            // }
+			// }
 
-            this.events(true);
+			this.events(true);
 
-            // SoundManager
+			// SoundManager
 
-            this.graphicBars = new _GraphicBars2.default();
+			this.graphicBars = new _GraphicBars2.default();
 
-            _SceneManager2.default.start();
-            _RouterManager2.default.start();
-        }
-    }, {
-        key: 'events',
-        value: function events(method) {
+			_SceneManager2.default.start();
+			_RouterManager2.default.start();
+		}
+	}, {
+		key: 'events',
+		value: function events(method) {
 
-            var listen = method === false ? 'removeEventListener' : 'addEventListener';
+			var listen = method === false ? 'removeEventListener' : 'addEventListener';
 
-            // raf
-            TweenMax.ticker[listen]('tick', this.raf);
+			// raf
+			TweenMax.ticker[listen]('tick', this.raf);
 
-            listen = method === false ? 'off' : 'on';
+			listen = method === false ? 'off' : 'on';
 
-            this.resizeHandler();
-            _bean2.default[listen](window, 'resize', this.resizeHandler);
-        }
-    }, {
-        key: 'raf',
-        value: function raf() {
+			this.resizeHandler();
+			_bean2.default[listen](window, 'resize', this.resizeHandler);
+		}
+	}, {
+		key: 'raf',
+		value: function raf() {
 
-            _EmitterManager2.default.emit('raf');
-        }
+			_EmitterManager2.default.emit('raf');
+		}
 
-        // completeLoading() {
-
-
-        //     // Preload Font for pixi.js
-        //     // WebFont.load({
-        //     //     custom: {
-        //     //         families: ['Avenir-black']
-        //     //     }
-        //     // });
-
-        // }
-
-    }, {
-        key: 'resizeHandler',
-        value: function resizeHandler() {
-
-            var touch = document.querySelector('html').classList.contains('touchevents');
-
-            if (touch) {
-                _Device.Device.touch = true;
-            } else {
-                _Device.Device.touch = false;
-            }
-
-            // // Device.browser = Detect.browser();
-
-            // // if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {
-
-            // //     document.body.classList.add('ie');
-            // // }
+		// completeLoading() {
 
 
-            _Device.Device.size = 'mobile';
+		//     // Preload Font for pixi.js
+		//     // WebFont.load({
+		//     //     custom: {
+		//     //         families: ['Avenir-black']
+		//     //     }
+		//     // });
 
-            if (window.innerWidth >= 768) {
-                _Device.Device.size = 'tablet';
-            }
+		// }
 
-            if (window.innerWidth > 1024) {
-                _Device.Device.size = 'desktop';
-            }
+	}, {
+		key: 'resizeHandler',
+		value: function resizeHandler() {
 
-            _EmitterManager2.default.emit('resize', window.innerWidth, window.innerHeight);
-        }
-    }]);
+			var touch = document.querySelector('html').classList.contains('touchevents');
 
-    return AppManager;
+			if (touch) {
+				_Device.Device.touch = true;
+			} else {
+				_Device.Device.touch = false;
+			}
+
+			// // Device.browser = Detect.browser();
+
+			// // if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {
+
+			// //     document.body.classList.add('ie');
+			// // }
+
+
+			_Device.Device.size = 'mobile';
+
+			if (window.innerWidth >= 768) {
+				_Device.Device.size = 'tablet';
+			}
+
+			if (window.innerWidth > 1024) {
+				_Device.Device.size = 'desktop';
+			}
+
+			_EmitterManager2.default.emit('resize', window.innerWidth, window.innerHeight);
+		}
+	}]);
+
+	return AppManager;
 }();
 
 exports.default = new AppManager();
@@ -868,7 +868,7 @@ var SceneManager = function () {
 
 			this.el = document.querySelector('.graphic3D');
 
-			// Set CssRenderer and WebGLRenderer 
+			// Set CssRenderer and WebGLRenderer
 			this.cssRenderer = new _CSS3DRendererIE2.default();
 			// Set the canvas size.
 			this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -897,7 +897,7 @@ var SceneManager = function () {
 		key: 'render',
 		value: function render(opts) {
 
-			// Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)        
+			// Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)
 			if (opts.composer !== null && opts.effectController.enabled === true) {
 				// Render scene composer
 				opts.composer.render(opts.scene, opts.camera);
@@ -933,7 +933,7 @@ exports.default = new SceneManager();
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -951,188 +951,186 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var SoundManager = function () {
-    function SoundManager() {
-        _classCallCheck(this, SoundManager);
+	function SoundManager() {
+		_classCallCheck(this, SoundManager);
 
-        this.bind();
+		this.bind();
 
-        this.init();
-    }
+		this.init();
+	}
 
-    _createClass(SoundManager, [{
-        key: 'bind',
-        value: function bind() {
+	_createClass(SoundManager, [{
+		key: 'bind',
+		value: function bind() {
 
-            this.events = this.events.bind(this);
-            this.changeFtt = this.changeFtt.bind(this);
-            this.init = this.init.bind(this);
-            this.raf = this.raf.bind(this);
-        }
-    }, {
-        key: 'init',
-        value: function init() {
-            console.log('init SoundManager');
+			this.events = this.events.bind(this);
+			this.changeFtt = this.changeFtt.bind(this);
+			this.init = this.init.bind(this);
+			this.raf = this.raf.bind(this);
+		}
+	}, {
+		key: 'init',
+		value: function init() {
+			console.log('init SoundManager');
 
-            this.el = document.querySelector('.xp');
+			this.el = document.querySelector('.xp');
 
-            this.ui = {
-                myAudio: this.el.querySelector('audio')
-            };
+			this.ui = {
+				myAudio: this.el.querySelector('audio')
+			};
 
-            // New WebAudio API
-            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+			// New WebAudio API
+			this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-            //  Create Analyser node
-            this.analyser = this.audioCtx.createAnalyser();
+			//  Create Analyser node
+			this.analyser = this.audioCtx.createAnalyser();
 
-            // Connect nodes together
-            var source = this.audioCtx.createMediaElementSource(this.ui.myAudio);
-            source.connect(this.analyser);
-            this.analyser.connect(this.audioCtx.destination);
+			// Connect nodes together
+			var source = this.audioCtx.createMediaElementSource(this.ui.myAudio);
+			source.connect(this.analyser);
+			this.analyser.connect(this.audioCtx.destination);
 
-            // Set Fourier value
-            this.analyser.fftSize = 2048;
-            // Get frequency length ( fftSize / 2)
-            this.bufferLength = this.analyser.frequencyBinCount;
-            // Prepare array of frequencies
-            this.dataArray = new Uint8Array(this.bufferLength);
+			// Set Fourier value
+			this.analyser.fftSize = 2048;
+			// Get frequency length ( fftSize / 2)
+			this.bufferLength = this.analyser.frequencyBinCount;
+			// Prepare array of frequencies
+			this.dataArray = new Uint8Array(this.bufferLength);
 
-            this.events(true);
+			this.events(true);
 
-            // GUI
+			// GUI
 
-            this.params = {
-                Fourier_value: this.analyser.fftSize
-            };
+			this.params = {
+				Fourier_value: this.analyser.fftSize
+			};
 
-            this.gui = new _datGui2.default.GUI();
-            this.gui.add(this.params, 'Fourier_value', [256, 512, 1024, 2048]).onChange(this.changeFtt);
-        }
-    }, {
-        key: 'events',
-        value: function events(method) {
+			this.gui = new _datGui2.default.GUI();
+			this.gui.add(this.params, 'Fourier_value', [256, 512, 1024, 2048]).onChange(this.changeFtt);
+		}
+	}, {
+		key: 'events',
+		value: function events(method) {
 
-            var listen = method === false ? 'removeEventListener' : 'addEventListener';
-            listen = method === false ? 'off' : 'on';
+			var listen = method === false ? 'removeEventListener' : 'addEventListener';
+			listen = method === false ? 'off' : 'on';
 
-            _EmitterManager2.default[listen]('raf', this.raf);
-        }
-    }, {
-        key: 'changeFtt',
-        value: function changeFtt(e) {
-            // Reset frequencies 
-            this.analyser.fftSize = this.params.Fourier_value;
-            this.bufferLength = this.analyser.frequencyBinCount;
-            this.dataArray = new Uint8Array(this.bufferLength);
-        }
-    }, {
-        key: 'raf',
-        value: function raf() {
+			_EmitterManager2.default[listen]('raf', this.raf);
+		}
+	}, {
+		key: 'changeFtt',
+		value: function changeFtt(e) {
+			// Reset frequencies
+			this.analyser.fftSize = this.params.Fourier_value;
+			this.bufferLength = this.analyser.frequencyBinCount;
+			this.dataArray = new Uint8Array(this.bufferLength);
+		}
+	}, {
+		key: 'raf',
+		value: function raf() {
 
-            // .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
-            // .getByteTimeDomainData() --> For oscilloscope visualisation 
-            this.analyser.getByteFrequencyData(this.dataArray);
+			// .getByteFrequencyData() --> For bar graph visualisation (abscisse = Fréquence / ordonnée = intensité)
+			// .getByteTimeDomainData() --> For oscilloscope visualisation
+			this.analyser.getByteFrequencyData(this.dataArray);
 
-            // Divise frequencies in 3 parts
+			// Divise frequencies in 3 parts
 
-            ////////////
-            // hight
-            ///////////
+			////////////
+			// hight
+			///////////
 
-            var hightVals = 0;
-            var hightLimit = Math.round(this.bufferLength / 5);
+			var hightVals = 0;
+			var hightLimit = Math.round(this.bufferLength / 5);
 
-            for (var i = 0; i < hightLimit; i++) {
+			for (var i = 0; i < hightLimit; i++) {
 
-                hightVals += this.dataArray[i];
-            }
+				hightVals += this.dataArray[i];
+			}
 
-            this.hightAvg = hightVals / hightLimit;
+			this.hightAvg = hightVals / hightLimit;
 
-            ////////////
-            // medium
-            ///////////
+			////////////
+			// medium
+			///////////
 
-            var mediumVals = 0;
-            var mediumLimit = Math.round(this.bufferLength / 5 * 2);
+			var mediumVals = 0;
+			var mediumLimit = Math.round(this.bufferLength / 5 * 2);
 
-            for (var _i = hightLimit; _i < mediumLimit; _i++) {
+			for (var _i = hightLimit; _i < mediumLimit; _i++) {
 
-                mediumVals += this.dataArray[_i];
-            }
+				mediumVals += this.dataArray[_i];
+			}
 
-            this.mediumAvg = mediumVals / mediumLimit;
+			this.mediumAvg = mediumVals / mediumLimit;
 
-            ////////////
-            // low
-            ///////////
+			////////////
+			// low
+			///////////
 
-            var lowVals = 0;
-            var lowLimit = Math.round(this.bufferLength / 5 * 3);
+			var lowVals = 0;
+			var lowLimit = Math.round(this.bufferLength / 5 * 3);
 
-            for (var _i2 = mediumLimit; _i2 < lowLimit; _i2++) {
+			for (var _i2 = mediumLimit; _i2 < lowLimit; _i2++) {
 
-                lowVals += this.dataArray[_i2];
-            }
+				lowVals += this.dataArray[_i2];
+			}
 
-            this.lowAvg = lowVals / lowLimit;
-        }
-    }]);
+			this.lowAvg = lowVals / lowLimit;
+		}
+	}]);
 
-    return SoundManager;
+	return SoundManager;
 }();
 
 exports.default = new SoundManager();
 
 },{"./EmitterManager":9,"dat-gui":32}],14:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var BrightnessShader = function BrightnessShader() {
-    _classCallCheck(this, BrightnessShader);
+	_classCallCheck(this, BrightnessShader);
 
-    this.uniforms = {
-        brightness: { type: "f", value: 0 },
-        contrast: { type: "f", value: 1 },
-        tInput: { type: "sampler2D", value: null }
-    };
+	this.uniforms = {
+		brightness: { type: 'f', value: 0 },
+		contrast: { type: 'f', value: 1 },
+		tInput: { type: 'sampler2D', value: null }
+	};
 
-    this.vertexShader = ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n");
+	this.vertexShader = ['varying vec2 vUv;', 'void main() {', 'vUv = uv;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n');
 
-    this.fragmentShader = ["uniform float brightness;", "uniform float contrast;", "uniform sampler2D tInput;", "varying vec2 vUv;", "void main() {", "vec3 color = texture2D(tInput, vUv).rgb;", "vec3 colorContrasted = (color) * contrast;", "vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);", "gl_FragColor.rgb = bright;", "gl_FragColor.a = 1.;", "}"].join("\n");
+	this.fragmentShader = ['uniform float brightness;', 'uniform float contrast;', 'uniform sampler2D tInput;', 'varying vec2 vUv;', 'void main() {', 'vec3 color = texture2D(tInput, vUv).rgb;', 'vec3 colorContrasted = (color) * contrast;', 'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);', 'gl_FragColor.rgb = bright;', 'gl_FragColor.a = 1.;', '}'].join('\n');
 };
-
-;
 
 exports.BrightnessShader = BrightnessShader;
 
 },{}],15:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.FXAAShader = undefined;
 
-var _three = require("three");
+var _three = require('three');
 
 var FXAAShader = {
 
 	uniforms: {
 
-		"tDiffuse": { value: null },
-		"resolution": { value: new _three.Vector2(1 / 1024, 1 / 512) }
+		'tDiffuse': { value: null },
+		'resolution': { value: new _three.Vector2(1 / 1024, 1 / 512) }
 
 	},
 
-	vertexShader: ["void main() {", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+	vertexShader: ['void main() {', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n'),
 
-	fragmentShader: ["uniform sampler2D tDiffuse;", "uniform vec2 resolution;", "#define FXAA_REDUCE_MIN   (1.0/128.0)", "#define FXAA_REDUCE_MUL   (1.0/8.0)", "#define FXAA_SPAN_MAX     8.0", "void main() {", "vec3 rgbNW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, -1.0 ) ) * resolution ).xyz;", "vec3 rgbNE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, -1.0 ) ) * resolution ).xyz;", "vec3 rgbSW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, 1.0 ) ) * resolution ).xyz;", "vec3 rgbSE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, 1.0 ) ) * resolution ).xyz;", "vec4 rgbaM  = texture2D( tDiffuse,  gl_FragCoord.xy  * resolution );", "vec3 rgbM  = rgbaM.xyz;", "vec3 luma = vec3( 0.299, 0.587, 0.114 );", "float lumaNW = dot( rgbNW, luma );", "float lumaNE = dot( rgbNE, luma );", "float lumaSW = dot( rgbSW, luma );", "float lumaSE = dot( rgbSE, luma );", "float lumaM  = dot( rgbM,  luma );", "float lumaMin = min( lumaM, min( min( lumaNW, lumaNE ), min( lumaSW, lumaSE ) ) );", "float lumaMax = max( lumaM, max( max( lumaNW, lumaNE) , max( lumaSW, lumaSE ) ) );", "vec2 dir;", "dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));", "dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));", "float dirReduce = max( ( lumaNW + lumaNE + lumaSW + lumaSE ) * ( 0.25 * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );", "float rcpDirMin = 1.0 / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );", "dir = min( vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),", "max( vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),", "dir * rcpDirMin)) * resolution;", "vec4 rgbA = (1.0/2.0) * (", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (1.0/3.0 - 0.5)) +", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (2.0/3.0 - 0.5)));", "vec4 rgbB = rgbA * (1.0/2.0) + (1.0/4.0) * (", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (0.0/3.0 - 0.5)) +", "texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (3.0/3.0 - 0.5)));", "float lumaB = dot(rgbB, vec4(luma, 0.0));", "if ( ( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {", "gl_FragColor = rgbA;", "} else {", "gl_FragColor = rgbB;", "}", "}"].join("\n")
+	fragmentShader: ['uniform sampler2D tDiffuse;', 'uniform vec2 resolution;', '#define FXAA_REDUCE_MIN   (1.0/128.0)', '#define FXAA_REDUCE_MUL   (1.0/8.0)', '#define FXAA_SPAN_MAX     8.0', 'void main() {', 'vec3 rgbNW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, -1.0 ) ) * resolution ).xyz;', 'vec3 rgbNE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, -1.0 ) ) * resolution ).xyz;', 'vec3 rgbSW = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( -1.0, 1.0 ) ) * resolution ).xyz;', 'vec3 rgbSE = texture2D( tDiffuse, ( gl_FragCoord.xy + vec2( 1.0, 1.0 ) ) * resolution ).xyz;', 'vec4 rgbaM  = texture2D( tDiffuse,  gl_FragCoord.xy  * resolution );', 'vec3 rgbM  = rgbaM.xyz;', 'vec3 luma = vec3( 0.299, 0.587, 0.114 );', 'float lumaNW = dot( rgbNW, luma );', 'float lumaNE = dot( rgbNE, luma );', 'float lumaSW = dot( rgbSW, luma );', 'float lumaSE = dot( rgbSE, luma );', 'float lumaM  = dot( rgbM,  luma );', 'float lumaMin = min( lumaM, min( min( lumaNW, lumaNE ), min( lumaSW, lumaSE ) ) );', 'float lumaMax = max( lumaM, max( max( lumaNW, lumaNE) , max( lumaSW, lumaSE ) ) );', 'vec2 dir;', 'dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));', 'dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));', 'float dirReduce = max( ( lumaNW + lumaNE + lumaSW + lumaSE ) * ( 0.25 * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );', 'float rcpDirMin = 1.0 / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );', 'dir = min( vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),', 'max( vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),', 'dir * rcpDirMin)) * resolution;', 'vec4 rgbA = (1.0/2.0) * (', 'texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (1.0/3.0 - 0.5)) +', 'texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (2.0/3.0 - 0.5)));', 'vec4 rgbB = rgbA * (1.0/2.0) + (1.0/4.0) * (', 'texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (0.0/3.0 - 0.5)) +', 'texture2D(tDiffuse,  gl_FragCoord.xy  * resolution + dir * (3.0/3.0 - 0.5)));', 'float lumaB = dot(rgbB, vec4(luma, 0.0));', 'if ( ( lumaB < lumaMin ) || ( lumaB > lumaMax ) ) {', 'gl_FragColor = rgbA;', '} else {', 'gl_FragColor = rgbB;', '}', '}'].join('\n')
 
 }; /**
     * @author alteredq / http://alteredqualia.com/
@@ -1147,7 +1145,7 @@ var FXAAShader = {
 exports.FXAAShader = FXAAShader;
 
 },{"three":43}],16:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -1159,30 +1157,30 @@ Object.defineProperty(exports, "__esModule", {
  *
  * - 9 samples per pass
  * - standard deviation 2.7
- * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
- * - "r" parameter control where "focused" horizontal line lies
+ * - 'h' and 'v' parameters should be set to '1 / width' and '1 / height'
+ * - 'r' parameter control where 'focused' horizontal line lies
  */
 
 var HorizontalTiltShiftShader = {
 
 	uniforms: {
 
-		"tDiffuse": { value: null },
-		"h": { value: 1.0 / 512.0 },
-		"r": { value: 0.35 }
+		'tDiffuse': { value: null },
+		'h': { value: 1.0 / 512.0 },
+		'r': { value: 0.35 }
 
 	},
 
-	vertexShader: ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+	vertexShader: ['varying vec2 vUv;', 'void main() {', 'vUv = uv;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n'),
 
-	fragmentShader: ["uniform sampler2D tDiffuse;", "uniform float h;", "uniform float r;", "varying vec2 vUv;", "void main() {", "vec4 sum = vec4( 0.0 );", "float hh = h * abs( r - vUv.y );", "sum += texture2D( tDiffuse, vec2( vUv.x - 4.0 * hh, vUv.y ) ) * 0.051;", "sum += texture2D( tDiffuse, vec2( vUv.x - 3.0 * hh, vUv.y ) ) * 0.0918;", "sum += texture2D( tDiffuse, vec2( vUv.x - 2.0 * hh, vUv.y ) ) * 0.12245;", "sum += texture2D( tDiffuse, vec2( vUv.x - 1.0 * hh, vUv.y ) ) * 0.1531;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;", "sum += texture2D( tDiffuse, vec2( vUv.x + 1.0 * hh, vUv.y ) ) * 0.1531;", "sum += texture2D( tDiffuse, vec2( vUv.x + 2.0 * hh, vUv.y ) ) * 0.12245;", "sum += texture2D( tDiffuse, vec2( vUv.x + 3.0 * hh, vUv.y ) ) * 0.0918;", "sum += texture2D( tDiffuse, vec2( vUv.x + 4.0 * hh, vUv.y ) ) * 0.051;", "gl_FragColor = sum;", "}"].join("\n")
+	fragmentShader: ['uniform sampler2D tDiffuse;', 'uniform float h;', 'uniform float r;', 'varying vec2 vUv;', 'void main() {', 'vec4 sum = vec4( 0.0 );', 'float hh = h * abs( r - vUv.y );', 'sum += texture2D( tDiffuse, vec2( vUv.x - 4.0 * hh, vUv.y ) ) * 0.051;', 'sum += texture2D( tDiffuse, vec2( vUv.x - 3.0 * hh, vUv.y ) ) * 0.0918;', 'sum += texture2D( tDiffuse, vec2( vUv.x - 2.0 * hh, vUv.y ) ) * 0.12245;', 'sum += texture2D( tDiffuse, vec2( vUv.x - 1.0 * hh, vUv.y ) ) * 0.1531;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;', 'sum += texture2D( tDiffuse, vec2( vUv.x + 1.0 * hh, vUv.y ) ) * 0.1531;', 'sum += texture2D( tDiffuse, vec2( vUv.x + 2.0 * hh, vUv.y ) ) * 0.12245;', 'sum += texture2D( tDiffuse, vec2( vUv.x + 3.0 * hh, vUv.y ) ) * 0.0918;', 'sum += texture2D( tDiffuse, vec2( vUv.x + 4.0 * hh, vUv.y ) ) * 0.051;', 'gl_FragColor = sum;', '}'].join('\n')
 
 };
 
 exports.HorizontalTiltShiftShader = HorizontalTiltShiftShader;
 
 },{}],17:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -1194,23 +1192,23 @@ Object.defineProperty(exports, "__esModule", {
  *
  * - 9 samples per pass
  * - standard deviation 2.7
- * - "h" and "v" parameters should be set to "1 / width" and "1 / height"
- * - "r" parameter control where "focused" horizontal line lies
+ * - 'h' and 'v' parameters should be set to '1 / width' and '1 / height'
+ * - 'r' parameter control where 'focused' horizontal line lies
  */
 
 var VerticalTiltShiftShader = {
 
 	uniforms: {
 
-		"tDiffuse": { value: null },
-		"v": { value: 1.0 / 512.0 },
-		"r": { value: 0.35 }
+		'tDiffuse': { value: null },
+		'v': { value: 1.0 / 512.0 },
+		'r': { value: 0.35 }
 
 	},
 
-	vertexShader: ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+	vertexShader: ['varying vec2 vUv;', 'void main() {', 'vUv = uv;', 'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n'),
 
-	fragmentShader: ["uniform sampler2D tDiffuse;", "uniform float v;", "uniform float r;", "varying vec2 vUv;", "void main() {", "vec4 sum = vec4( 0.0 );", "float vv = v * abs( r - vUv.y );", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 4.0 * vv ) ) * 0.051;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 3.0 * vv ) ) * 0.0918;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 2.0 * vv ) ) * 0.12245;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 1.0 * vv ) ) * 0.1531;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 1.0 * vv ) ) * 0.1531;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 2.0 * vv ) ) * 0.12245;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 3.0 * vv ) ) * 0.0918;", "sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 4.0 * vv ) ) * 0.051;", "gl_FragColor = sum;", "}"].join("\n")
+	fragmentShader: ['uniform sampler2D tDiffuse;', 'uniform float v;', 'uniform float r;', 'varying vec2 vUv;', 'void main() {', 'vec4 sum = vec4( 0.0 );', 'float vv = v * abs( r - vUv.y );', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 4.0 * vv ) ) * 0.051;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 3.0 * vv ) ) * 0.0918;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 2.0 * vv ) ) * 0.12245;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y - 1.0 * vv ) ) * 0.1531;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y ) ) * 0.1633;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 1.0 * vv ) ) * 0.1531;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 2.0 * vv ) ) * 0.12245;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 3.0 * vv ) ) * 0.0918;', 'sum += texture2D( tDiffuse, vec2( vUv.x, vUv.y + 4.0 * vv ) ) * 0.051;', 'gl_FragColor = sum;', '}'].join('\n')
 
 };
 
@@ -1302,7 +1300,7 @@ var Asteroid = function (_AbstractShape) {
 
 		// physic body
 		_this.physics = {
-			type: 'sphere', // type of shape : sphere, box, cylinder 
+			type: 'sphere', // type of shape : sphere, box, cylinder
 			size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
 			pos: [pos.x, pos.y, pos.z], // start position in degree
 			rot: [rot.x, rot.y, rot.z], // start rotation in degree
@@ -4203,8 +4201,6 @@ var _threeEffectcomposerEs = require('three-effectcomposer-es6');
 
 var _threeEffectcomposerEs2 = _interopRequireDefault(_threeEffectcomposerEs);
 
-var _CSS3DRenderer = require('../vendors/CSS3DRenderer');
-
 var _OrbitControls = require('../vendors/OrbitControls');
 
 var _OrbitControls2 = _interopRequireDefault(_OrbitControls);
@@ -4262,7 +4258,6 @@ var UniversView = function () {
 		this.gravity = obj.gravity;
 		this.pointsLight = obj.pointsLight;
 		this.glow = obj.glow;
-		this.alt = obj.alt ? 'alt' : '';
 		var elGraphics3D = document.querySelector('.graphic3D');
 
 		if (obj.alt === true) {
@@ -4461,7 +4456,7 @@ var UniversView = function () {
 		key: 'events',
 		value: function events(method) {
 
-			var listen = method === false ? 'removeEventListener' : 'addEventListener';
+			var listen = method === true ? 'addEventListener' : 'removeEventListener';
 
 			if (_Device.Device.touch === false) {
 				// move camera
@@ -4473,16 +4468,20 @@ var UniversView = function () {
 				document.body[listen]('touchstart', this.onClick);
 			}
 
-			var listenO = method === false ? 'off' : 'on';
+			var listenO = method === true ? 'on' : 'off';
 
 			_EmitterManager2.default[listenO]('resize', this.resizeHandler);
 			_EmitterManager2.default[listenO]('raf', this.raf);
 
-			_bean2.default[listenO](document.body, 'click', '.project__title', this.showDetails);
-			_bean2.default[listenO](document.body, 'click', '.gallery__arrow-t', this.slideUp);
-			_bean2.default[listenO](document.body, 'click', '.gallery__arrow-b', this.slideDown);
-			_bean2.default[listenO](document.body, 'click', '.details__back', this.backFromDetails);
-			_bean2.default.one(document.body, 'click', '.project__next', this.transitionOut);
+			if (method === true) {
+				_bean2.default.on(document.body, 'click.univers', '.project__title', this.showDetails);
+				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-t', this.slideUp);
+				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-b', this.slideDown);
+				_bean2.default.on(document.body, 'click.univers', '.details__back', this.backFromDetails);
+				_bean2.default.on(document.body, 'click.univers', '.project__next', this.transitionOut);
+			} else {
+				_bean2.default.off(document.body, 'click.univers');
+			}
 		}
 	}, {
 		key: 'setCamera',
@@ -4514,7 +4513,7 @@ var UniversView = function () {
 				timestep: 1 / 60,
 				iterations: 8,
 				broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
-				worldscale: 1, // scale full world 
+				worldscale: 1, // scale full world
 				random: true, // randomize sample
 				info: false, // calculate statistic or not
 				gravity: [0, 0, 0] // 0 gravity
@@ -4999,13 +4998,11 @@ var UniversView = function () {
 			console.log('transition out', this.id);
 
 			var dest = this.id === 0 ? 1 : 0;
-			// console.log(this.id, dest);
 
-
-			setTimeout(function () {
-				_EmitterManager2.default.emit('router:switch', '/project-' + dest, dest);
-				_EmitterManager2.default.emit('view:transition:out');
-			}, 200);
+			// setTimeout(()=>{
+			_EmitterManager2.default.emit('router:switch', '/project-' + dest, dest);
+			_EmitterManager2.default.emit('view:transition:out');
+			// },200);
 		}
 	}, {
 		key: 'showDetails',
@@ -5615,7 +5612,7 @@ var UniversView = function () {
 
 exports.default = UniversView;
 
-},{"../components/CssContainer":3,"../helpers/Device":5,"../helpers/ease":6,"../helpers/utils":7,"../managers/EmitterManager":9,"../managers/PreloadManager":10,"../managers/SceneManager":12,"../managers/SoundManager":13,"../shaders/BrightnessShader":14,"../shaders/FXAAShader":15,"../shaders/HorizontalTiltShiftShader":16,"../shaders/VerticalTiltShiftShader":17,"../shapes/Asteroid":19,"../shapes/Envelop":20,"../shapes/Symbol":21,"../vendors/CSS3DRenderer":22,"../vendors/OrbitControls":24,"../vendors/three-camera-dolly-custom":27,"../vendors/threex-glow":28,"bean":30,"oimo":36,"three":43,"three-effectcomposer-es6":37}],30:[function(require,module,exports){
+},{"../components/CssContainer":3,"../helpers/Device":5,"../helpers/ease":6,"../helpers/utils":7,"../managers/EmitterManager":9,"../managers/PreloadManager":10,"../managers/SceneManager":12,"../managers/SoundManager":13,"../shaders/BrightnessShader":14,"../shaders/FXAAShader":15,"../shaders/HorizontalTiltShiftShader":16,"../shaders/VerticalTiltShiftShader":17,"../shapes/Asteroid":19,"../shapes/Envelop":20,"../shapes/Symbol":21,"../vendors/OrbitControls":24,"../vendors/three-camera-dolly-custom":27,"../vendors/threex-glow":28,"bean":30,"oimo":36,"three":43,"three-effectcomposer-es6":37}],30:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
