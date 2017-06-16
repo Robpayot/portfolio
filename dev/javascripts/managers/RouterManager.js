@@ -31,7 +31,10 @@ class RouterManager {
 		EmitterManager.on('router:switch', this.switchView);
 	}
 
-	switchView(goToPage, index) {
+	switchView(goToPage, index = 0) {
+
+		console.log('change view', goToPage, index);
+		// return false;
 
 		if (this.currentPage !== null) {
 

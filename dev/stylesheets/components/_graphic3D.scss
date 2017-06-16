@@ -74,6 +74,14 @@
                 opacity: 0;
             }
         }
+        .project__next {
+            font-size: 40px;
+            display: inline-block;
+            vertical-align: middle;
+            cursor: pointer;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
         .link {
             img {
                 width: 40px;
