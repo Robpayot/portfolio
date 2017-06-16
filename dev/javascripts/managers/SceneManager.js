@@ -17,7 +17,7 @@ class SceneManager {
 
 
 
-		// Set CssRenderer and WebGLRenderer 
+		// Set CssRenderer and WebGLRenderer
 		this.cssRenderer = new CSS3DRendererIE();
 		// Set the canvas size.
 		this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -46,7 +46,7 @@ class SceneManager {
 
 	render(opts) {
 
-		// Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)        
+		// Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)
 		if (opts.composer !== null && opts.effectController.enabled === true) {
 			// Render scene composer
 			opts.composer.render(opts.scene, opts.camera);

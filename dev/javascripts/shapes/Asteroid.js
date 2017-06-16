@@ -17,7 +17,7 @@ export default class Asteroid extends AbstractShape {
 
 		// physic body
 		this.physics = {
-			type: 'sphere', // type of shape : sphere, box, cylinder 
+			type: 'sphere', // type of shape : sphere, box, cylinder
 			size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
 			pos: [pos.x, pos.y, pos.z], // start position in degree
 			rot: [rot.x, rot.y, rot.z], // start rotation in degree
@@ -27,7 +27,7 @@ export default class Asteroid extends AbstractShape {
 			restitution: 0.2,
 			belongsTo: 1, // The bits of the collision groups to which the shape belongs.
 			collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-		}
+		};
 
 		// for normal asts
 		this.mesh.rotation.set(toRadian(rot.x), toRadian(rot.y), toRadian(rot.z));

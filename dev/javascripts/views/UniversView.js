@@ -16,7 +16,6 @@ import CssContainer from '../components/CssContainer';
 // THREE JS
 import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
-import { CSS3DObject } from '../vendors/CSS3DRenderer';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import { World } from 'oimo';
@@ -64,7 +63,6 @@ export default class UniversView {
 		this.gravity = obj.gravity;
 		this.pointsLight = obj.pointsLight;
 		this.glow = obj.glow;
-		this.alt = obj.alt ? 'alt' : '';
 		const elGraphics3D = document.querySelector('.graphic3D');
 
 		if (obj.alt === true) {
@@ -268,7 +266,7 @@ export default class UniversView {
 
 	events(method) {
 
-		let listen = method === false ? 'removeEventListener' : 'addEventListener';
+		let listen = method === true ? 'addEventListener' : 'removeEventListener';
 
 		if (Device.touch === false) {
 			// move camera
@@ -280,16 +278,20 @@ export default class UniversView {
 			document.body[listen]('touchstart', this.onClick);
 		}
 
-		let listenO = method === false ? 'off' : 'on';
+		let listenO = method === true ? 'on' : 'off';
 
 		EmitterManager[listenO]('resize', this.resizeHandler);
 		EmitterManager[listenO]('raf', this.raf);
 
-		bean[listenO](document.body, 'click', '.project__title', this.showDetails);
-		bean[listenO](document.body, 'click', '.gallery__arrow-t', this.slideUp);
-		bean[listenO](document.body, 'click', '.gallery__arrow-b', this.slideDown);
-		bean[listenO](document.body, 'click', '.details__back', this.backFromDetails);
-		bean.one(document.body, 'click', '.project__next', this.transitionOut);
+		if (method === true) {
+			bean.on(document.body, 'click.univers', '.project__title', this.showDetails);
+			bean.on(document.body, 'click.univers', '.gallery__arrow-t', this.slideUp);
+			bean.on(document.body, 'click.univers', '.gallery__arrow-b', this.slideDown);
+			bean.on(document.body, 'click.univers', '.details__back', this.backFromDetails);
+			bean.on(document.body, 'click.univers', '.project__next', this.transitionOut);
+		} else {
+			bean.off(document.body, 'click.univers');
+		}
 
 
 	}
@@ -324,7 +326,7 @@ export default class UniversView {
 			timestep: 1 / 60,
 			iterations: 8,
 			broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
-			worldscale: 1, // scale full world 
+			worldscale: 1, // scale full world
 			random: true, // randomize sample
 			info: false, // calculate statistic or not
 			gravity: [0, 0, 0] // 0 gravity
@@ -446,7 +448,7 @@ export default class UniversView {
 			RINGS: 32,
 			geometry: null,
 			glow: this.glow
-		}
+		};
 
 
 		let geometry;
@@ -669,7 +671,7 @@ export default class UniversView {
 
 		// Gallery
 		const radius = 80; // radius circonference of gallery circle
-		this.galleryAngle = Math.PI / 6 // Space of 30 degree PI / 6
+		this.galleryAngle = Math.PI / 6; // Space of 30 degree PI / 6
 		this.gallery = new Object3D(); // DESTROY CONTAINER ????
 		this.gallery.position.set(0, 0, 0);
 		this.gallery.rotation.set(0, toRadian(90), 0);
@@ -861,17 +863,12 @@ export default class UniversView {
 		console.log('transition out', this.id);
 
 		const dest = this.id === 0 ? 1 : 0;
-		// console.log(this.id, dest);
 
-
-		
-
-		setTimeout(()=>{
+		// setTimeout(()=>{
 			EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 			EmitterManager.emit('view:transition:out');
-			
-		},200);
-		
+		// },200);
+
 	}
 
 	showDetails() {
@@ -1237,12 +1234,12 @@ export default class UniversView {
 			for (let i = 0; i < this.asteroids.length; i++) {
 				// Move top and bottom --> Float effect
 				// Start Number + Math.sin(this.incr*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speed) * (this.asteroids[i].range / 2) + (this.asteroids[i].range / 2)
+				this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speed) * (this.asteroids[i].range / 2) + this.asteroids[i].range / 2;
 					// rotate
 					// console.log(Math.sin(this.incr * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-				this.asteroids[i].mesh.rotation.y = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + (360 / 2));
-				this.asteroids[i].mesh.rotation.x = toRadian(this.asteroids[i].initRotateY + Math.cos(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + (360 / 2));
-				this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + (360 / 2));
+				this.asteroids[i].mesh.rotation.y = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + 360 / 2);
+				this.asteroids[i].mesh.rotation.x = toRadian(this.asteroids[i].initRotateY + Math.cos(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + 360 / 2);
+				this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + 360 / 2);
 			}
 		}
 
