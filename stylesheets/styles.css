@@ -359,6 +359,13 @@ body {
     white-space: nowrap; }
     .graphic3D .container3D .project__title span {
       opacity: 0; }
+  .graphic3D .container3D .project__next {
+    font-size: 40px;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    white-space: nowrap;
+    text-transform: uppercase; }
   .graphic3D .container3D .link img {
     width: 40px;
     margin-left: 20px;
