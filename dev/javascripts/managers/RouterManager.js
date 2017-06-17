@@ -19,75 +19,87 @@ class RouterManager {
 
 		this.currentPage = null;
 		this.currentRoute = null;
+		this.project0 = null;
+		this.project1 = null;
 
 		const url = window.location.href;
 
 		if (/\/#project-1/.test(url) === true) {
-			this.switchView('/project-1');
+			this.switchView('/project-1', 1, true);
 		} else {
-			this.switchView('/project-0');
+			this.switchView('/project-0', 0, true);
 		}
 
 		EmitterManager.on('router:switch', this.switchView);
 	}
 
-	switchView(goToPage, index = 0) {
+	switchView(goToPage, index = 0, fromUrl = false) {
 
 		console.log('change view', goToPage, index);
 		// return false;
 
 		if (this.currentPage !== null) {
 
-			if (goToPage === '/project-0') {
-				this.currentPage.destroy(true);
-			} else {
-				this.currentPage.destroy(false);
-			}
+			this.currentPage.destroy(false);
 
 			EmitterManager.once('view:transition:out', () => {
 
-				this.initView(goToPage, index);
+				this.initView(goToPage, index, false);
 
 			});
 
 		} else {
-
-			this.initView(goToPage, index);
+			// here we are sure that transition come from a refresh, so fromUrl = true
+			this.initView(goToPage, index, true);
 
 		}
 
 	}
 
-	initView(goToPage, index = null) {
+	initView(goToPage, index = null, fromUrl) {
 
 		let slug;
 
 		switch (goToPage) {
 			case '/project-0':
 
-				this.currentPage = new UniversView({
-					id: 0,
-					bkg: 0x0101010,
-					astd: 'spheres',
-					gravity: true,
-					pointsLight: true,
-					glow: true,
-					alt: false,
-					data: data.projects[0]
-				});
+				if (this.project0 === null) {
+					this.currentPage = this.project0 = new UniversView({
+						id: 0,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: true,
+						pointsLight: true,
+						glow: true,
+						alt: false,
+						data: data.projects[0],
+						fromUrl: fromUrl
+					});
+				} else {
+					this.currentPage = this.project0;
+					this.currentPage.start();
+				}
+
 				window.location = '#project-0';
 				break;
 			case '/project-1':
-				this.currentPage = new UniversView({
-					id: 1,
-					bkg: 0xcafefd,
-					astd: 'cubes',
-					gravity: false,
-					pointsLight: false,
-					glow: false,
-					alt: true,
-					data: data.projects[1]
-				});
+
+				if (this.project1 === null) {
+					this.currentPage = this.project1 = new UniversView({
+						id: 1,
+						bkg: 0xcafefd,
+						astd: 'cubes',
+						gravity: false,
+						pointsLight: false,
+						glow: false,
+						alt: true,
+						data: data.projects[1],
+						fromUrl: fromUrl
+					});
+				} else {
+					this.currentPage = this.project1;
+					this.currentPage.start();
+				}
 				window.location = '#project-1';
 				break;
 		}
