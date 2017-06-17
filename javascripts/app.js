@@ -379,7 +379,7 @@ exports.inOutBounce = function (n) {
 };
 
 exports.inElastic = function (n) {
-	var s,
+	var s = void 0,
 	    a = 0.1,
 	    p = 0.4;
 	if (n === 0) return 0;
@@ -391,7 +391,7 @@ exports.inElastic = function (n) {
 };
 
 exports.outElastic = function (n) {
-	var s,
+	var s = void 0,
 	    a = 0.1,
 	    p = 0.4;
 	if (n === 0) return 0;
@@ -403,7 +403,7 @@ exports.outElastic = function (n) {
 };
 
 exports.inOutElastic = function (n) {
-	var s,
+	var s = void 0,
 	    a = 0.1,
 	    p = 0.4;
 	if (n === 0) return 0;
@@ -500,7 +500,7 @@ function browser() {
 		if (tem !== null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
 	}
 	M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
-	if ((tem = ua.match(/version\/(\d+)/i)) != null) M.splice(1, 1, tem[1]);
+	if (tem = ua.match(/version\/(\d+)/i) !== null) M.splice(1, 1, tem[1]);
 	return M.join(' ');
 }
 
@@ -751,13 +751,15 @@ var RouterManager = function () {
 
 			this.currentPage = null;
 			this.currentRoute = null;
+			this.project0 = null;
+			this.project1 = null;
 
 			var url = window.location.href;
 
 			if (/\/#project-1/.test(url) === true) {
-				this.switchView('/project-1');
+				this.switchView('/project-1', 1, true);
 			} else {
-				this.switchView('/project-0');
+				this.switchView('/project-0', 0, true);
 			}
 
 			_EmitterManager2.default.on('router:switch', this.switchView);
@@ -768,6 +770,7 @@ var RouterManager = function () {
 			var _this = this;
 
 			var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+			var fromUrl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 
 			console.log('change view', goToPage, index);
@@ -775,25 +778,22 @@ var RouterManager = function () {
 
 			if (this.currentPage !== null) {
 
-				if (goToPage === '/project-0') {
-					this.currentPage.destroy(true);
-				} else {
-					this.currentPage.destroy(false);
-				}
+				this.currentPage.destroy(false);
 
 				_EmitterManager2.default.once('view:transition:out', function () {
 
-					_this.initView(goToPage, index);
+					_this.initView(goToPage, index, false);
 				});
 			} else {
-
-				this.initView(goToPage, index);
+				// here we are sure that transition come from a refresh, so fromUrl = true
+				this.initView(goToPage, index, true);
 			}
 		}
 	}, {
 		key: 'initView',
 		value: function initView(goToPage) {
 			var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+			var fromUrl = arguments[2];
 
 
 			var slug = void 0;
@@ -801,29 +801,43 @@ var RouterManager = function () {
 			switch (goToPage) {
 				case '/project-0':
 
-					this.currentPage = new _UniversView2.default({
-						id: 0,
-						bkg: 0x0101010,
-						astd: 'spheres',
-						gravity: true,
-						pointsLight: true,
-						glow: true,
-						alt: false,
-						data: _data2.default.projects[0]
-					});
+					if (this.project0 === null) {
+						this.currentPage = this.project0 = new _UniversView2.default({
+							id: 0,
+							bkg: 0x0101010,
+							astd: 'spheres',
+							gravity: true,
+							pointsLight: true,
+							glow: true,
+							alt: false,
+							data: _data2.default.projects[0],
+							fromUrl: fromUrl
+						});
+					} else {
+						this.currentPage = this.project0;
+						this.currentPage.start();
+					}
+
 					window.location = '#project-0';
 					break;
 				case '/project-1':
-					this.currentPage = new _UniversView2.default({
-						id: 1,
-						bkg: 0xcafefd,
-						astd: 'cubes',
-						gravity: false,
-						pointsLight: false,
-						glow: false,
-						alt: true,
-						data: _data2.default.projects[1]
-					});
+
+					if (this.project1 === null) {
+						this.currentPage = this.project1 = new _UniversView2.default({
+							id: 1,
+							bkg: 0xcafefd,
+							astd: 'cubes',
+							gravity: false,
+							pointsLight: false,
+							glow: false,
+							alt: true,
+							data: _data2.default.projects[1],
+							fromUrl: fromUrl
+						});
+					} else {
+						this.currentPage = this.project1;
+						this.currentPage.start();
+					}
 					window.location = '#project-1';
 					break;
 			}
@@ -866,7 +880,7 @@ var SceneManager = function () {
 		value: function start() {
 			// Set unique Renderer
 
-			this.el = document.querySelector('.graphic3D');
+			this.el = document.querySelector('.univers');
 
 			// Set CssRenderer and WebGLRenderer
 			this.cssRenderer = new _CSS3DRendererIE2.default();
@@ -880,7 +894,7 @@ var SceneManager = function () {
 
 			this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: false });
 			this.renderer.setClearColor(0xffffff, 1);
-			this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
+			// this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1); --> 1.5 au lieu de 2 ???
 			// setScissor ??
 
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -4232,6 +4246,7 @@ var UniversView = function () {
 
 		this.raf = this.raf.bind(this);
 		this.events = this.events.bind(this);
+		this.start = this.start.bind(this);
 		this.setSymbol = this.setSymbol.bind(this);
 		this.resizeHandler = this.resizeHandler.bind(this);
 		this.reset = this.reset.bind(this);
@@ -4243,6 +4258,7 @@ var UniversView = function () {
 		this.slideDown = this.slideDown.bind(this);
 		this.backFromDetails = this.backFromDetails.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
+		this.goTo = this.goTo.bind(this);
 		this.onMouseWheel = this.onMouseWheel.bind(this);
 		this.onChangeGlow = this.onChangeGlow.bind(this);
 		this.onChangeBlur = this.onChangeBlur.bind(this);
@@ -4258,39 +4274,32 @@ var UniversView = function () {
 		this.gravity = obj.gravity;
 		this.pointsLight = obj.pointsLight;
 		this.glow = obj.glow;
-		var elGraphics3D = document.querySelector('.graphic3D');
-
-		if (obj.alt === true) {
-			elGraphics3D.classList.add('alt');
-		} else {
-			elGraphics3D.classList.remove('alt');
-		}
+		this.alt = obj.alt;
+		this.fromUrl = obj.fromUrl;
 
 		this.sound = _SoundManager2.default;
 
-		this.start();
+		this.init();
 	}
 
 	_createClass(UniversView, [{
-		key: 'start',
-		value: function start() {
-			var _this = this;
+		key: 'init',
+		value: function init() {
 
 			// set ui
 			this.ui = {
-				el: document.querySelector('.graphic3D'),
+				el: document.querySelector('.univers'),
 				body: document.getElementsByTagName('body')[0]
 			};
 
-			this.isControls = true;
+			this.isControls = false;
 
 			this.cssObjects = [];
 			this.incr = 1;
 			this.nbAst = 10;
 			this.finalFov = 45;
-			this.cameraMove = true;
 			this.composer = null;
-			this.bounceArea = 400;
+			this.bounceArea = 480;
 
 			// retina screen size
 			this.width = window.innerWidth * window.devicePixelRatio;
@@ -4301,7 +4310,7 @@ var UniversView = function () {
 			this.scene.background = new _three.Color(this.bkg);
 			this.cssScene = new _three.Scene();
 
-			// Set Camera.
+			// Set Camera
 			this.setCamera();
 
 			// Set physics
@@ -4313,8 +4322,6 @@ var UniversView = function () {
 			// Set asteroid
 			this.setAsteroids();
 
-			// Set Context
-			this.setCssContainers();
 			console.log(this.pointsLight);
 			if (this.pointsLight === true) {
 				console.log('trueeee');
@@ -4409,6 +4416,22 @@ var UniversView = function () {
 			// Set BLUR EFFECT
 			this.setBlur();
 
+			this.start();
+		}
+	}, {
+		key: 'start',
+		value: function start() {
+			var _this = this;
+
+			if (this.alt === true) {
+				this.ui.el.classList.add('alt');
+			} else {
+				this.ui.el.classList.remove('alt');
+			}
+
+			// Set CssContainers
+			this.setCssContainers();
+
 			////////////////////
 			// EVENTS
 			////////////////////
@@ -4416,42 +4439,274 @@ var UniversView = function () {
 			this.events(true);
 
 			setTimeout(function () {
+				// wait for first frame to be done to select new DOM elements
+				console.log(document.querySelector('.project__title span'));
 				// Start transition In
-				_this.transitionIn();
-			}, 500);
+				if (_this.fromUrl === true) {
+					_this.transitionInFromUrl();
+					_this.fromUrl = false;
+				} else {
+					_this.transitionIn();
+				}
+			}, 10);
 		}
-	}, {
-		key: 'onChangeBlur',
-		value: function onChangeBlur() {
-			this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
-			this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
-			this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
-		}
-	}, {
-		key: 'onChangeGlow',
-		value: function onChangeGlow() {
-			this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.effectController.coeficient;
-			this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.effectController.power;
-			this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColor);
+		////////////////////
+		// TRANSITIONS
+		////////////////////
 
-			this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
-			this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
-			this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
+	}, {
+		key: 'transitionInFromUrl',
+		value: function transitionInFromUrl() {
+			var _this2 = this;
+
+			this.cameraMove = true;
+
+			var points = {
+				'camera': [{
+					'x': -60,
+					'y': 170,
+					'z': 70
+				}, {
+					'x': -40,
+					'y': 100,
+					'z': 100
+				}, {
+					'x': -20,
+					'y': 50,
+					'z': 130
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 160
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': -3,
+					'z': 3
+				}, {
+					'x': 0,
+					'y': -3,
+					'z': 3
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}]
+			};
+
+			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, false);
+
+			this.dolly.cameraPosition = 0;
+			this.dolly.lookatPosition = 0;
+			this.dolly.range = [0, 1];
+			this.dolly.both = 0;
+
+			var tl = new TimelineMax({
+				onComplete: function onComplete() {
+					_this2.camera.position.set(0, 0, 160);
+					_this2.cameraMove = false;
+				}
+			});
+
+			tl.to(this.dolly, 4, {
+				cameraPosition: 1,
+				lookatPosition: 1,
+				ease: window.Power3.easeInOut,
+				onUpdate: function onUpdate() {
+					_this2.dolly.update();
+				}
+			});
+
+			console.log(document.querySelector('.project__title span'));
+
+			tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+				opacity: 0,
+				y: 80
+			}, {
+				opacity: 0.8,
+				y: 0,
+				ease: window.Power4.easeOut
+			}, 0.1, 2.5);
+
+			tl.add(function () {
+				// add transition hover css
+				var title = document.querySelector('.project__title svg');
+				var next = document.querySelector('.project__next');
+				title.classList.add('transi');
+				next.classList.add('transi');
+			});
+
+			tl.to('.overlay', 1, {
+				opacity: 0
+			}, 0);
 		}
 	}, {
-		key: 'onChangeBrightness',
-		value: function onChangeBrightness() {
-			this.brightness.uniforms['brightness'].value = this.effectController.brightness;
-			this.brightness.uniforms['contrast'].value = this.effectController.contrast;
+		key: 'transitionIn',
+		value: function transitionIn() {
+			var _this3 = this;
+
+			this.cameraMove = true;
+
+			// Set camera Dolly
+			var points = {
+				'camera': [{
+					'x': 0,
+					'y': 0,
+					'z': 240
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 180
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 160
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}]
+			};
+
+			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, false);
+
+			this.dolly.cameraPosition = 0;
+			this.dolly.lookatPosition = 0;
+			this.dolly.range = [0, 1];
+			this.dolly.both = 0;
+
+			var tl = new TimelineMax({
+				onComplete: function onComplete() {
+					_this3.camera.position.set(0, 0, 160);
+					_this3.cameraMove = false;
+				}
+			});
+
+			tl.to(this.dolly, 3, {
+				cameraPosition: 1,
+				lookatPosition: 1,
+				ease: window.Power3.easeOut,
+				onUpdate: function onUpdate() {
+					_this3.dolly.update();
+				}
+			});
+
+			tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+				opacity: 0,
+				y: 80
+			}, {
+				opacity: 0.8,
+				y: 0,
+				ease: window.Power4.easeOut
+			}, 0.1, 1.2);
+
+			tl.add(function () {
+				// add transition hover css
+				var title = document.querySelector('.project__title svg');
+				var next = document.querySelector('.project__next');
+				title.classList.add('transi');
+				next.classList.add('transi');
+			});
+
+			tl.to('.overlay', 1, {
+				opacity: 0
+			}, 0);
 		}
 	}, {
-		key: 'onChangeDolly',
-		value: function onChangeDolly() {
-			this.dolly.cameraPosition = this.effectController.position;
-			this.dolly.lookatPosition = this.effectController.lookAt;
-			this.dolly.update();
+		key: 'transitionOut',
+		value: function transitionOut(dest) {
+			var _this4 = this;
+
+			this.cameraMove = true;
+			// Set camera Dolly
+			var points = {
+				'camera': [{
+					'x': 0,
+					'y': 0,
+					'z': 160
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 80
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}]
+			};
+
+			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, false);
+
+			this.dolly.cameraPosition = 0;
+			this.dolly.lookatPosition = 0;
+			this.dolly.range = [0, 1];
+			this.dolly.both = 0;
+
+			var tl = new TimelineMax({
+				onComplete: function onComplete() {
+					_this4.cameraMove = false;
+
+					_EmitterManager2.default.emit('router:switch', '/project-' + dest, dest);
+					_EmitterManager2.default.emit('view:transition:out');
+					console.log('transition out', _this4.id);
+				}
+			});
+
+			tl.to(this.dolly, 2, {
+				cameraPosition: 1,
+				lookatPosition: 1,
+				ease: window.Power2.easeIn,
+				onUpdate: function onUpdate() {
+					_this4.dolly.update();
+				}
+			});
+
+			tl.to('.overlay', 0.5, {
+				opacity: 1
+			}, 1.7);
+
+			// setTimeout(()=>{
+
+			// },200);
 		}
+	}, {
+		key: 'goTo',
+		value: function goTo() {
+			var dest = this.id === 0 ? 1 : 0;
+			this.transitionOut(dest);
+		}
+
+		////////////////////
+		// EVENTS
+		////////////////////
+
 	}, {
 		key: 'events',
 		value: function events(method) {
@@ -4478,11 +4733,16 @@ var UniversView = function () {
 				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-t', this.slideUp);
 				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-b', this.slideDown);
 				_bean2.default.on(document.body, 'click.univers', '.details__back', this.backFromDetails);
-				_bean2.default.on(document.body, 'click.univers', '.project__next', this.transitionOut);
+				_bean2.default.on(document.body, 'click.univers', '.project__next', this.goTo);
 			} else {
 				_bean2.default.off(document.body, 'click.univers');
 			}
 		}
+
+		////////////////////
+		// SET SCENE
+		////////////////////
+
 	}, {
 		key: 'setCamera',
 		value: function setCamera() {
@@ -4696,6 +4956,14 @@ var UniversView = function () {
 				});
 			}
 
+			var pos = void 0;
+			var posFixed = void 0;
+			if (this.astd !== 'spheres') {
+				// get positions from a json
+				// /! nu;brer of astd needed
+				posFixed = [{ x: -40, y: -10, z: 80 }, { x: -50, y: 5, z: 10 }, { x: -30, y: -60, z: -20 }, { x: -10, y: 40, z: -40 }, { x: -60, y: 10, z: -40 }, { x: 0, y: -40, z: -60 }, { x: 30, y: 20, z: 60 }, { x: 20, y: -20, z: -30 }, { x: 50, y: -40, z: 30 }, { x: 40, y: 20, z: -80 }];
+			}
+
 			for (var i = 0; i < this.nbAst; i++) {
 
 				var rot = {
@@ -4703,26 +4971,24 @@ var UniversView = function () {
 					y: (0, _utils.getRandom)(-180, 180),
 					z: (0, _utils.getRandom)(-180, 180)
 				};
-
-				var pos = {
-					x: (0, _utils.getRandom)(-80, 80),
-					y: (0, _utils.getRandom)(-80, 80),
-					z: (0, _utils.getRandom)(-80, 80)
-				};
-
-				var scale = this.astd === 'spheres' ? 1 : (0, _utils.getRandom)(1, 4);
-				var speed = (0, _utils.getRandom)(500, 800); // more is slower
-				var range = (0, _utils.getRandom)(3, 8);
-				var speedRotate = (0, _utils.getRandom)(15000, 17000);
-
 				// Intra perimeter radius
 				var ipRadius = 50;
 
-				if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-					console.log(i, ' dans le périmetre !');
-					pos.x += ipRadius;
-					pos.y += ipRadius;
-					pos.z += ipRadius;
+				if (this.astd === 'spheres') {
+					pos = {
+						x: (0, _utils.getRandom)(-80, 80),
+						y: (0, _utils.getRandom)(-80, 80),
+						z: (0, _utils.getRandom)(-80, 80)
+					};
+
+					if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+						console.log(i, ' dans le périmetre !');
+						pos.x += ipRadius;
+						pos.y += ipRadius;
+						pos.z += ipRadius;
+					}
+				} else {
+					pos = posFixed[i];
 				}
 
 				//  force impulsion
@@ -4732,13 +4998,16 @@ var UniversView = function () {
 					z: (0, _utils.getRandom)(-10, 10)
 				};
 
+				var scale = this.astd === 'spheres' ? 1 : (0, _utils.getRandom)(1, 4);
+				var speed = (0, _utils.getRandom)(500, 800); // more is slower
+				var range = (0, _utils.getRandom)(3, 8);
+				var speedRotate = (0, _utils.getRandom)(15000, 17000);
+
 				var finalMat = void 0;
 
 				if (i % 2 === 0) {
 					finalMat = this.materialAst1;
-					// console.log(i);
 				} else {
-					// console.log(i);
 					finalMat = this.materialAst2;
 				}
 				var asteroid = new _Asteroid2.default(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
@@ -4821,12 +5090,12 @@ var UniversView = function () {
 
 			// Title
 			var title = new _CssContainer2.default('<div class="project__title"><span>' + data.title + '</span><svg class="icon project__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">\n\t<g transform="translate(0,-952.36218)">\n\t\t<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4\n\t\tL404.9,1271.9L404.9,1271.9z" />\n\t</g>\n</svg></div>', this.cssScene, this.cssObjects);
-			title.position.set(60, 0, 0);
+			title.position.set(20, 0, 10);
 			title.scale.multiplyScalar(1 / 14);
 
 			// Next project
 			var nextProject = new _CssContainer2.default('<div class="project__next">Next</div>', this.cssScene, this.cssObjects);
-			nextProject.position.set(0, -12, 0);
+			nextProject.position.set(0, -12, 10);
 			nextProject.scale.multiplyScalar(1 / 14);
 
 			// Gallery
@@ -4915,99 +5184,9 @@ var UniversView = function () {
 		////////////
 
 	}, {
-		key: 'transitionIn',
-		value: function transitionIn() {
-			var _this2 = this;
-
-			// this.cameraMove = true;
-
-			// Set camera Dolly
-			var points = {
-				'camera': [{
-					'x': -60,
-					'y': 170,
-					'z': 70
-				}, {
-					'x': -40,
-					'y': 100,
-					'z': 100
-				}, {
-					'x': -20,
-					'y': 50,
-					'z': 130
-				}, {
-					'x': 0,
-					'y': 0,
-					'z': 160
-				}],
-				'lookat': [{
-					'x': 0,
-					'y': 0,
-					'z': 0
-				}, {
-					'x': 0,
-					'y': -3,
-					'z': 3
-				}, {
-					'x': 0,
-					'y': -3,
-					'z': 3
-				}, {
-					'x': 0,
-					'y': 0,
-					'z': 0
-				}]
-			};
-
-			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, false);
-
-			this.dolly.cameraPosition = 0;
-			this.dolly.lookatPosition = 0;
-			this.dolly.range = [0, 1];
-			this.dolly.both = 0;
-
-			var tl = new TimelineMax({
-				onComplete: function onComplete() {
-					_this2.camera.position.set(0, 0, 160);
-					_this2.cameraMove = false;
-				}
-			});
-
-			tl.to(this.dolly, 5, {
-				cameraPosition: 1,
-				lookatPosition: 1,
-				ease: window.Power3.easeInOut,
-				onUpdate: function onUpdate() {
-					_this2.dolly.update();
-				}
-			});
-
-			tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
-				opacity: 0,
-				y: 80
-			}, {
-				opacity: 0.8,
-				y: 0,
-				ease: window.Power4.easeOut
-			}, 0.1, 3.5);
-		}
-	}, {
-		key: 'transitionOut',
-		value: function transitionOut() {
-
-			console.log('transition out', this.id);
-
-			var dest = this.id === 0 ? 1 : 0;
-
-			// setTimeout(()=>{
-			_EmitterManager2.default.emit('router:switch', '/project-' + dest, dest);
-			_EmitterManager2.default.emit('view:transition:out');
-			// },200);
-		}
-	}, {
 		key: 'showDetails',
 		value: function showDetails() {
-			var _this3 = this;
+			var _this5 = this;
 
 			console.log('show details');
 
@@ -5016,7 +5195,7 @@ var UniversView = function () {
 			var trigo = { angle: 1 };
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this3.cameraMove = true;
+					_this5.cameraMove = true;
 				}
 			});
 
@@ -5033,9 +5212,9 @@ var UniversView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this3.camera.lookAt(_this3.cameraTarget);
+					_this5.camera.position.x = _this5.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this5.camera.position.z = _this5.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this5.camera.lookAt(_this5.cameraTarget);
 				}
 			});
 
@@ -5049,17 +5228,22 @@ var UniversView = function () {
 				y: 0,
 				ease: window.Power4.easeOut
 			}, 0.2, 2.8);
+
+			tl.staggerTo(['.project__next', '.project__title'], 0.6, {
+				opacity: 0,
+				ease: window.Power4.easeOut
+			}, 0.2, 2.2);
 		}
 	}, {
 		key: 'backFromDetails',
 		value: function backFromDetails() {
-			var _this4 = this;
+			var _this6 = this;
 
 			this.cameraMove = true;
 
 			var trigo = { angle: 0 };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
-					_this4.cameraMove = false;
+					_this6.cameraMove = false;
 				} });
 			this.cameraMove = true;
 
@@ -5075,11 +5259,16 @@ var UniversView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this4.camera.lookAt(_this4.cameraTarget);
+					_this6.camera.position.x = _this6.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this6.camera.position.z = _this6.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this6.camera.lookAt(_this6.cameraTarget);
 				}
 			}, 0.5);
+
+			tl.staggerTo(['.project__next', '.project__title'], 0.6, {
+				opacity: 1,
+				ease: window.Power4.easeOut
+			}, 0.2, 1.5);
 		}
 	}, {
 		key: 'slide',
@@ -5087,7 +5276,7 @@ var UniversView = function () {
 	}, {
 		key: 'slideUp',
 		value: function slideUp() {
-			var _this5 = this;
+			var _this7 = this;
 
 			if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
 
@@ -5100,15 +5289,15 @@ var UniversView = function () {
 				z: -this.galleryAngle * (this.currentSlide + 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this5.currentSlide++;
-					_this5.isSliding = false;
+					_this7.currentSlide++;
+					_this7.isSliding = false;
 				}
 			});
 		}
 	}, {
 		key: 'slideDown',
 		value: function slideDown() {
-			var _this6 = this;
+			var _this8 = this;
 
 			if (this.isSliding === true || this.currentSlide === 0) return false;
 
@@ -5121,8 +5310,8 @@ var UniversView = function () {
 				z: -this.galleryAngle * (this.currentSlide - 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this6.currentSlide--;
-					_this6.isSliding = false;
+					_this8.currentSlide--;
+					_this8.isSliding = false;
 				}
 			});
 		}
@@ -5485,57 +5674,62 @@ var UniversView = function () {
 	}, {
 		key: 'destroy',
 		value: function destroy() {
-
-			this.scene.traverse(function (obj) {
-
-				// remove physics
-				if (obj.body) obj.body.remove();
-
-				if (obj.geometry) obj.geometry.dispose();
-
-				if (obj.material) {
-
-					if (obj.material.materials) {
-						var _iteratorNormalCompletion = true;
-						var _didIteratorError = false;
-						var _iteratorError = undefined;
-
-						try {
-
-							for (var _iterator = obj.material.materials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-								var mat = _step.value;
+			var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-								if (mat.map) mat.map.dispose();
+			if (all === true) {
 
-								mat.dispose();
-							}
-						} catch (err) {
-							_didIteratorError = true;
-							_iteratorError = err;
-						} finally {
+				this.scene.traverse(function (obj) {
+
+					// remove physics
+					if (obj.body) obj.body.remove();
+
+					if (obj.geometry) obj.geometry.dispose();
+
+					if (obj.material) {
+
+						if (obj.material.materials) {
+							var _iteratorNormalCompletion = true;
+							var _didIteratorError = false;
+							var _iteratorError = undefined;
+
 							try {
-								if (!_iteratorNormalCompletion && _iterator.return) {
-									_iterator.return();
+
+								for (var _iterator = obj.material.materials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+									var mat = _step.value;
+
+
+									if (mat.map) mat.map.dispose();
+
+									mat.dispose();
 								}
+							} catch (err) {
+								_didIteratorError = true;
+								_iteratorError = err;
 							} finally {
-								if (_didIteratorError) {
-									throw _iteratorError;
+								try {
+									if (!_iteratorNormalCompletion && _iterator.return) {
+										_iterator.return();
+									}
+								} finally {
+									if (_didIteratorError) {
+										throw _iteratorError;
+									}
 								}
 							}
+						} else {
+
+							if (obj.material.map) obj.material.map.dispose();
+
+							obj.material.dispose();
 						}
-					} else {
-
-						if (obj.material.map) obj.material.map.dispose();
-
-						obj.material.dispose();
 					}
+				});
+
+				for (var i = this.scene.children.length - 1; i >= 0; i--) {
+
+					this.scene.remove(this.scene.children[i]);
 				}
-			});
-
-			for (var i = this.scene.children.length - 1; i >= 0; i--) {
-
-				this.scene.remove(this.scene.children[i]);
 			}
 
 			// Destroy css scene
@@ -5599,11 +5793,47 @@ var UniversView = function () {
 			}
 
 			this.cssObjects = [];
-
 			// Wait destroy scene before stop js events
 			// setTimeout(() => {
 			this.events(false);
 			// }, 500);
+		}
+
+		////////////////////
+		// GUI
+		////////////////////
+
+	}, {
+		key: 'onChangeBlur',
+		value: function onChangeBlur() {
+			this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+			this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
+
+			this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
+		}
+	}, {
+		key: 'onChangeGlow',
+		value: function onChangeGlow() {
+			this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.effectController.coeficient;
+			this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.effectController.power;
+			this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColor);
+
+			this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
+			this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
+			this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
+		}
+	}, {
+		key: 'onChangeBrightness',
+		value: function onChangeBrightness() {
+			this.brightness.uniforms['brightness'].value = this.effectController.brightness;
+			this.brightness.uniforms['contrast'].value = this.effectController.contrast;
+		}
+	}, {
+		key: 'onChangeDolly',
+		value: function onChangeDolly() {
+			this.dolly.cameraPosition = this.effectController.position;
+			this.dolly.lookatPosition = this.effectController.lookAt;
+			this.dolly.update();
 		}
 	}]);
 
