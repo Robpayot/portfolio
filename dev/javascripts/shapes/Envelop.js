@@ -9,7 +9,7 @@ export default class Envelop extends AbstractShape {
 		super();
 
 		this.createMesh(geometry, material);
-		
+
 		this.mesh.position.copy(pos);
 		this.mesh.rotation.x = rot.x;
 		this.mesh.rotation.y = rot.y;
@@ -17,7 +17,7 @@ export default class Envelop extends AbstractShape {
 
 		// physic body
 		this.mesh.physics = {
-			type: 'box', // type of shape : sphere, box, cylinder 
+			type: 'box', // type of shape : sphere, box, cylinder
 			size: [geometry.parameters.width, geometry.parameters.height, geometry.parameters.depth], // size of shape
 			pos: [pos.x, pos.y, pos.z], // start position in degree
 			rot: [toDegree(rot.x), toDegree(rot.y), toDegree(rot.z)], // start rotation in degree
@@ -27,7 +27,7 @@ export default class Envelop extends AbstractShape {
 			restitution: 0.2,
 			belongsTo: 1, // The bits of the collision groups to which the shape belongs.
 			collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-		}
+		};
 
 
 		return this.mesh;

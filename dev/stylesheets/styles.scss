@@ -8,6 +8,7 @@
 // Add the layout dependencies here
 @import "layouts/grid";
 @import "layouts/body";
+@import "layouts/overlay";
 // @import "layouts/header";
 // @import "layouts/footer";
 
@@ -19,6 +20,6 @@
 // Add your components here
 @import "components/buttons";
 @import "components/xp";
-@import "components/graphic3D";
+@import "components/univers";
 @import "components/graphicBars";
 @import "components/jauge";

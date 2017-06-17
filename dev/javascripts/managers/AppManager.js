@@ -6,98 +6,97 @@ import { Device } from '../helpers/Device';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
-
 import bean from 'bean';
 
 class AppManager {
 
-    constructor() {
+	constructor() {
 
-        this.start = this.start.bind(this);
-        this.resizeHandler = this.resizeHandler.bind(this);
-        this.raf = this.raf.bind(this);
+		this.start = this.start.bind(this);
+		this.resizeHandler = this.resizeHandler.bind(this);
+		this.raf = this.raf.bind(this);
 
-    }
+	}
 
-    start() {
+	start() {
 
-        // }
+		// }
 
-        this.events(true);
+		this.events(true);
 
-        // SoundManager
+		// SoundManager
 
-        this.graphicBars = new GraphicBars();
+		this.graphicBars = new GraphicBars();
 
-        SceneManager.start();
-        RouterManager.start();
-    }
+		SceneManager.start();
+		RouterManager.start();
+	}
 
-    events(method) {
+	events(method) {
 
-        let listen = method === false ? 'removeEventListener' : 'addEventListener';
+		let listen = method === false ? 'removeEventListener' : 'addEventListener';
 
-        // raf
-        TweenMax.ticker[listen]('tick', this.raf);
-        
-
-        listen = method === false ? 'off' : 'on';
-        
-        this.resizeHandler();
-        bean[listen](window, 'resize', this.resizeHandler);
-
-    }
-
-    raf() {
-
-    	EmitterManager.emit('raf');
-    }
-
-    // completeLoading() {
+		// raf
+		TweenMax.ticker[listen]('tick', this.raf);
 
 
+		listen = method === false ? 'off' : 'on';
 
-    //     // Preload Font for pixi.js
-    //     // WebFont.load({
-    //     //     custom: {
-    //     //         families: ['Avenir-black']
-    //     //     }
-    //     // });
+		this.resizeHandler();
+		bean[listen](window, 'resize', this.resizeHandler);
 
-    // }
+	}
 
-    resizeHandler() {
+	raf() {
 
-        const touch = document.querySelector('html').classList.contains('touchevents');
+		EmitterManager.emit('raf');
+	}
 
-        if (touch) {
-            Device.touch = true;
-        } else {
-            Device.touch = false;
-        }
-
-        // // Device.browser = Detect.browser();
-
-        // // if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {
-
-        // //     document.body.classList.add('ie');
-        // // }
+	// completeLoading() {
 
 
 
-        Device.size = 'mobile';
+	//     // Preload Font for pixi.js
+	//     // WebFont.load({
+	//     //     custom: {
+	//     //         families: ['Avenir-black']
+	//     //     }
+	//     // });
 
-        if (window.innerWidth >= 768) {
-            Device.size = 'tablet';
-        }
+	// }
 
-        if (window.innerWidth > 1024) {
-            Device.size = 'desktop';
-        }
+	resizeHandler() {
 
-        EmitterManager.emit('resize', window.innerWidth, window.innerHeight);
+		const touch = document.querySelector('html').classList.contains('touchevents');
 
-    }
+		if (touch) {
+			Device.touch = true;
+		} else {
+			Device.touch = false;
+		}
+
+		// // Device.browser = Detect.browser();
+
+		// // if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {
+
+		// //     document.body.classList.add('ie');
+		// // }
+
+
+
+		Device.size = 'mobile';
+
+		if (window.innerWidth >= 768) {
+			Device.size = 'tablet';
+		}
+
+		if (window.innerWidth > 1024) {
+			Device.size = 'desktop';
+		}
+
+		EmitterManager.emit('resize', window.innerWidth, window.innerHeight);
+
+	}
 }
 
 export default new AppManager();

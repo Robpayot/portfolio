@@ -73,56 +73,56 @@ exports.inOutSine = function(n){
 	return .5 * (1 - Math.cos(Math.PI * n));
 };
 
-exports.inExpo = function(n){
+exports.inExpo = function(n) {
 	return 0 == n ? 0 : Math.pow(1024, n - 1);
 };
 
-exports.outExpo = function(n){
+exports.outExpo = function(n) {
 	return 1 == n ? n : 1 - Math.pow(2, -10 * n);
 };
 
-exports.inOutExpo = function(n){
+exports.inOutExpo = function(n) {
 	if (0 == n) return 0;
 	if (1 == n) return 1;
 	if ((n *= 2) < 1) return .5 * Math.pow(1024, n - 1);
 	return .5 * (-Math.pow(2, -10 * (n - 1)) + 2);
 };
 
-exports.inCirc = function(n){
+exports.inCirc = function(n) {
 	return 1 - Math.sqrt(1 - n * n);
 };
 
-exports.outCirc = function(n){
+exports.outCirc = function(n) {
 	return Math.sqrt(1 - (--n * n));
 };
 
-exports.inOutCirc = function(n){
-	n *= 2
+exports.inOutCirc = function(n) {
+	n *= 2;
 	if (n < 1) return -0.5 * (Math.sqrt(1 - n * n) - 1);
 	return 0.5 * (Math.sqrt(1 - (n -= 2) * n) + 1);
 };
 
-exports.inBack = function(n){
-	var s = 1.70158;
+exports.inBack = function(n) {
+	let s = 1.70158;
 	return n * n * (( s + 1 ) * n - s);
 };
 
-exports.outBack = function(n){
-	var s = 1.70158;
+exports.outBack = function(n) {
+	let s = 1.70158;
 	return --n * n * ((s + 1) * n + s) + 1;
 };
 
-exports.inOutBack = function(n){
-	var s = 1.70158 * 1.525;
+exports.inOutBack = function(n) {
+	let s = 1.70158 * 1.525;
 	if ( ( n *= 2 ) < 1 ) return 0.5 * ( n * n * ( ( s + 1 ) * n - s ) );
 	return 0.5 * ( ( n -= 2 ) * n * ( ( s + 1 ) * n + s ) + 2 );
 };
 
-exports.inBounce = function(n){
+exports.inBounce = function(n) {
 	return 1 - exports.outBounce(1 - n);
 };
 
-exports.outBounce = function(n){
+exports.outBounce = function(n) {
 	if ( n < ( 1 / 2.75 ) ) {
 		return 7.5625 * n * n;
 	} else if ( n < ( 2 / 2.75 ) ) {
@@ -134,36 +134,36 @@ exports.outBounce = function(n){
 	}
 };
 
-exports.inOutBounce = function(n){
+exports.inOutBounce = function(n) {
 	if (n < .5) return exports.inBounce(n * 2) * .5;
 	return exports.outBounce(n * 2 - 1) * .5 + .5;
 };
 
-exports.inElastic = function(n){
-	var s, a = 0.1, p = 0.4;
+exports.inElastic = function(n) {
+	let s, a = 0.1, p = 0.4;
 	if ( n === 0 ) return 0;
 	if ( n === 1 ) return 1;
 	if ( !a || a < 1 ) { a = 1; s = p / 4; }
 	else s = p * Math.asin( 1 / a ) / ( 2 * Math.PI );
-	return - ( a * Math.pow( 2, 10 * ( n -= 1 ) ) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) );
+	return -( a * Math.pow( 2, 10 * ( n -= 1 ) ) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) );
 };
 
-exports.outElastic = function(n){
-	var s, a = 0.1, p = 0.4;
+exports.outElastic = function(n) {
+	let s, a = 0.1, p = 0.4;
 	if ( n === 0 ) return 0;
 	if ( n === 1 ) return 1;
 	if ( !a || a < 1 ) { a = 1; s = p / 4; }
 	else s = p * Math.asin( 1 / a ) / ( 2 * Math.PI );
-	return ( a * Math.pow( 2, - 10 * n) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) + 1 );
+	return a * Math.pow( 2, -10 * n) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) + 1;
 };
 
-exports.inOutElastic = function(n){
-	var s, a = 0.1, p = 0.4;
+exports.inOutElastic = function(n) {
+	let s, a = 0.1, p = 0.4;
 	if ( n === 0 ) return 0;
 	if ( n === 1 ) return 1;
 	if ( !a || a < 1 ) { a = 1; s = p / 4; }
 	else s = p * Math.asin( 1 / a ) / ( 2 * Math.PI );
-	if ( ( n *= 2 ) < 1 ) return - 0.5 * ( a * Math.pow( 2, 10 * ( n -= 1 ) ) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) );
+	if ( ( n *= 2 ) < 1 ) return -0.5 * ( a * Math.pow( 2, 10 * ( n -= 1 ) ) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) );
 	return a * Math.pow( 2, -10 * ( n -= 1 ) ) * Math.sin( ( n - s ) * ( 2 * Math.PI ) / p ) * 0.5 + 1;
 };
 

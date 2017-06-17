@@ -61,6 +61,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* ------------------------------------------------------------------ */
 /*        COLORS
 /* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/*        EASE
+/* ------------------------------------------------------------------ */
 /*
 *   Easing Equations ported to CSS by @matthewlein - http://matthewlein.com/ceaser/
 *   Converted to SCSS vars by @pettpett
@@ -233,6 +236,17 @@ body {
 .dg.ac {
   z-index: 9000 !important; }
 
+.overlay {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0;
+  z-index: 9000;
+  pointer-events: none; }
+
 /* ------------------------------------------------------------------ */
 /*        FONT FACE DECLARATION
 /* ------------------------------------------------------------------ */
@@ -289,93 +303,138 @@ body {
 .xp {
   text-align: center; }
 
-.graphic3D {
-  position: relative; }
-  .graphic3D .container3D .css-container {
+.univers {
+  position: relative;
+  color: #FFFFFF; }
+  .univers .icon {
+    fill: #FFFFFF; }
+  .univers .container3D .css-container {
     font-size: 38px;
-    color: white;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none; }
-  .graphic3D .container3D .project__context {
-    max-width: 750px;
+  .univers .container3D .project__context {
+    max-width: 300px;
     line-height: 1.4em;
     z-index: 10;
+    text-align: left;
     opacity: 0;
-    color: white;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    font-size: 32px; }
-  .graphic3D .container3D .project__image {
+    font-size: 20px; }
+    .univers .container3D .project__context h1 {
+      font-size: 30px; }
+  .univers .container3D .project__image {
     max-width: 750px;
     border: 1px solid rgba(128, 128, 128, 0.15);
-    opacity: 0.8;
+    opacity: 0.9;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
     display: none; }
-    .graphic3D .container3D .project__image img {
+    .univers .container3D .project__image img {
       width: 100%; }
-  .graphic3D .container3D .project__btn {
+  .univers .container3D .project__btn {
     cursor: pointer; }
-  .graphic3D .container3D .project__arrow {
+  .univers .container3D .project__arrow {
     transition: -webkit-transform 0.3s ease-out;
     transition: transform 0.3s ease-out;
     transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
     cursor: pointer;
     opacity: 0; }
-    .graphic3D .container3D .project__arrow img {
+    .univers .container3D .project__arrow img {
       width: 40px; }
-    .graphic3D .container3D .project__arrow:hover {
+    .univers .container3D .project__arrow:hover {
       -webkit-transform: scale(1.05) translateX(10px) !important;
       -ms-transform: scale(1.05) translateX(10px) !important;
       transform: scale(1.05) translateX(10px) !important; }
-    .graphic3D .container3D .project__arrow-l {
+    .univers .container3D .project__arrow-l {
       -webkit-transform: rotate(180deg);
       -ms-transform: rotate(180deg);
       transform: rotate(180deg); }
-      .graphic3D .container3D .project__arrow-l:hover {
+      .univers .container3D .project__arrow-l:hover {
         -webkit-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
         -ms-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
         transform: scale(1.05) rotate(180deg) translateX(10px) !important; }
-  .graphic3D .container3D .project__title {
-    opacity: 0; }
-  .graphic3D .container3D .link img {
+    .univers .container3D .project__arrow-r {
+      width: 30px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 25px; }
+  .univers .container3D .project__title {
+    font-size: 80px;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    white-space: nowrap;
+    -webkit-transform: translateX(50%);
+    -ms-transform: translateX(50%);
+    transform: translateX(50%); }
+    .univers .container3D .project__title span {
+      opacity: 0;
+      display: inline-block; }
+    .univers .container3D .project__title svg {
+      opacity: 0; }
+      .univers .container3D .project__title svg.transi {
+        transition: -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
+        transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
+        transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1); }
+    .univers .container3D .project__title:hover svg {
+      -webkit-transform: translateX(15px) !important;
+      -ms-transform: translateX(15px) !important;
+      transform: translateX(15px) !important; }
+  .univers .container3D .project__next {
+    font-size: 40px;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    white-space: nowrap;
+    opacity: 0;
+    text-transform: uppercase; }
+    .univers .container3D .project__next.transi {
+      transition: -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
+      transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
+      transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1); }
+    .univers .container3D .project__next:hover {
+      -webkit-transform: scale(1.15) !important;
+      -ms-transform: scale(1.15) !important;
+      transform: scale(1.15) !important; }
+  .univers .container3D .link img {
     width: 40px;
     margin-left: 20px;
     margin-bottom: -5px; }
-  .graphic3D .container3D .gallery__arrow {
+  .univers .container3D .gallery__arrow {
     width: 30px;
     display: block;
     cursor: pointer;
     display: none;
     opacity: 0;
-    transition: -webkit-transform 0.3s ease-out;
-    transition: transform 0.3s ease-out;
-    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
-    .graphic3D .container3D .gallery__arrow-t {
+    transition: -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1); }
+    .univers .container3D .gallery__arrow-t {
       -webkit-transform: rotate(-90deg);
       -ms-transform: rotate(-90deg);
       transform: rotate(-90deg);
       margin-bottom: 10px;
       opacity: 0.2; }
-    .graphic3D .container3D .gallery__arrow:hover {
+    .univers .container3D .gallery__arrow:hover {
       -webkit-transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
       -ms-transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
       transform: scale(1.05) translateY(-10px) rotate(-90deg) !important; }
-    .graphic3D .container3D .gallery__arrow-b {
+    .univers .container3D .gallery__arrow-b {
       -webkit-transform: rotate(90deg);
       -ms-transform: rotate(90deg);
       transform: rotate(90deg); }
-      .graphic3D .container3D .gallery__arrow-b:hover {
+      .univers .container3D .gallery__arrow-b:hover {
         -webkit-transform: scale(1.05) rotate(90deg) translateX(10px) !important;
         -ms-transform: scale(1.05) rotate(90deg) translateX(10px) !important;
         transform: scale(1.05) rotate(90deg) translateX(10px) !important; }
-  .graphic3D .container3D .gallery__back {
+  .univers .container3D .details__back {
     display: inline-block;
     vertical-align: middle;
     font-size: 20px;
@@ -383,34 +442,14 @@ body {
     cursor: pointer;
     display: none;
     opacity: 0;
-    transition: -webkit-transform 0.3s ease-out;
-    transition: transform 0.3s ease-out;
-    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
-    .graphic3D .container3D .gallery__back:hover {
-      -webkit-transform: scale(1.05) translateX(10px) !important;
-      -ms-transform: scale(1.05) translateX(10px) !important;
-      transform: scale(1.05) translateX(10px) !important; }
-    .graphic3D .container3D .gallery__back img {
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: 10px;
-      width: 20px; }
-  .graphic3D .container3D .context__back {
-    display: inline-block;
-    vertical-align: middle;
-    font-size: 20px;
-    text-transform: uppercase;
-    cursor: pointer;
-    display: none;
-    opacity: 0;
-    transition: -webkit-transform 0.3s ease-out;
-    transition: transform 0.3s ease-out;
-    transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out; }
-    .graphic3D .container3D .context__back:hover {
+    transition: -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1); }
+    .univers .container3D .details__back:hover {
       -webkit-transform: scale(1.05) translateX(-10px) !important;
       -ms-transform: scale(1.05) translateX(-10px) !important;
       transform: scale(1.05) translateX(-10px) !important; }
-    .graphic3D .container3D .context__back img {
+    .univers .container3D .details__back .icon {
       display: inline-block;
       vertical-align: middle;
       margin-right: 10px;
@@ -418,6 +457,10 @@ body {
       -webkit-transform: rotate(180deg);
       -ms-transform: rotate(180deg);
       transform: rotate(180deg); }
+  .univers.alt {
+    color: #000000; }
+    .univers.alt .icon {
+      fill: #000000; }
 
 .graphicBars {
   background-color: transparent;

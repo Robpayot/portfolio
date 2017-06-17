@@ -1,77 +1,112 @@
 import EmitterManager from './EmitterManager';
 import PreloadManager from './PreloadManager';
 import UniversView from '../views/UniversView';
+import data from '../../datas/data.json';
 
 // console.log(ListView);
 
 
 class RouterManager {
 
-    constructor() {
+	constructor() {
 
-        this.switchView = this.switchView.bind(this);
-        this.initView = this.initView.bind(this);
+		this.switchView = this.switchView.bind(this);
+		this.initView = this.initView.bind(this);
 
-    }
+	}
 
-    start() {
+	start() {
 
-        this.currentPage = null;
-        this.currentRoute = null;
-        
-        const url = window.location.href;
+		this.currentPage = null;
+		this.currentRoute = null;
+		this.project0 = null;
+		this.project1 = null;
 
-        if (/\/#list/.test(url) === true) {
-            this.switchView('/list');
-        } else {
-            this.switchView('/home');
-        }
+		const url = window.location.href;
 
-        EmitterManager.on('router:switch', this.switchView);
-    }
+		if (/\/#project-1/.test(url) === true) {
+			this.switchView('/project-1', 1, true);
+		} else {
+			this.switchView('/project-0', 0, true);
+		}
 
-    switchView(goToPage, index) {
+		EmitterManager.on('router:switch', this.switchView);
+	}
 
-        if (this.currentPage !== null) {
+	switchView(goToPage, index = 0, fromUrl = false) {
 
-            if (goToPage === '/home') {
-                this.currentPage.destroy(true);
-            } else {
-                this.currentPage.destroy(false);
-            }
+		console.log('change view', goToPage, index);
+		// return false;
 
-            EmitterManager.once('view:transition:out', () => {
+		if (this.currentPage !== null) {
 
-                this.initView(goToPage, index);
+			this.currentPage.destroy(false);
 
-            });
+			EmitterManager.once('view:transition:out', () => {
 
-        } else {
+				this.initView(goToPage, index, false);
 
-            this.initView(goToPage, index);
+			});
 
-        }
+		} else {
+			// here we are sure that transition come from a refresh, so fromUrl = true
+			this.initView(goToPage, index, true);
 
-    }
+		}
 
-    initView(goToPage, index = null) {
+	}
 
-        let slug;
+	initView(goToPage, index = null, fromUrl) {
 
-        switch (goToPage) {
-            case '/home':
-                this.currentPage = new UniversView();
-                window.location = '#home';
-                break;
-            case '/list':
-                this.currentPage = new ListView();
-                window.location = '#list';
-                break;
-        }
+		let slug;
 
-        this.fromLoad = false;
+		switch (goToPage) {
+			case '/project-0':
 
-    }
+				if (this.project0 === null) {
+					this.currentPage = this.project0 = new UniversView({
+						id: 0,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: true,
+						pointsLight: true,
+						glow: true,
+						alt: false,
+						data: data.projects[0],
+						fromUrl: fromUrl
+					});
+				} else {
+					this.currentPage = this.project0;
+					this.currentPage.start();
+				}
+
+				window.location = '#project-0';
+				break;
+			case '/project-1':
+
+				if (this.project1 === null) {
+					this.currentPage = this.project1 = new UniversView({
+						id: 1,
+						bkg: 0xcafefd,
+						astd: 'cubes',
+						gravity: false,
+						pointsLight: false,
+						glow: false,
+						alt: true,
+						data: data.projects[1],
+						fromUrl: fromUrl
+					});
+				} else {
+					this.currentPage = this.project1;
+					this.currentPage.start();
+				}
+				window.location = '#project-1';
+				break;
+		}
+
+		this.fromLoad = false;
+
+	}
 }
 
 export default new RouterManager();

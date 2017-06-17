@@ -2,20 +2,20 @@ import { Object3D, Mesh } from 'three';
 
 export default class AbstractShape {
 
-    constructor() {
+	constructor() {
 
-        this.container = new Object3D();
+		this.container = new Object3D();
 
-    }
+	}
 
-    createMesh(geometry, material) {
+	createMesh(geometry, material) {
 
-        this.mesh = new Mesh(geometry, material);
-    }
+		this.mesh = new Mesh(geometry, material);
+	}
 
-    isHover() {
+	isHover() {
 
-    	return this.hover;
-    }
+		return this.hover;
+	}
 
 }
