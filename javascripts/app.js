@@ -4292,7 +4292,7 @@ var UniversView = function () {
 				body: document.getElementsByTagName('body')[0]
 			};
 
-			this.isControls = false;
+			this.isControls = true;
 
 			this.cssObjects = [];
 			this.incr = 1;
@@ -4631,6 +4631,9 @@ var UniversView = function () {
 		value: function transitionOut(dest) {
 			var _this4 = this;
 
+			if (this.animating === true) return false;
+			this.animating = true;
+
 			this.cameraMove = true;
 			// Set camera Dolly
 			var points = {
@@ -4672,6 +4675,7 @@ var UniversView = function () {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					_this4.cameraMove = false;
+					_this4.animating = false;
 
 					_EmitterManager2.default.emit('router:switch', '/project-' + dest, dest);
 					_EmitterManager2.default.emit('view:transition:out');
@@ -4730,8 +4734,8 @@ var UniversView = function () {
 
 			if (method === true) {
 				_bean2.default.on(document.body, 'click.univers', '.project__title', this.showDetails);
-				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-t', this.slideUp);
-				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-b', this.slideDown);
+				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-r', this.slideUp);
+				_bean2.default.on(document.body, 'click.univers', '.gallery__arrow-l', this.slideDown);
 				_bean2.default.on(document.body, 'click.univers', '.details__back', this.backFromDetails);
 				_bean2.default.on(document.body, 'click.univers', '.project__next', this.goTo);
 			} else {
@@ -5099,7 +5103,7 @@ var UniversView = function () {
 			nextProject.scale.multiplyScalar(1 / 14);
 
 			// Gallery
-			var radius = 80; // radius circonference of gallery circle
+			var radius = 100; // radius circonference of gallery circle
 			this.galleryAngle = Math.PI / 6; // Space of 30 degree PI / 6
 			this.gallery = new _three.Object3D(); // DESTROY CONTAINER ????
 			this.gallery.position.set(0, 0, 0);
@@ -5115,8 +5119,8 @@ var UniversView = function () {
 			for (var i = 0; i < this.nbSlides; i++) {
 				// image 1
 				var image = new _CssContainer2.default('<div class="project__image"><img src="images/projects/' + data.imgs[i] + '" alt="project image" /></div>', this.gallery, this.cssObjects);
-				image.position.set(0, radius * Math.sin(this.galleryAngle * i), radius * Math.cos(this.galleryAngle * i));
-				image.rotation.set(-this.galleryAngle * i, 0, 0);
+				image.position.set(radius * Math.sin(this.galleryAngle * i), 0, radius * Math.cos(this.galleryAngle * i));
+				image.rotation.set(0, this.galleryAngle * i, 0);
 				image.scale.multiplyScalar(1 / 14);
 			}
 
@@ -5125,21 +5129,15 @@ var UniversView = function () {
 
 			this.cssScene.add(this.galleryPivot);
 
-			// gallery arrows
-			var galleryArrows = new _CssContainer2.default('<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-t" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">\n\t<g transform="translate(0,-952.36218)">\n\t\t<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4\n\t\tL404.9,1271.9L404.9,1271.9z" />\n\t</g>\n</svg><svg class="icon gallery__arrow gallery__arrow-b" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">\n\t<g transform="translate(0,-952.36218)">\n\t\t<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4\n\t\tL404.9,1271.9L404.9,1271.9z" />\n\t</g>\n</svg></div>', this.cssScene, this.cssObjects);
-			galleryArrows.position.set(radius, 0, 40);
-			galleryArrows.rotation.set(0, (0, _utils.toRadian)(90), 0);
-			galleryArrows.scale.multiplyScalar(1 / 14);
-
 			// gallery back
 			var galleryBack = new _CssContainer2.default('<div class="details__back"><svg class="icon" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">\n\t<g transform="translate(0,-952.36218)">\n\t\t<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4\n\t\tL404.9,1271.9L404.9,1271.9z" />\n\t</g>\n</svg> Back </div>', this.cssScene, this.cssObjects);
-			galleryBack.position.set(radius, 0, 50);
+			galleryBack.position.set(radius, 0, 30);
 			galleryBack.rotation.set(0, (0, _utils.toRadian)(90), 0);
 			galleryBack.scale.multiplyScalar(1 / 14);
 
-			// Context
-			var context = new _CssContainer2.default('<div class="project__context">\n\t\t\t\t<h1>' + data.title + ' - ' + data.date + '</h1>\n\t\t\t\t<br>\n\t\t\t\t<p>' + data.descr + '</p>\n\t\t\t\t<br>\n\t\t\t\t<p>Technos : ' + data.technos + '</p>\n\t\t\t\t<br>\n\t\t\t\t<p>' + data.awards + '</p>\n\t\t\t</div>', this.cssScene, this.cssObjects);
-			context.position.set(radius, 0, -45);
+			// Context + gallery arrows
+			var context = new _CssContainer2.default('<div class="context__container">\n\t\t\t<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">\n\t\t\t\t<g transform="translate(0,-952.36218)">\n\t\t\t\t\t<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4\n\t\t\t\t\tL404.9,1271.9L404.9,1271.9z" />\n\t\t\t\t</g>\n\t\t\t</svg><svg class="icon gallery__arrow gallery__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">\n\t\t\t\t<g transform="translate(0,-952.36218)">\n\t\t\t\t\t<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4\n\t\t\t\t\tL404.9,1271.9L404.9,1271.9z" />\n\t\t\t\t</g>\n\t\t\t</svg></div>\n\t\t\t<div class="project__context">\n\t\t\t\t<h1>' + data.context + ' - ' + data.date + '</h1>\n\t\t\t\t<br>\n\t\t\t\t<p>' + data.descr + '</p>\n\t\t\t\t<br>\n\t\t\t\t<p>Technos : ' + data.technos + '</p>\n\t\t\t\t<br>\n\t\t\t\t<p>' + data.awards + '</p>\n\t\t\t</div>\n\t\t\t</div>', this.cssScene, this.cssObjects);
+			context.position.set(radius, -15, 0);
 			context.rotation.set(0, (0, _utils.toRadian)(90), 0);
 			context.scale.multiplyScalar(1 / 14);
 		}
@@ -5190,16 +5188,18 @@ var UniversView = function () {
 
 			console.log('show details');
 
+			if (this.animating === true) return false;
+			this.animating = true;
+
 			// Turn around the perimeter of a circle
+			this.cameraMove = true;
 
 			var trigo = { angle: 1 };
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this5.cameraMove = true;
+					_this5.cameraMove = true;_this5.animating = false;
 				}
 			});
-
-			this.cameraMove = true;
 
 			tl.to(this.camera.rotation, 0.8, {
 				x: 0,
@@ -5218,7 +5218,7 @@ var UniversView = function () {
 				}
 			});
 
-			tl.set(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], { display: 'block' }, 3);
+			tl.set(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], { visibility: 'visible' }, 3);
 
 			tl.staggerFromTo(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], 1.2, { // 1.2
 				opacity: 0,
@@ -5252,7 +5252,7 @@ var UniversView = function () {
 				ease: window.Power4.easeOut
 			}, 0.1);
 
-			tl.set(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], { display: 'none' });
+			tl.set(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], { visibility: 'hidden' });
 
 			tl.to(trigo, 3, { // 3.5
 				angle: 1,
@@ -5281,12 +5281,12 @@ var UniversView = function () {
 			if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
 
 			this.isSliding = true;
-			TweenMax.set(['.gallery__arrow-b', '.gallery__arrow-t'], { opacity: 1 });
+			TweenMax.set(['.gallery__arrow-l', '.gallery__arrow-r'], { opacity: 1 });
 
-			if (this.currentSlide === this.nbSlides - 2) TweenMax.to('.gallery__arrow-t', 1.5, { opacity: 0.2 });
+			if (this.currentSlide === this.nbSlides - 2) TweenMax.to('.gallery__arrow-r', 1.5, { opacity: 0.2 });
 
 			TweenMax.to(this.galleryPivot.rotation, 1.5, {
-				z: -this.galleryAngle * (this.currentSlide + 1),
+				y: -this.galleryAngle * (this.currentSlide + 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
 					_this7.currentSlide++;
@@ -5302,12 +5302,12 @@ var UniversView = function () {
 			if (this.isSliding === true || this.currentSlide === 0) return false;
 
 			this.isSliding = true;
-			TweenMax.set(['.gallery__arrow-b', '.gallery__arrow-t'], { opacity: 1 });
+			TweenMax.set(['.gallery__arrow-l', '.gallery__arrow-r'], { opacity: 1 });
 
-			if (this.currentSlide === 1) TweenMax.to('.gallery__arrow-b', 1.5, { opacity: 0.2 });
+			if (this.currentSlide === 1) TweenMax.to('.gallery__arrow-l', 1.5, { opacity: 0.2 });
 
 			TweenMax.to(this.galleryPivot.rotation, 1.5, {
-				z: -this.galleryAngle * (this.currentSlide - 1),
+				y: -this.galleryAngle * (this.currentSlide - 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
 					_this8.currentSlide--;
