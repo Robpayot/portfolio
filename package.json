@@ -52,7 +52,8 @@
   "dependencies": {
     "@84paris/84.tools": "~0.0.2",
     "babel": "~6.5.2",
-    "babel-polyfill": "~6.20.0"
+    "babel-polyfill": "~6.20.0",
+    "virtual-scroll": "^1.2.1"
   },
   "browser": {
     "modernizr": "./dev/javascripts/vendors/modernizr.js"
