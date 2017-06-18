@@ -29,7 +29,7 @@ class SceneManager {
 
 		this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
 		this.renderer.setClearColor(0xffffff, 1);
-		// this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1); //--> 1.5 au lieu de 2 ???
+		this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1); //--> 1.5 au lieu de 2 ???
 		// setScissor ??
 
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
