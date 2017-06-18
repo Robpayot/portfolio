@@ -10,11 +10,11 @@ import { Device } from '../helpers/Device';
 import bean from 'bean';
 import ease from '../helpers/ease';
 import CssContainer from '../components/CssContainer';
-
+import ScrollManager from '../managers/ScrollManager';
 
 
 // THREE JS
-import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, CSS, Sprite, SpriteCanvasMaterial } from 'three';
+import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, Box3, CSS, Sprite, SpriteCanvasMaterial } from 'three';
 import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -50,6 +50,7 @@ export default class UniversView {
 		this.backFromDetails = this.backFromDetails.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
 		this.goTo = this.goTo.bind(this);
+		this.scroll = this.scroll.bind(this);
 		this.onMouseWheel = this.onMouseWheel.bind(this);
 		this.onChangeGlow = this.onChangeGlow.bind(this);
 		this.onChangeBlur = this.onChangeBlur.bind(this);
@@ -72,6 +73,10 @@ export default class UniversView {
 
 		this.init();
 
+		// ScrollManager.on(); 
+
+
+
 
 	}
 
@@ -83,7 +88,7 @@ export default class UniversView {
 			body: document.getElementsByTagName('body')[0]
 		};
 
-		this.isControls = true;
+		this.isControls = false;
 
 		this.cssObjects = [];
 		this.incr = 1;
@@ -215,6 +220,21 @@ export default class UniversView {
 
 		this.start();
 
+		// const p = new VirtualScroll();
+
+		// console.log(p);
+
+
+		// p.on(function(e) {
+		// 	console.log(e);
+		//     // e is an object that holds scroll values, including:
+		//     e.deltaY; // <- amount of pixels scrolled vertically since last call
+		//     e.deltaX; // <- amount of pixels scrolled horizontally since last call
+		// });
+
+
+
+
 
 	}
 
@@ -236,7 +256,7 @@ export default class UniversView {
 		this.events(true);
 
 		setTimeout(() => { // wait for first frame to be done to select new DOM elements
-			console.log(document.querySelector('.project__title span'));
+
 			// Start transition In
 			if (this.fromUrl === true) {
 				this.transitionInFromUrl();
@@ -244,6 +264,9 @@ export default class UniversView {
 			} else {
 				this.transitionIn();
 			}
+
+			// ui
+			this.ui.context = document.querySelector('.context__container');
 
 		}, 10);
 
@@ -316,7 +339,6 @@ export default class UniversView {
 			}
 		});
 
-		console.log(document.querySelector('.project__title span'));
 
 		tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
@@ -407,7 +429,7 @@ export default class UniversView {
 			y: 0,
 			ease: window.Power4.easeOut
 		}, 0.1, 1.2);
-		
+
 		tl.add( () => { // add transition hover css
 			const title = document.querySelector('.project__title svg');
 			const next = document.querySelector('.project__next');
@@ -520,6 +542,7 @@ export default class UniversView {
 
 		let listenO = method === true ? 'on' : 'off';
 
+		EmitterManager[listenO]('scroll', this.scroll);
 		EmitterManager[listenO]('resize', this.resizeHandler);
 		EmitterManager[listenO]('raf', this.raf);
 
@@ -549,11 +572,11 @@ export default class UniversView {
 			3000 // far
 		);
 
-		const initPos = {
-			'x': 0,
-			'y': 0,
-			'z': 160
-		};
+		// const initPos = {
+		// 	'x': 0,
+		// 	'y': 0,
+		// 	'z': 160
+		// };
 
 		this.pathRadius = 160;
 		this.camera.position.set(-60, 170, 70);
@@ -944,6 +967,8 @@ export default class UniversView {
 		this.currentSlide = 0;
 		this.nbSlides = data.imgs.length;
 
+		this.initGalleryY = this.targetGalleryY = 0;
+
 		// Formules coordonnée d'un cercle
 		// x = x0 + r * cos(t)
 		// y = y0 + r * sin(t)
@@ -973,7 +998,7 @@ export default class UniversView {
 		galleryBack.scale.multiplyScalar(1 / 14);
 
 		// Context + gallery arrows
-		const context = new CssContainer(`<div class="context__container">
+		this.context = new CssContainer(`<div class="context__container">
 			<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
 				<g transform="translate(0,-952.36218)">
 					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
@@ -986,7 +1011,9 @@ export default class UniversView {
 				</g>
 			</svg></div>
 			<div class="project__context">
-				<h1>${data.context} - ${data.date}</h1>
+				<h1>${data.title}</h1>
+				<br>
+				<p>${data.context} - ${data.date}</p>
 				<br>
 				<p>${data.descr}</p>
 				<br>
@@ -995,10 +1022,14 @@ export default class UniversView {
 				<p>${data.awards}</p>
 			</div>
 			</div>`, this.cssScene, this.cssObjects);
-		context.position.set(radius, -15, 0);
-		context.rotation.set(0, toRadian(90), 0);
-		context.scale.multiplyScalar(1 / 14);
+		this.context.position.set(radius, -15, 0);
+		this.context.rotation.set(0, toRadian(90), 0);
+		this.context.scale.multiplyScalar(1 / 14);
 
+		// const box = new Box3().setFromObject( this.context );
+		// console.log( box.min, box.max, box.size() );
+
+		this.initContextY = this.contextTargetY = this.contextSmoothY = this.contextY = -15;
 	}
 
 	setBlur() {
@@ -1052,7 +1083,11 @@ export default class UniversView {
 
 		const trigo = { angle: 1 };
 		const tl = new TimelineMax({
-			onComplete: () => { this.cameraMove = true; this.animating = false;},
+			onComplete: () => {
+				this.cameraMove = true;
+				this.animating = false;
+				ScrollManager.on(); // start scrollmanager
+			},
 		});
 
 		tl.to(this.camera.rotation, 0.8, {
@@ -1094,10 +1129,11 @@ export default class UniversView {
 	backFromDetails() {
 
 		this.cameraMove = true;
+		ScrollManager.off(); // stop scrollmanager
 
 		const trigo = { angle: 0 };
 		const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
-		this.cameraMove = true;
+
 
 		tl.staggerTo(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], 1.2, {
 			opacity: 0,
@@ -1166,6 +1202,29 @@ export default class UniversView {
 				this.isSliding = false;
 			}
 		});
+	}
+
+	scroll(e) {
+
+
+
+		this.contextTargetY -= e.deltaY * 0.02;
+
+		// Smooth it with deceleration
+		this.contextSmoothY += (this.contextTargetY - this.contextSmoothY) * 0.15;
+
+		this.contextY = this.contextSmoothY;
+
+		// this.targetContextYFinal = -this.targetContextY * 0.1;
+		// console.log(this.contextY, this.context);
+		// this.ui.context.offsetHeight --> Get Threejs Unit !!!
+		if (this.contextY <= this.initContextY) this.contextY = this.contextTargetY = this.contextSmoothY = this.initContextY;
+		if (this.contextY >= 15) this.contextY = this.contextTargetY = this.contextSmoothY = 15;
+
+		this.context.position.y = this.contextY;
+		this.gallery.position.y = this.contextY - this.initContextY;
+		// console.log(this.context.position.y);
+
 	}
 
 	onClick(e) {

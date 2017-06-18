@@ -8,6 +8,7 @@ import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
 import bean from 'bean';
 
+
 class AppManager {
 
 	constructor() {
