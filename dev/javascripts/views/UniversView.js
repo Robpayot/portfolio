@@ -83,7 +83,7 @@ export default class UniversView {
 			body: document.getElementsByTagName('body')[0]
 		};
 
-		this.isControls = false;
+		this.isControls = true;
 
 		this.cssObjects = [];
 		this.incr = 1;
@@ -423,6 +423,9 @@ export default class UniversView {
 
 	transitionOut(dest) {
 
+		if (this.animating === true) return false;
+		this.animating = true;
+
 		this.cameraMove = true;
 		// Set camera Dolly
 		const points = {
@@ -464,6 +467,7 @@ export default class UniversView {
 		const tl = new TimelineMax({
 			onComplete: () => {
 				this.cameraMove = false;
+				this.animating = false;
 
 				EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 				EmitterManager.emit('view:transition:out');
@@ -521,8 +525,8 @@ export default class UniversView {
 
 		if (method === true) {
 			bean.on(document.body, 'click.univers', '.project__title', this.showDetails);
-			bean.on(document.body, 'click.univers', '.gallery__arrow-t', this.slideUp);
-			bean.on(document.body, 'click.univers', '.gallery__arrow-b', this.slideDown);
+			bean.on(document.body, 'click.univers', '.gallery__arrow-r', this.slideUp);
+			bean.on(document.body, 'click.univers', '.gallery__arrow-l', this.slideDown);
 			bean.on(document.body, 'click.univers', '.details__back', this.backFromDetails);
 			bean.on(document.body, 'click.univers', '.project__next', this.goTo);
 		} else {
@@ -931,7 +935,7 @@ export default class UniversView {
 		nextProject.scale.multiplyScalar(1 / 14);
 
 		// Gallery
-		const radius = 80; // radius circonference of gallery circle
+		const radius = 100; // radius circonference of gallery circle
 		this.galleryAngle = Math.PI / 6; // Space of 30 degree PI / 6
 		this.gallery = new Object3D(); // DESTROY CONTAINER ????
 		this.gallery.position.set(0, 0, 0);
@@ -947,8 +951,8 @@ export default class UniversView {
 		for (let i = 0; i < this.nbSlides; i++) {
 			// image 1
 			const image = new CssContainer(`<div class="project__image"><img src="images/projects/${data.imgs[i]}" alt="project image" /></div>`, this.gallery, this.cssObjects);
-			image.position.set(0, radius * Math.sin(this.galleryAngle * i), radius * Math.cos(this.galleryAngle * i));
-			image.rotation.set(-this.galleryAngle * i, 0, 0);
+			image.position.set(radius * Math.sin(this.galleryAngle * i), 0, radius * Math.cos(this.galleryAngle * i));
+			image.rotation.set(0, this.galleryAngle * i, 0);
 			image.scale.multiplyScalar(1 / 14);
 		}
 
@@ -957,22 +961,6 @@ export default class UniversView {
 
 		this.cssScene.add(this.galleryPivot);
 
-		// gallery arrows
-		const galleryArrows = new CssContainer(`<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-t" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-	<g transform="translate(0,-952.36218)">
-		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-		L404.9,1271.9L404.9,1271.9z" />
-	</g>
-</svg><svg class="icon gallery__arrow gallery__arrow-b" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-	<g transform="translate(0,-952.36218)">
-		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-		L404.9,1271.9L404.9,1271.9z" />
-	</g>
-</svg></div>`, this.cssScene, this.cssObjects);
-		galleryArrows.position.set(radius, 0, 40);
-		galleryArrows.rotation.set(0, toRadian(90), 0);
-		galleryArrows.scale.multiplyScalar(1 / 14);
-
 		// gallery back
 		const galleryBack = new CssContainer(`<div class="details__back"><svg class="icon" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
 	<g transform="translate(0,-952.36218)">
@@ -980,21 +968,34 @@ export default class UniversView {
 		L404.9,1271.9L404.9,1271.9z" />
 	</g>
 </svg> Back </div>`, this.cssScene, this.cssObjects);
-		galleryBack.position.set(radius, 0, 50);
+		galleryBack.position.set(radius, 0, 30);
 		galleryBack.rotation.set(0, toRadian(90), 0);
 		galleryBack.scale.multiplyScalar(1 / 14);
 
-		// Context
-		const context = new CssContainer(`<div class="project__context">
-				<h1>${data.title} - ${data.date}</h1>
+		// Context + gallery arrows
+		const context = new CssContainer(`<div class="context__container">
+			<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+				<g transform="translate(0,-952.36218)">
+					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+					L404.9,1271.9L404.9,1271.9z" />
+				</g>
+			</svg><svg class="icon gallery__arrow gallery__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+				<g transform="translate(0,-952.36218)">
+					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+					L404.9,1271.9L404.9,1271.9z" />
+				</g>
+			</svg></div>
+			<div class="project__context">
+				<h1>${data.context} - ${data.date}</h1>
 				<br>
 				<p>${data.descr}</p>
 				<br>
 				<p>Technos : ${data.technos}</p>
 				<br>
 				<p>${data.awards}</p>
+			</div>
 			</div>`, this.cssScene, this.cssObjects);
-		context.position.set(radius, 0, -45);
+		context.position.set(radius, -15, 0);
 		context.rotation.set(0, toRadian(90), 0);
 		context.scale.multiplyScalar(1 / 14);
 
@@ -1043,14 +1044,16 @@ export default class UniversView {
 	showDetails() {
 		console.log('show details');
 
+		if (this.animating === true) return false;
+		this.animating = true;
+
 		// Turn around the perimeter of a circle
+		this.cameraMove = true;
 
 		const trigo = { angle: 1 };
 		const tl = new TimelineMax({
-			onComplete: () => { this.cameraMove = true; },
+			onComplete: () => { this.cameraMove = true; this.animating = false;},
 		});
-
-		this.cameraMove = true;
 
 		tl.to(this.camera.rotation, 0.8, {
 			x: 0,
@@ -1069,7 +1072,8 @@ export default class UniversView {
 			}
 		});
 
-		tl.set(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], { display: 'block' }, 3);
+		tl.set(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], { visibility: 'visible' }, 3);
+
 
 		tl.staggerFromTo(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], 1.2, { // 1.2
 			opacity: 0,
@@ -1100,7 +1104,7 @@ export default class UniversView {
 			ease: window.Power4.easeOut
 		}, 0.1);
 
-		tl.set(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], { display: 'none' });
+		tl.set(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], { visibility: 'hidden' });
 
 
 		tl.to(trigo, 3, { // 3.5
@@ -1130,12 +1134,12 @@ export default class UniversView {
 		if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
 
 		this.isSliding = true;
-		TweenMax.set(['.gallery__arrow-b', '.gallery__arrow-t'], { opacity: 1 });
+		TweenMax.set(['.gallery__arrow-l', '.gallery__arrow-r'], { opacity: 1 });
 
-		if (this.currentSlide === this.nbSlides - 2) TweenMax.to('.gallery__arrow-t', 1.5, { opacity: 0.2 });
+		if (this.currentSlide === this.nbSlides - 2) TweenMax.to('.gallery__arrow-r', 1.5, { opacity: 0.2 });
 
 		TweenMax.to(this.galleryPivot.rotation, 1.5, {
-			z: -this.galleryAngle * (this.currentSlide + 1),
+			y: -this.galleryAngle * (this.currentSlide + 1),
 			ease: window.Expo.easeInOut,
 			onComplete: () => {
 				this.currentSlide++;
@@ -1150,12 +1154,12 @@ export default class UniversView {
 		if (this.isSliding === true || this.currentSlide === 0) return false;
 
 		this.isSliding = true;
-		TweenMax.set(['.gallery__arrow-b', '.gallery__arrow-t'], { opacity: 1 });
+		TweenMax.set(['.gallery__arrow-l', '.gallery__arrow-r'], { opacity: 1 });
 
-		if (this.currentSlide === 1) TweenMax.to('.gallery__arrow-b', 1.5, { opacity: 0.2 });
+		if (this.currentSlide === 1) TweenMax.to('.gallery__arrow-l', 1.5, { opacity: 0.2 });
 
 		TweenMax.to(this.galleryPivot.rotation, 1.5, {
-			z: -this.galleryAngle * (this.currentSlide - 1),
+			y: -this.galleryAngle * (this.currentSlide - 1),
 			ease: window.Expo.easeInOut,
 			onComplete: () => {
 				this.currentSlide--;

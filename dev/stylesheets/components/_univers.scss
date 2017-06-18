@@ -26,12 +26,12 @@
             }
         }
         .project__image {
-            max-width: 750px;
+            max-width: 600px;
             // max-height: 300px;
             border: 1px solid rgba(128, 128, 128, 0.15);
             opacity: 0.9;
             user-select: none;
-            display: none;
+            visibility: hidden;
             img {
                 width: 100%;
             }
@@ -109,24 +109,25 @@
         }
         .gallery {
             &__arrow {
-                width: 30px;
-                display: block;
+                width: 20px;
+                display: inline-block;
                 cursor: pointer;
-                display: none;
+                visibility: hidden;
                 opacity: 0;
                 transition: transform 0.5s $easeToinou;
-                &-t {
-                    transform: rotate(-90deg);
-                    margin-bottom: 10px;
+                &-l {
+                    transform: rotate(-180deg);
+                    margin-right: 15px;
                     opacity: 0.2;
                 }
                 &:hover {
-                    transform: scale(1.05) translateY(-10px) rotate(-90deg) !important;
+                    transform: scale(1.05) translateX(-5px) rotate(-180deg) !important;
                 }
-                &-b {
-                    transform: rotate(90deg);
+                &-r {
+                    // transform: rotate(0deg);
+                    margin-left: 15px;
                     &:hover {
-                        transform: scale(1.05) rotate(90deg) translateX(10px) !important;
+                        transform: scale(1.05) translateX(5px) !important;
                     }
                 }
             }
@@ -138,8 +139,7 @@
                 font-size: 20px;
                 text-transform: uppercase;
                 cursor: pointer;
-                display: none;
-                opacity: 0;
+                visibility: hidden;
                 transition: transform 0.5s $easeToinou;
                 &:hover {
                     transform: scale(1.05) translateX(-10px) !important;
@@ -152,6 +152,9 @@
                     transform: rotate(180deg);
                 }
             }
+        }
+        .context__container {
+            transform: translateY(50%);
         }
     }
     &.alt {
