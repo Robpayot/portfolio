@@ -4341,7 +4341,7 @@ var UniversView = function () {
 
 		this.init();
 
-		// ScrollManager.on(); 
+		// ScrollManager.on();
 
 	}
 
@@ -5406,21 +5406,21 @@ var UniversView = function () {
 		key: 'scroll',
 		value: function scroll(e) {
 
-			this.contextTargetY -= e.deltaY * 0.02;
+			this.contextTargetY -= e.deltaY * 0.01;
 
 			// Smooth it with deceleration
-			this.contextSmoothY += (this.contextTargetY - this.contextSmoothY) * 0.15;
+			// this.contextSmoothY += (this.contextTargetY - this.contextSmoothY) * 0.15;
 
-			this.contextY = this.contextSmoothY;
+			this.contextY = this.contextTargetY;
 
 			// this.targetContextYFinal = -this.targetContextY * 0.1;
 			// console.log(this.contextY, this.context);
 			// this.ui.context.offsetHeight --> Get Threejs Unit !!!
 			if (this.contextY <= this.initContextY) this.contextY = this.contextTargetY = this.contextSmoothY = this.initContextY;
-			if (this.contextY >= 15) this.contextY = this.contextTargetY = this.contextSmoothY = 15;
+			if (this.contextY >= 20) this.contextY = this.contextTargetY = this.contextSmoothY = 20;
 
-			this.context.position.y = this.contextY;
-			this.gallery.position.y = this.contextY - this.initContextY;
+			// this.context.position.y = this.contextY;
+			// this.gallery.position.y = this.contextY - this.initContextY;
 			// console.log(this.context.position.y);
 		}
 	}, {
@@ -5693,6 +5693,10 @@ var UniversView = function () {
 				this.brightness.uniforms['contrast'].value = (Math.sin(this.incr / 40) + 1.2) * 3;
 				this.brightness2.uniforms['contrast'].value = (Math.cos(this.incr / 40) + 1.2) * 3;
 			}
+
+			// scroll gallery
+			this.context.position.y = this.contextY;
+			this.gallery.position.y = this.contextY - this.initContextY;
 
 			this.incr++;
 

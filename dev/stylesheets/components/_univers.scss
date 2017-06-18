@@ -142,16 +142,19 @@
                 text-transform: uppercase;
                 cursor: pointer;
                 visibility: hidden;
-                transition: transform 0.5s $easeToinou;
-                &:hover {
-                    transform: scale(1.05) translateX(-10px) !important;
-                }
+                
                 .icon {
                     display: inline-block;
                     vertical-align: middle;
                     margin-right: 10px;
                     width: 20px;
                     transform: rotate(180deg);
+                    transition: transform 0.5s $easeToinou;
+                }
+                &:hover {
+                    .icon {
+                        transform: scale(1.05) translateX(-10px)  rotate(180deg) !important;
+                    }
                 }
             }
         }

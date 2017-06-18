@@ -441,14 +441,7 @@ body {
     font-size: 20px;
     text-transform: uppercase;
     cursor: pointer;
-    visibility: hidden;
-    transition: -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
-    transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
-    transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1); }
-    .univers .container3D .details__back:hover {
-      -webkit-transform: scale(1.05) translateX(-10px) !important;
-      -ms-transform: scale(1.05) translateX(-10px) !important;
-      transform: scale(1.05) translateX(-10px) !important; }
+    visibility: hidden; }
     .univers .container3D .details__back .icon {
       display: inline-block;
       vertical-align: middle;
@@ -456,7 +449,14 @@ body {
       width: 20px;
       -webkit-transform: rotate(180deg);
       -ms-transform: rotate(180deg);
-      transform: rotate(180deg); }
+      transform: rotate(180deg);
+      transition: -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
+      transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
+      transition: transform 0.5s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1); }
+    .univers .container3D .details__back:hover .icon {
+      -webkit-transform: scale(1.05) translateX(-10px) rotate(180deg) !important;
+      -ms-transform: scale(1.05) translateX(-10px) rotate(180deg) !important;
+      transform: scale(1.05) translateX(-10px) rotate(180deg) !important; }
   .univers .container3D .context__container {
     -webkit-transform: translateY(50%);
     -ms-transform: translateY(50%);
