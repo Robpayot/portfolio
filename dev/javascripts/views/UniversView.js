@@ -1515,7 +1515,7 @@ export default class UniversView {
 		this.context.position.y = this.contextY;
 		this.gallery.position.y = this.contextY - this.initContextY;
 
-
+		// if (this.incr === 360) this.incr = 0;
 		this.incr++;
 
 		// Zoom ??

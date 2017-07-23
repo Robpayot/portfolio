@@ -68,7 +68,7 @@ class RouterManager {
 						id: 0,
 						bkg: 0x0101010,
 						astd: 'spheres',
-						gravity: true,
+						gravity: false,
 						pointsLight: true,
 						glow: true,
 						alt: false,
