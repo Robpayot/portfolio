@@ -13,7 +13,7 @@ class SceneManager {
 	start() {
 		// Set unique Renderer
 
-		if (/\/#intro/.test(window.location.href) === true) return false;
+		// if (/\/#intro/.test(window.location.href) === true) return false;
 
 
 		this.el = document.querySelector('.univers');
@@ -60,7 +60,7 @@ class SceneManager {
 		}
 
 		// Render cssScene
-		this.cssRenderer.render(opts.cssScene, opts.camera);
+		if (opts.cssScene !== null) this.cssRenderer.render(opts.cssScene, opts.camera);
 
 	}
 
@@ -72,7 +72,7 @@ class SceneManager {
 
 		// Update canvas size
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+		if (opts.cssScene !== null) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
 }
