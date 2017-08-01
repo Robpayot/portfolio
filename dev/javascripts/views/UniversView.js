@@ -528,23 +528,22 @@ export default class UniversView {
 
 	events(method) {
 
-		let listen = method === true ? 'addEventListener' : 'removeEventListener';
+		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
+		let onListener = method === false ? 'off' : 'on';
 
 		if (Device.touch === false) {
 			// move camera
-			document[listen]('mousemove', this.onMouseMove);
-			document.body[listen]('click', this.onClick);
-			// document[listen]('mousewheel', this.onMouseWheel);
-			// document[listen]('MozMousePixelScroll', this.onMouseWheel);
+			document[evListener]('mousemove', this.onMouseMove);
+			document.body[evListener]('click', this.onClick);
+			// document[evListener]('mousewheel', this.onMouseWheel);
+			// document[evListener]('MozMousePixelScroll', this.onMouseWheel);
 		} else {
-			document.body[listen]('touchstart', this.onClick);
+			document.body[evListener]('touchstart', this.onClick);
 		}
 
-		let listenO = method === true ? 'on' : 'off';
-
-		EmitterManager[listenO]('scroll', this.scroll);
-		EmitterManager[listenO]('resize', this.resizeHandler);
-		EmitterManager[listenO]('raf', this.raf);
+		EmitterManager[onListener]('scroll', this.scroll);
+		EmitterManager[onListener]('resize', this.resizeHandler);
+		EmitterManager[onListener]('raf', this.raf);
 
 		if (method === true) {
 			bean.on(document.body, 'click.univers', '.project__title', this.showDetails);
@@ -1515,7 +1514,7 @@ export default class UniversView {
 		this.context.position.y = this.contextY;
 		this.gallery.position.y = this.contextY - this.initContextY;
 
-
+		// if (this.incr === 360) this.incr = 0;
 		this.incr++;
 
 		// Zoom ??

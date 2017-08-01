@@ -1,6 +1,7 @@
 import EmitterManager from './EmitterManager';
 import PreloadManager from './PreloadManager';
 import UniversView from '../views/UniversView';
+import IntroView from '../views/IntroView';
 import data from '../../datas/data.json';
 
 // console.log(ListView);
@@ -26,6 +27,9 @@ class RouterManager {
 
 		if (/\/#project-1/.test(url) === true) {
 			this.switchView('/project-1', 1, true);
+		} else if (/\/#intro/.test(url) === true) {
+			this.switchView('/intro', 0, true);
+			console.log('?');
 		} else {
 			this.switchView('/project-0', 0, true);
 		}
@@ -68,7 +72,7 @@ class RouterManager {
 						id: 0,
 						bkg: 0x0101010,
 						astd: 'spheres',
-						gravity: true,
+						gravity: false,
 						pointsLight: true,
 						glow: true,
 						alt: false,
@@ -101,6 +105,12 @@ class RouterManager {
 					this.currentPage.start();
 				}
 				window.location = '#project-1';
+				break;
+
+			case '/intro':
+				const el = document.querySelector('.univers');
+				this.currentPage = new IntroView(el);
+				window.location = '#intro';
 				break;
 		}
 
