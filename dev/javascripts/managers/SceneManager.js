@@ -13,6 +13,9 @@ class SceneManager {
 	start() {
 		// Set unique Renderer
 
+		if (/\/#intro/.test(window.location.href) === true) return false;
+
+
 		this.el = document.querySelector('.univers');
 
 
