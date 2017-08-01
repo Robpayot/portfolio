@@ -2,7 +2,7 @@ import EmitterManager from '../managers/EmitterManager';
 // import { getRandom, toRadian, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 
-import * as THREE from 'three';
+import { Vector2, Raycaster, PerspectiveCamera, Scene, DirectionalLight, BoxGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
@@ -31,6 +31,7 @@ export default class IntroView {
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
+		this.onW = this.onW.bind(this);
 
 		this.init();
 
@@ -40,11 +41,16 @@ export default class IntroView {
 
 	events(method) {
 
-		// let evListener = method === false ? 'removeEventListener' : 'addEventListener';
+		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		let onListener = method === false ? 'off' : 'on';
 
 		EmitterManager[onListener]('resize', this.resizeHandler);
 		EmitterManager[onListener]('raf', this.raf);
+
+		document[evListener]( 'mousemove', this.onDocumentMouseMove, false );
+		document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
+		document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
+		document[evListener]( 'keydown', this.onW , false );
 	}
 
 	init() {
@@ -63,10 +69,9 @@ export default class IntroView {
 		// let BOUNDS_HALF = BOUNDS * 0.5;
 
 		let container;
-		let controls;
 		this.mouseMoved = false;
-		this.mouseCoords = new THREE.Vector2();
-		this.raycaster = new THREE.Raycaster();
+		this.mouseCoords = new Vector2();
+		this.raycaster = new Raycaster();
 
 		this.simplex = new SimplexNoise();
 
@@ -90,44 +95,23 @@ export default class IntroView {
 		container = document.createElement( 'div' );
 		document.body.appendChild( container );
 
-		this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+		this.camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
 		this.camera.position.set( 0, 200, 350 );
 
-		this.scene = new THREE.Scene();
+		this.scene = new Scene();
 
-		let sun = new THREE.DirectionalLight( 0xFFFFFF, 1.0 );
+		let sun = new DirectionalLight( 0xFFFFFF, 1.0 );
 		sun.position.set( 300, 400, 175 );
 		this.scene.add( sun );
 
-		let sun2 = new THREE.DirectionalLight( 0xe8f0ff, 0.2 );
+		let sun2 = new DirectionalLight( 0xe8f0ff, 0.2 );
 		sun2.position.set( -100, 350, -200 );
 		this.scene.add( sun2 );
 
 		SceneManager.renderer.setClearColor( 0x000000 );
 		SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
 
-		controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
-
-
-		// stats = new Stats();
-		// container.appendChild( stats.dom );
-
-		document.addEventListener( 'mousemove', this.onDocumentMouseMove, false );
-		document.addEventListener( 'touchstart', this.onDocumentTouchStart, false );
-		document.addEventListener( 'touchmove', this.onDocumentTouchMove, false );
-
-		document.addEventListener( 'keydown', ( event ) => {
-
-			// W Pressed: Toggle wireframe
-			if ( event.keyCode === 87 ) {
-
-				this.waterMesh.material.wireframe = !this.waterMesh.material.wireframe;
-				this.waterMesh.material.needsUpdate = true;
-
-			}
-
-		} , false );
-
+		let controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 		let gui = new dat.GUI();
 
@@ -155,9 +139,9 @@ export default class IntroView {
 
 		for (let i = 0; i < numberBox; i++) {
 
-			let geometry = new THREE.BoxGeometry( 100, 100, 100 );
-			let material = new THREE.MeshBasicMaterial( {color: 0xFFFFFF} );
-			let cube = new THREE.Mesh( geometry, material );
+			let geometry = new BoxGeometry( 100, 100, 100 );
+			let material = new MeshBasicMaterial( {color: 0xFFFFFF} );
+			let cube = new Mesh( geometry, material );
 			cube.position.x = i * 200 - 100;
 			cube.position.z = i * 200 - 100;
 
@@ -175,26 +159,26 @@ export default class IntroView {
 
 		let materialColor = 0xffffff;
 
-		let geometry = new THREE.PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, this.WIDTH - 1, this.WIDTH - 1 );
+		let geometry = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, this.WIDTH - 1, this.WIDTH - 1 );
 
 		// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-		let material = new THREE.ShaderMaterial( {
-			uniforms: THREE.UniformsUtils.merge( [
-				THREE.ShaderLib[ 'phong' ].uniforms,
+		let material = new ShaderMaterial( {
+			uniforms: UniformsUtils.merge( [
+				ShaderLib[ 'phong' ].uniforms,
 				{
 					heightmap: { value: null }
 				}
 			] ),
 			vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
-			fragmentShader: THREE.ShaderChunk[ 'meshphong_frag' ]
+			fragmentShader: ShaderChunk[ 'meshphong_frag' ]
 
 		} );
 
 		material.lights = true;
 
 		// Material attributes from MeshPhongMaterial
-		material.color = new THREE.Color( materialColor );
-		material.specular = new THREE.Color( 0x111111 );
+		material.color = new Color( materialColor );
+		material.specular = new Color( 0x111111 );
 		material.shininess = 50;
 
 		// Sets the uniforms with the material values
@@ -209,7 +193,7 @@ export default class IntroView {
 
 		this.waterUniforms = material.uniforms;
 
-		this.waterMesh = new THREE.Mesh( geometry, material );
+		this.waterMesh = new Mesh( geometry, material );
 		this.waterMesh.rotation.x = -Math.PI / 2;
 		this.waterMesh.matrixAutoUpdate = false;
 		this.waterMesh.updateMatrix();
@@ -217,8 +201,8 @@ export default class IntroView {
 		this.scene.add( this.waterMesh );
 
 		// Mesh just for mouse raycasting
-		let geometryRay = new THREE.PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
-		this.meshRay = new THREE.Mesh( geometryRay, new THREE.MeshBasicMaterial( { color: 0xFFFFFF, visible: false } ) );
+		let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
+		this.meshRay = new Mesh( geometryRay, new MeshBasicMaterial( { color: 0xFFFFFF, visible: false } ) );
 		this.meshRay.rotation.x = -Math.PI / 2;
 		this.meshRay.matrixAutoUpdate = false;
 		this.meshRay.updateMatrix();
@@ -238,7 +222,7 @@ export default class IntroView {
 
 		this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
 
-		this.heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2( 10000, 10000 ) };
+		this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
 		this.heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
 		this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
 		this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
@@ -349,6 +333,17 @@ export default class IntroView {
 
 		}
 
+	}
+
+	onW(event) {
+
+		// W Pressed: Toggle wireframe
+		if ( event.keyCode === 87 ) {
+
+			this.waterMesh.material.wireframe = !this.waterMesh.material.wireframe;
+			this.waterMesh.material.needsUpdate = true;
+
+		}
 	}
 
 	resizeHandler() {
