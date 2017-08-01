@@ -4906,8 +4906,6 @@ var _SceneManager2 = _interopRequireDefault(_SceneManager);
 
 var _three = require('three');
 
-var THREE = _interopRequireWildcard(_three);
-
 var _OrbitControls = require('../vendors/OrbitControls');
 
 var _OrbitControls2 = _interopRequireDefault(_OrbitControls);
@@ -4923,8 +4921,6 @@ var _GPUComputationRenderer2 = _interopRequireDefault(_GPUComputationRenderer);
 var _datGui = require('dat-gui');
 
 var _datGui2 = _interopRequireDefault(_datGui);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4951,6 +4947,7 @@ var IntroView = function () {
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
+		this.onW = this.onW.bind(this);
 
 		this.init();
 
@@ -4961,11 +4958,16 @@ var IntroView = function () {
 		key: 'events',
 		value: function events(method) {
 
-			// let evListener = method === false ? 'removeEventListener' : 'addEventListener';
+			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			var onListener = method === false ? 'off' : 'on';
 
 			_EmitterManager2.default[onListener]('resize', this.resizeHandler);
 			_EmitterManager2.default[onListener]('raf', this.raf);
+
+			document[evListener]('mousemove', this.onDocumentMouseMove, false);
+			document[evListener]('touchstart', this.onDocumentTouchStart, false);
+			document[evListener]('touchmove', this.onDocumentTouchMove, false);
+			document[evListener]('keydown', this.onW, false);
 		}
 	}, {
 		key: 'init',
@@ -4986,10 +4988,9 @@ var IntroView = function () {
 			// let BOUNDS_HALF = BOUNDS * 0.5;
 
 			var container = void 0;
-			var controls = void 0;
 			this.mouseMoved = false;
-			this.mouseCoords = new THREE.Vector2();
-			this.raycaster = new THREE.Raycaster();
+			this.mouseCoords = new _three.Vector2();
+			this.raycaster = new _three.Raycaster();
 
 			this.simplex = new _SimplexNoise2.default();
 
@@ -5013,40 +5014,23 @@ var IntroView = function () {
 			container = document.createElement('div');
 			document.body.appendChild(container);
 
-			this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+			this.camera = new _three.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
 			this.camera.position.set(0, 200, 350);
 
-			this.scene = new THREE.Scene();
+			this.scene = new _three.Scene();
 
-			var sun = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+			var sun = new _three.DirectionalLight(0xFFFFFF, 1.0);
 			sun.position.set(300, 400, 175);
 			this.scene.add(sun);
 
-			var sun2 = new THREE.DirectionalLight(0xe8f0ff, 0.2);
+			var sun2 = new _three.DirectionalLight(0xe8f0ff, 0.2);
 			sun2.position.set(-100, 350, -200);
 			this.scene.add(sun2);
 
 			_SceneManager2.default.renderer.setClearColor(0x000000);
 			_SceneManager2.default.renderer.setPixelRatio(window.devicePixelRatio);
 
-			controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
-
-			// stats = new Stats();
-			// container.appendChild( stats.dom );
-
-			document.addEventListener('mousemove', this.onDocumentMouseMove, false);
-			document.addEventListener('touchstart', this.onDocumentTouchStart, false);
-			document.addEventListener('touchmove', this.onDocumentTouchMove, false);
-
-			document.addEventListener('keydown', function (event) {
-
-				// W Pressed: Toggle wireframe
-				if (event.keyCode === 87) {
-
-					_this.waterMesh.material.wireframe = !_this.waterMesh.material.wireframe;
-					_this.waterMesh.material.needsUpdate = true;
-				}
-			}, false);
+			var controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
 
 			var gui = new _datGui2.default.GUI();
 
@@ -5073,9 +5057,9 @@ var IntroView = function () {
 
 			for (var _i = 0; _i < numberBox; _i++) {
 
-				var geometry = new THREE.BoxGeometry(100, 100, 100);
-				var material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
-				var cube = new THREE.Mesh(geometry, material);
+				var geometry = new _three.BoxGeometry(100, 100, 100);
+				var material = new _three.MeshBasicMaterial({ color: 0xFFFFFF });
+				var cube = new _three.Mesh(geometry, material);
 				cube.position.x = _i * 200 - 100;
 				cube.position.z = _i * 200 - 100;
 
@@ -5094,23 +5078,23 @@ var IntroView = function () {
 
 			var materialColor = 0xffffff;
 
-			var geometry = new THREE.PlaneBufferGeometry(this.BOUNDS, this.BOUNDS, this.WIDTH - 1, this.WIDTH - 1);
+			var geometry = new _three.PlaneBufferGeometry(this.BOUNDS, this.BOUNDS, this.WIDTH - 1, this.WIDTH - 1);
 
 			// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-			var material = new THREE.ShaderMaterial({
-				uniforms: THREE.UniformsUtils.merge([THREE.ShaderLib['phong'].uniforms, {
+			var material = new _three.ShaderMaterial({
+				uniforms: _three.UniformsUtils.merge([_three.ShaderLib['phong'].uniforms, {
 					heightmap: { value: null }
 				}]),
 				vertexShader: document.getElementById('waterVertexShader').textContent,
-				fragmentShader: THREE.ShaderChunk['meshphong_frag']
+				fragmentShader: _three.ShaderChunk['meshphong_frag']
 
 			});
 
 			material.lights = true;
 
 			// Material attributes from MeshPhongMaterial
-			material.color = new THREE.Color(materialColor);
-			material.specular = new THREE.Color(0x111111);
+			material.color = new _three.Color(materialColor);
+			material.specular = new _three.Color(0x111111);
 			material.shininess = 50;
 
 			// Sets the uniforms with the material values
@@ -5125,7 +5109,7 @@ var IntroView = function () {
 
 			this.waterUniforms = material.uniforms;
 
-			this.waterMesh = new THREE.Mesh(geometry, material);
+			this.waterMesh = new _three.Mesh(geometry, material);
 			this.waterMesh.rotation.x = -Math.PI / 2;
 			this.waterMesh.matrixAutoUpdate = false;
 			this.waterMesh.updateMatrix();
@@ -5133,8 +5117,8 @@ var IntroView = function () {
 			this.scene.add(this.waterMesh);
 
 			// Mesh just for mouse raycasting
-			var geometryRay = new THREE.PlaneBufferGeometry(this.BOUNDS, this.BOUNDS, 1, 1);
-			this.meshRay = new THREE.Mesh(geometryRay, new THREE.MeshBasicMaterial({ color: 0xFFFFFF, visible: false }));
+			var geometryRay = new _three.PlaneBufferGeometry(this.BOUNDS, this.BOUNDS, 1, 1);
+			this.meshRay = new _three.Mesh(geometryRay, new _three.MeshBasicMaterial({ color: 0xFFFFFF, visible: false }));
 			this.meshRay.rotation.x = -Math.PI / 2;
 			this.meshRay.matrixAutoUpdate = false;
 			this.meshRay.updateMatrix();
@@ -5153,7 +5137,7 @@ var IntroView = function () {
 
 			this.gpuCompute.setVariableDependencies(this.heightmapVariable, [this.heightmapVariable]);
 
-			this.heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2(10000, 10000) };
+			this.heightmapVariable.material.uniforms.mousePos = { value: new _three.Vector2(10000, 10000) };
 			this.heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
 			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
 			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(1);
@@ -5259,6 +5243,17 @@ var IntroView = function () {
 				event.preventDefault();
 
 				this.setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
+			}
+		}
+	}, {
+		key: 'onW',
+		value: function onW(event) {
+
+			// W Pressed: Toggle wireframe
+			if (event.keyCode === 87) {
+
+				this.waterMesh.material.wireframe = !this.waterMesh.material.wireframe;
+				this.waterMesh.material.needsUpdate = true;
 			}
 		}
 	}, {
