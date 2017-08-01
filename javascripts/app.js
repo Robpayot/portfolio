@@ -893,7 +893,8 @@ var SceneManager = function () {
 		value: function start() {
 			// Set unique Renderer
 
-			if (/\/#intro/.test(window.location.href) === true) return false;
+			// if (/\/#intro/.test(window.location.href) === true) return false;
+
 
 			this.el = document.querySelector('.univers');
 
@@ -937,7 +938,7 @@ var SceneManager = function () {
 			}
 
 			// Render cssScene
-			this.cssRenderer.render(opts.cssScene, opts.camera);
+			if (opts.cssScene !== null) this.cssRenderer.render(opts.cssScene, opts.camera);
 		}
 	}, {
 		key: 'resizeHandler',
@@ -949,7 +950,7 @@ var SceneManager = function () {
 
 			// Update canvas size
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
-			this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+			if (opts.cssScene !== null) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 		}
 	}]);
 
@@ -4892,12 +4893,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+// import { getRandom, toRadian, clamp, round } from '../helpers/utils';
+
 
 var _EmitterManager = require('../managers/EmitterManager');
 
 var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 
-var _utils = require('../helpers/utils');
+var _SceneManager = require('../managers/SceneManager');
+
+var _SceneManager2 = _interopRequireDefault(_SceneManager);
 
 var _three = require('three');
 
@@ -4929,15 +4934,25 @@ var IntroView = function () {
 	function IntroView(el) {
 		_classCallCheck(this, IntroView);
 
-		console.log('intro fdp');
-
 		this.el = el;
 
 		this.ui = {};
 
-		this.init();
-
 		// bind
+
+		this.init = this.init.bind(this);
+		this.raf = this.raf.bind(this);
+		this.resizeHandler = this.resizeHandler.bind(this);
+		this.valuesChanger = this.valuesChanger.bind(this);
+		this.initWater = this.initWater.bind(this);
+		this.fillTexture = this.fillTexture.bind(this);
+		this.onDocumentMouseMove = this.onDocumentMouseMove.bind(this);
+		this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this);
+		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
+		this.smoothWater = this.smoothWater.bind(this);
+		this.setMouseCoords = this.setMouseCoords.bind(this);
+
+		this.init();
 
 		this.events(true);
 	}
@@ -4947,365 +4962,358 @@ var IntroView = function () {
 		value: function events(method) {
 
 			// let evListener = method === false ? 'removeEventListener' : 'addEventListener';
-			// let onListener = method === false ? 'off' : 'on'
+			var onListener = method === false ? 'off' : 'on';
+
+			_EmitterManager2.default[onListener]('resize', this.resizeHandler);
+			_EmitterManager2.default[onListener]('raf', this.raf);
 		}
 	}, {
 		key: 'init',
 		value: function init() {
+			var _this = this;
+
 			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 			this.hash = document.location.hash.substr(1);
 			if (this.hash) this.hash = parseInt(this.hash, 0);
 
 			// Texture width for simulation
-			var WIDTH = this.hash || 128;
+			this.WIDTH = this.hash || 128;
 			// let NUM_TEXELS = WIDTH * WIDTH;
 
 			// Water size in system units
-			var BOUNDS = 512;
+			this.BOUNDS = 512;
 			// let BOUNDS_HALF = BOUNDS * 0.5;
 
 			var container = void 0;
-			var camera = void 0,
-			    scene = void 0,
-			    renderer = void 0,
-			    controls = void 0;
-			var mouseMoved = false;
-			var mouseCoords = new THREE.Vector2();
-			var raycaster = new THREE.Raycaster();
+			var controls = void 0;
+			this.mouseMoved = false;
+			this.mouseCoords = new THREE.Vector2();
+			this.raycaster = new THREE.Raycaster();
 
-			var waterMesh = void 0;
-			var meshRay = void 0;
-			var gpuCompute = void 0;
-			var heightmapVariable = void 0;
-			var waterUniforms = void 0;
-			var smoothShader = void 0;
+			this.simplex = new _SimplexNoise2.default();
 
-			var simplex = new _SimplexNoise2.default();
+			document.getElementById('waterSize').innerText = this.WIDTH + ' x ' + this.WIDTH;
 
-			var windowHalfX = window.innerWidth / 2;
-			var windowHalfY = window.innerHeight / 2;
+			// function change(n) {
+			// 	location.hash = n;
+			// 	location.reload();
+			// 	return false;
+			// }
 
-			document.getElementById('waterSize').innerText = WIDTH + ' x ' + WIDTH;
-
-			function change(n) {
-				location.hash = n;
-				location.reload();
-				return false;
-			}
 
 			var options = '';
 			for (var i = 4; i < 10; i++) {
 				var j = Math.pow(2, i);
 				options += '<a href="#" onclick="return change(' + j + ')">' + j + 'x' + j + '</a> ';
 			}
+
 			document.getElementById('options').innerHTML = options;
 
-			init();
-			animate();
+			container = document.createElement('div');
+			document.body.appendChild(container);
 
-			function init() {
+			this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+			this.camera.position.set(0, 200, 350);
 
-				container = document.createElement('div');
-				document.body.appendChild(container);
+			this.scene = new THREE.Scene();
 
-				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
-				camera.position.set(0, 200, 350);
+			var sun = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+			sun.position.set(300, 400, 175);
+			this.scene.add(sun);
 
-				scene = new THREE.Scene();
+			var sun2 = new THREE.DirectionalLight(0xe8f0ff, 0.2);
+			sun2.position.set(-100, 350, -200);
+			this.scene.add(sun2);
 
-				var sun = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-				sun.position.set(300, 400, 175);
-				scene.add(sun);
+			_SceneManager2.default.renderer.setClearColor(0x000000);
+			_SceneManager2.default.renderer.setPixelRatio(window.devicePixelRatio);
 
-				var sun2 = new THREE.DirectionalLight(0xe8f0ff, 0.2);
-				sun2.position.set(-100, 350, -200);
-				scene.add(sun2);
+			controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
 
-				renderer = new THREE.WebGLRenderer();
-				renderer.setClearColor(0x000000);
-				renderer.setPixelRatio(window.devicePixelRatio);
-				renderer.setSize(window.innerWidth, window.innerHeight);
-				container.appendChild(renderer.domElement);
+			// stats = new Stats();
+			// container.appendChild( stats.dom );
 
-				controls = new _OrbitControls2.default(camera, renderer.domElement);
+			document.addEventListener('mousemove', this.onDocumentMouseMove, false);
+			document.addEventListener('touchstart', this.onDocumentTouchStart, false);
+			document.addEventListener('touchmove', this.onDocumentTouchMove, false);
 
-				// stats = new Stats();
-				// container.appendChild( stats.dom );
+			document.addEventListener('keydown', function (event) {
 
-				document.addEventListener('mousemove', onDocumentMouseMove, false);
-				document.addEventListener('touchstart', onDocumentTouchStart, false);
-				document.addEventListener('touchmove', onDocumentTouchMove, false);
+				// W Pressed: Toggle wireframe
+				if (event.keyCode === 87) {
 
-				document.addEventListener('keydown', function (event) {
+					_this.waterMesh.material.wireframe = !_this.waterMesh.material.wireframe;
+					_this.waterMesh.material.needsUpdate = true;
+				}
+			}, false);
 
-					// W Pressed: Toggle wireframe
-					if (event.keyCode === 87) {
+			var gui = new _datGui2.default.GUI();
 
-						waterMesh.material.wireframe = !waterMesh.material.wireframe;
-						waterMesh.material.needsUpdate = true;
-					}
-				}, false);
+			this.effectController = {
+				mouseSize: 20.0,
+				viscosity: 0.03
+			};
 
-				window.addEventListener('resize', onWindowResize, false);
+			gui.add(this.effectController, 'mouseSize', 1.0, 100.0, 1.0).onChange(this.valuesChanger);
+			gui.add(this.effectController, 'viscosity', 0.0, 0.1, 0.001).onChange(this.valuesChanger);
+			var buttonSmooth = {
+				smoothWater: function smoothWater() {
+					_this.smoothWater();
+				}
+			};
+			gui.add(buttonSmooth, 'smoothWater');
 
-				var gui = new _datGui2.default.GUI();
+			this.initWater();
 
-				var effectController = {
-					mouseSize: 20.0,
-					viscosity: 0.03
-				};
+			this.valuesChanger();
 
-				var valuesChanger = function valuesChanger() {
+			// ADD BOXES
+			var numberBox = 2;
 
-					heightmapVariable.material.uniforms.mouseSize.value = effectController.mouseSize;
-					heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
-				};
+			for (var _i = 0; _i < numberBox; _i++) {
 
-				gui.add(effectController, 'mouseSize', 1.0, 100.0, 1.0).onChange(valuesChanger);
-				gui.add(effectController, 'viscosity', 0.0, 0.1, 0.001).onChange(valuesChanger);
-				var buttonSmooth = {
-					smoothWater: function smoothWater() {
-						_smoothWater();
-					}
-				};
-				gui.add(buttonSmooth, 'smoothWater');
+				var geometry = new THREE.BoxGeometry(100, 100, 100);
+				var material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
+				var cube = new THREE.Mesh(geometry, material);
+				cube.position.x = _i * 200 - 100;
+				cube.position.z = _i * 200 - 100;
 
-				initWater();
+				this.scene.add(cube);
 
-				valuesChanger();
+				var tl = new TimelineMax({ repeat: -1 });
+				tl.fromTo(cube.position, 2, { y: -50 }, { y: 50, ease: window.Linear.easeNone });
+				tl.to(cube.position, 2, { y: -50, ease: window.Linear.easeNone });
+				tl.fromTo(cube.position, 2, { y: -50 }, { y: 50, ease: window.Linear.easeNone });
+				tl.fromTo(cube.position, 7, { z: -200 }, { z: 200, ease: window.Linear.easeNone }, 0);
+			}
+		}
+	}, {
+		key: 'initWater',
+		value: function initWater() {
 
-				// create box
-				var numberBox = 2;
+			var materialColor = 0xffffff;
 
-				for (var _i = 0; _i < numberBox; _i++) {
+			var geometry = new THREE.PlaneBufferGeometry(this.BOUNDS, this.BOUNDS, this.WIDTH - 1, this.WIDTH - 1);
 
-					var geometry = new THREE.BoxGeometry(100, 100, 100);
-					var material = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
-					var cube = new THREE.Mesh(geometry, material);
-					cube.position.x = _i * 200 - 100;
-					cube.position.z = _i * 200 - 100;
+			// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
+			var material = new THREE.ShaderMaterial({
+				uniforms: THREE.UniformsUtils.merge([THREE.ShaderLib['phong'].uniforms, {
+					heightmap: { value: null }
+				}]),
+				vertexShader: document.getElementById('waterVertexShader').textContent,
+				fragmentShader: THREE.ShaderChunk['meshphong_frag']
 
-					scene.add(cube);
+			});
 
-					var tl = new TimelineMax({ repeat: -1 });
-					tl.fromTo(cube.position, 2, { y: -50 }, { y: 50, ease: window.Linear.easeNone });
-					tl.to(cube.position, 2, { y: -50, ease: window.Linear.easeNone });
-					tl.fromTo(cube.position, 2, { y: -50 }, { y: 50, ease: window.Linear.easeNone });
-					tl.fromTo(cube.position, 7, { z: -200 }, { z: 200, ease: window.Linear.easeNone }, 0);
+			material.lights = true;
+
+			// Material attributes from MeshPhongMaterial
+			material.color = new THREE.Color(materialColor);
+			material.specular = new THREE.Color(0x111111);
+			material.shininess = 50;
+
+			// Sets the uniforms with the material values
+			material.uniforms.diffuse.value = material.color;
+			material.uniforms.specular.value = material.specular;
+			material.uniforms.shininess.value = Math.max(material.shininess, 1e-4);
+			material.uniforms.opacity.value = material.opacity;
+
+			// Defines
+			material.defines.WIDTH = this.WIDTH.toFixed(1);
+			material.defines.BOUNDS = this.BOUNDS.toFixed(1);
+
+			this.waterUniforms = material.uniforms;
+
+			this.waterMesh = new THREE.Mesh(geometry, material);
+			this.waterMesh.rotation.x = -Math.PI / 2;
+			this.waterMesh.matrixAutoUpdate = false;
+			this.waterMesh.updateMatrix();
+
+			this.scene.add(this.waterMesh);
+
+			// Mesh just for mouse raycasting
+			var geometryRay = new THREE.PlaneBufferGeometry(this.BOUNDS, this.BOUNDS, 1, 1);
+			this.meshRay = new THREE.Mesh(geometryRay, new THREE.MeshBasicMaterial({ color: 0xFFFFFF, visible: false }));
+			this.meshRay.rotation.x = -Math.PI / 2;
+			this.meshRay.matrixAutoUpdate = false;
+			this.meshRay.updateMatrix();
+			this.scene.add(this.meshRay);
+
+			// Creates the gpu computation class and sets it up
+			console.log(_GPUComputationRenderer2.default);
+
+			this.gpuCompute = new _GPUComputationRenderer2.default(this.WIDTH, this.WIDTH, _SceneManager2.default.renderer);
+
+			var heightmap0 = this.gpuCompute.createTexture();
+
+			this.fillTexture(heightmap0);
+
+			this.heightmapVariable = this.gpuCompute.addVariable('heightmap', document.getElementById('heightmapFragmentShader').textContent, heightmap0);
+
+			this.gpuCompute.setVariableDependencies(this.heightmapVariable, [this.heightmapVariable]);
+
+			this.heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2(10000, 10000) };
+			this.heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
+			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
+			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(1);
+
+			var error = this.gpuCompute.init();
+			if (error !== null) {
+				console.error(error);
+			}
+
+			// Create compute shader to smooth the water surface and velocity
+			this.smoothShader = this.gpuCompute.createShaderMaterial(document.getElementById('smoothFragmentShader').textContent, { texture: { value: null } });
+		}
+	}, {
+		key: 'fillTexture',
+		value: function fillTexture(texture) {
+			var _this2 = this;
+
+			var waterMaxHeight = 10;
+
+			var noise = function noise(x, y, z) {
+				var multR = waterMaxHeight;
+				var mult = 0.025;
+				var r = 0;
+				for (var i = 0; i < 15; i++) {
+					r += multR * _this2.simplex.noise(x * mult, y * mult);
+					multR *= 0.53 + 0.025 * i;
+					mult *= 1.25;
+				}
+				return r;
+			};
+
+			var pixels = texture.image.data;
+
+			var p = 0;
+			for (var j = 0; j < this.WIDTH; j++) {
+				for (var i = 0; i < this.WIDTH; i++) {
+
+					var x = i * 128 / this.WIDTH;
+					var y = j * 128 / this.WIDTH;
+
+					pixels[p + 0] = noise(x, y, 123.4);
+					pixels[p + 1] = 0;
+					pixels[p + 2] = 0;
+					pixels[p + 3] = 1;
+
+					p += 4;
 				}
 			}
+		}
+	}, {
+		key: 'valuesChanger',
+		value: function valuesChanger() {
 
-			function initWater() {
+			this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
+			this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
+		}
+	}, {
+		key: 'smoothWater',
+		value: function smoothWater() {
 
-				var materialColor = 0xffffff;
+			var currentRenderTarget = this.gpuCompute.getCurrentRenderTarget(this.heightmapVariable);
+			var alternateRenderTarget = this.gpuCompute.getAlternateRenderTarget(this.heightmapVariable);
 
-				var geometry = new THREE.PlaneBufferGeometry(BOUNDS, BOUNDS, WIDTH - 1, WIDTH - 1);
+			for (var i = 0; i < 10; i++) {
 
-				// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-				var material = new THREE.ShaderMaterial({
-					uniforms: THREE.UniformsUtils.merge([THREE.ShaderLib['phong'].uniforms, {
-						heightmap: { value: null }
-					}]),
-					vertexShader: document.getElementById('waterVertexShader').textContent,
-					fragmentShader: THREE.ShaderChunk['meshphong_frag']
+				this.smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+				this.gpuCompute.doRenderTarget(this.smoothShader, alternateRenderTarget);
 
-				});
-
-				material.lights = true;
-
-				// Material attributes from MeshPhongMaterial
-				material.color = new THREE.Color(materialColor);
-				material.specular = new THREE.Color(0x111111);
-				material.shininess = 50;
-
-				// Sets the uniforms with the material values
-				material.uniforms.diffuse.value = material.color;
-				material.uniforms.specular.value = material.specular;
-				material.uniforms.shininess.value = Math.max(material.shininess, 1e-4);
-				material.uniforms.opacity.value = material.opacity;
-
-				// Defines
-				material.defines.WIDTH = WIDTH.toFixed(1);
-				material.defines.BOUNDS = BOUNDS.toFixed(1);
-
-				waterUniforms = material.uniforms;
-
-				waterMesh = new THREE.Mesh(geometry, material);
-				waterMesh.rotation.x = -Math.PI / 2;
-				waterMesh.matrixAutoUpdate = false;
-				waterMesh.updateMatrix();
-
-				scene.add(waterMesh);
-
-				// Mesh just for mouse raycasting
-				var geometryRay = new THREE.PlaneBufferGeometry(BOUNDS, BOUNDS, 1, 1);
-				meshRay = new THREE.Mesh(geometryRay, new THREE.MeshBasicMaterial({ color: 0xFFFFFF, visible: false }));
-				meshRay.rotation.x = -Math.PI / 2;
-				meshRay.matrixAutoUpdate = false;
-				meshRay.updateMatrix();
-				scene.add(meshRay);
-
-				// Creates the gpu computation class and sets it up
-				console.log(_GPUComputationRenderer2.default);
-
-				gpuCompute = new _GPUComputationRenderer2.default(WIDTH, WIDTH, renderer);
-
-				var heightmap0 = gpuCompute.createTexture();
-
-				fillTexture(heightmap0);
-
-				heightmapVariable = gpuCompute.addVariable('heightmap', document.getElementById('heightmapFragmentShader').textContent, heightmap0);
-
-				gpuCompute.setVariableDependencies(heightmapVariable, [heightmapVariable]);
-
-				heightmapVariable.material.uniforms.mousePos = { value: new THREE.Vector2(10000, 10000) };
-				heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
-				heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
-				heightmapVariable.material.defines.BOUNDS = BOUNDS.toFixed(1);
-
-				var error = gpuCompute.init();
-				if (error !== null) {
-					console.error(error);
-				}
-
-				// Create compute shader to smooth the water surface and velocity
-				smoothShader = gpuCompute.createShaderMaterial(document.getElementById('smoothFragmentShader').textContent, { texture: { value: null } });
+				this.smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+				this.gpuCompute.doRenderTarget(this.smoothShader, currentRenderTarget);
 			}
+		}
+	}, {
+		key: 'setMouseCoords',
+		value: function setMouseCoords(x, y) {
 
-			function fillTexture(texture) {
+			this.mouseCoords.set(x / _SceneManager2.default.renderer.domElement.clientWidth * 2 - 1, -(y / _SceneManager2.default.renderer.domElement.clientHeight) * 2 + 1);
+			this.mouseMoved = true;
+		}
+	}, {
+		key: 'onDocumentMouseMove',
+		value: function onDocumentMouseMove(event) {
 
-				var waterMaxHeight = 10;
+			this.setMouseCoords(event.clientX, event.clientY);
+		}
+	}, {
+		key: 'onDocumentTouchStart',
+		value: function onDocumentTouchStart(event) {
 
-				function noise(x, y, z) {
-					var multR = waterMaxHeight;
-					var mult = 0.025;
-					var r = 0;
-					for (var _i2 = 0; _i2 < 15; _i2++) {
-						r += multR * simplex.noise(x * mult, y * mult);
-						multR *= 0.53 + 0.025 * _i2;
-						mult *= 1.25;
-					}
-					return r;
-				}
+			if (event.touches.length === 1) {
 
-				var pixels = texture.image.data;
+				event.preventDefault();
 
-				var p = 0;
-				for (var _j = 0; _j < WIDTH; _j++) {
-					for (var _i3 = 0; _i3 < WIDTH; _i3++) {
-
-						var x = _i3 * 128 / WIDTH;
-						var y = _j * 128 / WIDTH;
-
-						pixels[p + 0] = noise(x, y, 123.4);
-						pixels[p + 1] = 0;
-						pixels[p + 2] = 0;
-						pixels[p + 3] = 1;
-
-						p += 4;
-					}
-				}
+				this.setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
 			}
+		}
+	}, {
+		key: 'onDocumentTouchMove',
+		value: function onDocumentTouchMove(event) {
 
-			function _smoothWater() {
+			if (event.touches.length === 1) {
 
-				var currentRenderTarget = gpuCompute.getCurrentRenderTarget(heightmapVariable);
-				var alternateRenderTarget = gpuCompute.getAlternateRenderTarget(heightmapVariable);
+				event.preventDefault();
 
-				for (var _i4 = 0; _i4 < 10; _i4++) {
-
-					smoothShader.uniforms.texture.value = currentRenderTarget.texture;
-					gpuCompute.doRenderTarget(smoothShader, alternateRenderTarget);
-
-					smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
-					gpuCompute.doRenderTarget(smoothShader, currentRenderTarget);
-				}
+				this.setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
 			}
+		}
+	}, {
+		key: 'resizeHandler',
+		value: function resizeHandler() {
 
-			function onWindowResize() {
+			this.width = window.innerWidth * window.devicePixelRatio;
+			this.height = window.innerHeight * window.devicePixelRatio;
 
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
+			_SceneManager2.default.resizeHandler({
+				camera: this.camera
+			});
+		}
+	}, {
+		key: 'raf',
+		value: function raf() {
 
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+			// Set uniforms: mouse interaction
+			var uniforms = this.heightmapVariable.material.uniforms;
 
-				renderer.setSize(window.innerWidth, window.innerHeight);
-			}
+			if (this.mouseMoved) {
 
-			function setMouseCoords(x, y) {
+				this.raycaster.setFromCamera(this.mouseCoords, this.camera);
 
-				mouseCoords.set(x / renderer.domElement.clientWidth * 2 - 1, -(y / renderer.domElement.clientHeight) * 2 + 1);
-				mouseMoved = true;
-			}
+				var intersects = this.raycaster.intersectObject(this.meshRay);
 
-			function onDocumentMouseMove(event) {
-
-				setMouseCoords(event.clientX, event.clientY);
-			}
-
-			function onDocumentTouchStart(event) {
-
-				if (event.touches.length === 1) {
-
-					event.preventDefault();
-
-					setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
-				}
-			}
-
-			function onDocumentTouchMove(event) {
-
-				if (event.touches.length === 1) {
-
-					event.preventDefault();
-
-					setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
-				}
-			}
-
-			function animate() {
-
-				requestAnimationFrame(animate);
-
-				render();
-				// stats.update();
-			}
-
-			function render() {
-				// console.log(window);
-
-				// Set uniforms: mouse interaction
-				var uniforms = heightmapVariable.material.uniforms;
-
-				if (mouseMoved) {
-
-					raycaster.setFromCamera(mouseCoords, camera);
-
-					var intersects = raycaster.intersectObject(meshRay);
-
-					if (intersects.length > 0) {
-						var point = intersects[0].point;
-						uniforms.mousePos.value.set(point.x, point.z);
-					} else {
-						uniforms.mousePos.value.set(10000, 10000);
-					}
-
-					mouseMoved = false;
+				if (intersects.length > 0) {
+					var point = intersects[0].point;
+					uniforms.mousePos.value.set(point.x, point.z);
 				} else {
 					uniforms.mousePos.value.set(10000, 10000);
 				}
 
-				// Do the gpu computation
-				gpuCompute.compute();
-
-				// Get compute output in custom uniform
-				waterUniforms.heightmap.value = gpuCompute.getCurrentRenderTarget(heightmapVariable).texture;
-
-				// Render
-				renderer.render(scene, camera);
+				this.mouseMoved = false;
+			} else {
+				uniforms.mousePos.value.set(10000, 10000);
 			}
+
+			// Do the gpu computation
+			this.gpuCompute.compute();
+
+			// Get compute output in custom uniform
+			this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget(this.heightmapVariable).texture;
+
+			// Render
+			// renderer.render( scene, camera );
+
+			// Render Scenes
+			_SceneManager2.default.render({
+				camera: this.camera,
+				scene: this.scene,
+				cssScene: null,
+				effectController: null,
+				composer: null
+			});
 		}
 	}, {
 		key: 'destroy',
@@ -5319,7 +5327,7 @@ var IntroView = function () {
 
 exports.default = IntroView;
 
-},{"../helpers/utils":7,"../managers/EmitterManager":9,"../vendors/GPUComputationRenderer":25,"../vendors/OrbitControls":26,"../vendors/SimplexNoise":28,"dat-gui":36,"three":47}],33:[function(require,module,exports){
+},{"../managers/EmitterManager":9,"../managers/SceneManager":12,"../vendors/GPUComputationRenderer":25,"../vendors/OrbitControls":26,"../vendors/SimplexNoise":28,"dat-gui":36,"three":47}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
