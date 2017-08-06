@@ -1,11 +1,16 @@
 import EmitterManager from '../managers/EmitterManager';
-// import { getRandom, toRadian, clamp, round } from '../helpers/utils';
+import {toRadian } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 
-import { Vector2, Raycaster, PerspectiveCamera, Scene, DirectionalLight, BoxGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color } from 'three';
+import { Vector2, Raycaster, PerspectiveCamera, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
+import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
+import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
+import WaterVertexShader from '../shaders/WaterVertexShader';
+
+
 import dat from 'dat-gui';
 
 export default class IntroView {
@@ -31,6 +36,9 @@ export default class IntroView {
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
+		this.addAsteroids = this.addAsteroids.bind(this);
+		this.setLight = this.setLight.bind(this);
+		this.resetWater = this.resetWater.bind(this);
 		this.onW = this.onW.bind(this);
 
 		this.init();
@@ -57,61 +65,36 @@ export default class IntroView {
 
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-		this.hash = document.location.hash.substr( 1 );
-		if ( this.hash ) this.hash = parseInt( this.hash, 0 );
+		this.scene = new Scene();
 
-		// Texture width for simulation
-		this.WIDTH = this.hash || 128;
-		// let NUM_TEXELS = WIDTH * WIDTH;
+		SceneManager.renderer.setClearColor( 0x000000 );
+		SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
 
-		// Water size in system units
-		this.BOUNDS = 512;
-		// let BOUNDS_HALF = BOUNDS * 0.5;
+		// set Camera
+		this.setCamera();
 
-		let container;
+		// set Light
+		this.setLight();
+
+		this.WIDTH = 64; // Texture width for simulation bits
+		this.BOUNDS = 512; // Water size in system units
+
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
 		this.raycaster = new Raycaster();
 
 		this.simplex = new SimplexNoise();
 
-		document.getElementById( 'waterSize' ).innerText = `${this.WIDTH} x ${this.WIDTH}`;
+		this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
-		// function change(n) {
-		// 	location.hash = n;
-		// 	location.reload();
-		// 	return false;
-		// }
+		this.initWater();
 
+		this.addAsteroids();
 
-		let options = '';
-		for ( let i = 4; i < 10; i++ ) {
-			let j = Math.pow( 2, i );
-			options += '<a href="#" onclick="return change(' + j + ')">' + j + 'x' + j + '</a> ';
-		}
-
-		document.getElementById('options').innerHTML = options;
-
-		container = document.createElement( 'div' );
-		document.body.appendChild( container );
-
-		this.camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
-		this.camera.position.set( 0, 200, 350 );
-
-		this.scene = new Scene();
-
-		let sun = new DirectionalLight( 0xFFFFFF, 1.0 );
-		sun.position.set( 300, 400, 175 );
-		this.scene.add( sun );
-
-		let sun2 = new DirectionalLight( 0xe8f0ff, 0.2 );
-		sun2.position.set( -100, 350, -200 );
-		this.scene.add( sun2 );
-
-		SceneManager.renderer.setClearColor( 0x000000 );
-		SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
-
-		let controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
+		// reset Water bits to 64
+		setInterval(() => {
+			this.resetWater();
+		}, 10000);
 
 		let gui = new dat.GUI();
 
@@ -122,6 +105,7 @@ export default class IntroView {
 
 		gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
 		gui.add( this.effectController, 'viscosity', 0.0, 0.1, 0.001 ).onChange( this.valuesChanger );
+		this.valuesChanger();
 		let buttonSmooth = {
 			smoothWater: () => {
 				this.smoothWater();
@@ -129,37 +113,44 @@ export default class IntroView {
 		};
 		gui.add( buttonSmooth, 'smoothWater' );
 
+	}
 
-		this.initWater();
+	////////////////////
+	// SET SCENE
+	////////////////////
 
-		this.valuesChanger();
+	setCamera() {
 
-		// ADD BOXES
-		let numberBox = 2;
+		this.camera = new PerspectiveCamera(
+			45, // fov
+			window.innerWidth / window.innerHeight, // aspect
+			1, // near
+			3000 // far
+		);
 
-		for (let i = 0; i < numberBox; i++) {
 
-			let geometry = new BoxGeometry( 100, 100, 100 );
-			let material = new MeshBasicMaterial( {color: 0xFFFFFF} );
-			let cube = new Mesh( geometry, material );
-			cube.position.x = i * 200 - 100;
-			cube.position.z = i * 200 - 100;
+		this.camera.position.set(0, 600, 0);
+		this.camera.rotation.x = toRadian(-90);
+		// this.camera.rotation.x = toRadian(45);
 
-			this.scene.add( cube );
 
-			const tl = new TimelineMax({repeat: -1});
-			tl.fromTo(cube.position, 2, {y:-50 }, {y:50, ease:window.Linear.easeNone });
-			tl.to(cube.position, 2, {y:-50, ease:window.Linear.easeNone });
-			tl.fromTo(cube.position, 2, {y:-50 }, {y:50, ease:window.Linear.easeNone });
-			tl.fromTo(cube.position, 7, {z:-200 }, {z:200, ease:window.Linear.easeNone }, 0);
-		}
+	}
+
+	setLight() {
+		let sun = new DirectionalLight( 0xFFFFFF, 1.0 );
+		sun.position.set( 300, 400, 175 );
+		this.scene.add( sun );
+
+		let sun2 = new DirectionalLight( 0xe8f0ff, 0.2 );
+		sun2.position.set( -100, 350, -200 );
+		this.scene.add( sun2 );
 	}
 
 	initWater() {
 
 		let materialColor = 0xffffff;
 
-		let geometry = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, this.WIDTH - 1, this.WIDTH - 1 );
+		let geometry = new PlaneGeometry( this.BOUNDS, this.BOUNDS , this.WIDTH - 1, this.WIDTH - 1 );
 
 		// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
 		let material = new ShaderMaterial( {
@@ -169,13 +160,12 @@ export default class IntroView {
 					heightmap: { value: null }
 				}
 			] ),
-			vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
+			vertexShader: WaterVertexShader.vertexShader,
 			fragmentShader: ShaderChunk[ 'meshphong_frag' ]
 
 		} );
 
 		material.lights = true;
-
 		// Material attributes from MeshPhongMaterial
 		material.color = new Color( materialColor );
 		material.specular = new Color( 0x111111 );
@@ -195,6 +185,7 @@ export default class IntroView {
 
 		this.waterMesh = new Mesh( geometry, material );
 		this.waterMesh.rotation.x = -Math.PI / 2;
+		this.waterMesh.position.set( 0, 0, -this.BOUNDS / 2 + 300);
 		this.waterMesh.matrixAutoUpdate = false;
 		this.waterMesh.updateMatrix();
 
@@ -204,21 +195,23 @@ export default class IntroView {
 		let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
 		this.meshRay = new Mesh( geometryRay, new MeshBasicMaterial( { color: 0xFFFFFF, visible: false } ) );
 		this.meshRay.rotation.x = -Math.PI / 2;
+		// this.meshRay.position.x = 400;
 		this.meshRay.matrixAutoUpdate = false;
 		this.meshRay.updateMatrix();
-		this.scene.add( this.meshRay );
+		// this.scene.add( this.meshRay );
 
 
 		// Creates the gpu computation class and sets it up
-		console.log(GPUComputationRenderer);
+		// console.log(GPUComputationRenderer);
 
 		this.gpuCompute = new GPUComputationRenderer( this.WIDTH, this.WIDTH, SceneManager.renderer );
 
 		let heightmap0 = this.gpuCompute.createTexture();
+		console.log(heightmap0);
 
 		this.fillTexture( heightmap0 );
 
-		this.heightmapVariable = this.gpuCompute.addVariable( 'heightmap', document.getElementById( 'heightmapFragmentShader' ).textContent, heightmap0 );
+		this.heightmapVariable = this.gpuCompute.addVariable( 'heightmap', HeightmapFragmentShader.fragmentShader, heightmap0 );
 
 		this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
 
@@ -233,7 +226,32 @@ export default class IntroView {
 		}
 
 		// Create compute shader to smooth the water surface and velocity
-		this.smoothShader = this.gpuCompute.createShaderMaterial( document.getElementById( 'smoothFragmentShader' ).textContent, { texture: { value: null } } );
+		this.smoothShader = this.gpuCompute.createShaderMaterial( SmoothFragmentShader.fragmentShader, { texture: { value: null } } );
+
+		console.log(this.heightmapVariable, this.smoothShader);
+
+	}
+
+	addAsteroids() {
+		// ADD BOXES
+		// let numberBox = 2;
+
+		// for (let i = 0; i < numberBox; i++) {
+
+		// 	let geometry = new BoxGeometry( 100, 100, 100 );
+		// 	let material = new MeshBasicMaterial( {color: 0xFFFFFF} );
+		// 	let cube = new Mesh( geometry, material );
+		// 	cube.position.x = i * 200 - 100;
+		// 	cube.position.z = i * 200 - 100;
+
+		// 	this.scene.add( cube );
+
+		// 	const tl = new TimelineMax({repeat: -1});
+		// 	tl.fromTo(cube.position, 2, {y:-50 }, {y:50, ease:window.Linear.easeNone });
+		// 	tl.to(cube.position, 2, {y:-50, ease:window.Linear.easeNone });
+		// 	tl.fromTo(cube.position, 2, {y:-50 }, {y:50, ease:window.Linear.easeNone });
+		// 	tl.fromTo(cube.position, 7, {z:-200 }, {z:200, ease:window.Linear.easeNone }, 0);
+		// }
 
 	}
 
@@ -285,15 +303,29 @@ export default class IntroView {
 		let currentRenderTarget = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable );
 		let alternateRenderTarget = this.gpuCompute.getAlternateRenderTarget( this.heightmapVariable );
 
-		for ( let i = 0; i < 10; i++ ) {
+		// for ( let i = 0; i < 10; i++ ) {
 
 			this.smoothShader.uniforms.texture.value = currentRenderTarget.texture;
+			// this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
 			this.gpuCompute.doRenderTarget( this.smoothShader, alternateRenderTarget );
 
 			this.smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
+			// this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
 			this.gpuCompute.doRenderTarget( this.smoothShader, currentRenderTarget );
 
-		}
+		// }
+	}
+
+	resetWater() {
+
+		let currentRenderTarget = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable );
+		let alternateRenderTarget = this.gpuCompute.getAlternateRenderTarget( this.heightmapVariable );
+
+		this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
+		this.gpuCompute.doRenderTarget( this.smoothShader, alternateRenderTarget );
+
+		this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
+		this.gpuCompute.doRenderTarget( this.smoothShader, currentRenderTarget );
 	}
 
 	setMouseCoords( x, y ) {
@@ -360,34 +392,38 @@ export default class IntroView {
 	raf() {
 
 		// Set uniforms: mouse interaction
-		let uniforms = this.heightmapVariable.material.uniforms;
+		// let uniforms = this.heightmapVariable.material.uniforms;
 
-		if ( this.mouseMoved ) {
+		// if ( this.mouseMoved ) {
 
-			this.raycaster.setFromCamera( this.mouseCoords, this.camera );
+		// 	this.raycaster.setFromCamera( this.mouseCoords, this.camera );
 
-			let intersects = this.raycaster.intersectObject( this.meshRay );
+		// 	let intersects = this.raycaster.intersectObject( this.meshRay );
 
-			if ( intersects.length > 0 ) {
-				let point = intersects[ 0 ].point;
-				uniforms.mousePos.value.set( point.x, point.z );
+		// 	if ( intersects.length > 0 ) {
+		// 		let point = intersects[ 0 ].point;
+		// 		uniforms.mousePos.value.set( point.x, point.z );
 
-			}
-			else {
-				uniforms.mousePos.value.set( 10000, 10000 );
-			}
+		// 	}
+		// 	else {
+		// 		uniforms.mousePos.value.set( 10000, 10000 );
+		// 	}
 
-			this.mouseMoved = false;
-		}
-		else {
-			uniforms.mousePos.value.set( 10000, 10000 );
-		}
+		// 	this.mouseMoved = false;
+		// }
+		// else {
+		// 	uniforms.mousePos.value.set( 10000, 10000 );
+		// }
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
 
+		// console.log(this.heightmapVariable, this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable ));
+
 		// Get compute output in custom uniform
 		this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable ).texture;
+		// this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
+		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// Render
 		// renderer.render( scene, camera );
@@ -400,6 +436,9 @@ export default class IntroView {
 			effectController: null,
 			composer: null
 		});
+
+
+		if (this.controls !== undefined ) this.controls.update();
 
 	}
 

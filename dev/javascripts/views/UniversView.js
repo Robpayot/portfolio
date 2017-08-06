@@ -14,8 +14,8 @@ import ScrollManager from '../managers/ScrollManager';
 
 
 // THREE JS
-import { DirectionalLight, ShaderMaterial, OrthographicCamera, MeshDepthMaterial, RGBFormat, NearestFilter, LinearFilter, RGBAFormat, WebGLRenderTarget, NoBlending, SpotLight, ShaderChunk, Raycaster, UniformsUtils, ShaderLib, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, ConeBufferGeometry, Vector3, BoxGeometry, Object3D, Box3, CSS, Sprite, SpriteCanvasMaterial } from 'three';
-import EffectComposer, { RenderPass, ShaderPass, CopyShader } from 'three-effectcomposer-es6';
+import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
+import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import { World } from 'oimo';
@@ -259,7 +259,7 @@ export default class UniversView {
 
 			// Start transition In
 			if (this.fromUrl === true) {
-				this.transitionInFromUrl();
+				this.transitionIn(true);
 				this.fromUrl = false;
 			} else {
 				this.transitionIn();
@@ -276,100 +276,12 @@ export default class UniversView {
 	// TRANSITIONS
 	////////////////////
 
-	transitionInFromUrl() {
-		this.cameraMove = true;
-
-		const points = {
-			'camera': [{
-				'x': -60,
-				'y': 170,
-				'z': 70
-			}, {
-				'x': -40,
-				'y': 100,
-				'z': 100
-			}, {
-				'x': -20,
-				'y': 50,
-				'z': 130
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 160
-			}],
-			'lookat': [{
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': -3,
-				'z': 3
-			}, {
-				'x': 0,
-				'y': -3,
-				'z': 3
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}]
-		};
-
-		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		this.dolly.cameraPosition = 0;
-		this.dolly.lookatPosition = 0;
-		this.dolly.range = [0, 1];
-		this.dolly.both = 0;
-
-		const tl = new TimelineMax({
-			onComplete: () => {
-				this.camera.position.set(0, 0, 160);
-				this.cameraMove = false;
-			}
-		});
-
-		tl.to(this.dolly, 4, {
-			cameraPosition: 1,
-			lookatPosition: 1,
-			ease: window.Power3.easeInOut,
-			onUpdate: () => {
-				this.dolly.update();
-			}
-		});
-
-
-		tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
-			opacity: 0,
-			y: 80
-		}, {
-			opacity: 0.8,
-			y: 0,
-			ease: window.Power4.easeOut
-		}, 0.1, 2.5);
-
-		tl.add( () => { // add transition hover css
-			const title = document.querySelector('.project__title svg');
-			const next = document.querySelector('.project__next');
-			title.classList.add('transi');
-			next.classList.add('transi');
-		});
-
-		tl.to('.overlay', 1, {
-			opacity: 0
-		}, 0);
-
-
-
-	}
-
-	transitionIn() {
+	transitionIn(fromUrl = false) {
 
 		this.cameraMove = true;
 
 		// Set camera Dolly
-		const points = {
+		let points = {
 			'camera': [{
 				'x': 0,
 				'y': 0,
@@ -398,6 +310,45 @@ export default class UniversView {
 			}]
 		};
 
+		if (fromUrl === true) {
+			points = {
+				'camera': [{
+					'x': -60,
+					'y': 170,
+					'z': 70
+				}, {
+					'x': -40,
+					'y': 100,
+					'z': 100
+				}, {
+					'x': -20,
+					'y': 50,
+					'z': 130
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 160
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': -3,
+					'z': 3
+				}, {
+					'x': 0,
+					'y': -3,
+					'z': 3
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}]
+			};
+		}
+
 		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
 
 		this.dolly.cameraPosition = 0;
@@ -412,10 +363,14 @@ export default class UniversView {
 			}
 		});
 
-		tl.to(this.dolly, 3, {
+		const time = fromUrl === false ? 3 : 4;
+		const ease = fromUrl === false ? window.Power3.easeOut : window.Power3.easeInOut;
+		const delay = fromUrl === false ? 1.2 : 2.5;
+
+		tl.to(this.dolly, time, {
 			cameraPosition: 1,
 			lookatPosition: 1,
-			ease: window.Power3.easeOut,
+			ease: ease,
 			onUpdate: () => {
 				this.dolly.update();
 			}
@@ -428,7 +383,7 @@ export default class UniversView {
 			opacity: 0.8,
 			y: 0,
 			ease: window.Power4.easeOut
-		}, 0.1, 1.2);
+		}, 0.1, delay);
 
 		tl.add( () => { // add transition hover css
 			const title = document.querySelector('.project__title svg');
@@ -440,7 +395,6 @@ export default class UniversView {
 		tl.to('.overlay', 1, {
 			opacity: 0
 		}, 0);
-
 	}
 
 	transitionOut(dest) {
