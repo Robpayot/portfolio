@@ -23,6 +23,7 @@ export default class IntroView {
 
 		// We will need a UI selector in global.
 		this.ui = {
+			intro: document.querySelector('.intro'),
 			overlay: document.querySelector('.intro__overlay'),
 			title1: document.querySelector('.intro .title--1'),
 			title2: document.querySelector('.intro .title--2'),
@@ -498,6 +499,8 @@ export default class IntroView {
 	}
 
 	transitionIn() {
+
+		this.ui.intro.style.display = 'block';
 
 		const tl = new TimelineMax();
 
