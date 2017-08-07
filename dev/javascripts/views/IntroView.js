@@ -1,15 +1,17 @@
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian } from '../helpers/utils';
+import {toRadian, getRandom } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
+import Asteroid from '../shapes/Asteroid';
+import SplitText from '../vendors/SplitText.js';
 
-import { Vector2, Raycaster, PerspectiveCamera, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color } from 'three';
+import { Vector2, Raycaster, PerspectiveCamera, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
-
 
 import dat from 'dat-gui';
 
@@ -19,8 +21,12 @@ export default class IntroView {
 
 		this.el = el;
 
+		// We will need a UI selector in global.
 		this.ui = {
-
+			overlay: document.querySelector('.intro__overlay'),
+			title1: document.querySelector('.intro .title--1'),
+			title2: document.querySelector('.intro .title--2'),
+			button: document.querySelector('.intro .button')
 		};
 
 		// bind
@@ -40,10 +46,14 @@ export default class IntroView {
 		this.setLight = this.setLight.bind(this);
 		this.resetWater = this.resetWater.bind(this);
 		this.onW = this.onW.bind(this);
+		this.transitionOut = this.transitionOut.bind(this);
+		this.transitionIn = this.transitionIn.bind(this);
 
 		this.init();
 
 		this.events(true);
+
+		this.transitionIn();
 
 	}
 
@@ -59,6 +69,11 @@ export default class IntroView {
 		document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
 		document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
 		document[evListener]( 'keydown', this.onW , false );
+
+		this.ui.button[evListener]('click', () => {
+			window.location.href = `${window.location.origin}/#project-0`;
+			window.location.reload();
+		});
 	}
 
 	init() {
@@ -76,8 +91,12 @@ export default class IntroView {
 		// set Light
 		this.setLight();
 
-		this.WIDTH = 64; // Texture width for simulation bits
+		this.WIDTH = 128; // Texture width for simulation bits
 		this.BOUNDS = 512; // Water size in system units
+		this.nbAst = 20;
+		this.time = 0;
+		this.asteroids = [];
+		this.asteroidsM = [];
 
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
@@ -85,16 +104,16 @@ export default class IntroView {
 
 		this.simplex = new SimplexNoise();
 
-		this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
+		// this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 		this.initWater();
 
 		this.addAsteroids();
 
 		// reset Water bits to 64
-		setInterval(() => {
-			this.resetWater();
-		}, 10000);
+		// setInterval(() => {
+		// 	this.resetWater();
+		// }, 10000);
 
 		let gui = new dat.GUI();
 
@@ -129,7 +148,7 @@ export default class IntroView {
 		);
 
 
-		this.camera.position.set(0, 600, 0);
+		this.camera.position.set(0, 30, 0);
 		this.camera.rotation.x = toRadian(-90);
 		// this.camera.rotation.x = toRadian(45);
 
@@ -169,7 +188,7 @@ export default class IntroView {
 		// Material attributes from MeshPhongMaterial
 		material.color = new Color( materialColor );
 		material.specular = new Color( 0x111111 );
-		material.shininess = 50;
+		material.shininess = 1;
 
 		// Sets the uniforms with the material values
 		material.uniforms.diffuse.value = material.color;
@@ -234,25 +253,44 @@ export default class IntroView {
 
 	addAsteroids() {
 		// ADD BOXES
-		// let numberBox = 2;
 
-		// for (let i = 0; i < numberBox; i++) {
+		let geometry = new BoxGeometry( 6, 6, 6 );
+		let finalMat = new MeshPhongMaterial( {color: 0xFFFFFF} );
+		finalMat.shininess = 900;
 
-		// 	let geometry = new BoxGeometry( 100, 100, 100 );
-		// 	let material = new MeshBasicMaterial( {color: 0xFFFFFF} );
-		// 	let cube = new Mesh( geometry, material );
-		// 	cube.position.x = i * 200 - 100;
-		// 	cube.position.z = i * 200 - 100;
+		for (let i = 0; i < this.nbAst; i++) {
 
-		// 	this.scene.add( cube );
+			const rot = {
+				x: getRandom(-180, 180),
+				y: getRandom(-180, 180),
+				z: getRandom(-180, 180),
+			};
 
-		// 	const tl = new TimelineMax({repeat: -1});
-		// 	tl.fromTo(cube.position, 2, {y:-50 }, {y:50, ease:window.Linear.easeNone });
-		// 	tl.to(cube.position, 2, {y:-50, ease:window.Linear.easeNone });
-		// 	tl.fromTo(cube.position, 2, {y:-50 }, {y:50, ease:window.Linear.easeNone });
-		// 	tl.fromTo(cube.position, 7, {z:-200 }, {z:200, ease:window.Linear.easeNone }, 0);
-		// }
+			let pos = {
+				x: getRandom(-180, 180),
+				y: 0,
+				z: getRandom(30, 300),
+			};
 
+
+			const scale = getRandom(1, 4);
+			const speed = getRandom(500, 800); // more is slower
+			const range = getRandom(-3, 4);
+			const speedRotate = getRandom(15000, 17000);
+
+			const asteroid = new Asteroid(geometry, finalMat, pos, rot, null, scale, range, speed, speedRotate);
+
+			asteroid.mesh.index = i;
+			asteroid.speedZ = getRandom(0.3, 0.8);
+			console.log(asteroid.speedZ)
+
+			this.asteroids.push(asteroid);
+			this.asteroidsM.push(asteroid.mesh);
+
+			// add mesh to the scene
+			this.scene.add(asteroid.mesh);
+
+		}
 	}
 
 	fillTexture( texture ) {
@@ -428,6 +466,21 @@ export default class IntroView {
 		// Render
 		// renderer.render( scene, camera );
 
+		// Moving Icebergs
+		this.asteroids.forEach((el) => {
+			el.mesh.position.z -= 1 * el.speedZ;
+			if (el.mesh.position.z <= -200) el.mesh.position.z = 300;
+
+			// Move top and bottom --> Float effect
+			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
+			el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+			// rotate
+			// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
+			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+		});
+
 		// Render Scenes
 		SceneManager.render({
 			camera: this.camera,
@@ -439,6 +492,111 @@ export default class IntroView {
 
 
 		if (this.controls !== undefined ) this.controls.update();
+
+		this.time++;
+
+	}
+
+	transitionIn() {
+
+		const tl = new TimelineMax();
+
+		const title1Arr = new SplitText(this.ui.title1, { type: 'chars' });
+		const title2Arr = new SplitText(this.ui.title2, { type: 'words' });
+
+		tl.set(this.ui.overlay, {opacity: 1});
+		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
+		console.log(title1Arr);
+
+		tl.staggerFromTo(title1Arr.chars, 0.7, {
+			opacity: 0,
+			y: 10,
+			// force3D: true,
+			ease: Expo.easeOut
+		}, {
+			opacity: 1,
+			y: 0
+		}, 0.07, 1);
+
+		tl.staggerFromTo(title2Arr.words, 0.7, {
+			opacity: 0,
+			y: 10,
+			// force3D: true,
+			ease: Expo.easeOut
+		}, {
+			opacity: 1,
+			y: 0
+		}, 0.07);
+		tl.to(this.ui.overlay, 1.5, {opacity: 0});
+		tl.add(() => {
+			this.transitionOut();
+		});
+		tl.to([this.ui.title1,this.ui.title2], 2, {autoAlpha: 0}, '+=1');
+
+
+	}
+
+	transitionOut(dest) {
+
+		if (this.animating === true) return false;
+		this.animating = true;
+
+		this.cameraMove = true;
+		// Set camera Dolly
+		const points = {
+			'camera': [{
+				'x': 0,
+				'y': 30,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 40,
+				'z': -100
+			}, {
+				'x': 0,
+				'y': 40,
+				'z': -200
+			}],
+			'lookat': [{
+				'x': 0,
+				'y': 15,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 40,
+				'z': 5
+			}, {
+				'x': 0,
+				'y': 40,
+				'z': 10
+			}]
+		};
+
+		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+
+		this.dolly.cameraPosition = 0;
+		this.dolly.lookatPosition = 0;
+		this.dolly.range = [0, 1];
+		this.dolly.both = 0;
+
+		const tl = new TimelineMax({
+			onComplete: () => {
+				console.log('ok ');
+			}
+		});
+
+		tl.to(this.dolly, 7, {
+			cameraPosition: 1,
+			lookatPosition: 1,
+			ease: window.Power3.easeInOut,
+			onUpdate: () => {
+				this.dolly.update();
+			}
+		});
+		tl.set(this.ui.button, {opacity: 0, display: 'block'}, 5);
+		tl.to(this.ui.button, 1, {opacity: 1}, 5);
+
+		console.log('transitionOut');
 
 	}
 

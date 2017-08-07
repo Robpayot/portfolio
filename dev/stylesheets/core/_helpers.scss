@@ -1,0 +1,45 @@
+.flex {
+	display: flex;
+}
+
+.uppercase {
+	text-transform: uppercase;
+}
+
+.center {
+	text-align: center;
+}
+
+.left {
+	text-align: left;
+}
+
+.block {
+	display: block !important;
+}
+
+.full-width {
+	width: 100% !important;
+}
+
+.absolute-center {
+	@include center();
+}
+
+.only-mobile {
+
+	@media(--tablet) {
+		display: none !important;
+	}
+}
+
+.only-tablet {
+
+	@media(--mobile) {
+		display: none !important;
+	}
+}
+
+.mixin-center {
+	@include center;
+}

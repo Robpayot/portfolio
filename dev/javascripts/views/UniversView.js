@@ -85,8 +85,11 @@ export default class UniversView {
 		// set ui
 		this.ui = {
 			el: document.querySelector('.univers'),
-			body: document.getElementsByTagName('body')[0]
+			body: document.getElementsByTagName('body')[0],
+			ui: document.querySelector('.ui')
 		};
+
+		this.ui.ui.style.display = 'none';
 
 		this.isControls = false;
 
@@ -1383,59 +1386,60 @@ export default class UniversView {
 		// update world
 		if (this.gravity === true) {
 			this.world.step();
+
 			// Symbol body
-			for (let i = 0; i < this.symbols.length; i++) {
-				this.symbols[i].mesh.position.copy(this.symbols[i].body.getPosition());
-				this.symbols[i].mesh.quaternion.copy(this.symbols[i].body.getQuaternion());
-			}
+			this.symbols.forEach((el) => {
+				el.mesh.position.copy(el.body.getPosition());
+				el.mesh.quaternion.copy(el.body.getQuaternion());
+			});
 			// Asteroids bodies
-			for (let i = 0; i < this.asteroids.length; i++) {
+			this.asteroids.forEach( (el) => {
 
-				if (this.asteroids[i].mesh.position.x > this.bounceArea / 2 - 50 || this.asteroids[i].mesh.position.x < -this.bounceArea / 2 + 50 || this.asteroids[i].mesh.position.y > this.bounceArea / 2 - 50 || this.asteroids[i].mesh.position.y < -this.bounceArea / 2 + 50 || this.asteroids[i].mesh.position.z > this.bounceArea / 2 - 50 || this.asteroids[i].mesh.position.z < -this.bounceArea / 2 + 50) {
+				if (el.mesh.position.x > this.bounceArea / 2 - 50 || el.mesh.position.x < -this.bounceArea / 2 + 50 || el.mesh.position.y > this.bounceArea / 2 - 50 || el.mesh.position.y < -this.bounceArea / 2 + 50 || el.mesh.position.z > this.bounceArea / 2 - 50 || el.mesh.position.z < -this.bounceArea / 2 + 50) {
 					// Reverse Force Vector
-					if (this.asteroids[i].annilled !== true) {
+					if (el.annilled !== true) {
 
-						this.asteroids[i].changeDirection();
-						this.asteroids[i].annilled = true;
+						el.changeDirection();
+						el.annilled = true;
 					}
 				}
 
-				if (this.asteroids[i].body !== undefined) {
+				if (el.body !== undefined) {
 
 					// APPLY IMPULSE
-					this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-					this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-					this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z;
+					el.body.linearVelocity.x = el.force.x;
+					el.body.linearVelocity.y = el.force.y;
+					el.body.linearVelocity.z = el.force.z;
 
-					// console.log(this.asteroids[i].body.angularVelocity);
+					// console.log(el.body.angularVelocity);
 					// angular Velocity always inferior to 1 (or too much rotations)
 
-					this.asteroids[i].body.angularVelocity.x = clamp(this.asteroids[i].body.angularVelocity.x, -1, 1);
-					this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -1, 1);
-					this.asteroids[i].body.angularVelocity.z = clamp(this.asteroids[i].body.angularVelocity.z, -1, 1);
+					el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -1, 1);
+					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -1, 1);
+					el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -1, 1);
 					// if (i === 0) {
-					//   console.log(this.asteroids[i].body.angularVelocity.x);
+					//   console.log(el.body.angularVelocity.x);
 					// }
 
-
-					this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-					this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+					el.mesh.position.copy(el.body.getPosition());
+					el.mesh.quaternion.copy(el.body.getQuaternion());
 
 
 				}
-			}
+			});
 		} else {
 			// Asteroids bodies
-			for (let i = 0; i < this.asteroids.length; i++) {
+			this.asteroids.forEach( (el)=> {
 				// Move top and bottom --> Float effect
 				// Start Number + Math.sin(this.incr*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speed) * (this.asteroids[i].range / 2) + this.asteroids[i].range / 2;
+				el.mesh.position.y = el.endY + Math.sin(this.incr * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 				// rotate
 				// console.log(Math.sin(this.incr * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-				this.asteroids[i].mesh.rotation.y = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + 360 / 2);
-				this.asteroids[i].mesh.rotation.x = toRadian(this.asteroids[i].initRotateY + Math.cos(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + 360 / 2);
-				this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateY + Math.sin(this.incr * 2 * Math.PI / this.asteroids[i].speedRotate) * (360 / 2) + 360 / 2);
-			}
+				el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			});
+
 		}
 
 
