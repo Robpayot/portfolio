@@ -20,6 +20,8 @@
 @import "mixins/placeholder";
 @import "mixins/position";
 @import "mixins/media-queries";
+@import "mixins/globals";
 
 // Common abstract classes
 @import "extends";
+@import "helpers";
