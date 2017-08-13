@@ -1,10 +1,11 @@
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian, getRandom, clamp } from '../helpers/utils';
+import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 import SplitText from '../vendors/SplitText.js';
+import { Device } from '../helpers/Device';
 
-import { Vector2, Raycaster, PerspectiveCamera, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, PerspectiveCamera, Vector3, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -40,7 +41,7 @@ export default class IntroView {
 		this.valuesChanger = this.valuesChanger.bind(this);
 		this.initWater = this.initWater.bind(this);
 		this.fillTexture = this.fillTexture.bind(this);
-		this.onDocumentMouseMove = this.onDocumentMouseMove.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this);
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
@@ -68,9 +69,14 @@ export default class IntroView {
 		EmitterManager[onListener]('resize', this.resizeHandler);
 		EmitterManager[onListener]('raf', this.raf);
 
-		document[evListener]( 'mousemove', this.onDocumentMouseMove, false );
-		document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
-		document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
+		if (Device.touch === false) {
+			// move camera
+			document[evListener]( 'mousemove', this.onMouseMove, false );
+		} else {
+			document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
+			document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
+		}
+
 		document[evListener]( 'keydown', this.onW , false );
 
 		this.ui.button[evListener]('click', () => {
@@ -103,6 +109,7 @@ export default class IntroView {
 		this.time = 0;
 		this.asteroids = [];
 		this.asteroidsM = [];
+		this.asteroidsMove = false;
 
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
@@ -110,7 +117,12 @@ export default class IntroView {
 
 		this.simplex = new SimplexNoise();
 
-		this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
+		// Mouse
+		this.mouse = { x: 0, y: 0 };
+		this.camRotTarget = new Vector3(0, 0, 0);
+		this.camRotSmooth = new Vector3(0, 0, 0);
+
+		// this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 		this.initWater();
 
@@ -291,7 +303,7 @@ export default class IntroView {
 			let pos = {
 				x: getRandom(-180, 180),
 				y: 0,
-				z: getRandom(30, 300),
+				z: getRandom(130, 400),
 			};
 
 			//  force impulsion
@@ -410,9 +422,17 @@ export default class IntroView {
 
 	}
 
-	onDocumentMouseMove( event ) {
+	onMouseMove( e ) {
 
-		this.setMouseCoords( event.clientX, event.clientY );
+		this.setMouseCoords( e.clientX, e.clientY );
+
+		const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+		const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+
+		// calculate mouse position in normalized device coordinates
+		// (-1 to +1) for both components
+		this.mouse.x = eventX / window.innerWidth * 2 - 1;
+		this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
 
 	}
 
@@ -505,45 +525,67 @@ export default class IntroView {
 
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
+
 			// el.mesh.position.z -= 1 * el.speedZ;
 			if (el.mesh.position.z <= -200) el.mesh.position.z = 300;
 
 			// Move top and bottom --> Float effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-			// rotate
-			// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-			el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-			el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			el.mesh.position.y = el.body.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+			// rotate Manually
 
-			if (el.body !== undefined) {
+			el.mesh.rotation.y = el.body.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.x = el.body.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.z = el.body.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
 
-				// APPLY IMPULSE
-				el.body.linearVelocity.x = el.force.x;
-				el.body.linearVelocity.y = el.force.y;
-				el.body.linearVelocity.z = el.force.z;
+			if (el.body !== undefined ) {
 
-				// console.log(el.body.angularVelocity);
-				// angular Velocity always inferior to 1 (or too much rotations)
+				if (this.asteroidsMove === true) {
+					// APPLY IMPULSE
+					el.body.linearVelocity.x = el.force.x;
+					el.body.linearVelocity.y = el.force.y;
+					el.body.linearVelocity.z = el.force.z;
 
-				el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -0.5, 0.5);
-				el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
-				el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -0.5, 0.5);
-				// if (i === 0) {
-				//   console.log(el.body.angularVelocity.x);
-				// }
+					// Clamp rotation
+
+					el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -0.5, 0.5);
+					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
+					el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -0.5, 0.5);
+				}
+
 
 				el.mesh.position.copy(el.body.getPosition());
 				el.mesh.quaternion.copy(el.body.getQuaternion());
 				if (el.mesh.position.z <= -200) {
 					el.mesh.position.z = 300;
 					el.body.position.z = 300;
+					// TweenMax.fromTo(el.mesh.material, 1, {opacity: 0}, {opacity: 0});
 					// reboot
 				}
 
 			}
 		});
+
+
+		// deceleration
+		if (this.cameraMove === false) {
+
+			// Specify target we want
+			this.camRotTarget.x = -toRadian(round(this.mouse.y * 4, 100));
+			this.camRotTarget.y = toRadian(round(this.mouse.x * 8, 100));
+
+			// Smooth it with deceleration
+			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+			// Apply rotation
+
+			// console.log(this.camRotSmooth.x, this.camRotSmooth.y, this.camera.rotation.x, this.camera.rotation.y);
+
+			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+			this.camera.rotation.y = this.camRotSmooth.y;
+
+		}
 
 		// Render Scenes
 		SceneManager.render({
@@ -604,6 +646,8 @@ export default class IntroView {
 
 	moveCameraIn(dest) {
 
+
+
 		if (this.animating === true) return false;
 		this.animating = true;
 
@@ -647,7 +691,10 @@ export default class IntroView {
 
 		const tl = new TimelineMax({
 			onComplete: () => {
-				console.log('ok ');
+
+				this.cameraMove = false;
+				this.currentCameraRotX = this.camera.rotation.x;
+				// this.dolly.destroy();
 			}
 		});
 
@@ -657,11 +704,16 @@ export default class IntroView {
 			ease: window.Power3.easeInOut,
 			onUpdate: () => {
 				this.dolly.update();
-				console.log(this.dolly);
 			}
 		});
-		tl.set(this.ui.button, {opacity: 0, display: 'block'}, 5);
-		tl.to(this.ui.button, 1, {opacity: 1}, 5);
+		tl.set(this.ui.button, {opacity: 0, display: 'block'}, 4);
+		tl.to(this.ui.button, 3, {opacity: 1}, 4);
+		tl.add(() => {
+
+			this.asteroidsMove = true;
+		}, 0);
+
+
 
 		console.log('moveCameraIn');
 

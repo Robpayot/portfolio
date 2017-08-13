@@ -5599,6 +5599,8 @@ var _SplitText = require('../vendors/SplitText.js');
 
 var _SplitText2 = _interopRequireDefault(_SplitText);
 
+var _Device = require('../helpers/Device');
+
 var _three = require('three');
 
 var _threeCameraDollyCustom = require('../vendors/three-camera-dolly-custom');
@@ -5661,7 +5663,7 @@ var IntroView = function () {
 		this.valuesChanger = this.valuesChanger.bind(this);
 		this.initWater = this.initWater.bind(this);
 		this.fillTexture = this.fillTexture.bind(this);
-		this.onDocumentMouseMove = this.onDocumentMouseMove.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this);
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
@@ -5690,9 +5692,14 @@ var IntroView = function () {
 			_EmitterManager2.default[onListener]('resize', this.resizeHandler);
 			_EmitterManager2.default[onListener]('raf', this.raf);
 
-			document[evListener]('mousemove', this.onDocumentMouseMove, false);
-			document[evListener]('touchstart', this.onDocumentTouchStart, false);
-			document[evListener]('touchmove', this.onDocumentTouchMove, false);
+			if (_Device.Device.touch === false) {
+				// move camera
+				document[evListener]('mousemove', this.onMouseMove, false);
+			} else {
+				document[evListener]('touchstart', this.onDocumentTouchStart, false);
+				document[evListener]('touchmove', this.onDocumentTouchMove, false);
+			}
+
 			document[evListener]('keydown', this.onW, false);
 
 			this.ui.button[evListener]('click', function () {
@@ -5727,6 +5734,7 @@ var IntroView = function () {
 			this.time = 0;
 			this.asteroids = [];
 			this.asteroidsM = [];
+			this.asteroidsMove = false;
 
 			this.mouseMoved = false;
 			this.mouseCoords = new _three.Vector2();
@@ -5734,7 +5742,12 @@ var IntroView = function () {
 
 			this.simplex = new _SimplexNoise2.default();
 
-			this.controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
+			// Mouse
+			this.mouse = { x: 0, y: 0 };
+			this.camRotTarget = new _three.Vector3(0, 0, 0);
+			this.camRotSmooth = new _three.Vector3(0, 0, 0);
+
+			// this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 			this.initWater();
 
@@ -5912,7 +5925,7 @@ var IntroView = function () {
 				var pos = {
 					x: (0, _utils.getRandom)(-180, 180),
 					y: 0,
-					z: (0, _utils.getRandom)(30, 300)
+					z: (0, _utils.getRandom)(130, 400)
 				};
 
 				//  force impulsion
@@ -6032,10 +6045,18 @@ var IntroView = function () {
 			this.mouseMoved = true;
 		}
 	}, {
-		key: 'onDocumentMouseMove',
-		value: function onDocumentMouseMove(event) {
+		key: 'onMouseMove',
+		value: function onMouseMove(e) {
 
-			this.setMouseCoords(event.clientX, event.clientY);
+			this.setMouseCoords(e.clientX, e.clientY);
+
+			var eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+			var eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+
+			// calculate mouse position in normalized device coordinates
+			// (-1 to +1) for both components
+			this.mouse.x = eventX / window.innerWidth * 2 - 1;
+			this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
 		}
 	}, {
 		key: 'onDocumentTouchStart',
@@ -6125,44 +6146,63 @@ var IntroView = function () {
 
 			// Moving Icebergs
 			this.asteroids.forEach(function (el) {
+
 				// el.mesh.position.z -= 1 * el.speedZ;
 				if (el.mesh.position.z <= -200) el.mesh.position.z = 300;
 
 				// Move top and bottom --> Float effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.endY + Math.sin(_this3.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-				// rotate
-				// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.position.y = el.body.position.y = el.endY + Math.sin(_this3.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+				// rotate Manually
+
+				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
 
 				if (el.body !== undefined) {
 
-					// APPLY IMPULSE
-					el.body.linearVelocity.x = el.force.x;
-					el.body.linearVelocity.y = el.force.y;
-					el.body.linearVelocity.z = el.force.z;
+					if (_this3.asteroidsMove === true) {
+						// APPLY IMPULSE
+						el.body.linearVelocity.x = el.force.x;
+						el.body.linearVelocity.y = el.force.y;
+						el.body.linearVelocity.z = el.force.z;
 
-					// console.log(el.body.angularVelocity);
-					// angular Velocity always inferior to 1 (or too much rotations)
+						// Clamp rotation
 
-					el.body.angularVelocity.x = (0, _utils.clamp)(el.body.angularVelocity.x, -0.5, 0.5);
-					el.body.angularVelocity.y = (0, _utils.clamp)(el.body.angularVelocity.y, -0.5, 0.5);
-					el.body.angularVelocity.z = (0, _utils.clamp)(el.body.angularVelocity.z, -0.5, 0.5);
-					// if (i === 0) {
-					//   console.log(el.body.angularVelocity.x);
-					// }
+						el.body.angularVelocity.x = (0, _utils.clamp)(el.body.angularVelocity.x, -0.5, 0.5);
+						el.body.angularVelocity.y = (0, _utils.clamp)(el.body.angularVelocity.y, -0.5, 0.5);
+						el.body.angularVelocity.z = (0, _utils.clamp)(el.body.angularVelocity.z, -0.5, 0.5);
+					}
 
 					el.mesh.position.copy(el.body.getPosition());
 					el.mesh.quaternion.copy(el.body.getQuaternion());
 					if (el.mesh.position.z <= -200) {
 						el.mesh.position.z = 300;
 						el.body.position.z = 300;
+						// TweenMax.fromTo(el.mesh.material, 1, {opacity: 0}, {opacity: 0});
 						// reboot
 					}
 				}
 			});
+
+			// deceleration
+			if (this.cameraMove === false) {
+
+				// Specify target we want
+				this.camRotTarget.x = -(0, _utils.toRadian)((0, _utils.round)(this.mouse.y * 4, 100));
+				this.camRotTarget.y = (0, _utils.toRadian)((0, _utils.round)(this.mouse.x * 8, 100));
+
+				// Smooth it with deceleration
+				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+				this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+				// Apply rotation
+
+				// console.log(this.camRotSmooth.x, this.camRotSmooth.y, this.camera.rotation.x, this.camera.rotation.y);
+
+				this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+				this.camera.rotation.y = this.camRotSmooth.y;
+			}
 
 			// Render Scenes
 			_SceneManager2.default.render({
@@ -6266,7 +6306,10 @@ var IntroView = function () {
 
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					console.log('ok ');
+
+					_this5.cameraMove = false;
+					_this5.currentCameraRotX = _this5.camera.rotation.x;
+					// this.dolly.destroy();
 				}
 			});
 
@@ -6276,11 +6319,14 @@ var IntroView = function () {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					_this5.dolly.update();
-					console.log(_this5.dolly);
 				}
 			});
-			tl.set(this.ui.button, { opacity: 0, display: 'block' }, 5);
-			tl.to(this.ui.button, 1, { opacity: 1 }, 5);
+			tl.set(this.ui.button, { opacity: 0, display: 'block' }, 4);
+			tl.to(this.ui.button, 3, { opacity: 1 }, 4);
+			tl.add(function () {
+
+				_this5.asteroidsMove = true;
+			}, 0);
 
 			console.log('moveCameraIn');
 		}
@@ -6356,7 +6402,7 @@ var IntroView = function () {
 
 exports.default = IntroView;
 
-},{"../helpers/utils":7,"../managers/EmitterManager":9,"../managers/SceneManager":12,"../shaders/HeightmapFragmentShader":17,"../shaders/SmoothFragmentShader":19,"../shaders/WaterVertexShader":21,"../shapes/Asteroid":23,"../vendors/GPUComputationRenderer":28,"../vendors/OrbitControls":29,"../vendors/SimplexNoise":31,"../vendors/SplitText.js":32,"../vendors/three-camera-dolly-custom":34,"dat-gui":40,"oimo":44,"three":52}],37:[function(require,module,exports){
+},{"../helpers/Device":5,"../helpers/utils":7,"../managers/EmitterManager":9,"../managers/SceneManager":12,"../shaders/HeightmapFragmentShader":17,"../shaders/SmoothFragmentShader":19,"../shaders/WaterVertexShader":21,"../shapes/Asteroid":23,"../vendors/GPUComputationRenderer":28,"../vendors/OrbitControls":29,"../vendors/SimplexNoise":31,"../vendors/SplitText.js":32,"../vendors/three-camera-dolly-custom":34,"dat-gui":40,"oimo":44,"three":52}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
