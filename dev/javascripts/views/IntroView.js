@@ -1,5 +1,5 @@
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian, getRandom } from '../helpers/utils';
+import {toRadian, getRandom, clamp } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 import SplitText from '../vendors/SplitText.js';
@@ -12,14 +12,16 @@ import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
+import { World } from 'oimo';
 
 import dat from 'dat-gui';
 
 export default class IntroView {
 
-	constructor(el) {
+	constructor(obj) {
 
-		this.el = el;
+		this.el = obj.el;
+		this.gravity = obj.gravity;
 
 		// We will need a UI selector in global.
 		this.ui = {
@@ -43,11 +45,11 @@ export default class IntroView {
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
-		this.addAsteroids = this.addAsteroids.bind(this);
+		this.setAsteroids = this.setAsteroids.bind(this);
 		this.setLight = this.setLight.bind(this);
 		this.resetWater = this.resetWater.bind(this);
 		this.onW = this.onW.bind(this);
-		this.transitionOut = this.transitionOut.bind(this);
+		this.moveCameraIn = this.moveCameraIn.bind(this);
 		this.transitionIn = this.transitionIn.bind(this);
 
 		this.init();
@@ -92,6 +94,9 @@ export default class IntroView {
 		// set Light
 		this.setLight();
 
+		// Set physics
+		if (this.gravity === true) this.initPhysics();
+
 		this.WIDTH = 128; // Texture width for simulation bits
 		this.BOUNDS = 512; // Water size in system units
 		this.nbAst = 20;
@@ -105,11 +110,11 @@ export default class IntroView {
 
 		this.simplex = new SimplexNoise();
 
-		// this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
+		this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 		this.initWater();
 
-		this.addAsteroids();
+		this.setAsteroids();
 
 		// reset Water bits to 64
 		// setInterval(() => {
@@ -132,6 +137,22 @@ export default class IntroView {
 			}
 		};
 		gui.add( buttonSmooth, 'smoothWater' );
+
+	}
+
+	initPhysics() {
+
+		this.world = new World({
+			timestep: 1 / 60,
+			iterations: 8,
+			broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
+			worldscale: 1, // scale full world
+			random: true, // randomize sample
+			info: false, // calculate statistic or not
+			gravity: [0, 0, 0] // 0 gravity
+		});
+
+		// this.world.gravity.y = 0;
 
 	}
 
@@ -227,7 +248,6 @@ export default class IntroView {
 		this.gpuCompute = new GPUComputationRenderer( this.WIDTH, this.WIDTH, SceneManager.renderer );
 
 		let heightmap0 = this.gpuCompute.createTexture();
-		console.log(heightmap0);
 
 		this.fillTexture( heightmap0 );
 
@@ -252,12 +272,13 @@ export default class IntroView {
 
 	}
 
-	addAsteroids() {
+	setAsteroids() {
 		// ADD BOXES
 
 		let geometry = new BoxGeometry( 6, 6, 6 );
 		let finalMat = new MeshPhongMaterial( {color: 0xFFFFFF} );
 		finalMat.shininess = 900;
+		console.log(geometry.parameters);
 
 		for (let i = 0; i < this.nbAst; i++) {
 
@@ -273,23 +294,38 @@ export default class IntroView {
 				z: getRandom(30, 300),
 			};
 
+			//  force impulsion
+			const force = {
+				x: 0,
+				y: 0,
+				z: -getRandom(40, 50)
+			};
 
 			const scale = getRandom(1, 4);
 			const speed = getRandom(500, 800); // more is slower
 			const range = getRandom(-3, 4);
 			const speedRotate = getRandom(15000, 17000);
 
-			const asteroid = new Asteroid(geometry, finalMat, pos, rot, null, scale, range, speed, speedRotate);
+			const asteroid = new Asteroid(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
 
 			asteroid.mesh.index = i;
 			asteroid.speedZ = getRandom(0.3, 0.8);
-			console.log(asteroid.speedZ)
+			// console.log(asteroid.speedZ);
+			if (this.gravity === true) {
+				// add physic body to world
+				asteroid.body = this.world.add(asteroid.physics);
+				// Set rotation impulsion
+				asteroid.body.angularVelocity.x = getRandom(-0.2, 0.2);
+				asteroid.body.angularVelocity.y = getRandom(-0.2, 0.2);
+				asteroid.body.angularVelocity.z = getRandom(-0.2, 0.2);
+			}
 
 			this.asteroids.push(asteroid);
 			this.asteroidsM.push(asteroid.mesh);
 
 			// add mesh to the scene
 			this.scene.add(asteroid.mesh);
+
 
 		}
 	}
@@ -464,12 +500,12 @@ export default class IntroView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
-		// Render
-		// renderer.render( scene, camera );
+
+		if (this.gravity === true) this.world.step();
 
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
-			el.mesh.position.z -= 1 * el.speedZ;
+			// el.mesh.position.z -= 1 * el.speedZ;
 			if (el.mesh.position.z <= -200) el.mesh.position.z = 300;
 
 			// Move top and bottom --> Float effect
@@ -480,6 +516,33 @@ export default class IntroView {
 			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
 			el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
 			el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+
+			if (el.body !== undefined) {
+
+				// APPLY IMPULSE
+				el.body.linearVelocity.x = el.force.x;
+				el.body.linearVelocity.y = el.force.y;
+				el.body.linearVelocity.z = el.force.z;
+
+				// console.log(el.body.angularVelocity);
+				// angular Velocity always inferior to 1 (or too much rotations)
+
+				el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -0.5, 0.5);
+				el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
+				el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -0.5, 0.5);
+				// if (i === 0) {
+				//   console.log(el.body.angularVelocity.x);
+				// }
+
+				el.mesh.position.copy(el.body.getPosition());
+				el.mesh.quaternion.copy(el.body.getQuaternion());
+				if (el.mesh.position.z <= -200) {
+					el.mesh.position.z = 300;
+					el.body.position.z = 300;
+					// reboot
+				}
+
+			}
 		});
 
 		// Render Scenes
@@ -532,14 +595,14 @@ export default class IntroView {
 		}, 0.07);
 		tl.to(this.ui.overlay, 1.5, {opacity: 0});
 		tl.add(() => {
-			this.transitionOut();
+			this.moveCameraIn();
 		});
 		tl.to([this.ui.title1,this.ui.title2], 2, {autoAlpha: 0}, '+=1');
 
 
 	}
 
-	transitionOut(dest) {
+	moveCameraIn(dest) {
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -594,16 +657,57 @@ export default class IntroView {
 			ease: window.Power3.easeInOut,
 			onUpdate: () => {
 				this.dolly.update();
+				console.log(this.dolly);
 			}
 		});
 		tl.set(this.ui.button, {opacity: 0, display: 'block'}, 5);
 		tl.to(this.ui.button, 1, {opacity: 1}, 5);
 
-		console.log('transitionOut');
+		console.log('moveCameraIn');
 
 	}
 
-	destroy() {
+	destroy(all = false) {
+
+		if (all === true) {
+
+			this.scene.traverse((obj) => {
+
+				// remove physics
+				if (obj.body) obj.body.remove();
+
+				if (obj.geometry) obj.geometry.dispose();
+
+				if (obj.material) {
+
+					if (obj.material.materials) {
+
+						for (const mat of obj.material.materials) {
+
+							if (mat.map) mat.map.dispose();
+
+							mat.dispose();
+						}
+					} else {
+
+						if (obj.material.map) obj.material.map.dispose();
+
+						obj.material.dispose();
+					}
+				}
+
+			});
+
+			for (let i = this.scene.children.length - 1; i >= 0; i--) {
+
+				this.scene.remove(this.scene.children[i]);
+			}
+
+		}
+		// Wait destroy scene before stop js events
+		// setTimeout(() => {
 		this.events(false);
+		// }, 500);
+
 	}
 }

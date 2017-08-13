@@ -109,7 +109,10 @@ class RouterManager {
 
 			case '/intro':
 				const el = document.querySelector('.univers');
-				this.currentPage = new IntroView(el);
+				this.currentPage = new IntroView({
+					el: el,
+					gravity: true
+				});
 				window.location = '#intro';
 				break;
 		}

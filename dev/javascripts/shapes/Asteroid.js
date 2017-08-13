@@ -4,7 +4,7 @@ import { getRandom, toRadian } from '../helpers/utils';
 
 export default class Asteroid extends AbstractShape {
 
-	constructor(geometry, material, pos, rot, force, scale = 1, range, speed, speedRotate) {
+	constructor(geometry, material, pos, rot, force, scale = 1, range, speed, speedRotate, type = 'box') {
 
 		super();
 
@@ -17,8 +17,9 @@ export default class Asteroid extends AbstractShape {
 
 		// physic body
 		this.physics = {
-			type: 'sphere', // type of shape : sphere, box, cylinder
-			size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
+			type: type, // type of shape : sphere, box, cylinder
+			// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
+			size: [geometry.parameters.width * scale, geometry.parameters.height * scale, geometry.parameters.depth * scale],
 			pos: [pos.x, pos.y, pos.z], // start position in degree
 			rot: [rot.x, rot.y, rot.z], // start rotation in degree
 			move: true, // dynamic or statique
