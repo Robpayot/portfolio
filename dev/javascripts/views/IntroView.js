@@ -2,6 +2,7 @@ import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
+import Symbol from '../shapes/Symbol';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 
@@ -47,6 +48,7 @@ export default class IntroView {
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
 		this.setAsteroids = this.setAsteroids.bind(this);
+		this.setSymbol = this.setSymbol.bind(this);
 		this.setLight = this.setLight.bind(this);
 		this.resetWater = this.resetWater.bind(this);
 		this.onW = this.onW.bind(this);
@@ -103,8 +105,8 @@ export default class IntroView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.WIDTH = 128; // Texture width for simulation bits
-		this.BOUNDS = 512; // Water size in system units
+		this.WIDTH = 254; // Texture width for simulation bits
+		this.BOUNDS = 712; // Water size
 		this.nbAst = 20;
 		this.time = 0;
 		this.asteroids = [];
@@ -122,11 +124,14 @@ export default class IntroView {
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
+		this.cameraMove = true;
+
 		// this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 		this.initWater();
 
 		this.setAsteroids();
+		this.setSymbol();
 
 		// reset Water bits to 64
 		// setInterval(() => {
@@ -149,6 +154,7 @@ export default class IntroView {
 			}
 		};
 		gui.add( buttonSmooth, 'smoothWater' );
+		gui.close();
 
 	}
 
@@ -163,8 +169,6 @@ export default class IntroView {
 			info: false, // calculate statistic or not
 			gravity: [0, 0, 0] // 0 gravity
 		});
-
-		// this.world.gravity.y = 0;
 
 	}
 
@@ -184,18 +188,20 @@ export default class IntroView {
 
 		this.camera.position.set(0, 30, 0);
 		this.camera.rotation.x = toRadian(-90);
-		// this.camera.rotation.x = toRadian(45);
+		// debug add this.controls
+		// this.camera.position.set(0, 40, -200);
+		// this.camera.rotation.x = toRadian(-75);
 
 
 	}
 
 	setLight() {
 		let sun = new DirectionalLight( 0xFFFFFF, 1.0 );
-		sun.position.set( 300, 400, 175 );
+		sun.position.set( 300, 400, -205 );
 		this.scene.add( sun );
 
 		let sun2 = new DirectionalLight( 0xe8f0ff, 0.2 );
-		sun2.position.set( -100, 350, -200 );
+		sun2.position.set( -100, 350, -20 );
 		this.scene.add( sun2 );
 	}
 
@@ -206,17 +212,17 @@ export default class IntroView {
 		let geometry = new PlaneGeometry( this.BOUNDS, this.BOUNDS , this.WIDTH - 1, this.WIDTH - 1 );
 
 		// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-		let material = new ShaderMaterial( {
-			uniforms: UniformsUtils.merge( [
+		let material = new ShaderMaterial({
+			uniforms: UniformsUtils.merge([
 				ShaderLib[ 'phong' ].uniforms,
 				{
 					heightmap: { value: null }
 				}
-			] ),
+			]),
 			vertexShader: WaterVertexShader.vertexShader,
 			fragmentShader: ShaderChunk[ 'meshphong_frag' ]
 
-		} );
+		});
 
 		material.lights = true;
 		// Material attributes from MeshPhongMaterial
@@ -316,13 +322,23 @@ export default class IntroView {
 			const scale = getRandom(1, 4);
 			const speed = getRandom(500, 800); // more is slower
 			const range = getRandom(-3, 4);
-			const speedRotate = getRandom(15000, 17000);
+			const timeRotate = getRandom(15000, 17000);
 
-			const asteroid = new Asteroid(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
+			const asteroid = new Asteroid({
+				geometry: geometry,
+				material: finalMat,
+				pos: pos,
+				rot: rot,
+				force: force,
+				scale: scale,
+				range: range,
+				speed: speed,
+				timeRotate: timeRotate
+			});
 
 			asteroid.mesh.index = i;
 			asteroid.speedZ = getRandom(0.3, 0.8);
-			// console.log(asteroid.speedZ);
+
 			if (this.gravity === true) {
 				// add physic body to world
 				asteroid.body = this.world.add(asteroid.physics);
@@ -340,6 +356,44 @@ export default class IntroView {
 
 
 		}
+	}
+
+	setSymbol() {
+
+		// Set up the sphere vars
+		// const RADIUS = 10;
+		// const SEGMENTS = 32;
+		// const RINGS = 32;
+
+		// const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+		const geometry = new BoxGeometry(20, 20, 20);
+		// const img = PreloadManager.getResult('texture-asteroid');
+		// const tex = new Texture(img);
+		// tex.needsUpdate = true;
+		// #4682b4
+		const material = new MeshPhongMaterial({ color: 0x4682b4, transparent: false, opacity: 1, map: null });
+		const pos = {
+			x: 0,
+			y: 170, // 60 end point
+			z: 100,
+		};
+		const timeRotate = 7000;
+
+		const symbol = new Symbol({
+			geometry: geometry,
+			material: material,
+			pos: pos,
+			timeRotate: timeRotate
+		});
+
+		symbol.endPointY = 70;
+
+		this.symbols = [symbol];
+		this.symbolsM = [symbol.mesh];
+
+		// add mesh to the scene
+		this.scene.add(symbol.mesh);
+
 	}
 
 	fillTexture( texture ) {
@@ -523,6 +577,13 @@ export default class IntroView {
 
 		if (this.gravity === true) this.world.step();
 
+		// Moving Symbol
+		this.symbols.forEach((el) => {
+			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+		});
+
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
 
@@ -534,9 +595,9 @@ export default class IntroView {
 			el.mesh.position.y = el.body.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 			// rotate Manually
 
-			el.mesh.rotation.y = el.body.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-			el.mesh.rotation.x = el.body.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-			el.mesh.rotation.z = el.body.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.y = el.body.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.x = el.body.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			el.mesh.rotation.z = el.body.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 
 			if (el.body !== undefined ) {
 
@@ -706,12 +767,14 @@ export default class IntroView {
 				this.dolly.update();
 			}
 		});
-		tl.set(this.ui.button, {opacity: 0, display: 'block'}, 4);
-		tl.to(this.ui.button, 3, {opacity: 1}, 4);
 		tl.add(() => {
 
 			this.asteroidsMove = true;
 		}, 0);
+
+		tl.to(this.symbols[0].mesh.position, 7, {y: this.symbols[0].endPointY, ease: window.Power3.easeOut }, 2);
+		tl.set(this.ui.button, {opacity: 0, display: 'block'}, '-=3');
+		tl.to(this.ui.button, 3, {opacity: 1}, '-=3');
 
 
 

@@ -626,8 +626,11 @@ export default class UniversView {
 			z: 0,
 		};
 
-		const symbol = new Symbol(geometry, material, pos);
-
+		const symbol = new Symbol({
+			geometry: geometry,
+			material: material,
+			pos: pos
+		});
 
 		if (this.gravity === true) {
 			// add physic body to world
@@ -803,7 +806,7 @@ export default class UniversView {
 			const scale = this.astd === 'spheres' ? 1 : getRandom(1, 4);
 			const speed = getRandom(500, 800); // more is slower
 			const range = getRandom(3, 8);
-			const speedRotate = getRandom(15000, 17000);
+			const timeRotate = getRandom(15000, 17000);
 
 			let finalMat;
 
@@ -812,8 +815,18 @@ export default class UniversView {
 			} else {
 				finalMat = this.materialAst2;
 			}
-			const asteroid = new Asteroid(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
 
+			const asteroid = new Asteroid({
+				geometry: geometry,
+				material: finalMat,
+				pos: pos,
+				rot: rot,
+				force: force,
+				scale: scale,
+				range: range,
+				speed: speed,
+				timeRotate: timeRotate
+			});
 
 			if (this.gravity === true) {
 				// add physic body to world
@@ -1435,9 +1448,9 @@ export default class UniversView {
 				el.mesh.position.y = el.endY + Math.sin(this.incr * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 				// rotate
 				// console.log(Math.sin(this.incr * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-				el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			});
 
 		}

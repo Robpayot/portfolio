@@ -1,27 +1,31 @@
 import AbstractShape from './AbstractShape';
-import { Vector3 } from 'three';
+// import { Vector3 } from 'three';
 import { getRandom, toRadian } from '../helpers/utils';
 
 export default class Asteroid extends AbstractShape {
 
-	constructor(geometry, material, pos, rot, force, scale = 1, range, speed, speedRotate, type = 'box') {
+	constructor(obj = {}) {
 
 		super();
 
+		obj.type = obj.type || 'box';
+		obj.scale = obj.scale || 1;
+		obj.rot = obj.rot || { x: 0, y: 0, z: 0 };
+
 		this.annilled = false;
 
-		this.createMesh(geometry, material);
+		this.createMesh(obj.geometry, obj.material);
 
 		// Position mesh
-		this.mesh.position.copy(pos);
+		this.mesh.position.copy(obj.pos);
 
 		// physic body
 		this.physics = {
-			type: type, // type of shape : sphere, box, cylinder
+			type: obj.type, // type of shape : sphere, box, cylinder
 			// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-			size: [geometry.parameters.width * scale, geometry.parameters.height * scale, geometry.parameters.depth * scale],
-			pos: [pos.x, pos.y, pos.z], // start position in degree
-			rot: [rot.x, rot.y, rot.z], // start rotation in degree
+			size: [obj.geometry.parameters.width * obj.scale, obj.geometry.parameters.height * obj.scale, obj.geometry.parameters.depth * obj.scale],
+			pos: [obj.pos.x, obj.pos.y, obj.pos.z], // start position in degree
+			rot: [obj.rot.x, obj.rot.y, obj.rot.z], // start rotation in degree
 			move: true, // dynamic or statique
 			density: 1,
 			friction: 0.2,
@@ -31,17 +35,16 @@ export default class Asteroid extends AbstractShape {
 		};
 
 		// for normal asts
-		this.mesh.rotation.set(toRadian(rot.x), toRadian(rot.y), toRadian(rot.z));
-		this.mesh.scale.set(scale, scale, scale);
+		this.mesh.rotation.set(toRadian(obj.rot.x), toRadian(obj.rot.y), toRadian(obj.rot.z));
+		this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
 
 		// Impulse force
-		this.force = force;
-		this.initForce = force;
-		this.speed = speed;
-		this.range = range;
-		this.endY = pos.y - range / 2;
-		this.initRotateY = rot.y;
-		this.speedRotate = speedRotate;
+		this.force = this.initForce = obj.force;
+		this.speed = obj.speed;
+		this.range = obj.range;
+		this.endY = obj.pos.y - obj.range / 2;
+		this.initRotateY = obj.rot.y;
+		this.timeRotate = obj.timeRotate;
 
 	}
 
