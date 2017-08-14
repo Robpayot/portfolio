@@ -86,7 +86,8 @@ export default class UniversView {
 		this.ui = {
 			el: document.querySelector('.univers'),
 			body: document.getElementsByTagName('body')[0],
-			ui: document.querySelector('.ui')
+			ui: document.querySelector('.ui'),
+			overlay: document.querySelector('.overlay')
 		};
 
 		this.ui.ui.style.display = 'none';
@@ -398,6 +399,11 @@ export default class UniversView {
 		tl.to('.overlay', 1, {
 			opacity: 0
 		}, 0);
+
+		tl.add(() => {
+			// remover overlay class
+			this.ui.overlay.classList.remove('black');
+		});
 	}
 
 	transitionOut(dest) {

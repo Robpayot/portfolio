@@ -806,7 +806,7 @@ var RouterManager = function () {
 			var fromUrl = arguments[2];
 
 
-			var slug = void 0;
+			// let slug;
 
 			switch (goToPage) {
 				case '/project-0':
@@ -5674,10 +5674,11 @@ var IntroView = function () {
 		// We will need a UI selector in global.
 		this.ui = {
 			intro: document.querySelector('.intro'),
-			overlay: document.querySelector('.intro__overlay'),
+			introOverlay: document.querySelector('.intro__overlay'),
 			title1: document.querySelector('.intro .title--1'),
 			title2: document.querySelector('.intro .title--2'),
-			button: document.querySelector('.intro .button')
+			button: document.querySelector('.intro .button'),
+			overlay: document.querySelector('.overlay')
 		};
 
 		// bind
@@ -5700,12 +5701,17 @@ var IntroView = function () {
 		this.onW = this.onW.bind(this);
 		this.moveCameraIn = this.moveCameraIn.bind(this);
 		this.transitionIn = this.transitionIn.bind(this);
+		this.transitionOut = this.transitionOut.bind(this);
+		this.onClickStart = this.onClickStart.bind(this);
 
 		this.init();
 
 		this.events(true);
 
+		this.ui.overlay.classList.add('black');
+
 		this.transitionIn();
+		// this.onClickStart();
 	}
 
 	_createClass(IntroView, [{
@@ -5728,10 +5734,12 @@ var IntroView = function () {
 
 			document[evListener]('keydown', this.onW, false);
 
-			this.ui.button[evListener]('click', function () {
-				window.location.href = window.location.origin + '/#project-0';
-				window.location.reload();
-			});
+			// this.ui.button[evListener]('click', () => {
+			// 	window.location.href = `${window.location.origin}/#project-0`;
+			// 	window.location.reload();
+			// });
+
+			this.ui.button[evListener]('click', this.onClickStart);
 		}
 	}, {
 		key: 'init',
@@ -5743,7 +5751,7 @@ var IntroView = function () {
 			this.scene = new _three.Scene();
 
 			_SceneManager2.default.renderer.setClearColor(0x000000);
-			_SceneManager2.default.renderer.setPixelRatio(window.devicePixelRatio);
+			_SceneManager2.default.renderer.setPixelRatio(window.devicePixelRatio); // passer à 1.5 si rétina
 
 			// set Camera
 			this.setCamera();
@@ -5834,12 +5842,11 @@ var IntroView = function () {
 			3000 // far
 			);
 
-			this.camera.position.set(0, 30, 0);
-			this.camera.rotation.x = (0, _utils.toRadian)(-90);
+			// this.camera.position.set(0, 30, 0);
+			// this.camera.rotation.x = toRadian(-90);
 			// debug add this.controls
-			// this.camera.position.set(0, 40, -200);
-			// this.camera.rotation.x = toRadian(-75);
-
+			this.camera.position.set(0, 40, -200);
+			this.camera.rotation.x = (0, _utils.toRadian)(-75);
 		}
 	}, {
 		key: 'setLight',
@@ -6031,7 +6038,9 @@ var IntroView = function () {
 				timeRotate: timeRotate
 			});
 
-			symbol.endPointY = 70;
+			symbol.initPointY = 70;
+			symbol.endPointY = 2000;
+			symbol.endPointZ = 5000;
 
 			this.symbols = [symbol];
 			this.symbolsM = [symbol.mesh];
@@ -6170,6 +6179,46 @@ var IntroView = function () {
 			}
 		}
 	}, {
+		key: 'onClickStart',
+		value: function onClickStart() {
+			var _this3 = this;
+
+			if (this.clicked === true) return false;
+			this.clicked = true;
+
+			// const tl = new TimelineMax({delay: 2});
+			var tl = new TimelineMax();
+
+			// glitch
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY + 5, x: 0 });
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 3, x: 1 }, 0.01);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY + 3, x: 2 }, 0.03);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 4, x: -2 }, 0.05);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 1, x: 3 }, 0.07);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY + 5, x: 2 }, 0.09);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY, x: 0 }, 0.12);
+
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 2, x: -4 });
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 2, x: 3 }, 0.2);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY + 4, x: 2 }, 0.23);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 2, x: -4 }, 0.25);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 2, x: 3 }, 0.27);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY + 2, x: 2 }, 0.29);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 4, x: -3 }, 0.32);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY + 4, x: -2 }, 0.37);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY - 2, x: 2 }, 0.39);
+			tl.set(this.symbols[0].mesh.position, { y: this.symbols[0].initPointY, x: 0 }, 0.40);
+
+			tl.add(function () {
+				_this3.transitionOut();
+			}, '+=0.5');
+
+			tl.to(this.symbols[0].mesh.position, 10, { y: this.symbols[0].endPointY, z: this.symbols[0].endPointZ, ease: window.Expo.easeOut }, '+=0.2');
+
+			tl.to(this.ui.button, 0.5, { opacity: 0 }, 0);
+			tl.set(this.ui.button, { opacity: 0, display: 'none' }, 0.5);
+		}
+	}, {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
 
@@ -6183,7 +6232,7 @@ var IntroView = function () {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			var _this3 = this;
+			var _this4 = this;
 
 			// Set uniforms: mouse interaction
 			// let uniforms = this.heightmapVariable.material.uniforms;
@@ -6224,9 +6273,9 @@ var IntroView = function () {
 
 			// Moving Symbol
 			this.symbols.forEach(function (el) {
-				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this4.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this4.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this4.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			});
 
 			// Moving Icebergs
@@ -6237,16 +6286,16 @@ var IntroView = function () {
 
 				// Move top and bottom --> Float effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.body.position.y = el.endY + Math.sin(_this3.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+				el.mesh.position.y = el.body.position.y = el.endY + Math.sin(_this4.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 				// rotate Manually
 
-				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this4.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this4.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this4.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 
 				if (el.body !== undefined) {
 
-					if (_this3.asteroidsMove === true) {
+					if (_this4.asteroidsMove === true) {
 						// APPLY IMPULSE
 						el.body.linearVelocity.x = el.force.x;
 						el.body.linearVelocity.y = el.force.y;
@@ -6305,7 +6354,7 @@ var IntroView = function () {
 	}, {
 		key: 'transitionIn',
 		value: function transitionIn() {
-			var _this4 = this;
+			var _this5 = this;
 
 			this.ui.intro.style.display = 'block';
 
@@ -6314,9 +6363,8 @@ var IntroView = function () {
 			var title1Arr = new _SplitText2.default(this.ui.title1, { type: 'chars' });
 			var title2Arr = new _SplitText2.default(this.ui.title2, { type: 'words' });
 
-			tl.set(this.ui.overlay, { opacity: 1 });
+			tl.set(this.ui.introOverlay, { opacity: 1 });
 			tl.set([title1Arr.chars, title2Arr.words], { opacity: 0 });
-			console.log(title1Arr);
 
 			tl.staggerFromTo(title1Arr.chars, 0.7, {
 				opacity: 0,
@@ -6337,16 +6385,16 @@ var IntroView = function () {
 				opacity: 1,
 				y: 0
 			}, 0.07);
-			tl.to(this.ui.overlay, 1.5, { opacity: 0 });
+			tl.to(this.ui.introOverlay, 1.5, { opacity: 0 });
 			tl.add(function () {
-				_this4.moveCameraIn();
+				_this5.moveCameraIn();
 			});
 			tl.to([this.ui.title1, this.ui.title2], 2, { autoAlpha: 0 }, '+=1');
 		}
 	}, {
 		key: 'moveCameraIn',
 		value: function moveCameraIn(dest) {
-			var _this5 = this;
+			var _this6 = this;
 
 			if (this.animating === true) return false;
 			this.animating = true;
@@ -6392,8 +6440,8 @@ var IntroView = function () {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 
-					_this5.cameraMove = false;
-					_this5.currentCameraRotX = _this5.camera.rotation.x;
+					_this6.cameraMove = false;
+					_this6.currentCameraRotX = _this6.camera.rotation.x;
 					// this.dolly.destroy();
 				}
 			});
@@ -6403,19 +6451,83 @@ var IntroView = function () {
 				lookatPosition: 1,
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
-					_this5.dolly.update();
+					_this6.dolly.update();
 				}
 			});
 			tl.add(function () {
 
-				_this5.asteroidsMove = true;
+				_this6.asteroidsMove = true;
 			}, 0);
 
-			tl.to(this.symbols[0].mesh.position, 7, { y: this.symbols[0].endPointY, ease: window.Power3.easeOut }, 2);
+			tl.to(this.symbols[0].mesh.position, 7, { y: this.symbols[0].initPointY, ease: window.Power3.easeOut }, 2);
 			tl.set(this.ui.button, { opacity: 0, display: 'block' }, '-=3');
 			tl.to(this.ui.button, 3, { opacity: 1 }, '-=3');
+		}
+	}, {
+		key: 'transitionOut',
+		value: function transitionOut(dest) {
+			var _this7 = this;
 
-			console.log('moveCameraIn');
+			console.log('?', this.animating);
+
+			// if (this.animating === true) return false;
+			this.animating = true;
+
+			this.cameraMove = true;
+
+			// console.log(this.symbols[0].mesh.getPosition());
+			// Set camera Dolly
+			var points = {
+				'camera': [{
+					'x': this.camera.position.x,
+					'y': this.camera.position.y,
+					'z': this.camera.position.z
+				}, {
+					'x': 0,
+					'y': 320,
+					'z': 400
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 40,
+					'z': 10
+				}, {
+					'x': 0,
+					'y': this.symbols[0].endPointY,
+					'z': this.symbols[0].endPointZ
+				}]
+			};
+
+			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, false);
+
+			this.dolly.cameraPosition = 0;
+			this.dolly.lookatPosition = 0;
+			this.dolly.range = [0, 1];
+			this.dolly.both = 0;
+
+			var tl = new TimelineMax({
+				onComplete: function onComplete() {
+
+					_this7.cameraMove = false;
+					// this.currentCameraRotX = this.camera.rotation.x;
+
+					_EmitterManager2.default.emit('router:switch', '/project-0', 0);
+					_EmitterManager2.default.emit('view:transition:out');
+				}
+			});
+
+			tl.to(this.dolly, 3, {
+				cameraPosition: 1,
+				lookatPosition: 1,
+				ease: window.Power3.easeIn,
+				onUpdate: function onUpdate() {
+					_this7.dolly.update();
+				}
+			});
+
+			tl.to('.overlay', 0.5, {
+				opacity: 1
+			}, 1.7);
 		}
 	}, {
 		key: 'destroy',
@@ -6641,7 +6753,8 @@ var UniversView = function () {
 			this.ui = {
 				el: document.querySelector('.univers'),
 				body: document.getElementsByTagName('body')[0],
-				ui: document.querySelector('.ui')
+				ui: document.querySelector('.ui'),
+				overlay: document.querySelector('.overlay')
 			};
 
 			this.ui.ui.style.display = 'none';
@@ -6951,6 +7064,11 @@ var UniversView = function () {
 			tl.to('.overlay', 1, {
 				opacity: 0
 			}, 0);
+
+			tl.add(function () {
+				// remover overlay class
+				_this2.ui.overlay.classList.remove('black');
+			});
 		}
 	}, {
 		key: 'transitionOut',

@@ -291,6 +291,8 @@ body {
   opacity: 0;
   z-index: 9000;
   pointer-events: none; }
+  .overlay.black {
+    background-color: black; }
 
 /* ------------------------------------------------------------------ */
 /*        FONT FACE DECLARATION

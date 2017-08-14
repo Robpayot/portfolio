@@ -62,7 +62,7 @@ class RouterManager {
 
 	initView(goToPage, index = null, fromUrl) {
 
-		let slug;
+		// let slug;
 
 		switch (goToPage) {
 			case '/project-0':

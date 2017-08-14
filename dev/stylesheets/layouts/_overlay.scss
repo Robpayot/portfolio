@@ -8,4 +8,8 @@
 	opacity: 0;
 	z-index: 9000;
 	pointer-events: none;
+
+	&.black {
+		background-color: black;
+	}
 }

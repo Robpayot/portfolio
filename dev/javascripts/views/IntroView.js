@@ -28,10 +28,11 @@ export default class IntroView {
 		// We will need a UI selector in global.
 		this.ui = {
 			intro: document.querySelector('.intro'),
-			overlay: document.querySelector('.intro__overlay'),
+			introOverlay: document.querySelector('.intro__overlay'),
 			title1: document.querySelector('.intro .title--1'),
 			title2: document.querySelector('.intro .title--2'),
-			button: document.querySelector('.intro .button')
+			button: document.querySelector('.intro .button'),
+			overlay: document.querySelector('.overlay')
 		};
 
 		// bind
@@ -54,12 +55,17 @@ export default class IntroView {
 		this.onW = this.onW.bind(this);
 		this.moveCameraIn = this.moveCameraIn.bind(this);
 		this.transitionIn = this.transitionIn.bind(this);
+		this.transitionOut = this.transitionOut.bind(this);
+		this.onClickStart = this.onClickStart.bind(this);
 
 		this.init();
 
 		this.events(true);
 
+		this.ui.overlay.classList.add('black');
+
 		this.transitionIn();
+		// this.onClickStart();
 
 	}
 
@@ -81,10 +87,13 @@ export default class IntroView {
 
 		document[evListener]( 'keydown', this.onW , false );
 
-		this.ui.button[evListener]('click', () => {
-			window.location.href = `${window.location.origin}/#project-0`;
-			window.location.reload();
-		});
+		// this.ui.button[evListener]('click', () => {
+		// 	window.location.href = `${window.location.origin}/#project-0`;
+		// 	window.location.reload();
+		// });
+
+		this.ui.button[evListener]('click', this.onClickStart);
+
 	}
 
 	init() {
@@ -94,7 +103,7 @@ export default class IntroView {
 		this.scene = new Scene();
 
 		SceneManager.renderer.setClearColor( 0x000000 );
-		SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
+		SceneManager.renderer.setPixelRatio( window.devicePixelRatio ); // passer à 1.5 si rétina
 
 		// set Camera
 		this.setCamera();
@@ -186,11 +195,11 @@ export default class IntroView {
 		);
 
 
-		this.camera.position.set(0, 30, 0);
-		this.camera.rotation.x = toRadian(-90);
+		// this.camera.position.set(0, 30, 0);
+		// this.camera.rotation.x = toRadian(-90);
 		// debug add this.controls
-		// this.camera.position.set(0, 40, -200);
-		// this.camera.rotation.x = toRadian(-75);
+		this.camera.position.set(0, 40, -200);
+		this.camera.rotation.x = toRadian(-75);
 
 
 	}
@@ -386,7 +395,9 @@ export default class IntroView {
 			timeRotate: timeRotate
 		});
 
-		symbol.endPointY = 70;
+		symbol.initPointY = 70;
+		symbol.endPointY = 2000;
+		symbol.endPointZ = 5000;
 
 		this.symbols = [symbol];
 		this.symbolsM = [symbol.mesh];
@@ -525,6 +536,46 @@ export default class IntroView {
 			this.waterMesh.material.needsUpdate = true;
 
 		}
+	}
+
+	onClickStart() {
+
+		if (this.clicked === true) return false;
+		this.clicked = true;
+
+		// const tl = new TimelineMax({delay: 2});
+		const tl = new TimelineMax();
+
+		// glitch
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY + 5, x: 0});
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 3, x: 1}, 0.01);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY + 3, x: 2}, 0.03);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 4, x: -2}, 0.05);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 1, x: 3}, 0.07);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY + 5, x: 2}, 0.09);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY, x: 0}, 0.12);
+
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 2, x: -4});
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 2, x: 3}, 0.2);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY + 4, x: 2}, 0.23);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 2, x: -4}, 0.25);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 2, x: 3}, 0.27);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY + 2, x: 2}, 0.29);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 4, x: -3}, 0.32);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY + 4, x: -2}, 0.37);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY - 2, x: 2}, 0.39);
+		tl.set(this.symbols[0].mesh.position, {y: this.symbols[0].initPointY, x: 0}, 0.40);
+
+		tl.add(() => {
+			this.transitionOut();
+		}, '+=0.5');
+
+		tl.to(this.symbols[0].mesh.position, 10, {y: this.symbols[0].endPointY, z: this.symbols[0].endPointZ, ease: window.Expo.easeOut }, '+=0.2');
+
+		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
+		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
+
+
 	}
 
 	resizeHandler() {
@@ -673,9 +724,8 @@ export default class IntroView {
 		const title1Arr = new SplitText(this.ui.title1, { type: 'chars' });
 		const title2Arr = new SplitText(this.ui.title2, { type: 'words' });
 
-		tl.set(this.ui.overlay, {opacity: 1});
+		tl.set(this.ui.introOverlay, {opacity: 1});
 		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
-		console.log(title1Arr);
 
 		tl.staggerFromTo(title1Arr.chars, 0.7, {
 			opacity: 0,
@@ -696,7 +746,7 @@ export default class IntroView {
 			opacity: 1,
 			y: 0
 		}, 0.07);
-		tl.to(this.ui.overlay, 1.5, {opacity: 0});
+		tl.to(this.ui.introOverlay, 1.5, {opacity: 0});
 		tl.add(() => {
 			this.moveCameraIn();
 		});
@@ -706,8 +756,6 @@ export default class IntroView {
 	}
 
 	moveCameraIn(dest) {
-
-
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -772,13 +820,74 @@ export default class IntroView {
 			this.asteroidsMove = true;
 		}, 0);
 
-		tl.to(this.symbols[0].mesh.position, 7, {y: this.symbols[0].endPointY, ease: window.Power3.easeOut }, 2);
+		tl.to(this.symbols[0].mesh.position, 7, {y: this.symbols[0].initPointY, ease: window.Power3.easeOut }, 2);
 		tl.set(this.ui.button, {opacity: 0, display: 'block'}, '-=3');
 		tl.to(this.ui.button, 3, {opacity: 1}, '-=3');
 
+	}
 
+	transitionOut(dest) {
 
-		console.log('moveCameraIn');
+		console.log('?', this.animating);
+
+		// if (this.animating === true) return false;
+		this.animating = true;
+
+		this.cameraMove = true;
+
+		// console.log(this.symbols[0].mesh.getPosition());
+		// Set camera Dolly
+		const points = {
+			'camera': [{
+				'x': this.camera.position.x,
+				'y': this.camera.position.y,
+				'z': this.camera.position.z
+			}, {
+				'x': 0,
+				'y': 320,
+				'z': 400
+			}],
+			'lookat': [{
+				'x': 0,
+				'y': 40,
+				'z': 10
+			}, {
+				'x': 0,
+				'y': this.symbols[0].endPointY,
+				'z': this.symbols[0].endPointZ
+			}]
+		};
+
+		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+
+		this.dolly.cameraPosition = 0;
+		this.dolly.lookatPosition = 0;
+		this.dolly.range = [0, 1];
+		this.dolly.both = 0;
+
+		const tl = new TimelineMax({
+			onComplete: () => {
+
+				this.cameraMove = false;
+				// this.currentCameraRotX = this.camera.rotation.x;
+
+				EmitterManager.emit('router:switch', '/project-0', 0);
+				EmitterManager.emit('view:transition:out');
+			}
+		});
+
+		tl.to(this.dolly, 3, {
+			cameraPosition: 1,
+			lookatPosition: 1,
+			ease: window.Power3.easeIn,
+			onUpdate: () => {
+				this.dolly.update();
+			}
+		});
+
+		tl.to('.overlay', 0.5, {
+			opacity: 1
+		}, 1.7);
 
 	}
 
