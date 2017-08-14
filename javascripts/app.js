@@ -1446,8 +1446,6 @@ var _AbstractShape2 = require('./AbstractShape');
 
 var _AbstractShape3 = _interopRequireDefault(_AbstractShape2);
 
-var _three = require('three');
-
 var _utils = require('../helpers/utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -1457,35 +1455,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+// import { Vector3 } from 'three';
+
 
 var Asteroid = function (_AbstractShape) {
 	_inherits(Asteroid, _AbstractShape);
 
-	function Asteroid(geometry, material, pos, rot, force) {
-		var scale = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
-		var range = arguments[6];
-		var speed = arguments[7];
-		var speedRotate = arguments[8];
-		var type = arguments.length > 9 && arguments[9] !== undefined ? arguments[9] : 'box';
+	function Asteroid() {
+		var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 		_classCallCheck(this, Asteroid);
 
 		var _this = _possibleConstructorReturn(this, (Asteroid.__proto__ || Object.getPrototypeOf(Asteroid)).call(this));
 
+		obj.type = obj.type || 'box';
+		obj.scale = obj.scale || 1;
+		obj.rot = obj.rot || { x: 0, y: 0, z: 0 };
+
 		_this.annilled = false;
 
-		_this.createMesh(geometry, material);
+		_this.createMesh(obj.geometry, obj.material);
 
 		// Position mesh
-		_this.mesh.position.copy(pos);
+		_this.mesh.position.copy(obj.pos);
 
 		// physic body
 		_this.physics = {
-			type: type, // type of shape : sphere, box, cylinder
+			type: obj.type, // type of shape : sphere, box, cylinder
 			// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-			size: [geometry.parameters.width * scale, geometry.parameters.height * scale, geometry.parameters.depth * scale],
-			pos: [pos.x, pos.y, pos.z], // start position in degree
-			rot: [rot.x, rot.y, rot.z], // start rotation in degree
+			size: [obj.geometry.parameters.width * obj.scale, obj.geometry.parameters.height * obj.scale, obj.geometry.parameters.depth * obj.scale],
+			pos: [obj.pos.x, obj.pos.y, obj.pos.z], // start position in degree
+			rot: [obj.rot.x, obj.rot.y, obj.rot.z], // start rotation in degree
 			move: true, // dynamic or statique
 			density: 1,
 			friction: 0.2,
@@ -1495,17 +1495,16 @@ var Asteroid = function (_AbstractShape) {
 		};
 
 		// for normal asts
-		_this.mesh.rotation.set((0, _utils.toRadian)(rot.x), (0, _utils.toRadian)(rot.y), (0, _utils.toRadian)(rot.z));
-		_this.mesh.scale.set(scale, scale, scale);
+		_this.mesh.rotation.set((0, _utils.toRadian)(obj.rot.x), (0, _utils.toRadian)(obj.rot.y), (0, _utils.toRadian)(obj.rot.z));
+		_this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
 
 		// Impulse force
-		_this.force = force;
-		_this.initForce = force;
-		_this.speed = speed;
-		_this.range = range;
-		_this.endY = pos.y - range / 2;
-		_this.initRotateY = rot.y;
-		_this.speedRotate = speedRotate;
+		_this.force = _this.initForce = obj.force;
+		_this.speed = obj.speed;
+		_this.range = obj.range;
+		_this.endY = obj.pos.y - obj.range / 2;
+		_this.initRotateY = obj.rot.y;
+		_this.timeRotate = obj.timeRotate;
 
 		return _this;
 	}
@@ -1553,7 +1552,7 @@ var Asteroid = function (_AbstractShape) {
 
 exports.default = Asteroid;
 
-},{"../helpers/utils":7,"./AbstractShape":22,"three":52}],24:[function(require,module,exports){
+},{"../helpers/utils":7,"./AbstractShape":22}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1627,6 +1626,8 @@ var _AbstractShape2 = require('./AbstractShape');
 
 var _AbstractShape3 = _interopRequireDefault(_AbstractShape2);
 
+var _utils = require('../helpers/utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1635,33 +1636,53 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// import { SphereGeometry, MeshLambertMaterial } from 'three';
-
 var _Symbol = function (_AbstractShape) {
 	_inherits(_Symbol, _AbstractShape);
 
-	function _Symbol(geometry, material, pos) {
+	function _Symbol() {
+		var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
 		_classCallCheck(this, _Symbol);
 
 		var _this = _possibleConstructorReturn(this, (_Symbol.__proto__ || Object.getPrototypeOf(_Symbol)).call(this));
 
-		_this.createMesh(geometry, material);
+		obj.type = obj.type || 'box';
+		obj.scale = obj.scale || 1;
+		obj.rot = obj.rot || { x: 0, y: 0, z: 0 };
 
-		_this.mesh.position.copy(pos);
+		_this.annilled = false;
 
-		// physic body
-		_this.physics = {
-			type: 'sphere', // type of shape : sphere, box, cylinder
-			size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-			pos: [pos.x, pos.y, pos.z], // start position in degree
-			rot: [0, 0, 0], // start rotation in degree
-			move: false, // dynamic or statique
-			density: 1,
-			friction: 0.2,
-			restitution: 0.2,
-			belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-			collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-		};
+		_this.createMesh(obj.geometry, obj.material);
+
+		// Position mesh
+		_this.mesh.position.copy(obj.pos);
+
+		// // physic body
+		// this.physics = {
+		// 	type: obj.type, // type of shape : sphere, box, cylinder
+		// 	// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
+		// 	size: [obj.geometry.parameters.width * obj.scale, obj.geometry.parameters.height * obj.scale, obj.geometry.parameters.depth * obj.scale],
+		// 	pos: [obj.pos.x, obj.pos.y, obj.pos.z], // start position in degree
+		// 	rot: [obj.rot.x, obj.rot.y, obj.rot.z], // start rotation in degree
+		// 	move: true, // dynamic or statique
+		// 	density: 1,
+		// 	friction: 0.2,
+		// 	restitution: 0.2,
+		// 	belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+		// 	collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+		// };
+
+		// for normal asts
+		_this.mesh.rotation.set((0, _utils.toRadian)(obj.rot.x), (0, _utils.toRadian)(obj.rot.y), (0, _utils.toRadian)(obj.rot.z));
+		_this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
+
+		// Impulse force
+		_this.force = _this.initForce = obj.force;
+		_this.speed = obj.speed;
+		_this.range = obj.range;
+		_this.endY = obj.pos.y - obj.range / 2;
+		_this.initRotateY = obj.rot.y;
+		_this.timeRotate = obj.timeRotate;
 
 		return _this;
 	}
@@ -1671,7 +1692,7 @@ var _Symbol = function (_AbstractShape) {
 
 exports.default = _Symbol;
 
-},{"./AbstractShape":22}],26:[function(require,module,exports){
+},{"../helpers/utils":7,"./AbstractShape":22}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5595,6 +5616,10 @@ var _Asteroid = require('../shapes/Asteroid');
 
 var _Asteroid2 = _interopRequireDefault(_Asteroid);
 
+var _Symbol2 = require('../shapes/Symbol');
+
+var _Symbol3 = _interopRequireDefault(_Symbol2);
+
 var _SplitText = require('../vendors/SplitText.js');
 
 var _SplitText2 = _interopRequireDefault(_SplitText);
@@ -5669,6 +5694,7 @@ var IntroView = function () {
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
 		this.setAsteroids = this.setAsteroids.bind(this);
+		this.setSymbol = this.setSymbol.bind(this);
 		this.setLight = this.setLight.bind(this);
 		this.resetWater = this.resetWater.bind(this);
 		this.onW = this.onW.bind(this);
@@ -5728,8 +5754,8 @@ var IntroView = function () {
 			// Set physics
 			if (this.gravity === true) this.initPhysics();
 
-			this.WIDTH = 128; // Texture width for simulation bits
-			this.BOUNDS = 512; // Water size in system units
+			this.WIDTH = 254; // Texture width for simulation bits
+			this.BOUNDS = 712; // Water size
 			this.nbAst = 20;
 			this.time = 0;
 			this.asteroids = [];
@@ -5747,11 +5773,14 @@ var IntroView = function () {
 			this.camRotTarget = new _three.Vector3(0, 0, 0);
 			this.camRotSmooth = new _three.Vector3(0, 0, 0);
 
+			this.cameraMove = true;
+
 			// this.controls = new OrbitControls( this.camera, SceneManager.renderer.domElement );
 
 			this.initWater();
 
 			this.setAsteroids();
+			this.setSymbol();
 
 			// reset Water bits to 64
 			// setInterval(() => {
@@ -5774,6 +5803,7 @@ var IntroView = function () {
 				}
 			};
 			gui.add(buttonSmooth, 'smoothWater');
+			gui.close();
 		}
 	}, {
 		key: 'initPhysics',
@@ -5788,8 +5818,6 @@ var IntroView = function () {
 				info: false, // calculate statistic or not
 				gravity: [0, 0, 0] // 0 gravity
 			});
-
-			// this.world.gravity.y = 0;
 		}
 
 		////////////////////
@@ -5808,18 +5836,20 @@ var IntroView = function () {
 
 			this.camera.position.set(0, 30, 0);
 			this.camera.rotation.x = (0, _utils.toRadian)(-90);
-			// this.camera.rotation.x = toRadian(45);
+			// debug add this.controls
+			// this.camera.position.set(0, 40, -200);
+			// this.camera.rotation.x = toRadian(-75);
 
 		}
 	}, {
 		key: 'setLight',
 		value: function setLight() {
 			var sun = new _three.DirectionalLight(0xFFFFFF, 1.0);
-			sun.position.set(300, 400, 175);
+			sun.position.set(300, 400, -205);
 			this.scene.add(sun);
 
 			var sun2 = new _three.DirectionalLight(0xe8f0ff, 0.2);
-			sun2.position.set(-100, 350, -200);
+			sun2.position.set(-100, 350, -20);
 			this.scene.add(sun2);
 		}
 	}, {
@@ -5938,13 +5968,23 @@ var IntroView = function () {
 				var scale = (0, _utils.getRandom)(1, 4);
 				var speed = (0, _utils.getRandom)(500, 800); // more is slower
 				var range = (0, _utils.getRandom)(-3, 4);
-				var speedRotate = (0, _utils.getRandom)(15000, 17000);
+				var timeRotate = (0, _utils.getRandom)(15000, 17000);
 
-				var asteroid = new _Asteroid2.default(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
+				var asteroid = new _Asteroid2.default({
+					geometry: geometry,
+					material: finalMat,
+					pos: pos,
+					rot: rot,
+					force: force,
+					scale: scale,
+					range: range,
+					speed: speed,
+					timeRotate: timeRotate
+				});
 
 				asteroid.mesh.index = i;
 				asteroid.speedZ = (0, _utils.getRandom)(0.3, 0.8);
-				// console.log(asteroid.speedZ);
+
 				if (this.gravity === true) {
 					// add physic body to world
 					asteroid.body = this.world.add(asteroid.physics);
@@ -5960,6 +6000,44 @@ var IntroView = function () {
 				// add mesh to the scene
 				this.scene.add(asteroid.mesh);
 			}
+		}
+	}, {
+		key: 'setSymbol',
+		value: function setSymbol() {
+
+			// Set up the sphere vars
+			// const RADIUS = 10;
+			// const SEGMENTS = 32;
+			// const RINGS = 32;
+
+			// const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
+			var geometry = new _three.BoxGeometry(20, 20, 20);
+			// const img = PreloadManager.getResult('texture-asteroid');
+			// const tex = new Texture(img);
+			// tex.needsUpdate = true;
+			// #4682b4
+			var material = new _three.MeshPhongMaterial({ color: 0x4682b4, transparent: false, opacity: 1, map: null });
+			var pos = {
+				x: 0,
+				y: 170, // 60 end point
+				z: 100
+			};
+			var timeRotate = 7000;
+
+			var symbol = new _Symbol3.default({
+				geometry: geometry,
+				material: material,
+				pos: pos,
+				timeRotate: timeRotate
+			});
+
+			symbol.endPointY = 70;
+
+			this.symbols = [symbol];
+			this.symbolsM = [symbol.mesh];
+
+			// add mesh to the scene
+			this.scene.add(symbol.mesh);
 		}
 	}, {
 		key: 'fillTexture',
@@ -6144,6 +6222,13 @@ var IntroView = function () {
 
 			if (this.gravity === true) this.world.step();
 
+			// Moving Symbol
+			this.symbols.forEach(function (el) {
+				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			});
+
 			// Moving Icebergs
 			this.asteroids.forEach(function (el) {
 
@@ -6155,9 +6240,9 @@ var IntroView = function () {
 				el.mesh.position.y = el.body.position.y = el.endY + Math.sin(_this3.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 				// rotate Manually
 
-				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this3.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 
 				if (el.body !== undefined) {
 
@@ -6321,12 +6406,14 @@ var IntroView = function () {
 					_this5.dolly.update();
 				}
 			});
-			tl.set(this.ui.button, { opacity: 0, display: 'block' }, 4);
-			tl.to(this.ui.button, 3, { opacity: 1 }, 4);
 			tl.add(function () {
 
 				_this5.asteroidsMove = true;
 			}, 0);
+
+			tl.to(this.symbols[0].mesh.position, 7, { y: this.symbols[0].endPointY, ease: window.Power3.easeOut }, 2);
+			tl.set(this.ui.button, { opacity: 0, display: 'block' }, '-=3');
+			tl.to(this.ui.button, 3, { opacity: 1 }, '-=3');
 
 			console.log('moveCameraIn');
 		}
@@ -6402,7 +6489,7 @@ var IntroView = function () {
 
 exports.default = IntroView;
 
-},{"../helpers/Device":5,"../helpers/utils":7,"../managers/EmitterManager":9,"../managers/SceneManager":12,"../shaders/HeightmapFragmentShader":17,"../shaders/SmoothFragmentShader":19,"../shaders/WaterVertexShader":21,"../shapes/Asteroid":23,"../vendors/GPUComputationRenderer":28,"../vendors/OrbitControls":29,"../vendors/SimplexNoise":31,"../vendors/SplitText.js":32,"../vendors/three-camera-dolly-custom":34,"dat-gui":40,"oimo":44,"three":52}],37:[function(require,module,exports){
+},{"../helpers/Device":5,"../helpers/utils":7,"../managers/EmitterManager":9,"../managers/SceneManager":12,"../shaders/HeightmapFragmentShader":17,"../shaders/SmoothFragmentShader":19,"../shaders/WaterVertexShader":21,"../shapes/Asteroid":23,"../shapes/Symbol":25,"../vendors/GPUComputationRenderer":28,"../vendors/OrbitControls":29,"../vendors/SimplexNoise":31,"../vendors/SplitText.js":32,"../vendors/three-camera-dolly-custom":34,"dat-gui":40,"oimo":44,"three":52}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7091,7 +7178,11 @@ var UniversView = function () {
 				z: 0
 			};
 
-			var symbol = new _Symbol3.default(geometry, material, pos);
+			var symbol = new _Symbol3.default({
+				geometry: geometry,
+				material: material,
+				pos: pos
+			});
 
 			if (this.gravity === true) {
 				// add physic body to world
@@ -7244,7 +7335,7 @@ var UniversView = function () {
 				var scale = this.astd === 'spheres' ? 1 : (0, _utils.getRandom)(1, 4);
 				var speed = (0, _utils.getRandom)(500, 800); // more is slower
 				var range = (0, _utils.getRandom)(3, 8);
-				var speedRotate = (0, _utils.getRandom)(15000, 17000);
+				var timeRotate = (0, _utils.getRandom)(15000, 17000);
 
 				var finalMat = void 0;
 
@@ -7253,7 +7344,18 @@ var UniversView = function () {
 				} else {
 					finalMat = this.materialAst2;
 				}
-				var asteroid = new _Asteroid2.default(geometry, finalMat, pos, rot, force, scale, range, speed, speedRotate);
+
+				var asteroid = new _Asteroid2.default({
+					geometry: geometry,
+					material: finalMat,
+					pos: pos,
+					rot: rot,
+					force: force,
+					scale: scale,
+					range: range,
+					speed: speed,
+					timeRotate: timeRotate
+				});
 
 				if (this.gravity === true) {
 					// add physic body to world
@@ -7833,9 +7935,9 @@ var UniversView = function () {
 					el.mesh.position.y = el.endY + Math.sin(_this8.incr * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 					// rotate
 					// console.log(Math.sin(this.incr * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-					el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this8.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-					el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this8.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
-					el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this8.incr * 2 * Math.PI / el.speedRotate) * (360 / 2) + 360 / 2);
+					el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this8.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+					el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this8.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+					el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this8.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 				});
 			}
 
