@@ -27,10 +27,12 @@ class RouterManager {
 
 		if (/\/#project-1/.test(url) === true) {
 			this.switchView('/project-1', 1, true);
+		} else if (/\/#project-0/.test(url) === true) {
+			this.switchView('/project-0', 0, true);
 		} else if (/\/#intro/.test(url) === true) {
 			this.switchView('/intro', 0, true);
 		} else {
-			this.switchView('/project-0', 0, true);
+			this.switchView('/intro', 0, true);
 		}
 
 		EmitterManager.on('router:switch', this.switchView);
@@ -42,6 +44,8 @@ class RouterManager {
 		// return false;
 
 		if (this.currentPage !== null) {
+
+			this.lastPage = this.currentPage.name;
 
 			this.currentPage.destroy(false);
 
@@ -59,7 +63,7 @@ class RouterManager {
 
 	}
 
-	initView(goToPage, index = null, fromUrl) {
+	initView(goToPage, index = null, fromUrl, lastPage = null) {
 
 		// let slug;
 
@@ -76,7 +80,7 @@ class RouterManager {
 						glow: true,
 						alt: false,
 						data: data.projects[0],
-						fromUrl: fromUrl
+						fromUrl
 					});
 				} else {
 					this.currentPage = this.project0;
@@ -97,7 +101,7 @@ class RouterManager {
 						glow: false,
 						alt: true,
 						data: data.projects[1],
-						fromUrl: fromUrl
+						fromUrl
 					});
 				} else {
 					this.currentPage = this.project1;
@@ -109,7 +113,7 @@ class RouterManager {
 			case '/intro':
 
 				this.currentPage = new IntroView({
-					gravity: true
+					gravity: true,
 				});
 				window.location = '#intro';
 				break;
