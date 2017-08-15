@@ -1,3 +1,4 @@
+import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
@@ -5,6 +6,7 @@ import Asteroid from '../shapes/Asteroid';
 import Symbol from '../shapes/Symbol';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
+import Ui from '../components/Ui';
 
 import { Vector2, Raycaster, PerspectiveCamera, Vector3, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -18,22 +20,17 @@ import { World } from 'oimo';
 
 import dat from 'dat-gui';
 
-export default class IntroView {
+export default class IntroView extends AbstractView {
 
 	constructor(obj) {
 
-		this.el = obj.el;
-		this.gravity = obj.gravity;
+		super();
 
-		// We will need a UI selector in global.
-		this.ui = {
-			intro: document.querySelector('.intro'),
-			introOverlay: document.querySelector('.intro__overlay'),
-			title1: document.querySelector('.intro .title--1'),
-			title2: document.querySelector('.intro .title--2'),
-			button: document.querySelector('.intro .button'),
-			overlay: document.querySelector('.overlay')
-		};
+		// properties
+
+		this.el = this.ui.webGl;
+		this.gravity = obj.gravity;
+		this.UI = Ui.ui; // Global UI selector
 
 		// bind
 
@@ -58,6 +55,7 @@ export default class IntroView {
 		this.transitionOut = this.transitionOut.bind(this);
 		this.onClickStart = this.onClickStart.bind(this);
 
+		// init
 		this.init();
 
 		this.events(true);
@@ -87,16 +85,19 @@ export default class IntroView {
 
 		document[evListener]( 'keydown', this.onW , false );
 
-		// this.ui.button[evListener]('click', () => {
+		// this.UI.button[evListener]('click', () => {
 		// 	window.location.href = `${window.location.origin}/#project-0`;
 		// 	window.location.reload();
 		// });
 
-		this.ui.button[evListener]('click', this.onClickStart);
+		this.UI.button[evListener]('click', this.onClickStart);
 
 	}
 
 	init() {
+
+		this.el.classList.add('intro');
+		this.el.classList.remove('project');
 
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -572,8 +573,8 @@ export default class IntroView {
 
 		tl.to(this.symbols[0].mesh.position, 10, {y: this.symbols[0].endPointY, z: this.symbols[0].endPointZ, ease: window.Expo.easeOut }, '+=0.2');
 
-		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
-		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
+		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
+		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
 
 
 	}
@@ -717,14 +718,14 @@ export default class IntroView {
 
 	transitionIn() {
 
-		this.ui.intro.style.display = 'block';
+		Ui.el.style.display = 'block';
 
 		const tl = new TimelineMax();
 
-		const title1Arr = new SplitText(this.ui.title1, { type: 'chars' });
-		const title2Arr = new SplitText(this.ui.title2, { type: 'words' });
+		const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
+		const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
 
-		tl.set(this.ui.introOverlay, {opacity: 1});
+		tl.set(this.UI.overlay, {opacity: 1});
 		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
 
 		tl.staggerFromTo(title1Arr.chars, 0.7, {
@@ -746,11 +747,11 @@ export default class IntroView {
 			opacity: 1,
 			y: 0
 		}, 0.07);
-		tl.to(this.ui.introOverlay, 1.5, {opacity: 0});
+		tl.to(this.UI.overlay, 1.5, {opacity: 0});
 		tl.add(() => {
 			this.moveCameraIn();
 		});
-		tl.to([this.ui.title1,this.ui.title2], 2, {autoAlpha: 0}, '+=1');
+		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=1');
 
 
 	}
@@ -821,8 +822,8 @@ export default class IntroView {
 		}, 0);
 
 		tl.to(this.symbols[0].mesh.position, 7, {y: this.symbols[0].initPointY, ease: window.Power3.easeOut }, 2);
-		tl.set(this.ui.button, {opacity: 0, display: 'block'}, '-=3');
-		tl.to(this.ui.button, 3, {opacity: 1}, '-=3');
+		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
+		tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
 
 	}
 

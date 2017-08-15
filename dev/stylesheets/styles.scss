@@ -20,11 +20,16 @@
 // Add your components here
 @import "components/buttons";
 @import "components/xp";
-@import "components/univers";
+@import "components/webGl";
 @import "components/graphicBars";
 @import "components/jauge";
-@import "components/ui";
-@import "components/intro";
+
+// View 3D
+@import "views/intro";
+@import "views/project";
+
+// UI
+@import "ui/ui";
 
 a {
 	text-decoration: none;

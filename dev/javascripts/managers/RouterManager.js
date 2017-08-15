@@ -1,6 +1,6 @@
 import EmitterManager from './EmitterManager';
-import PreloadManager from './PreloadManager';
-import UniversView from '../views/UniversView';
+// import PreloadManager from './PreloadManager';
+import ProjectView from '../views/ProjectView';
 import IntroView from '../views/IntroView';
 import data from '../../datas/data.json';
 
@@ -29,7 +29,6 @@ class RouterManager {
 			this.switchView('/project-1', 1, true);
 		} else if (/\/#intro/.test(url) === true) {
 			this.switchView('/intro', 0, true);
-			console.log('?');
 		} else {
 			this.switchView('/project-0', 0, true);
 		}
@@ -68,7 +67,7 @@ class RouterManager {
 			case '/project-0':
 
 				if (this.project0 === null) {
-					this.currentPage = this.project0 = new UniversView({
+					this.currentPage = this.project0 = new ProjectView({
 						id: 0,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -89,7 +88,7 @@ class RouterManager {
 			case '/project-1':
 
 				if (this.project1 === null) {
-					this.currentPage = this.project1 = new UniversView({
+					this.currentPage = this.project1 = new ProjectView({
 						id: 1,
 						bkg: 0xcafefd,
 						astd: 'cubes',
@@ -108,9 +107,8 @@ class RouterManager {
 				break;
 
 			case '/intro':
-				const el = document.querySelector('.univers');
+
 				this.currentPage = new IntroView({
-					el: el,
 					gravity: true
 				});
 				window.location = '#intro';

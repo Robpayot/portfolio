@@ -1,17 +1,17 @@
-export default class Ui {
+class Ui {
 
 	constructor() {
 
-		// const div = document.createElement('div');
-		// div.classList.add('css-container');
-		// div.innerHTML = template;
+		this.el = document.querySelector('.ui');
 
-		// const object = new CSS3DObject(div);
-
-		// scene.add(object);
-		// tab.push(object);
-
-		// return object;
+		this.ui = {
+			title1: this.el.querySelector('.title--1'),
+			title2: this.el.querySelector('.title--2'),
+			button: this.el.querySelector('.button'),
+			overlay: this.el.querySelector('.ui-intro__overlay')
+		};
 
 	}
 }
+
+export default new Ui();

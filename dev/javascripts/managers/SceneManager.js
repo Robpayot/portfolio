@@ -15,10 +15,7 @@ class SceneManager {
 
 		// if (/\/#intro/.test(window.location.href) === true) return false;
 
-
-		this.el = document.querySelector('.univers');
-
-
+		this.xp = document.querySelector('.xp');
 
 		// Set CssRenderer and WebGLRenderer
 		this.cssRenderer = new CSS3DRendererIE();
@@ -28,7 +25,7 @@ class SceneManager {
 		this.cssRenderer.domElement.style.top = 0;
 		this.cssRenderer.domElement.style.left = 0;
 		this.cssRenderer.domElement.style.zIndex = 1;
-		this.cssRenderer.domElement.classList.add('container3D');
+		this.cssRenderer.domElement.classList.add('webGl');
 
 		this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
 		this.renderer.setClearColor(0xffffff, 1);
@@ -40,16 +37,19 @@ class SceneManager {
 		this.renderer.domElement.style.position = 'absolute';
 		this.renderer.domElement.style.top = 0;
 		this.renderer.domElement.style.left = 0;
-		this.renderer.domElement.classList.add('webGl');
+		this.renderer.domElement.classList.add('webGl__canvas');
 		this.cssRenderer.domElement.appendChild(this.renderer.domElement);
 
-		this.el.appendChild(this.cssRenderer.domElement);
+		this.xp.appendChild(this.cssRenderer.domElement);
+
+
+		this.el = this.renderer.domElement;
 
 	}
 
 	render(opts) {
 
-		// Render different scene throught opts. (ex: render scene Univers 1 if opts.scene come from Univers 1 etc...)
+		// Render different scene throught opts. (ex: render scene Project 1 if opts.scene come from Project 1 etc...)
 		if (opts.composer !== null && opts.effectController.enabled === true) {
 			// Render scene composer
 			opts.composer.render(opts.scene, opts.camera);

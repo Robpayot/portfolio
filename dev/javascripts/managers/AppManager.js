@@ -21,15 +21,23 @@ class AppManager {
 
 	start() {
 
-		// }
-
 		this.events(true);
 
 		// SoundManager
 
 		this.graphicBars = new GraphicBars();
 
+		// Set up scene
 		SceneManager.start();
+
+		// Selectors we need only one time
+		this.ui = {
+			xp: document.querySelector('.xp'),
+			webGl: document.querySelector('.webGl'),
+			overlay: document.querySelector('.overlay'),
+			body: document.getElementsByTagName('body')[0] // not sure needed
+		};
+
 		RouterManager.start();
 	}
 
