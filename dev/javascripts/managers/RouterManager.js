@@ -3,6 +3,7 @@ import EmitterManager from './EmitterManager';
 import ProjectView from '../views/ProjectView';
 import IntroView from '../views/IntroView';
 import data from '../../datas/data.json';
+import Menu from '../components/Menu';
 
 // console.log(ListView);
 
@@ -29,8 +30,6 @@ class RouterManager {
 			this.switchView('/project-1', 1, true);
 		} else if (/\/#project-0/.test(url) === true) {
 			this.switchView('/project-0', 0, true);
-		} else if (/\/#intro/.test(url) === true) {
-			this.switchView('/intro', 0, true);
 		} else {
 			this.switchView('/intro', 0, true);
 		}
@@ -118,6 +117,8 @@ class RouterManager {
 				window.location = '#intro';
 				break;
 		}
+
+		Menu.update(this.currentPage.name, this.currentPage.id);
 
 		this.fromLoad = false;
 

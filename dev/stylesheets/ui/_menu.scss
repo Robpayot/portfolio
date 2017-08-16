@@ -1,0 +1,132 @@
+.menu {
+	position: relative;
+	display: none;
+	height: 100%;
+	align-items: center;
+	padding: 0 7vw;
+	
+	// justify-content: space-between;
+
+	color: white;
+	&.is-active {
+		display: flex;
+	}
+
+	&.alt {
+		.menu {
+			&__button {
+				color: black;
+				border-color: black;
+			}
+		}
+	}
+
+	&.is-open {
+		.menu {
+			&__button {
+				transform: translateY(-50%) rotate(-90deg);
+				color: white;
+				border-color: white;
+			}
+			&__overlay {
+				opacity: 0.8;
+			}
+			&__links {
+				opacity: 1;
+				pointer-events: auto; 
+			}
+		}
+
+	}
+
+
+
+	&__button {
+		position: absolute;
+		top: 50%;
+		left: 7vw;
+		border: 1px solid white;
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transform: translateY(-50%) rotate(90deg);
+		cursor: pointer;
+		transition: transform 0.8s $Power3EaseOut, color 0.5s ease, border 0.5s ease;
+
+		pointer-events: auto;
+	}
+
+	&__links {
+		position: absolute;
+		display: flex;
+		left: 27.5vw;
+
+		opacity: 0;
+		cursor: pointer;
+
+		transition: opacity 0.5s ease;
+
+	}
+
+	&__link {
+		margin-right: 10vw;
+		text-align: left;
+		
+		.title--3 {
+			opacity: 0.5;
+			transition: opacity 0.2s ease;
+			&:hover {
+				opacity: 1;
+			}
+		}
+
+		&.is-active {
+			.title--3 {
+				opacity: 1;
+			}
+		}
+	}
+
+	&__sublinks {
+		position: absolute;
+		top: 5em;
+	}
+
+	&__sublink {
+		margin-bottom: 15px;
+		opacity: 0.5;
+		font-size: 0.8rem;
+		transition: opacity 0.2s ease;
+		&.is-active {
+			opacity: 1;
+		}
+		&:hover {
+			opacity: 1;
+		}
+	}
+
+	&__nb {
+		margin-right: 5px;
+	}
+
+	&__overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: black;
+		z-index: -1;
+		opacity: 0;
+
+		transition: opacity 0.5s ease;
+	}
+
+
+
+
+}

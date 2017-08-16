@@ -13,6 +13,8 @@ import ease from '../helpers/ease';
 import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
+import Ui from '../components/Ui';
+import Menu from '../components/Menu';
 
 
 // THREE JS
@@ -39,6 +41,7 @@ export default class ProjectView extends AbstractView {
 
 		// properties
 		this.el = this.ui.webGl;
+		this.UI = Ui.ui; // Global UI selector
 		this.id = obj.id;
 		this.data = obj.data;
 		this.bkg = obj.bkg;
@@ -120,13 +123,6 @@ export default class ProjectView extends AbstractView {
 
 	init() {
 
-		this.el.classList.remove('intro');
-		this.el.classList.add('project');
-
-		// set ui
-		this.uiUI =  document.querySelector('.ui');
-
-		this.uiUI.style.display = 'none';
 
 		this.isControls = false;
 
@@ -281,12 +277,20 @@ export default class ProjectView extends AbstractView {
 	start() {
 
 		this.lastPage = RouterManager.lastPage;
-		console.log(this.lastPage);
+		this.el.classList.remove('intro');
+		this.el.classList.add('project');
+
+		// set ui
+		this.UI.intro.style.display = 'none';
+		Menu.el.classList.add('is-active');
+		Menu.el.classList.remove('is-open');
 
 		if (this.alt === true) {
 			this.el.classList.add('alt');
+			Menu.el.classList.add('alt');
 		} else {
 			this.el.classList.remove('alt');
+			Menu.el.classList.remove('alt');
 		}
 
 		// Set CssContainers

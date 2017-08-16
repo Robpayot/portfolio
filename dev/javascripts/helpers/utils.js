@@ -75,3 +75,8 @@ export function round(value, dec) {
 
 	return Math.round(value * dec) / dec;
 }
+
+export function getIndex(el) {
+
+	return Array.from(el.parentNode.children).indexOf(el)
+}

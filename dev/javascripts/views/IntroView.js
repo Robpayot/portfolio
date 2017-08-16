@@ -7,6 +7,8 @@ import Symbol from '../shapes/Symbol';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
+import Menu from '../components/Menu';
+
 
 import { Vector2, Raycaster, PerspectiveCamera, Vector3, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -87,19 +89,11 @@ export default class IntroView extends AbstractView {
 
 		document[evListener]( 'keydown', this.onW , false );
 
-		// this.UI.button[evListener]('click', () => {
-		// 	window.location.href = `${window.location.origin}/#project-0`;
-		// 	window.location.reload();
-		// });
-
 		this.UI.button[evListener]('click', this.onClickStart);
 
 	}
 
 	init() {
-
-		this.el.classList.add('intro');
-		this.el.classList.remove('project');
 
 		this.isControls = false;
 
@@ -718,6 +712,13 @@ export default class IntroView extends AbstractView {
 
 	transitionIn() {
 
+		this.el.classList.add('intro');
+		this.el.classList.remove('project');
+
+		// set ui
+		this.UI.intro.style.display = 'block';
+		Menu.el.classList.remove('is-active');
+
 		Ui.el.style.display = 'block';
 
 		const tl = new TimelineMax();
@@ -811,7 +812,7 @@ export default class IntroView extends AbstractView {
 		tl.to(this.dolly, 7, {
 			cameraPosition: 1,
 			lookatPosition: 1,
-			ease: window.Power3.easeInOut,
+			ease: window.Power1.easeInOut,
 			onUpdate: () => {
 				this.dolly.update();
 			}

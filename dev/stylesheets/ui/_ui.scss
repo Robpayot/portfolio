@@ -1,4 +1,5 @@
 .ui {
+	display: block;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -9,5 +10,6 @@
 
 	@import "ui/intro";
 	@import "ui/project";
+	@import "ui/menu";
 
 }
