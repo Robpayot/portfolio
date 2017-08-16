@@ -12,6 +12,9 @@ import bean from 'bean';
 import ease from '../helpers/ease';
 import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
+import RouterManager from '../managers/RouterManager';
+import Ui from '../components/Ui';
+import Menu from '../components/Menu';
 
 
 // THREE JS
@@ -38,6 +41,7 @@ export default class ProjectView extends AbstractView {
 
 		// properties
 		this.el = this.ui.webGl;
+		this.UI = Ui.ui; // Global UI selector
 		this.id = obj.id;
 		this.data = obj.data;
 		this.bkg = obj.bkg;
@@ -49,6 +53,7 @@ export default class ProjectView extends AbstractView {
 		this.fromUrl = obj.fromUrl;
 		this.sound = SoundManager;
 
+		this.name = `project-${this.id}`;
 
 		// bind
 		this.raf = this.raf.bind(this);
@@ -118,18 +123,11 @@ export default class ProjectView extends AbstractView {
 
 	init() {
 
-		this.el.classList.remove('intro');
-		this.el.classList.add('project');
-
-		// set ui
-		this.uiUI =  document.querySelector('.ui');
-
-		this.uiUI.style.display = 'none';
 
 		this.isControls = false;
 
 		this.cssObjects = [];
-		this.incr = 1;
+		this.time = 1;
 		this.nbAst = 10;
 		this.finalFov = 45;
 		this.composer = null;
@@ -278,10 +276,21 @@ export default class ProjectView extends AbstractView {
 
 	start() {
 
+		this.lastPage = RouterManager.lastPage;
+		this.el.classList.remove('intro');
+		this.el.classList.add('project');
+
+		// set ui
+		this.UI.intro.style.display = 'none';
+		Menu.el.classList.add('is-active');
+		Menu.el.classList.remove('is-open');
+
 		if (this.alt === true) {
 			this.el.classList.add('alt');
+			Menu.el.classList.add('alt');
 		} else {
 			this.el.classList.remove('alt');
+			Menu.el.classList.remove('alt');
 		}
 
 		// Set CssContainers
@@ -307,215 +316,6 @@ export default class ProjectView extends AbstractView {
 			this.ui.context = document.querySelector('.context__container');
 
 		}, 10);
-
-	}
-
-	////////////////////
-	// TRANSITIONS
-	////////////////////
-
-	transitionIn(fromUrl = false) {
-
-		this.cameraMove = true;
-
-		// Set camera Dolly
-		let points = {
-			'camera': [{
-				'x': 0,
-				'y': 0,
-				'z': 240
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 180
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 160
-			}],
-			'lookat': [{
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}]
-		};
-
-		if (fromUrl === true) {
-			points = {
-				'camera': [{
-					'x': -60,
-					'y': 170,
-					'z': 70
-				}, {
-					'x': -40,
-					'y': 100,
-					'z': 100
-				}, {
-					'x': -20,
-					'y': 50,
-					'z': 130
-				}, {
-					'x': 0,
-					'y': 0,
-					'z': 160
-				}],
-				'lookat': [{
-					'x': 0,
-					'y': 0,
-					'z': 0
-				}, {
-					'x': 0,
-					'y': -3,
-					'z': 3
-				}, {
-					'x': 0,
-					'y': -3,
-					'z': 3
-				}, {
-					'x': 0,
-					'y': 0,
-					'z': 0
-				}]
-			};
-		}
-
-		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		this.dolly.cameraPosition = 0;
-		this.dolly.lookatPosition = 0;
-		this.dolly.range = [0, 1];
-		this.dolly.both = 0;
-
-		const tl = new TimelineMax({
-			onComplete: () => {
-				this.camera.position.set(0, 0, 160);
-				this.cameraMove = false;
-			}
-		});
-
-		const time = fromUrl === false ? 3 : 4;
-		const ease = fromUrl === false ? window.Power3.easeOut : window.Power3.easeInOut;
-		const delay = fromUrl === false ? 1.2 : 2.5;
-
-		tl.to(this.dolly, time, {
-			cameraPosition: 1,
-			lookatPosition: 1,
-			ease: ease,
-			onUpdate: () => {
-				this.dolly.update();
-			}
-		});
-
-		tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
-			opacity: 0,
-			y: 80
-		}, {
-			opacity: 0.8,
-			y: 0,
-			ease: window.Power4.easeOut
-		}, 0.1, delay);
-
-		tl.add( () => { // add transition hover css
-			const title = document.querySelector('.project__title svg');
-			const next = document.querySelector('.project__next');
-			title.classList.add('transi');
-			next.classList.add('transi');
-		});
-
-		tl.to('.overlay', 1, {
-			opacity: 0
-		}, 0);
-
-		tl.add(() => {
-			// remover overlay class
-			this.ui.overlay.classList.remove('black');
-		});
-	}
-
-	transitionOut(dest) {
-
-		if (this.animating === true) return false;
-		this.animating = true;
-
-		this.cameraMove = true;
-		// Set camera Dolly
-		const points = {
-			'camera': [{
-				'x': 0,
-				'y': 0,
-				'z': 160
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 80
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}],
-			'lookat': [{
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}]
-		};
-
-		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		this.dolly.cameraPosition = 0;
-		this.dolly.lookatPosition = 0;
-		this.dolly.range = [0, 1];
-		this.dolly.both = 0;
-
-		const tl = new TimelineMax({
-			onComplete: () => {
-				this.cameraMove = false;
-				this.animating = false;
-
-				EmitterManager.emit('router:switch', `/project-${dest}`, dest);
-				EmitterManager.emit('view:transition:out');
-				console.log('transition out', this.id);
-			}
-		});
-
-		tl.to(this.dolly, 2, {
-			cameraPosition: 1,
-			lookatPosition: 1,
-			ease: window.Power2.easeIn,
-			onUpdate: () => {
-				this.dolly.update();
-			}
-		});
-
-		tl.to('.overlay', 0.5, {
-			opacity: 1
-		}, 1.7);
-
-		// setTimeout(()=>{
-
-		// },200);
-
-	}
-
-	goTo() {
-		const dest = this.id === 0 ? 1 : 0;
-		this.transitionOut(dest);
 
 	}
 
@@ -613,53 +413,70 @@ export default class ProjectView extends AbstractView {
 
 	setSymbol() {
 
-		// Set up the sphere vars
-		// const RADIUS = 10;
-		// const SEGMENTS = 32;
-		// const RINGS = 32;
+		// const geometry = new TorusGeometry(6, 1, 16, 100);
+		// const img = PreloadManager.getResult('texture-asteroid');
+		// const tex = new Texture(img);
+		// tex.needsUpdate = true;
+		// const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: null });
+		// const pos = {
+		// 	x: 0,
+		// 	y: 0,
+		// 	z: 0,
+		// };
 
-		// const geometry = new SphereGeometry(RADIUS, SEGMENTS, RINGS);
-		const geometry = new TorusGeometry(6, 1, 16, 100);
-		const img = PreloadManager.getResult('texture-asteroid');
-		const tex = new Texture(img);
-		tex.needsUpdate = true;
-		const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: null });
+		// const symbol = new Symbol({
+		// 	geometry: geometry,
+		// 	material: material,
+		// 	pos: pos
+		// });
+
+		// if (this.gravity === true) {
+		// 	// add physic body to world
+		// 	symbol.body = this.world.add(symbol.physics);
+		// }
+
+
+
+		// // create a glowMesh
+		// symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
+		// symbol.mesh.add(symbol.glowMesh.object3d);
+
+		// // example of customization of the default glowMesh
+		// // Inside
+		// symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white');
+		// symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
+		// symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
+
+		// // Outside
+		// symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white');
+		// symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
+		// symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
+
+		const geometry = new BoxGeometry(12, 12, 12);
+		// const img = PreloadManager.getResult('texture-asteroid');
+		// const tex = new Texture(img);
+		// tex.needsUpdate = true;
+		// #4682b4
+		const material = new MeshPhongMaterial({ color: 0x4682b4, transparent: false, opacity: 1, map: null });
 		const pos = {
 			x: 0,
-			y: 0,
-			z: 0,
+			y: -100, // 60 end point
+			z: 200,
 		};
+		const timeRotate = 7000;
 
 		const symbol = new Symbol({
-			geometry: geometry,
-			material: material,
-			pos: pos
+			geometry,
+			material,
+			pos,
+			timeRotate
 		});
 
-		if (this.gravity === true) {
-			// add physic body to world
-			symbol.body = this.world.add(symbol.physics);
-		}
+		symbol.initPointY = 0;
+		symbol.endPointY = 2000;
+		symbol.endPointZ = 5000;
 
-
-
-		// create a glowMesh
-		symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
-		symbol.mesh.add(symbol.glowMesh.object3d);
-
-		// example of customization of the default glowMesh
-		// Inside
-		symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white');
-		symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
-		symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
-
-		// Outside
-		symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white');
-		symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
-		symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
-
-		this.symbols = [symbol];
-		this.symbolsM = [symbol.mesh];
+		this.symbol = symbol;
 
 		// add mesh to the scene
 		this.scene.add(symbol.mesh);
@@ -821,15 +638,15 @@ export default class ProjectView extends AbstractView {
 			}
 
 			const asteroid = new Asteroid({
-				geometry: geometry,
+				geometry,
 				material: finalMat,
-				pos: pos,
-				rot: rot,
-				force: force,
-				scale: scale,
-				range: range,
-				speed: speed,
-				timeRotate: timeRotate
+				pos,
+				rot,
+				force,
+				scale,
+				range,
+				speed,
+				timeRotate
 			});
 
 			if (this.gravity === true) {
@@ -862,7 +679,7 @@ export default class ProjectView extends AbstractView {
 			// { x: 70, y: 70, z: 0 },
 			{ x: -100, y: 0, z: 0 },
 			{ x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 100 },
+			{ x: 0, y: 0, z: 170 },
 			{ x: 0, y: -0, z: 0 }
 		];
 
@@ -916,7 +733,7 @@ export default class ProjectView extends AbstractView {
 		// contextBack.scale.multiplyScalar(1 / 14);
 
 		// Title
-		const title = new CssContainer(`<div class="project__title"><span>${data.title}</span><svg class="icon project__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+		const title = new CssContainer(`<div class="project__title"><span>${data.title}</span><svg class="icon project__arrow-r transi" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
 	<g transform="translate(0,-952.36218)">
 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
 		L404.9,1271.9L404.9,1271.9z" />
@@ -926,8 +743,8 @@ export default class ProjectView extends AbstractView {
 		title.scale.multiplyScalar(1 / 14);
 
 		// Next project
-		const nextProject = new CssContainer('<div class="project__next">Next</div>', this.cssScene, this.cssObjects);
-		nextProject.position.set(0, -12, 10);
+		const nextProject = new CssContainer('<div class="project__next transi">Next</div>', this.cssScene, this.cssObjects);
+		nextProject.position.set(0, -15, 10);
 		nextProject.scale.multiplyScalar(1 / 14);
 
 		// Gallery
@@ -1310,6 +1127,41 @@ export default class ProjectView extends AbstractView {
 
 	}
 
+	goTo() {
+
+		console.log('go To');
+		const dest = this.id === 0 ? 1 : 0;
+
+		if (this.clicked === true) return false;
+		this.clicked = true;
+
+		// const tl = new TimelineMax({delay: 2});
+		const tl = new TimelineMax();
+
+		// glitch
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 0});
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 1}, 0.01);
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 1, x: 1}, 0.03);
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -1}, 0.05);
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 2}, 0.07);
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 1}, 0.09);
+		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
+
+		tl.add(() => {
+			console.log('add called');
+
+			this.transitionOut(dest);
+
+		}, '+=0.5');
+
+		tl.to(this.symbol.mesh.position, 10, {y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
+
+		tl.staggerTo(['.project__next', '.project__title'], 0.5, {opacity: 0}, 0.2, 0);
+
+		// issue if come back to this timeline and 10 times end
+
+	}
+
 	resizeHandler() {
 
 		this.width = window.innerWidth * window.devicePixelRatio;
@@ -1376,7 +1228,7 @@ export default class ProjectView extends AbstractView {
 
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		const intersects = this.raycaster.intersectObjects(this.symbolsM);
+		const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
 
 		if (intersects.length > 0) {
 			this.ui.body.style.cursor = 'pointer';
@@ -1405,10 +1257,8 @@ export default class ProjectView extends AbstractView {
 			this.world.step();
 
 			// Symbol body
-			this.symbols.forEach((el) => {
-				el.mesh.position.copy(el.body.getPosition());
-				el.mesh.quaternion.copy(el.body.getQuaternion());
-			});
+			this.symbol.mesh.position.copy(this.symbol.body.getPosition());
+			this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
 			// Asteroids bodies
 			this.asteroids.forEach( (el) => {
 
@@ -1445,16 +1295,22 @@ export default class ProjectView extends AbstractView {
 				}
 			});
 		} else {
-			// Asteroids bodies
+			// Rotate Symbol
+
+			this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+
+			// Asteroids meshs
 			this.asteroids.forEach( (el)=> {
 				// Move top and bottom --> Float effect
-				// Start Number + Math.sin(this.incr*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.endY + Math.sin(this.incr * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
+				el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 				// rotate
-				// console.log(Math.sin(this.incr * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-				el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.incr * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
+				el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			});
 
 		}
@@ -1467,30 +1323,30 @@ export default class ProjectView extends AbstractView {
 
 
 		// Glow continuously
-		this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.incr / 30) + 1) / 5;
+		// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.time / 30) + 1) / 5;
 
-		// console.log(this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value);
+		// console.log(this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value);
 		// Glow arrows
 		if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-			this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.incr / 30) + 1) / 5;
-			this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.incr / 30) + 1) / 5;
-			// console.log(5 + (Math.sin(this.incr / 30) + 1) / 5);
+			this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
+			this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
+			// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
 		}
 
 
-		// console.log(this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value);
+		// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
 		if (this.glow === true) {
 			// Glow brightness material Asteroids
-			this.brightness.uniforms['contrast'].value = (Math.sin(this.incr / 40) + 1.2) * 3;
-			this.brightness2.uniforms['contrast'].value = (Math.cos(this.incr / 40) + 1.2) * 3;
+			this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
+			this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
 		}
 
 		// scroll gallery
 		this.context.position.y = this.contextY;
 		this.gallery.position.y = this.contextY - this.initContextY;
 
-		// if (this.incr === 360) this.incr = 0;
-		this.incr++;
+		// if (this.time === 360) this.time = 0;
+		this.time++;
 
 		// Zoom ??
 
@@ -1539,6 +1395,279 @@ export default class ProjectView extends AbstractView {
 		if (this.isControls === true) {
 			this.controls.update();
 		}
+
+	}
+
+	////////////////////
+	// TRANSITIONS
+	////////////////////
+
+	transitionIn(fromUrl = false) {
+
+
+		fromUrl = false;
+
+		let symbolY = 0;
+		let symbolZ = 160;
+		let time = 3;
+		let ease = window.Power3.easeOut;
+		let delay = 1.2;
+		let noDolly = true;
+
+		// Set camera Dolly
+		let points = {
+			'camera': [{
+				'x': 0,
+				'y': 0,
+				'z': 240
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 180
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 160
+			}],
+			'lookat': [{
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}]
+		};
+
+		if (this.lastPage === 'intro') {
+
+			noDolly = false;
+
+			symbolY = -160;
+			symbolZ = 160;
+
+			time = 5;
+			delay = 3;
+			ease = window.Expo.easeOut;
+
+			points = {
+				'camera': [{
+					'x': 0,
+					'y': -240,
+					'z': 240
+				}, {
+					'x': 0,
+					'y': -160,
+					'z': 160
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 160
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}]
+			};
+		}
+
+		if (fromUrl === true) {
+
+			noDolly = false;
+
+			time = 4;
+			ease = window.Power3.easeInOut;
+			delay = 2.5;
+
+			points = {
+				'camera': [{
+					'x': -60,
+					'y': 170,
+					'z': 70
+				}, {
+					'x': -40,
+					'y': 100,
+					'z': 100
+				}, {
+					'x': -20,
+					'y': 50,
+					'z': 130
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 160
+				}],
+				'lookat': [{
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}, {
+					'x': 0,
+					'y': -3,
+					'z': 3
+				}, {
+					'x': 0,
+					'y': -3,
+					'z': 3
+				}, {
+					'x': 0,
+					'y': 0,
+					'z': 0
+				}]
+			};
+		}
+
+		this.cameraMove = !noDolly;
+
+		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+
+		this.dolly.cameraPosition = 0;
+		this.dolly.lookatPosition = 0;
+		this.dolly.range = [0, 1];
+		this.dolly.both = 0;
+
+
+		const tl = new TimelineMax({
+			onComplete: () => {
+				this.camera.position.set(0, 0, 160);
+				if (noDolly === false) this.cameraMove = false;
+				this.clicked = false;
+			}
+		});
+
+		if (noDolly === false) {
+			tl.to(this.dolly, time, {
+				cameraPosition: 1,
+				lookatPosition: 1,
+				ease: window.Power4.easeOut,
+				onUpdate: () => {
+					this.dolly.update();
+				}
+			});
+
+		} else {
+			tl.fromTo(this.camera.position, 2, {z : 240}, {z : 160, ease: window.Power4.easeOut});
+		}
+
+
+
+		tl.to('.overlay', 1, {
+			opacity: 0
+		}, 0);
+
+		tl.add(() => {
+			// remover overlay class
+			this.ui.overlay.classList.remove('black');
+		});
+
+		tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
+
+		tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+			opacity: 0,
+			y: 40
+		}, {
+			opacity: 0.8,
+			y: 0,
+			ease: window.Power4.easeOut
+		}, 0.1, delay);
+
+		// tl.add( () => { // add transition hover css ????
+		// 	const title = document.querySelector('.project__title svg');
+		// 	const next = document.querySelector('.project__next');
+		// 	title.classList.add('transi');
+		// 	next.classList.add('transi');
+		// }, 0.1);
+	}
+
+	transitionOut(dest) {
+
+		if (this.animating === true) return false;
+		this.animating = true;
+
+		// this.cameraMove = true;
+		// Set camera Dolly
+		// const points = {
+		// 	'camera': [{
+		// 		'x': 0,
+		// 		'y': 0,
+		// 		'z': 160
+		// 	}, {
+		// 		'x': 0,
+		// 		'y': 0,
+		// 		'z': 80
+		// 	}, {
+		// 		'x': 0,
+		// 		'y': 0,
+		// 		'z': 0
+		// 	}],
+		// 	'lookat': [{
+		// 		'x': 0,
+		// 		'y': 0,
+		// 		'z': 0
+		// 	}, {
+		// 		'x': 0,
+		// 		'y': 0,
+		// 		'z': 0
+		// 	}, {
+		// 		'x': 0,
+		// 		'y': 0,
+		// 		'z': 0
+		// 	}]
+		// };
+
+		// this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+
+		// this.dolly.cameraPosition = 0;
+		// this.dolly.lookatPosition = 0;
+		// this.dolly.range = [0, 1];
+		// this.dolly.both = 0;
+
+		const tl = new TimelineMax({
+			onComplete: () => {
+				// this.cameraMove = false;
+				this.animating = false;
+
+				TweenMax.killAll();
+				// TweenMax.killTweensOf(this.symbol.mesh.position);
+
+				EmitterManager.emit('router:switch', `/project-${dest}`, dest);
+				EmitterManager.emit('view:transition:out');
+				// console.log('transition out', this.id);
+			}
+		});
+
+		tl.to(this.camera.position, 2, {z : 0, ease: window.Power2.easeIn});
+
+		// tl.to(this.dolly, 2, {
+		// 	cameraPosition: 1,
+		// 	// lookatPosition: 1,
+		// 	ease: window.Power2.easeIn,
+		// 	onUpdate: () => {
+		// 		this.dolly.update();
+		// 	}
+		// });
+
+		tl.to('.overlay', 0.5, {
+			opacity: 1
+		}, 1.7);
+
+		// setTimeout(()=>{
+
+		// },200);
 
 	}
 
@@ -1676,13 +1805,13 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onChangeGlow() {
-		this.symbols[0].glowMesh.insideMesh.material.uniforms['coeficient'].value = this.effectController.coeficient;
-		this.symbols[0].glowMesh.insideMesh.material.uniforms['power'].value = this.effectController.power;
-		this.symbols[0].glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColor);
+		// this.symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = this.effectController.coeficient;
+		// this.symbol.glowMesh.insideMesh.material.uniforms['power'].value = this.effectController.power;
+		// this.symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColor);
 
-		this.symbols[0].glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
-		this.symbols[0].glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
-		this.symbols[0].glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
+		// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
+		// this.symbol.glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
+		// this.symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
 	}
 
 	onChangeBrightness() {
