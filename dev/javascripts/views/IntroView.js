@@ -102,7 +102,8 @@ export default class IntroView extends AbstractView {
 		this.scene = new Scene();
 
 		SceneManager.renderer.setClearColor( 0x000000 );
-		SceneManager.renderer.setPixelRatio( window.devicePixelRatio ); // passer à 1.5 si rétina
+		SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
+		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 		// set Camera
 		this.setCamera();
@@ -306,11 +307,11 @@ export default class IntroView extends AbstractView {
 		// ADD BOXES
 
 		let geometry = new BoxGeometry( 6, 6, 6 );
-		let finalMat = new MeshPhongMaterial( {color: 0xFFFFFF} );
-		finalMat.shininess = 900;
 		console.log(geometry.parameters);
 
 		for (let i = 0; i < this.nbAst; i++) {
+			let finalMat = new MeshPhongMaterial( {color: 0xFFFFFF, transparent: true} );
+			finalMat.shininess = 900;
 
 			const rot = {
 				x: getRandom(-180, 180),
@@ -377,7 +378,7 @@ export default class IntroView extends AbstractView {
 		// const tex = new Texture(img);
 		// tex.needsUpdate = true;
 		// #4682b4
-		const material = new MeshPhongMaterial({ color: 0x4682b4, transparent: false, opacity: 1, map: null });
+		const material = new MeshPhongMaterial({ color: 0x4682b4, transparent: true, opacity: 1, map: null });
 		const pos = {
 			x: 0,
 			y: 170, // 60 end point
@@ -567,6 +568,7 @@ export default class IntroView extends AbstractView {
 		}, '+=0.5');
 
 		tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
+		tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
 
 		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
 		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
@@ -666,7 +668,7 @@ export default class IntroView extends AbstractView {
 				if (el.mesh.position.z <= -200) {
 					el.mesh.position.z = 300;
 					el.body.position.z = 300;
-					// TweenMax.fromTo(el.mesh.material, 1, {opacity: 0}, {opacity: 0});
+					TweenMax.fromTo(el.mesh.material, 0.5, {opacity: 0}, {opacity: 1}); // convert in time raf
 					// reboot
 				}
 
@@ -812,7 +814,7 @@ export default class IntroView extends AbstractView {
 		tl.to(this.dolly, 7, {
 			cameraPosition: 1,
 			lookatPosition: 1,
-			ease: window.Power1.easeInOut,
+			ease: window.Power3.easeInOut,
 			onUpdate: () => {
 				this.dolly.update();
 			}
