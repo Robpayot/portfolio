@@ -50,7 +50,7 @@ class SceneManager {
 	render(opts) {
 
 		// Render different scene throught opts. (ex: render scene Project 1 if opts.scene come from Project 1 etc...)
-		if (opts.composer !== null && opts.effectController.enabled === true) {
+		if (opts.composer !== undefined && opts.effectController.enabled === true) {
 			// Render scene composer
 			opts.composer.render(opts.scene, opts.camera);
 		} else {
@@ -60,7 +60,7 @@ class SceneManager {
 		}
 
 		// Render cssScene
-		if (opts.cssScene !== null) this.cssRenderer.render(opts.cssScene, opts.camera);
+		if (opts.cssScene !== undefined) this.cssRenderer.render(opts.cssScene, opts.camera);
 
 	}
 
@@ -72,7 +72,7 @@ class SceneManager {
 
 		// Update canvas size
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		if (opts.cssScene !== null) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+		if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
 }
