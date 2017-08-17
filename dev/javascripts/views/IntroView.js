@@ -10,7 +10,7 @@ import Ui from '../components/Ui';
 import Menu from '../components/Menu';
 
 
-import { Vector2, Raycaster, PerspectiveCamera, Vector3, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -18,7 +18,7 @@ import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
-import { World } from 'oimo';
+
 
 import dat from 'dat-gui';
 
@@ -107,6 +107,7 @@ export default class IntroView extends AbstractView {
 
 		// set Camera
 		this.setCamera();
+		this.setCameraPos();
 
 		// set Light
 		this.setLight();
@@ -171,33 +172,13 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	initPhysics() {
-
-		this.world = new World({
-			timestep: 1 / 60,
-			iterations: 8,
-			broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
-			worldscale: 1, // scale full world
-			random: true, // randomize sample
-			info: false, // calculate statistic or not
-			gravity: [0, 0, 0] // 0 gravity
-		});
-
-	}
-
 	////////////////////
 	// SET SCENE
 	////////////////////
 
-	setCamera() {
+	setCameraPos() {
 
-		this.camera = new PerspectiveCamera(
-			45, // fov
-			window.innerWidth / window.innerHeight, // aspect
-			1, // near
-			3000 // far
-		);
-
+		console.log('setCamera');
 
 		// this.camera.position.set(0, 30, 0);
 		// this.camera.rotation.x = toRadian(-90);
@@ -576,17 +557,6 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	resizeHandler() {
-
-		this.width = window.innerWidth * window.devicePixelRatio;
-		this.height = window.innerHeight * window.devicePixelRatio;
-
-		SceneManager.resizeHandler({
-			camera: this.camera
-		});
-
-	}
-
 	raf() {
 
 		// Set uniforms: mouse interaction
@@ -696,19 +666,8 @@ export default class IntroView extends AbstractView {
 
 		}
 
-		// Render Scenes
-		SceneManager.render({
-			camera: this.camera,
-			scene: this.scene,
-			cssScene: null,
-			effectController: null,
-			composer: null
-		});
+		this.render();
 
-
-		if (this.controls !== undefined ) this.controls.update();
-
-		this.time++;
 
 	}
 
@@ -895,47 +854,4 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	destroy(all = false) {
-
-		if (all === true) {
-
-			this.scene.traverse((obj) => {
-
-				// remove physics
-				if (obj.body) obj.body.remove();
-
-				if (obj.geometry) obj.geometry.dispose();
-
-				if (obj.material) {
-
-					if (obj.material.materials) {
-
-						for (const mat of obj.material.materials) {
-
-							if (mat.map) mat.map.dispose();
-
-							mat.dispose();
-						}
-					} else {
-
-						if (obj.material.map) obj.material.map.dispose();
-
-						obj.material.dispose();
-					}
-				}
-
-			});
-
-			for (let i = this.scene.children.length - 1; i >= 0; i--) {
-
-				this.scene.remove(this.scene.children[i]);
-			}
-
-		}
-		// Wait destroy scene before stop js events
-		// setTimeout(() => {
-		this.events(false);
-		// }, 500);
-
-	}
 }
