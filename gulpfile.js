@@ -247,6 +247,19 @@ gulp.task('copy:image', function() {
 		.pipe(gulp.dest('./dist/images'))
 });
 
+// TEMPLATE FILE
+gulp.task('copy:template', function() {
+	return gulp.src('./dev/templates/**')
+		// Concat all errors
+		.pipe(gulp.dest('./dist/templates'))
+});
+
+// FONT FILE
+gulp.task('copy:font', function() {
+	return gulp.src('./dev/fonts/**')
+		// Concat all errors
+		.pipe(gulp.dest('./dist/fonts'))
+});
 
 // sound files
 gulp.task('copy:sound', function() {
@@ -264,6 +277,10 @@ gulp.task('copy', ['copy:sound']);
 
 gulp.task('copy', ['copy:image']);
 
+gulp.task('copy', ['copy:template']);
+
+gulp.task('copy', ['copy:font']);
+
 
 //---------------------------------------------------------------------------------------------
 //    GULP TASKS
@@ -275,12 +292,16 @@ gulp.task('watch', function() {
 	gulp.watch(copyRoot, ['copy:root']);
 	gulp.watch('./dev/sounds/**', ['copy:sound']);
 	gulp.watch('./dev/images/**', ['copy:image']);
+	gulp.watch('./dev/templates/**', ['copy:template']);
+	gulp.watch('./dev/fonts/**', ['copy:font']);
 	
 	browserSync.watch([
 		'./dist/datas/**',
 		'./dist/stylesheets/**',
 		'./dist/javascripts/**',
 		'./dist/images/**',
+		'./dist/templates/**',
+		'./dist/fonts/**',
 		copyRoot
 	], {
 		ignored: '**/*.map'
