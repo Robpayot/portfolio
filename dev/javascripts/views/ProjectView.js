@@ -15,6 +15,8 @@ import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
 import Ui from '../components/Ui';
 import Menu from '../components/Menu';
+import Handlebars from 'handlebars';
+// import projectText from '../../templates/projectText.hbs!';
 
 
 // THREE JS
@@ -254,7 +256,20 @@ export default class ProjectView extends AbstractView {
 		// Set BLUR EFFECT
 		this.setBlur();
 
-		this.start();
+		// Load data
+
+		// Preloader
+		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
+
+
+		PreloadManager.loadManifest([
+			{ id: 'template-title', src: '/templates/projectTitle.hbs' },
+			{ id: 'template-content', src: '/templates/projectContent.hbs' },
+		]);
+
+		PreloadManager.load();
+
+		// this.start();
 
 		// const p = new VirtualScroll();
 
@@ -275,6 +290,8 @@ export default class ProjectView extends AbstractView {
 	}
 
 	start() {
+
+		PreloadManager.off('complete', this.preloadCb);
 
 		this.lastPage = RouterManager.lastPage;
 		this.el.classList.remove('intro');
@@ -733,12 +750,10 @@ export default class ProjectView extends AbstractView {
 		// contextBack.scale.multiplyScalar(1 / 14);
 
 		// Title
-		const title = new CssContainer(`<div class="project__title"><span>${data.title}</span><svg class="icon project__arrow-r transi" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-	<g transform="translate(0,-952.36218)">
-		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-		L404.9,1271.9L404.9,1271.9z" />
-	</g>
-</svg></div>`, this.cssScene, this.cssObjects);
+		let template = Handlebars.compile(PreloadManager.getResult('template-title'));
+		let html  = template(data);
+		console.log(html, template, PreloadManager.getResult('template-title'));
+		const title = new CssContainer(html, this.cssScene, this.cssObjects);
 		title.position.set(20, 0, 10);
 		title.scale.multiplyScalar(1 / 14);
 
@@ -777,44 +792,42 @@ export default class ProjectView extends AbstractView {
 		this.cssScene.add(this.galleryPivot);
 
 		// gallery back
-		const galleryBack = new CssContainer(`<div class="details__back"><svg class="icon" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-	<g transform="translate(0,-952.36218)">
-		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-		L404.9,1271.9L404.9,1271.9z" />
-	</g>
-</svg> Back </div>`, this.cssScene, this.cssObjects);
-		galleryBack.position.set(radius, 0, 30);
-		galleryBack.rotation.set(0, toRadian(90), 0);
-		galleryBack.scale.multiplyScalar(1 / 14);
+		// 		const galleryBack = new CssContainer(`<div class="details__back"><svg class="icon" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+		// 	<g transform="translate(0,-952.36218)">
+		// 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		// 		L404.9,1271.9L404.9,1271.9z" />
+		// 	</g>
+		// </svg> Back </div>`, this.cssScene, this.cssObjects);
+		// 		galleryBack.position.set(radius, 0, 30);
+		// 		galleryBack.rotation.set(0, toRadian(90), 0);
+		// 		galleryBack.scale.multiplyScalar(1 / 14);
+
+		// faire toute cette merde avec Handlbars svp
+
+		// arrows
+		// <div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+		// 	<g transform="translate(0,-952.36218)">
+		// 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		// 		L404.9,1271.9L404.9,1271.9z" />
+		// 	</g>
+		// </svg><svg class="icon gallery__arrow gallery__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+		// 	<g transform="translate(0,-952.36218)">
+		// 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+		// 		L404.9,1271.9L404.9,1271.9z" />
+		// 	</g>
+		// </svg></div>
 
 		// Context + gallery arrows
-		this.context = new CssContainer(`<div class="context__container">
-			<div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-				<g transform="translate(0,-952.36218)">
-					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-					L404.9,1271.9L404.9,1271.9z" />
-				</g>
-			</svg><svg class="icon gallery__arrow gallery__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-				<g transform="translate(0,-952.36218)">
-					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-					L404.9,1271.9L404.9,1271.9z" />
-				</g>
-			</svg></div>
-			<div class="project__context">
-				<h1>${data.title}</h1>
-				<br>
-				<p>${data.context} - ${data.date}</p>
-				<br>
-				<p>${data.descr}</p>
-				<br>
-				<p>Technos : ${data.technos}</p>
-				<br>
-				<p>${data.awards}</p>
-			</div>
-			</div>`, this.cssScene, this.cssObjects);
+		template = Handlebars.compile(PreloadManager.getResult('template-content'));
+		html  = template(data);
+		this.context = new CssContainer(html, this.cssScene, this.cssObjects);
+		// <p>${data.awards}</p>
+		console.log(this.context);
 		this.context.position.set(radius, -15, 0);
 		this.context.rotation.set(0, toRadian(90), 0);
 		this.context.scale.multiplyScalar(1 / 14);
+
+		// need Convertion pixel Height -> threeJS Y units camera Angle
 
 		// const box = new Box3().setFromObject( this.context );
 		// console.log( box.min, box.max, box.size() );

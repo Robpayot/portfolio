@@ -45,16 +45,7 @@
 		position: absolute;
 		top: 50%;
 		left: 7vw;
-		border: 1px solid white;
-		width: 60px;
-		height: 60px;
-		border-radius: 50%;
-
-		display: flex;
-		align-items: center;
-		justify-content: center;
 		transform: translateY(-50%) rotate(90deg);
-		cursor: pointer;
 		transition: transform 0.8s $Power3EaseOut, color 0.5s ease, border 0.5s ease;
 
 		pointer-events: auto;
@@ -94,6 +85,7 @@
 	&__sublinks {
 		position: absolute;
 		top: 5em;
+		font-family: 'Theinhardt-light';
 	}
 
 	&__sublink {

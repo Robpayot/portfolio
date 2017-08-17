@@ -11,18 +11,38 @@
         fill: $color-white;
     }
 
-	&__context {
+    .context__container {
+    	width: 600px;
         max-width: 600px;
         margin-top: 70px;
         line-height: 1.4em;
         z-index: 10;
         text-align: left;
-        opacity: 0;
         user-select: none;
-        font-size: 20px;
-        h1 {
-            font-size: 30px;
-        }
+        font-size: 1rem;
+        transform: translateY(50%);
+
+    }
+
+    &__header {
+    	display: flex;
+		justify-content: space-between;
+    	align-items: baseline;
+    	margin-bottom: 20px;
+
+    }
+
+    &__date {
+    	color: $color-grey;
+    }
+
+    &__descr {
+    	line-height: 2em;
+    }
+
+    &__footer {
+    	display: flex;
+    	
     }
 
     &__image {
@@ -165,7 +185,5 @@
         }
     }
 
-    .context__container {
-        transform: translateY(50%);
-    }
+
 }

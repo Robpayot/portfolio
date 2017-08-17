@@ -2,12 +2,35 @@
 /*        FONT FACE DECLARATION
 /* ------------------------------------------------------------------ */
 
+// @font-face {
+//     font-family: 'Avenir-black';
+//     src: url('../fonts/AvenirLTStd-Black.otf');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
 @font-face {
-    font-family: 'Avenir-black';
-    src: url('../fonts/AvenirLTStd-Black.otf');
+    font-family: 'Theinhardt';
+    src: url('../fonts/THEINHARDT-REGULAR.OTF');
     font-weight: normal;
     font-style: normal;
 }
+
+@font-face {
+    font-family: 'Theinhardt-light';
+    src: url('../fonts/THEINHARDT-LIGHT.OTF');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Theinhardt-ita';
+    src: url('../fonts/THEINHARDT-REGULARITA.OTF');
+    font-weight: 500;
+    font-style: italic;
+}
+
+
 
 /*
 
