@@ -4,7 +4,7 @@ module.exports={
         "title": "BMW Paris Motorshow 2016",
         "context": "84.Paris",
         "date": "2016",
-        "descr": "360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.",
+        "descr": "360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.",
         "technos": "WebGL, Three.js",
         "awards": "1 x SOTD FWA, 1 x SOTD AWWWARDS",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
@@ -6907,8 +6907,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// import projectText from '../../templates/projectText.hbs!';
-
 
 // THREE JS
 
@@ -7006,7 +7004,7 @@ var ProjectView = function (_AbstractView) {
 				_bean2.default.on(document.body, 'click.project', '.project__title', this.showDetails);
 				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-r', this.slideUp);
 				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
-				_bean2.default.on(document.body, 'click.project', '.details__back', this.backFromDetails);
+				_bean2.default.on(document.body, 'click.project', '.project__back', this.backFromDetails);
 				_bean2.default.on(document.body, 'click.project', '.project__next', this.goTo);
 			} else {
 				_bean2.default.off(document.body, 'click.project');
@@ -7024,6 +7022,7 @@ var ProjectView = function (_AbstractView) {
 			this.finalFov = 45;
 			this.composer = null;
 			this.bounceArea = 480;
+			this.pixelToUnits = 8.1;
 
 			// retina screen size
 			this.width = window.innerWidth * window.devicePixelRatio;
@@ -7145,7 +7144,7 @@ var ProjectView = function (_AbstractView) {
 			// Preloader
 			this.preloadCb = _PreloadManager2.default.on('complete', this.start, this, true);
 
-			_PreloadManager2.default.loadManifest([{ id: 'template-title', src: '/templates/projectTitle.hbs' }, { id: 'template-content', src: '/templates/projectContent.hbs' }]);
+			_PreloadManager2.default.loadManifest([{ id: 'template-title', src: '/templates/projectTitle.hbs' }, { id: 'template-content', src: '/templates/projectContent.hbs' }, { id: 'template-footer', src: '/templates/projectFooter.hbs' }]);
 
 			_PreloadManager2.default.load();
 
@@ -7209,7 +7208,34 @@ var ProjectView = function (_AbstractView) {
 				}
 
 				// ui
-				_this2.ui.context = document.querySelector('.context__container');
+				_this2.ui.projectContainer = _this2.el.querySelector('.project__container');
+				_this2.ui.projectImg = _this2.el.querySelectorAll('.project__image img')[0];
+				_this2.ui.projectFooter = _this2.el.querySelector('.project__footer');
+
+				// Position Gallery
+				// Pixel to Units magic
+				var vFOV = _this2.camera.fov * Math.PI / 180; // convert vertical fov to radians
+				var wHeight = 2 * Math.tan(vFOV / 2) * 60; // visible height dist = 60 (160 - 100)
+				// wHeight === window.innerHeight in Units equivalent
+				// let aspect = window.width / window.height;
+				// let width = height * aspect;                  // visible width
+				var margeTop = 4;
+
+				var percent = _this2.ui.projectContainer.offsetHeight / 2 / window.innerHeight; // half because centered
+				var finalHeight = wHeight * percent;
+				_this2.gallery.position.y = _this2.initGalleryY = -finalHeight - margeTop;
+
+				// Position Footer
+				percent = _this2.ui.projectImg.offsetHeight / window.innerHeight; // half because centered
+				var finalHeightFooter = wHeight * percent;
+				_this2.footer.position.y = _this2.initFooterY = _this2.initGalleryY - finalHeightFooter - margeTop - 2;
+
+				var globalMargeScrollBot = 5;
+
+				percent = (_this2.ui.projectContainer.offsetHeight + _this2.ui.projectImg.offsetHeight + _this2.ui.projectFooter.offsetHeight) / window.innerHeight;
+				_this2.maxHeightUnits = wHeight * percent - globalMargeScrollBot;
+
+				console.log(_this2.maxHeightUnits);
 			}, 10);
 		}
 
@@ -7589,16 +7615,9 @@ var ProjectView = function (_AbstractView) {
 
 			var data = this.data;
 
-			// // context back
-			// const contextBack = new CssContainer(`<div class='details__back'><img src="images/icons/chevron.svg" alt="link"> Back </div>`, this.cssScene, this.cssObjects);
-			// contextBack.position.set(80, 0, 40);
-			// contextBack.rotation.set(0, toRadian(90), 0);
-			// contextBack.scale.multiplyScalar(1 / 14);
-
 			// Title
 			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('template-title'));
 			var html = template(data);
-			console.log(html, template, _PreloadManager2.default.getResult('template-title'));
 			var title = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			title.position.set(20, 0, 10);
 			title.scale.multiplyScalar(1 / 14);
@@ -7612,7 +7631,7 @@ var ProjectView = function (_AbstractView) {
 			var radius = 100; // radius circonference of gallery circle
 			this.galleryAngle = Math.PI / 6; // Space of 30 degree PI / 6
 			this.gallery = new _three.Object3D(); // DESTROY CONTAINER ????
-			this.gallery.position.set(0, 0, 0);
+			this.gallery.position.set(0, -15, 0);
 			this.gallery.rotation.set(0, (0, _utils.toRadian)(90), 0);
 			this.cssScene.add(this.gallery);
 			this.currentSlide = 0;
@@ -7637,48 +7656,29 @@ var ProjectView = function (_AbstractView) {
 
 			this.cssScene.add(this.galleryPivot);
 
-			// gallery back
-			// 		const galleryBack = new CssContainer(`<div class="details__back"><svg class="icon" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-			// 	<g transform="translate(0,-952.36218)">
-			// 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-			// 		L404.9,1271.9L404.9,1271.9z" />
-			// 	</g>
-			// </svg> Back </div>`, this.cssScene, this.cssObjects);
-			// 		galleryBack.position.set(radius, 0, 30);
-			// 		galleryBack.rotation.set(0, toRadian(90), 0);
-			// 		galleryBack.scale.multiplyScalar(1 / 14);
-
-			// faire toute cette merde avec Handlbars svp
-
 			// arrows
-			// <div class="gallery__arrows"><svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-			// 	<g transform="translate(0,-952.36218)">
-			// 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-			// 		L404.9,1271.9L404.9,1271.9z" />
-			// 	</g>
-			// </svg><svg class="icon gallery__arrow gallery__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
-			// 	<g transform="translate(0,-952.36218)">
-			// 		<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
-			// 		L404.9,1271.9L404.9,1271.9z" />
-			// 	</g>
-			// </svg></div>
 
 			// Context + gallery arrows
 			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('template-content'));
 			html = template(data);
 			this.context = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
-			// <p>${data.awards}</p>
-			console.log(this.context);
-			this.context.position.set(radius, -15, 0);
+			// Rename context to container or projectContainer
+			// Rename Details in Content
+			this.context.position.set(radius, 0, 0);
 			this.context.rotation.set(0, (0, _utils.toRadian)(90), 0);
 			this.context.scale.multiplyScalar(1 / 14);
 
-			// need Convertion pixel Height -> threeJS Y units camera Angle
+			this.initContextY = this.contextTargetY = this.contextSmoothY = this.contextY = 0;
 
-			// const box = new Box3().setFromObject( this.context );
-			// console.log( box.min, box.max, box.size() );
+			// Context + gallery arrows
+			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('template-footer'));
+			html = template(data);
+			this.footer = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
+			this.footer.position.set(radius, 0, 0);
+			this.footer.rotation.set(0, (0, _utils.toRadian)(90), 0);
+			this.footer.scale.multiplyScalar(1 / 14);
 
-			this.initContextY = this.contextTargetY = this.contextSmoothY = this.contextY = -15;
+			// this.initContextY = this.contextTargetY = this.contextSmoothY = this.contextY = 0;
 		}
 	}, {
 		key: 'setBlur',
@@ -7759,9 +7759,9 @@ var ProjectView = function (_AbstractView) {
 				}
 			});
 
-			tl.set(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], { visibility: 'visible' }, 3);
+			tl.set(['.project__footer', '.gallery__arrow', '.project__image', '.project__container'], { visibility: 'visible' }, 3);
 
-			tl.staggerFromTo(['.details__back', '.gallery__arrow', '.project__image', '.project__context'], 1.2, { // 1.2
+			tl.staggerFromTo(['.project__footer', '.gallery__arrow', '.project__container', '.project__image'], 1.2, { // 1.2
 				opacity: 0,
 				y: 80
 			}, {
@@ -7788,12 +7788,12 @@ var ProjectView = function (_AbstractView) {
 					_this4.cameraMove = false;
 				} });
 
-			tl.staggerTo(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], 1.2, {
+			tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], 1.2, {
 				opacity: 0,
 				ease: window.Power4.easeOut
 			}, 0.1);
 
-			tl.set(['.project__image', '.gallery__arrow', '.details__back', '.project__context'], { visibility: 'hidden' });
+			tl.set(['.project__image', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
 
 			tl.to(trigo, 3, { // 3.5
 				angle: 1,
@@ -7859,6 +7859,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'scroll',
 		value: function scroll(e) {
+			console.log('scroll');
 
 			this.contextTargetY -= e.deltaY * 0.01;
 
@@ -7871,7 +7872,7 @@ var ProjectView = function (_AbstractView) {
 			// console.log(this.contextY, this.context);
 			// this.ui.context.offsetHeight --> Get Threejs Unit !!!
 			if (this.contextY <= this.initContextY) this.contextY = this.contextTargetY = this.contextSmoothY = this.initContextY;
-			if (this.contextY >= 20) this.contextY = this.contextTargetY = this.contextSmoothY = 20;
+			if (this.contextY >= this.maxHeightUnits) this.contextY = this.contextTargetY = this.contextSmoothY = this.maxHeightUnits;
 
 			// this.context.position.y = this.contextY;
 			// this.gallery.position.y = this.contextY - this.initContextY;
@@ -7924,7 +7925,7 @@ var ProjectView = function (_AbstractView) {
 
 			// } else {
 
-			// 	tl.to(['.project__context', '.project__image'], 0.8, {
+			// 	tl.to(['.project__container', '.project__image'], 0.8, {
 			// 		opacity: 0,
 			// 		ease: window.Power4.easeInOut
 			// 	});
@@ -8190,8 +8191,11 @@ var ProjectView = function (_AbstractView) {
 			}
 
 			// scroll gallery
-			this.context.position.y = this.contextY;
-			this.gallery.position.y = this.contextY - this.initContextY;
+			if (this.initGalleryY) {
+				this.context.position.y = this.contextY;
+				this.gallery.position.y = this.contextY + this.initGalleryY;
+				this.footer.position.y = this.contextY + this.initFooterY;
+			}
 
 			// if (this.time === 360) this.time = 0;
 			this.time++;
