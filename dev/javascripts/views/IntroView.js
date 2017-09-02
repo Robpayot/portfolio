@@ -10,7 +10,7 @@ import Ui from '../components/Ui';
 import Menu from '../components/Menu';
 
 
-import { Vector2, Raycaster, Vector3, Scene, Box3, DirectionalLight, JSONLoader, BoxGeometry, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, Box3, DirectionalLight, JSONLoader, BoxGeometry, PerspectiveCamera, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -35,7 +35,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 
@@ -147,9 +147,10 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.WIDTH = 1; // Texture width for simulation bits
+		this.WIDTH = 62; // Texture width for simulation bits
 		this.BOUNDS = 712; // Water size
 		this.nbAst = 20;
+		this.mouseSize = 32.0; // wave agitation
 		this.time = 0;
 		this.asteroids = [];
 		this.asteroidsM = [];
@@ -300,7 +301,6 @@ export default class IntroView extends AbstractView {
 		this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
 
 		this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
-		this.heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
 		this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
 		this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
 
@@ -457,7 +457,7 @@ export default class IntroView extends AbstractView {
 
 	valuesChanger() {
 
-		this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
+		// this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
 		this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
 
 	}
@@ -594,33 +594,40 @@ export default class IntroView extends AbstractView {
 	raf() {
 
 		// Set uniforms: mouse interaction
-		let uniforms = this.heightmapVariable.material.uniforms;
+		// let uniforms = this.heightmapVariable.material.uniforms;
 
-		this.mouseMoved = true;
+		// this.mouseMoved = true;
 
-		if ( this.mouseMoved ) {
+		// if ( this.mouseMoved ) {
 
-			this.raycaster.setFromCamera( this.mouse, this.camera );
+		// 	this.raycaster.setFromCamera( this.mouse, this.camera );
 
-			let intersects = this.raycaster.intersectObject( this.waterMesh );
+		// 	let intersects = this.raycaster.intersectObject( this.waterMesh );
 
-			if ( intersects.length > 0 ) {
-				console.log('yes');
-				let point = intersects[ 0 ].point;
-				uniforms.mousePos.value.set( 0.9, -0.5 );
+		// 	if ( intersects.length > 0 ) {
+		// 		// console.log('yes');
+		// 		let point = intersects[ 0 ].point;
+		// 		uniforms.mousePos.value.set( point.x, point.z );
 
-			}
-			else {	
-				console.log('no');
-				uniforms.mousePos.value.set( 10000, 10000 );
-			}
 
-			this.mouseMoved = false;
-		}
-		else {
-			uniforms.mousePos.value.set( 10000, 10000 );
+		// 	}
+		// 	else {
+		// 		// console.log('no');
+		// 		uniforms.mousePos.value.set( 10000, 10000 );
+		// 	}
 
-		}
+		// 	this.mouseMoved = false;
+		// }
+		// else {
+		// 	uniforms.mousePos.value.set( 10000, 10000 );
+
+		// }
+
+		// Manual simulation of infinite waves
+		let pointX = Math.sin(this.time / 30 ) * this.BOUNDS / 4;
+		let pointZ = -this.BOUNDS / 2;
+		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
+		this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
@@ -711,9 +718,6 @@ export default class IntroView extends AbstractView {
 	}
 
 	transitionIn() {
-
-		this.moveCameraIn();
-		return false;
 
 		this.el.classList.add('intro');
 		this.el.classList.remove('project');

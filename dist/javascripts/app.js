@@ -5955,7 +5955,7 @@ var IntroView = function (_AbstractView) {
 		_this.gravity = obj.gravity;
 		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.name = 'intro';
-		_this.isControls = true;
+		_this.isControls = false;
 
 		// bind
 
@@ -6069,9 +6069,10 @@ var IntroView = function (_AbstractView) {
 			// Set physics
 			if (this.gravity === true) this.initPhysics();
 
-			this.WIDTH = 1; // Texture width for simulation bits
+			this.WIDTH = 62; // Texture width for simulation bits
 			this.BOUNDS = 712; // Water size
 			this.nbAst = 20;
+			this.mouseSize = 32.0; // wave agitation
 			this.time = 0;
 			this.asteroids = [];
 			this.asteroidsM = [];
@@ -6220,7 +6221,6 @@ var IntroView = function (_AbstractView) {
 			this.gpuCompute.setVariableDependencies(this.heightmapVariable, [this.heightmapVariable]);
 
 			this.heightmapVariable.material.uniforms.mousePos = { value: new _three.Vector2(10000, 10000) };
-			this.heightmapVariable.material.uniforms.mouseSize = { value: 20.0 };
 			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
 			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(1);
 
@@ -6377,7 +6377,7 @@ var IntroView = function (_AbstractView) {
 		key: 'valuesChanger',
 		value: function valuesChanger() {
 
-			this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
+			// this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
 			this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
 		}
 	}, {
@@ -6513,29 +6513,40 @@ var IntroView = function (_AbstractView) {
 			var _this6 = this;
 
 			// Set uniforms: mouse interaction
-			var uniforms = this.heightmapVariable.material.uniforms;
+			// let uniforms = this.heightmapVariable.material.uniforms;
 
-			this.mouseMoved = true;
+			// this.mouseMoved = true;
 
-			if (this.mouseMoved) {
+			// if ( this.mouseMoved ) {
 
-				this.raycaster.setFromCamera(this.mouse, this.camera);
+			// 	this.raycaster.setFromCamera( this.mouse, this.camera );
 
-				var intersects = this.raycaster.intersectObject(this.waterMesh);
+			// 	let intersects = this.raycaster.intersectObject( this.waterMesh );
 
-				if (intersects.length > 0) {
-					console.log('yes');
-					var point = intersects[0].point;
-					uniforms.mousePos.value.set(0.9, -0.5);
-				} else {
-					console.log('no');
-					uniforms.mousePos.value.set(10000, 10000);
-				}
+			// 	if ( intersects.length > 0 ) {
+			// 		// console.log('yes');
+			// 		let point = intersects[ 0 ].point;
+			// 		uniforms.mousePos.value.set( point.x, point.z );
 
-				this.mouseMoved = false;
-			} else {
-				uniforms.mousePos.value.set(10000, 10000);
-			}
+
+			// 	}
+			// 	else {
+			// 		// console.log('no');
+			// 		uniforms.mousePos.value.set( 10000, 10000 );
+			// 	}
+
+			// 	this.mouseMoved = false;
+			// }
+			// else {
+			// 	uniforms.mousePos.value.set( 10000, 10000 );
+
+			// }
+
+			// Manual simulation of infinite waves
+			var pointX = Math.sin(this.time / 30) * this.BOUNDS / 4;
+			var pointZ = -this.BOUNDS / 2;
+			this.heightmapVariable.material.uniforms.mousePos.value.set(pointX, pointZ);
+			this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
 
 			// Do the gpu computation
 			this.gpuCompute.compute();
@@ -6622,9 +6633,6 @@ var IntroView = function (_AbstractView) {
 		key: 'transitionIn',
 		value: function transitionIn() {
 			var _this7 = this;
-
-			this.moveCameraIn();
-			return false;
 
 			this.el.classList.add('intro');
 			this.el.classList.remove('project');
