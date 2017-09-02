@@ -10,7 +10,7 @@ import Ui from '../components/Ui';
 import Menu from '../components/Menu';
 
 
-import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, BoxGeometry, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, Box3, DirectionalLight, JSONLoader, BoxGeometry, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -49,7 +49,6 @@ export default class IntroView extends AbstractView {
 		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
-		this.setAsteroids = this.setAsteroids.bind(this);
 		this.setSymbol = this.setSymbol.bind(this);
 		this.setLight = this.setLight.bind(this);
 		this.resetWater = this.resetWater.bind(this);
@@ -59,16 +58,50 @@ export default class IntroView extends AbstractView {
 		this.transitionOut = this.transitionOut.bind(this);
 		this.onClickStart = this.onClickStart.bind(this);
 
+		// preload Models
+		Promise.all([
+			this.loadJSON('datas/models/iceberg-1.json'),
+			this.loadJSON('datas/models/iceberg-2.json'),
+			this.loadJSON('datas/models/iceberg-3.json')
+		]).then((results) => {
+			// when all is loaded
+			this.models = results;
+			this.init();
+
+			this.events(true);
+			this.ui.overlay.classList.add('black');
+
+			this.transitionIn();
+
+		}, (err) => {
+			console.log(err);
+			// error here
+		});
+
 		// init
-		this.init();
 
-		this.events(true);
-
-		this.ui.overlay.classList.add('black');
-
-		this.transitionIn();
 		// this.onClickStart();
 
+	}
+
+	loadJSON(source) {
+		this.loaderM = new JSONLoader();
+
+		return new Promise((resolve, reject) => {
+			this.loaderM.load(source, (geometry) => {
+
+				const model = geometry;
+
+				geometry.computeVertexNormals();
+				geometry.computeFaceNormals();
+
+				const mesh = new Mesh( model, new MeshBasicMaterial());
+				const box = new Box3().setFromObject( mesh );
+				model.size = box.getSize();
+
+				resolve(model);
+			});
+		});
 	}
 
 	events(method) {
@@ -285,24 +318,21 @@ export default class IntroView extends AbstractView {
 	}
 
 	setAsteroids() {
-		// ADD BOXES
-
-		let geometry = new BoxGeometry( 6, 6, 6 );
-		console.log(geometry.parameters);
+		// ADD Iceberg
 
 		for (let i = 0; i < this.nbAst; i++) {
 			let finalMat = new MeshPhongMaterial( {color: 0xFFFFFF, transparent: true} );
-			finalMat.shininess = 900;
+			finalMat.shininess = 50;
 
 			const rot = {
-				x: getRandom(-180, 180),
+				x: 0,
 				y: getRandom(-180, 180),
-				z: getRandom(-180, 180),
+				z: 0,
 			};
 
 			let pos = {
 				x: getRandom(-180, 180),
-				y: 0,
+				y: -4,
 				z: getRandom(130, 400),
 			};
 
@@ -313,21 +343,26 @@ export default class IntroView extends AbstractView {
 				z: -getRandom(40, 50)
 			};
 
-			const scale = getRandom(1, 4);
+			const scale = getRandom(1, 8);
 			const speed = getRandom(500, 800); // more is slower
 			const range = getRandom(-3, 4);
 			const timeRotate = getRandom(15000, 17000);
 
+			const model = Math.round(getRandom(0, 2));
+
 			const asteroid = new Asteroid({
-				geometry: geometry,
+				width: this.models[model].size.x,
+				height: this.models[model].size.y,
+				depth: this.models[model].size.z,
+				geometry: this.models[model],
 				material: finalMat,
-				pos: pos,
-				rot: rot,
-				force: force,
-				scale: scale,
-				range: range,
-				speed: speed,
-				timeRotate: timeRotate
+				pos,
+				rot,
+				force,
+				scale,
+				range,
+				speed,
+				timeRotate
 			});
 
 			asteroid.mesh.index = i;
@@ -368,10 +403,10 @@ export default class IntroView extends AbstractView {
 		const timeRotate = 7000;
 
 		const symbol = new Symbol({
-			geometry: geometry,
-			material: material,
-			pos: pos,
-			timeRotate: timeRotate
+			geometry,
+			material,
+			pos,
+			timeRotate
 		});
 
 		symbol.initPointY = 70;
@@ -627,9 +662,9 @@ export default class IntroView extends AbstractView {
 
 					// Clamp rotation
 
-					el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -0.5, 0.5);
+					el.body.angularVelocity.x = 0;
 					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
-					el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -0.5, 0.5);
+					el.body.angularVelocity.z = 0;
 				}
 
 
