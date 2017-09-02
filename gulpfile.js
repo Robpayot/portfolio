@@ -206,7 +206,7 @@ var datasNotify = function(error) {
 gulp.task('datas', function() {
 	if (isDirectoryEmpty('./dev/datas')) { return gulp; }
 
-	return gulp.src('./dev/datas/**')
+	return gulp.src('./dev/datas/**/*.json')
 		// Concat all errors
 		.pipe(plumber({ errorHandler: datasNotify }))
 		// Check if we need to convert yaml to json

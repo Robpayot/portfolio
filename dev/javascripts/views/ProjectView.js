@@ -26,7 +26,7 @@ import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 
 
 // POSTPROCESSING
-import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
+// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 import { FXAAShader } from '../shaders/FXAAShader'; // FXAA shader
 import { HorizontalTiltShiftShader } from '../shaders/HorizontalTiltShiftShader'; // HorizontalTiltShiftShader shader
 import { VerticalTiltShiftShader } from '../shaders/VerticalTiltShiftShader'; // VerticalTiltShiftShader shader
@@ -1352,7 +1352,7 @@ export default class ProjectView extends AbstractView {
 
 		// On mouse Move Camera movement
 
-		// deceleration
+		// deceleration duplicate /!\
 		if (this.cameraMove === false) {
 
 			// Specify target we want
