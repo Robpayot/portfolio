@@ -35,6 +35,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
+		this.isControls = true;
 
 		// bind
 
@@ -128,8 +129,6 @@ export default class IntroView extends AbstractView {
 
 	init() {
 
-		this.isControls = false;
-
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 		this.scene = new Scene();
@@ -148,7 +147,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.WIDTH = 254; // Texture width for simulation bits
+		this.WIDTH = 1; // Texture width for simulation bits
 		this.BOUNDS = 712; // Water size
 		this.nbAst = 20;
 		this.time = 0;
@@ -278,12 +277,12 @@ export default class IntroView extends AbstractView {
 		this.scene.add( this.waterMesh );
 
 		// Mesh just for mouse raycasting
-		let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
-		this.meshRay = new Mesh( geometryRay, new MeshBasicMaterial( { color: 0xFFFFFF, visible: false } ) );
-		this.meshRay.rotation.x = -Math.PI / 2;
+		// let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
+		// this.meshRay = this.waterMesh;
+		// this.meshRay.rotation.x = -Math.PI / 2;
 		// this.meshRay.position.x = 400;
-		this.meshRay.matrixAutoUpdate = false;
-		this.meshRay.updateMatrix();
+		// this.meshRay.matrixAutoUpdate = false;
+		// this.meshRay.updateMatrix();
 		// this.scene.add( this.meshRay );
 
 
@@ -595,28 +594,33 @@ export default class IntroView extends AbstractView {
 	raf() {
 
 		// Set uniforms: mouse interaction
-		// let uniforms = this.heightmapVariable.material.uniforms;
+		let uniforms = this.heightmapVariable.material.uniforms;
 
-		// if ( this.mouseMoved ) {
+		this.mouseMoved = true;
 
-		// 	this.raycaster.setFromCamera( this.mouseCoords, this.camera );
+		if ( this.mouseMoved ) {
 
-		// 	let intersects = this.raycaster.intersectObject( this.meshRay );
+			this.raycaster.setFromCamera( this.mouse, this.camera );
 
-		// 	if ( intersects.length > 0 ) {
-		// 		let point = intersects[ 0 ].point;
-		// 		uniforms.mousePos.value.set( point.x, point.z );
+			let intersects = this.raycaster.intersectObject( this.waterMesh );
 
-		// 	}
-		// 	else {
-		// 		uniforms.mousePos.value.set( 10000, 10000 );
-		// 	}
+			if ( intersects.length > 0 ) {
+				console.log('yes');
+				let point = intersects[ 0 ].point;
+				uniforms.mousePos.value.set( 0.9, -0.5 );
 
-		// 	this.mouseMoved = false;
-		// }
-		// else {
-		// 	uniforms.mousePos.value.set( 10000, 10000 );
-		// }
+			}
+			else {	
+				console.log('no');
+				uniforms.mousePos.value.set( 10000, 10000 );
+			}
+
+			this.mouseMoved = false;
+		}
+		else {
+			uniforms.mousePos.value.set( 10000, 10000 );
+
+		}
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
@@ -707,6 +711,9 @@ export default class IntroView extends AbstractView {
 	}
 
 	transitionIn() {
+
+		this.moveCameraIn();
+		return false;
 
 		this.el.classList.add('intro');
 		this.el.classList.remove('project');
