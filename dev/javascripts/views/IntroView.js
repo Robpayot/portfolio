@@ -333,7 +333,7 @@ export default class IntroView extends AbstractView {
 
 			let pos = {
 				x: getRandom(-180, 180),
-				y: -4,
+				y: -2,
 				z: getRandom(130, 400),
 			};
 
@@ -345,9 +345,9 @@ export default class IntroView extends AbstractView {
 			};
 
 			const scale = getRandom(1, 8);
-			const speed = getRandom(500, 800); // more is slower
-			const range = getRandom(-3, 4);
-			const timeRotate = getRandom(15000, 17000);
+			const speed = getRandom(500, 600); // more is slower
+			const range = getRandom(2, 5);
+			const timeRotate = getRandom(14000, 16000);
 
 			const model = Math.round(getRandom(0, 2));
 
@@ -374,7 +374,7 @@ export default class IntroView extends AbstractView {
 				asteroid.body = this.world.add(asteroid.physics);
 				// Set rotation impulsion
 				asteroid.body.angularVelocity.x = getRandom(-0.2, 0.2);
-				asteroid.body.angularVelocity.y = getRandom(-0.2, 0.2);
+				asteroid.body.angularVelocity.y = getRandom(-0.5, 0.5);
 				asteroid.body.angularVelocity.z = getRandom(-0.2, 0.2);
 			}
 
@@ -554,9 +554,22 @@ export default class IntroView extends AbstractView {
 
 	onClick() {
 		if (this.clickAsteroid === true) {
-			console.log('click Asteroid');
+
+			this.currentAstClicked = this.currentAstHover;
+			this.currentAstClicked.clicked = true;
+			this.onAsteroidAnim = true;
+			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
+
+			const tl = new TimelineMax();
+
+			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, {y: -dest, ease: window.Expo.easeOut});
+
+			tl.add(()=> {
+				this.onAsteroidAnim = false;
+			});
+
 		} else {
-			console.log('false');
+			// console.log('false');
 		}
 	}
 
@@ -634,8 +647,9 @@ export default class IntroView extends AbstractView {
 		// }
 
 		// Manual simulation of infinite waves
-		let pointX = Math.sin(this.time / 30 ) * this.BOUNDS / 4;
-		let pointZ = -this.BOUNDS / 2;
+		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 30 ) * this.BOUNDS / 4;
+		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z + 30 : -this.BOUNDS / 2;
+
 		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
 		this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
 
@@ -666,7 +680,13 @@ export default class IntroView extends AbstractView {
 
 			// Move top and bottom --> Float effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.body.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+			if (el.clicked === true) {
+				// el.mesh.position.y = el.body.position.y = el.mesh.position.y - 1;
+				// now with tweenMax. /!\ Worst perf
+			} else {
+				el.mesh.position.y = el.body.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+			}
+
 			// rotate Manually
 
 			el.mesh.rotation.y = el.body.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
@@ -694,6 +714,7 @@ export default class IntroView extends AbstractView {
 				if (el.mesh.position.z <= -200) {
 					el.mesh.position.z = 300;
 					el.body.position.z = 300;
+					el.clicked = false;
 					TweenMax.fromTo(el.mesh.material, 0.5, {opacity: 0}, {opacity: 1}); // convert in time raf
 					// reboot
 				}
@@ -701,17 +722,22 @@ export default class IntroView extends AbstractView {
 			}
 		});
 
-		// // on Click asteroids
-		// const intersectsAst = this.raycaster.intersectObjects(this.asteroids.mesh);
+		// console.log(this.asteroids[1].mesh.position.y);
 
-		// if (intersectsAst.length > 0) {
-		// 	this.ui.body.style.cursor = 'pointer';
-		// 	this.clickAsteroid = true;
-		// 	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-		// } else {
-		// 	this.ui.body.style.cursor = 'auto';
-		// 	this.clickAsteroid = false;
-		// }
+		// Raycaster
+		this.raycaster.setFromCamera(this.mouse, this.camera);
+
+		// on Click asteroids
+		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+
+		if (intersectsAst.length > 0) {
+			this.ui.body.style.cursor = 'pointer';
+			this.clickAsteroid = true;
+			this.currentAstHover = this.asteroids[intersectsAst[0].object.index];
+		} else {
+			this.ui.body.style.cursor = 'auto';
+			this.clickAsteroid = false;
+		}
 
 		// deceleration
 		if (this.cameraMove === false) {

@@ -47,6 +47,8 @@ export default class Asteroid extends AbstractShape {
 		this.endY = obj.pos.y - obj.range / 2;
 		this.initRotateY = obj.rot.y;
 		this.timeRotate = obj.timeRotate;
+		this.height = obj.height;
+		this.scale = obj.scale;
 
 	}
 
