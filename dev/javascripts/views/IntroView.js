@@ -58,6 +58,7 @@ export default class IntroView extends AbstractView {
 		this.transitionIn = this.transitionIn.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
 		this.onClickStart = this.onClickStart.bind(this);
+		this.onClick = this.onClick.bind(this);
 
 		// preload Models
 		Promise.all([
@@ -122,6 +123,7 @@ export default class IntroView extends AbstractView {
 		}
 
 		document[evListener]( 'keydown', this.onW , false );
+		document[evListener]( 'click', this.onClick , false );
 
 		this.UI.button[evListener]('click', this.onClickStart);
 
@@ -550,6 +552,14 @@ export default class IntroView extends AbstractView {
 		}
 	}
 
+	onClick() {
+		if (this.clickAsteroid === true) {
+			console.log('click Asteroid');
+		} else {
+			console.log('false');
+		}
+	}
+
 	onClickStart() {
 
 		if (this.clicked === true) return false;
@@ -691,6 +701,17 @@ export default class IntroView extends AbstractView {
 			}
 		});
 
+		// // on Click asteroids
+		// const intersectsAst = this.raycaster.intersectObjects(this.asteroids.mesh);
+
+		// if (intersectsAst.length > 0) {
+		// 	this.ui.body.style.cursor = 'pointer';
+		// 	this.clickAsteroid = true;
+		// 	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+		// } else {
+		// 	this.ui.body.style.cursor = 'auto';
+		// 	this.clickAsteroid = false;
+		// }
 
 		// deceleration
 		if (this.cameraMove === false) {
