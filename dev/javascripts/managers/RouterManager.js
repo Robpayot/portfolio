@@ -2,6 +2,7 @@ import EmitterManager from './EmitterManager';
 // import PreloadManager from './PreloadManager';
 import ProjectView from '../views/ProjectView';
 import IntroView from '../views/IntroView';
+import GlitchView from '../views/GlitchView';
 import data from '../../datas/data.json';
 import Menu from '../components/Menu';
 
@@ -30,6 +31,8 @@ class RouterManager {
 			this.switchView('/project-1', 1, true);
 		} else if (/\/#project-0/.test(url) === true) {
 			this.switchView('/project-0', 0, true);
+		} else if (/\/#glitch/.test(url) === true) {
+			this.switchView('/glitch', 0, true);
 		} else {
 			this.switchView('/intro', 0, true);
 		}
@@ -115,6 +118,14 @@ class RouterManager {
 					gravity: true,
 				});
 				window.location = '#intro';
+				break;
+
+			case '/glitch':
+
+				this.currentPage = new GlitchView({
+					gravity: true,
+				});
+				window.location = '#glitch';
 				break;
 		}
 
