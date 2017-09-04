@@ -113,7 +113,8 @@ export default class GlitchView {
 		/* not too long of string, should always be visible */
 		/* Controls info: https://code.google.com/p/dat-gui/ */
 		/* dat.gui.js ==> https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js */
-		var textSize = 10;
+		var textSize = 120;
+		var textHeight = textSize - 33// need a real calcul
 		var glitcher = {
 
 			init: function () {
@@ -134,14 +135,16 @@ export default class GlitchView {
 					controls = gui.addFolder('Controls');
 
 				this.width = document.documentElement.offsetWidth;
-				this.forceHeight = 300;
+				this.forceHeight = window.innerHeight * 0.5;
 				this.height = this.forceHeight;
 
-				this.textSize = Math.floor(this.width / 7);
-				// sets text size based on window size
-				if (this.textSize > this.height) {
-					this.textSize = Math.floor(this.height / 2);
-				}
+				this.textSize = textSize;
+
+				// this.textSize = Math.floor(this.width / 7);
+				// // sets text size based on window size
+				// if (this.textSize > this.height) {
+				// 	this.textSize = Math.floor(this.height / 2);
+				// }
 				// tries to make text fit if window is
 				// very wide, but not very tall
 				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
@@ -149,6 +152,8 @@ export default class GlitchView {
 				// this.context.font = '900px "Theinhardt"';
 				this.text = 'The Forest';
 				this.textWidth = (this.context.measureText(this.text)).width;
+				this.textHeight = (this.context.measureText(this.text)).height;
+				console.log((this.context.measureText(this.text)));
 
 				this.fps = 60;
 
@@ -240,24 +245,28 @@ export default class GlitchView {
 
 				this.context.font = this.font;
 				this.context.fillStyle = 'rgb(255,255,255)';
-				this.context.fillText(this.text, x1, this.height / 2 + this.textSize - 10);
+				const centerY = this.height / 2 + textHeight / 2;
+				this.context.fillText(this.text, x1, centerY);
 
 				this.context.globalCompositeOperation = this.compOp;
 
 				this.context.fillStyle = 'rgb(0,0,0)';
-				this.context.fillText(this.text, x2, this.height / 2 + this.textSize - 10);
+				this.context.fillText(this.text, x2, centerY);
 
 				// this.context.rect(0, 0, 900, this.height);
 				// this.context.clip();
 				this.context.save();
 				this.context.beginPath();
-				this.context.rect(0,0,400,this.height);
-				this.context.arc(100,75,50,0,2*Math.PI);
+				let margeStart = this.textWidth * 0.2;
+				let startClip = (window.innerWidth - this.textWidth) / 2 - margeStart;
+				// console.log(this.height, this.textHeight);
+				this.context.rect(startClip,0, this.textWidth * 0.4,this.height);
+				// this.context.arc(100,75,50,0,2*Math.PI);
 				this.context.clip();
 				this.context.fillStyle = 'rgb(255,255,255)';
 				let margeX = 100;
 				let margeY = 50;
-				this.context.fillText(this.text, x3 - margeX, this.height / 2 + this.textSize - margeY);
+				this.context.fillText(this.text, x3 - margeX, centerY - margeY);
 				this.context.restore(); // --> magic here
 				// this.context.globalCompositeOperation = 'destination-over';
 
@@ -281,6 +290,8 @@ export default class GlitchView {
 			},
 
 			resize: function () {
+
+				// return false;
 				this.width = document.documentElement.offsetWidth;
 				//this.height = window.innerHeight;
 				this.height = this.forceHeight;
@@ -289,7 +300,7 @@ export default class GlitchView {
 					//document.documentElement.offsetHeight;
 					this.canvas.width = this.width;
 					//document.documentElement.offsetWidth;
-					this.textSize = Math.floor(this.canvas.width / 7);
+					this.textSize = textSize;
 					// RE-sets text size based on window size
 					if (this.textSize > this.height) {
 						this.textSize = Math.floor(this.canvas.height/1.5);
