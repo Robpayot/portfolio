@@ -15,6 +15,8 @@ body {
 
 	font-family: 'Theinhardt';
 
+	// background-image: url('../images/textures/glitch-1.png');
+
 
 	color: black;
 
@@ -28,6 +30,15 @@ body {
 		left: 50%;
 		transform: translate(-50%,-50%);
 		// height: 800px;
+
+	}
+
+	&__img {
+		height: 100px;
+		width: auto;
+	}
+	img {
+		display: none;
 	}
 }
 

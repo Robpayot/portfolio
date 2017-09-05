@@ -1,4 +1,5 @@
 // import { Object3D, Mesh } from 'three';
+import EmitterManager from '../managers/EmitterManager';
 import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import dat from 'dat-gui';
@@ -11,9 +12,8 @@ export default class GlitchView {
 		this.el = document.querySelector('.glitch');
 		this.el.style.display = 'block';
 
-		this.ui = {
-			xp: document.querySelector('.xp')
-		};
+		// bind 
+		this.raf = this.raf.bind(this);
 
 		// Preloader
 		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
@@ -27,6 +27,21 @@ export default class GlitchView {
 
 
 
+
+
+	}
+
+
+	events(method) {
+
+		// let evListener = method === false ? 'removeEventListener' : 'addEventListener';
+		let onListener = method === false ? 'off' : 'on';
+
+		EmitterManager[onListener]('resize', this.resizeHandler);
+		EmitterManager[onListener]('raf', this.raf);
+
+
+
 	}
 
 	start() {
@@ -34,288 +49,256 @@ export default class GlitchView {
 
 		let template = Handlebars.compile(PreloadManager.getResult('template-glitch'));
 		let html  = template();
-		console.log(html);
+		// console.log(html);
 
 		this.el.innerHTML = html;
 
+		this.ui = {
+			xp: document.querySelector('.xp'),
+			img: this.el.querySelector('.glitch__img'),
+			img2: this.el.querySelector('.glitch__img-2')
+		};
+		console.log(this.ui.img);
 		// Nathan Gordon <3
 		// //Create a canvas that is to become our reference image
 		// const baseCanvas = document.createElement('canvas');
 		// baseCanvas.width = 600;
 		// baseCanvas.height = 200;
-		// const baseContext = baseCanvas.getContext('2d');
+		// const basectx = baseCanvas.getctx('2d');
 
-		// //populate it with whatever you want, including dynamic text
-		// // baseContext.fillStyle = '#222';
-		// // baseContext.globalAlpha = 0;
-		// baseContext.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
-		// // baseContext.globalAlpha = 1;
-		// baseContext.fillStyle = '#fff';
-		// baseContext.font = '40pt Arial';
-		// baseContext.textBaseline = 'top';
-		// baseContext.fillText('this is your dynamic text', 20, 20);
-		// this.el.appendChild(baseCanvas);
+		this.textSize = 120;
+		this.textHeight = this.textSize - 33; // need a real calcul
+		this.time = 0;
 
-		// let imageData = baseContext.getImageData(0, 0, baseCanvas.width, baseCanvas.height);
-		// let d = imageData.data;
+		this.init();
 
-		// for (let i = 0; i < d.length; i += 4) {
-		// 	let offset = 5;
+	}
 
-		// 	//for the red channel, take the value of the pixel 5 spots in advance. If it doesn't exist, put 0.
-		// 	d[i] = d[i+4*offset] == undefined ? 0 : d[i+4*offset];
+	init() {
+
+		this.canvas = document.querySelector('.glitch__canvas');
+		this.ctx = this.canvas.getContext('2d');
+
+		this.initOptions();
+		this.resizeHandler();
+		this.events(true);
+	}
+
+	initOptions() {
+
+		const gui = new dat.GUI(),
+			current = gui.addFolder('Current'),
+			controls = gui.addFolder('Controls');
+
+		this.width = document.documentElement.offsetWidth;
+		this.forceHeight = window.innerHeight * 0.5;
+		this.height = this.forceHeight;
+
+		// this.textSize = Math.floor(this.width / 7);
+		// // sets text size based on window size
+		// if (this.textSize > this.height) {
+		// 	this.textSize = Math.floor(this.height / 2);
 		// }
+		// tries to make text fit if window is
+		// very wide, but not very tall
+		console.log(this.textSize);
+		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+		this.ctx.font = this.font;
+		this.text = 'The Forest';
+		this.textWidth = (this.ctx.measureText(this.text)).width;
+		// this.textHeight = (this.ctx.measureText(this.text)).height;
+		// console.log((this.ctx.measureText(this.text)));
 
-		// //repopulate base context with the affected data
-		// baseContext.putImageData(imageData, 0, 0);
+		this.fps = 60;
 
-		//    //create a canvas half the size of the original
-		//    var canvas = document.createElement('canvas');
-		//    canvas.width = 300;
-		//    canvas.height = 100;
-		//    var context = canvas.getContext('2d');
-		//    //draw the base canvas onto it
-		//    context.drawImage(baseCanvas, 0, 0);
+		this.channel = 0; // 0 = red, 1 = green, 2 = blue
+		this.compOp = 'lighter'; // CompositeOperation = lighter || darker || xor
+		this.phase = 0.0;
+		this.phaseStep = 0.05; //determines how often we will change channel and amplitude
+		this.amplitude = 0.0;
+		this.amplitudeBase = 2.0;
+		this.amplitudeRange = 2.0;
+		this.alphaMin = 0.8;
 
-		//    //display it
-		//    this.el.appendChild(canvas);
-		//    //aaand do it again
-		//    var canvas2 = document.createElement('canvas');
-		//    canvas2.style.display = 'block';
-		//    canvas2.width = 300;
-		//    canvas2.height = 100;
-		//    var context2 = canvas2.getContext('2d');
-		//    //shift the reference over halfway this time
-		//    context2.drawImage(baseCanvas, -300, 0);
-		//    this.el.appendChild(canvas2);
+		this.glitchAmplitude = 20.0;
+		this.glitchThreshold = 0.9;
+		this.scanlineBase = 40;
+		this.scanlineRange = 40;
+		this.scanlineShift = 15;
 
-		/* Based off of work on http://retromodular.com/ */
-		/*·····················································
-		···· Paul Reny ········································
-		····················· ██ ██ ██ ██ ██ ·· ██ ██ ·········
-		··············· ██ ██ ▒▒ ░░ ░░ ░░ ░░ ██ ▒▒ ░░ ██ ······
-		············ ██ ▒▒ ░░ ░░ ██ ░░ ██ ░░ ░░ ██ ░░ ░░ ██ ···
-		········· ██ ▒▒ ░░ ░░ ░░ ██ ░░ ██ ░░ ░░ ░░ ▒▒ ░░ ██ ···
-		········· ██ ░░ ░░ ░░ ░░ ██ ░░ ██ ░░ ░░ ░░ ▒▒ ▒▒ ██ ···
-		······ ██ ░░ ░░ ░░ ▒▒ ▒▒ ░░ ░░ ░░ ▒▒ ▒▒ ░░ ░░ ▒▒ ██ ···
-		··· ██ ▒▒ ░░ ░░ ░░ ░░ ░░ ░░ ██ ░░ ░░ ░░ ░░ ░░ ░░ ██ ···
-		··· ██ ░░ ░░ ▒▒ ░░ ░░ ░░ ░░ ██ ░░ ░░ ░░ ░░ ░░ ▒▒ ██ ···
-		··· ██ ░░ ░░ ▒▒ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ██ ······
-		······ ██ ██ ██ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▒▒ ██ ······
-		··· ██ ▒▒ ▒▒ ▒▒ ██ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▒▒ ██ ······
-		··· ██ ▒▒ ▒▒ ▒▒ ▒▒ ██ ░░ ░░ ░░ ░░ ░░ ░░ ▒▒ ██ ·········
-		··· ██ ▒▒ ▒▒ ▒▒ ▒▒ ██ ░░ ░░ ░░ ░░ ░░ ▒▒ ██ ██ ·········
-		······ ██ ▒▒ ▒▒ ▒▒ ▒▒ ██ ▒▒ ▒▒ ▒▒ ██ ██ ▒▒ ▒▒ ██ ······
-		········· ██ ▒▒ ▒▒ ██ ██ ██ ██ ██ ▒▒ ▒▒ ▒▒ ▒▒ ▒▒ ██ ···
-		············ ██ ██ ██ ········ ██ ██ ██ ██ ██ ██ ······
-		·····················································*/
-		/* added dynamic sizing to the text. as long as it's */
-		/* not too long of string, should always be visible */
-		/* Controls info: https://code.google.com/p/dat-gui/ */
-		/* dat.gui.js ==> https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js */
-		var textSize = 120;
-		var textHeight = textSize - 33// need a real calcul
-		var glitcher = {
+		current.add(this, 'channel', 0, 2).listen();
+		current.add(this, 'phase', 0, 1).listen();
+		current.add(this, 'amplitude', 0, 5).listen();
+		// comment out below to hide ability to change text string
+		// var text = controls.add(this, 'text');
+		// text.onChange((function (){
+		// 	this.textWidth = (this.ctx.measureText(this.text)).width;
+		// }).bind(this));
+		// comment out above to hide ability to change text string
+		controls.add(this, 'fps', 1, 60);
+		controls.add(this, 'phaseStep', 0, 1);
+		controls.add(this, 'alphaMin', 0, 1);
+		controls.add(this, 'amplitudeBase', 0, 5);
+		controls.add(this, 'amplitudeRange', 0, 5);
+		controls.add(this, 'glitchAmplitude', 0, 100);
+		controls.add(this, 'glitchThreshold', 0, 1);
+		controls.open();
+		gui.close(); // start the control panel cloased
+	}
 
-			init: function () {
-				setTimeout((function () {
-					this.canvas = document.querySelector('.glitch__canvas');
-					this.context = this.canvas.getContext('2d');
+	raf() {
 
-					this.initOptions();
-					this.resize();
-					this.tick();
-				}).bind(this), 100);
-			},
+		this.phase += this.phaseStep;
 
-			initOptions: function () {
+		if (this.phase > 1) {
+			this.phase = 0.0;
+			this.channel = this.channel === 2 ? 0 : this.channel + 1;
+			this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
+		}
 
-				var gui = new dat.GUI(),
-					current = gui.addFolder('Current'),
-					controls = gui.addFolder('Controls');
+		let x0 = this.amplitude * Math.sin(Math.PI * 2 * this.phase) >> 0, x1, x2, x3;
 
-				this.width = document.documentElement.offsetWidth;
-				this.forceHeight = window.innerHeight * 0.5;
-				this.height = this.forceHeight;
+		if (Math.random() >= this.glitchThreshold) {
+			x0 *= this.glitchAmplitude;
+		}
 
-				this.textSize = textSize;
-
-				// this.textSize = Math.floor(this.width / 7);
-				// // sets text size based on window size
-				// if (this.textSize > this.height) {
-				// 	this.textSize = Math.floor(this.height / 2);
-				// }
-				// tries to make text fit if window is
-				// very wide, but not very tall
-				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
-				this.context.font = this.font;
-				// this.context.font = '900px "Theinhardt"';
-				this.text = 'The Forest';
-				this.textWidth = (this.context.measureText(this.text)).width;
-				this.textHeight = (this.context.measureText(this.text)).height;
-				console.log((this.context.measureText(this.text)));
-
-				this.fps = 60;
-
-				this.channel = 0; // 0 = red, 1 = green, 2 = blue
-				this.compOp = 'lighter'; // CompositeOperation = lighter || darker || xor
-				this.phase = 0.0;
-				this.phaseStep = 0.05; //determines how often we will change channel and amplitude
-				this.amplitude = 0.0;
-				this.amplitudeBase = 2.0;
-				this.amplitudeRange = 2.0;
-				this.alphaMin = 0.8;
-
-				this.glitchAmplitude = 20.0;
-				this.glitchThreshold = 0.9;
-				this.scanlineBase = 40;
-				this.scanlineRange = 40;
-				this.scanlineShift = 15;
-
-				current.add(this, 'channel', 0, 2).listen();
-				current.add(this, 'phase', 0, 1).listen();
-				current.add(this, 'amplitude', 0, 5).listen();
-				// comment out below to hide ability to change text string
-				var text = controls.add(this, 'text');
-				text.onChange((function (){
-					this.textWidth = (this.context.measureText(this.text)).width;
-				}).bind(this));
-				// comment out above to hide ability to change text string
-				controls.add(this, 'fps', 1, 60);
-				controls.add(this, 'phaseStep', 0, 1);
-				controls.add(this, 'alphaMin', 0, 1);
-				controls.add(this, 'amplitudeBase', 0, 5);
-				controls.add(this, 'amplitudeRange', 0, 5);
-				controls.add(this, 'glitchAmplitude', 0, 100);
-				controls.add(this, 'glitchThreshold', 0, 1);
-				controls.open();
-				gui.close(); // start the control panel cloased
-			},
-
-			tick: function () {
-				setTimeout((function () {
-					this.phase += this.phaseStep;
-
-					if (this.phase > 1) {
-						this.phase = 0.0;
-						this.channel = (this.channel === 2) ? 0 : this.channel + 1;
-						this.amplitude = this.amplitudeBase + (this.amplitudeRange * Math.random());
-					}
-
-					this.render();
-					this.tick();
-
-				}).bind(this), 1000 / this.fps);
-			},
-
-			render: function () {
-				var x0 = this.amplitude * Math.sin((Math.PI * 2) * this.phase) >> 0, x1, x2, x3;
-
-				if (Math.random() >= this.glitchThreshold) {
-					x0 *= this.glitchAmplitude;
-				}
-
-				x1 = this.width - this.textWidth >> 1;
-				x2 = x1 + x0;
-				x3 = x1 - x0;
+		x1 = this.width - this.textWidth >> 1;
+		x2 = x1 + x0;
+		x3 = x1 - x0;
 
 
-				this.context.clearRect(0, 0, this.width, this.height);
-				this.context.globalAlpha = this.alphaMin + ((1 - this.alphaMin) * Math.random());
+		// console.log(x1, x2, x3, this.channel);
+		this.ctx.save();
 
-				switch (this.channel) {
-					case 0:
-						this.renderChannels(x1, x2, x3);
-						break;
-					case 1:
-						this.renderChannels(x2, x3, x1);
-						break;
-					case 2:
-						this.renderChannels(x3, x1, x2);
-						break;
-				}
-				this.renderScanline();
-				if (Math.floor(Math.random() * 2) > 1) {
-					this.renderScanline();
-					// renders a second scanline 50% of the time
-				}
-			},
+		// clear temp context
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-			renderChannels: function(x1, x2, x3) {
+		switch (this.channel) {
+			case 0:
+				this.renderChannels(x1, x2, x3);
+				break;
+			case 1:
+				this.renderChannels(x2, x3, x1);
+				break;
+			case 2:
+				this.renderChannels(x3, x1, x2);
+				break;
+		}
 
-				this.context.font = this.font;
-				this.context.fillStyle = 'rgb(255,255,255)';
-				const centerY = this.height / 2 + textHeight / 2;
-				this.context.fillText(this.text, x1, centerY);
-
-				this.context.globalCompositeOperation = this.compOp;
-
-				this.context.fillStyle = 'rgb(0,0,0)';
-				this.context.fillText(this.text, x2, centerY);
-
-				// this.context.rect(0, 0, 900, this.height);
-				// this.context.clip();
-				this.context.save();
-				this.context.beginPath();
-				let margeStart = this.textWidth * 0.2;
-				let startClip = (window.innerWidth - this.textWidth) / 2 - margeStart;
-				// console.log(this.height, this.textHeight);
-				this.context.rect(startClip,0, this.textWidth * 0.4,this.height);
-				// this.context.arc(100,75,50,0,2*Math.PI);
-				this.context.clip();
-				this.context.fillStyle = 'rgb(255,255,255)';
-				let margeX = 100;
-				let margeY = 50;
-				this.context.fillText(this.text, x3 - margeX, centerY - margeY);
-				this.context.restore(); // --> magic here
-				// this.context.globalCompositeOperation = 'destination-over';
+		this.renderScanline();
+		if (Math.floor(Math.random() * 2) > 1) {
+			this.renderScanline();
+			// renders a second scanline 50% of the time
+		}
+	}
 
 
-			},
+	renderChannels(x1, x2, x3) {
 
-			renderScanline: function () {
 
-				var y = this.height * Math.random() >> 0,
-					o = this.context.getImageData(0, y, this.width, 1),
-					d = o.data,
-					i = d.length,
-					s = this.scanlineBase + this.scanlineRange * Math.random() >> 0,
-					x = -this.scanlineShift + this.scanlineShift * 2 * Math.random() >> 0;
+		// draw rectangle (destination)
+		const top = Math.sin(this.time / 60 ) * 30;
+		// console.log(top);
+		this.ctx.beginPath();
+		this.ctx.drawImage(this.ui.img, x3, top, this.textWidth + 30, this.textWidth + 30);
 
-				while (i-- > 0) {
-					d[i] += s;
-				}
+		// set global composite
+		this.ctx.globalCompositeOperation = 'destination-atop';
 
-				this.context.putImageData(o, x, y);
-			},
+		// draw circle (source)
+		this.ctx.beginPath();
+		// this.ctx.fillText(this.text, 125,150);
+		// this.ctx.restore();
 
-			resize: function () {
 
-				// return false;
-				this.width = document.documentElement.offsetWidth;
-				//this.height = window.innerHeight;
-				this.height = this.forceHeight;
-				if (this.canvas) {
-					this.canvas.height = this.height;
-					//document.documentElement.offsetHeight;
-					this.canvas.width = this.width;
-					//document.documentElement.offsetWidth;
-					this.textSize = textSize;
-					// RE-sets text size based on window size
-					if (this.textSize > this.height) {
-						this.textSize = Math.floor(this.canvas.height/1.5);
-					}
-					// tries to make text fit if window is
-					// very wide, but not very tall
-					this.font = '900 ' + this.textSize + 'px "Theinhardt"';
-					this.context.font = this.font;
-				}
+
+		this.ctx.font = this.font;
+		this.ctx.fillStyle = 'rgb(255,255,255)';
+		const centerY = this.height / 2 + this.textHeight / 2;
+		this.ctx.fillText(this.text, x1, centerY);
+
+		this.ctx.globalCompositeOperation = this.compOp;
+
+
+		this.ctx.fillStyle = 'rgb(0,0,0)';
+		this.ctx.fillText(this.text, x2, centerY);
+
+		// this.ctx.rect(0, 0, 900, this.height);
+		// this.ctx.clip();
+		this.ctx.save();
+
+		this.ctx.beginPath();
+		// this.ctx.drawImage(this.ui.img, x1,0, this.textWidth + 30, this.textWidth + 30);
+		// this.ctx.restore();
+		this.ctx.globalCompositeOperation = 'destination-atop';
+		// this.ctx.globalCompositeOperation = this.compOp;
+
+
+		this.ctx.beginPath();
+		let margeStart = this.textWidth * 0.2;
+		let startClip = (window.innerWidth - this.textWidth) / 2 - margeStart;
+		// console.log(this.height, this.textHeight);
+		this.ctx.rect(startClip,0, this.textWidth * 0.4,this.height);
+		// this.ctx.arc(100,75,50,0,2*Math.PI);
+		this.ctx.clip();
+		this.ctx.fillStyle = 'rgb(255,255,255)';
+		let margeX = 80;
+		let margeY = 50;
+		this.ctx.fillText(this.text, x3 - margeX, centerY - margeY);
+
+		this.ctx.globalCompositeOperation = this.compOp;
+
+		this.ctx.fillStyle = 'rgb(41,64,16)';
+		this.ctx.fillText(this.text, x3 - margeX - 10, centerY - margeY + 10);
+		this.ctx.restore(); // --> magic here
+		// this.ctx.globalCompositeOperation = 'destination-over';
+
+		this.time++;
+
+
+	}
+
+	renderScanline() {
+
+		let y = this.height * Math.random() >> 0,
+			o = this.ctx.getImageData(0, y, this.width, 1),
+			d = o.data,
+			i = d.length,
+			s = this.scanlineBase + this.scanlineRange * Math.random() >> 0,
+			x = -this.scanlineShift + this.scanlineShift * 2 * Math.random() >> 0;
+
+		while (i-- > 0) {
+			d[i] += s;
+		}
+
+		this.ctx.putImageData(o, x, y);
+
+		// var imgData = this.ctx.getImageData(10,10,500,500);
+		// this.ctx.putImageData(imgData,10,70);
+	}
+
+	resizeHandler() {
+
+		// return false;
+		this.width = document.documentElement.offsetWidth;
+		//this.height = window.innerHeight;
+		this.height = this.forceHeight;
+		if (this.canvas) {
+			this.canvas.height = this.height;
+			//document.documentElement.offsetHeight;
+			this.canvas.width = this.width;
+			//document.documentElement.offsetWidth;
+			this.textSize = this.textSize;
+			// RE-sets text size based on window size
+			if (this.textSize > this.height) {
+				this.textSize = Math.floor(this.canvas.height / 1.5);
 			}
-		};
-		// setTimeout(() => {
-		document.onload = glitcher.init();
-		window.onresize = glitcher.resize();
-
+			// tries to make text fit if window is
+			// very wide, but not very tall
+			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+			this.ctx.font = this.font;
+			console.log(this.textSize);
+		}
 	}
 
 	isHover() {
