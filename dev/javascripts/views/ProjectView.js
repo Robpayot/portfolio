@@ -262,11 +262,19 @@ export default class ProjectView extends AbstractView {
 		// Preloader
 		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
 
+		let prod;
+
+		if (window.location.host === 'robpayot.github.io') {
+			prod = true;
+
+		}
+
+		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
 
 		PreloadManager.loadManifest([
-			{ id: 'template-title', src: '/templates/projectTitle.hbs' },
-			{ id: 'template-content', src: '/templates/projectContent.hbs' },
-			{ id: 'template-footer', src: '/templates/projectFooter.hbs' },
+			{ id: 'template-title', src: `${base}/templates/projectTitle.hbs`},
+			{ id: 'template-content', src: `${base}/templates/projectContent.hbs` },
+			{ id: 'template-footer', src: `${base}/templates/projectFooter.hbs` },
 		]);
 
 		PreloadManager.load();

@@ -18,9 +18,18 @@ export default class GlitchView {
 		// Preloader
 		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
 
+		let prod;
+
+		if (window.location.host === 'robpayot.github.io') {
+			prod = true;
+
+		}
+
+		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
+
 
 		PreloadManager.loadManifest([
-			{ id: 'template-glitch', src: '/templates/glitch.hbs' },
+			{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` },
 		]);
 
 		PreloadManager.load();
