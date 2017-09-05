@@ -27,6 +27,8 @@ export default class GlitchView {
 
 		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
 
+		console.log(`${base}/templates/glitch.hbs`, Handlebars);
+
 
 		PreloadManager.loadManifest([
 			{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` },
