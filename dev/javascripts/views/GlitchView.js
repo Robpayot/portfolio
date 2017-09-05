@@ -12,7 +12,7 @@ export default class GlitchView {
 		this.el = document.querySelector('.glitch');
 		this.el.style.display = 'block';
 
-		// bind 
+		// bind
 		this.raf = this.raf.bind(this);
 
 		// Preloader
@@ -31,7 +31,7 @@ export default class GlitchView {
 
 
 		PreloadManager.loadManifest([
-			{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` },
+			{ id: 'template-glitch', src: `templates/glitch.hbs` },
 		]);
 
 		PreloadManager.load();
