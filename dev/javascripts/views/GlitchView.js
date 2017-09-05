@@ -12,15 +12,26 @@ export default class GlitchView {
 		this.el = document.querySelector('.glitch');
 		this.el.style.display = 'block';
 
-		// bind 
+		// bind
 		this.raf = this.raf.bind(this);
 
 		// Preloader
 		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
 
+		let prod;
+
+		if (window.location.host === 'robpayot.github.io') {
+			prod = true;
+
+		}
+
+		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
+
+		console.log(`${base}/templates/glitch.hbs`, Handlebars);
+
 
 		PreloadManager.loadManifest([
-			{ id: 'template-glitch', src: '/templates/glitch.hbs' },
+			{ id: 'template-glitch', src: `templates/glitch.hbs` },
 		]);
 
 		PreloadManager.load();
