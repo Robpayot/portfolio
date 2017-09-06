@@ -31,6 +31,10 @@ body {
 		transform: translate(-50%,-50%);
 		// height: 800px;
 
+		&-temp {
+			display: none;
+		}
+
 	}
 
 	&__img {
