@@ -69,7 +69,7 @@ export default class GlitchView {
 			xp: document.querySelector('.xp'),
 			img: this.el.querySelector('.glitch__img'),
 			img2: this.el.querySelector('.glitch__img-2'),
-			img3: this.el.querySelector('.glitch__img-3'),
+			imgAlpha: this.el.querySelector('.glitch__img-3'),
 			canvas: this.el.querySelector('.glitch__canvas'),
 			canvasTemp: this.el.querySelector('.glitch__canvas-temp')
 		};
@@ -119,8 +119,8 @@ export default class GlitchView {
 		console.log(this.textSize);
 		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
 		this.ctxTemp.font = this.font;
-		this.text = 'The Forest';
-		this.textWidth = (this.ctxTemp.measureText(this.text)).width;
+		this.text = 'Withings';
+		this.textWidth = Math.round((this.ctxTemp.measureText(this.text)).width);
 		// this.textHeight = (this.ctx.measureText(this.text)).height;
 		// console.log((this.ctx.measureText(this.text)));
 
@@ -131,8 +131,8 @@ export default class GlitchView {
 		this.phase = 0.0;
 		this.phaseStep = 0.05; //determines how often we will change channel and amplitude
 		this.amplitude = 0.0;
-		this.amplitudeBase = 3; //2.0;
-		this.amplitudeRange = 2; // 2.0;
+		this.amplitudeBase = 2; //2.0;
+		this.amplitudeRange = 3; // 2.0;
 		this.alphaMin = 0.8;
 
 		this.glitchAmplitude = 20.0;
@@ -224,35 +224,62 @@ export default class GlitchView {
 
 		const top = Math.sin(this.time / 60 ) * 30; // move image
 		const centerY = this.height / 2 + this.textHeight / 2;
-		let margeStart = this.textWidth * 0.2;
-		let startClip = (window.innerWidth - this.textWidth) / 2 - margeStart;
+		// let margeStart = this.textWidth * 0.2;
+		let startClip = (window.innerWidth - this.textWidth) / 2 ;
+
+		// const arr = [{
+		// 	channel:[{
+		// 		margeX: getRandom(350, 400),
+		// 		posX: getRandom(30, 80), // 50
+		// 		posY: getRandom(-10, -30),
+		// 		width: 0
+		// 	}, {
+		// 		margeX: getRandom(350, 450),
+		// 		posX: getRandom(0, -20), // 50
+		// 		posY: getRandom(0, 20),
+		// 		width: 0
+		// 	}, {
+		// 		margeX: getRandom(350, 400),
+		// 		posX: getRandom(30, 80), // 50
+		// 		posY: getRandom(-10, -30),
+		// 		width: 0
+		// 	}]
+		// }];
 
 		// offset gesture
-		let margeX1 = 350;
-		let posX1 = 50;
-		let posY1 = -20;
-		let margeX12 = 450;
-		let posX12 = -10;
-		let posY12 = 10;
-
-		let posX2 = -90;
-		let posY2 = -40;
-		let width2 = this.textWidth * 0.3;
-		let posX22 = -70;
-		let posY22 = 20;
-		let width22 = this.textWidth * 0.5;
+		let margeX1 = Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
+		let posX1 =  Math.round(getRandom(30, 80)); // 50
+		let posY1 =  Math.round(getRandom(-10, -30)); // -20
+		let margeX12 =  Math.round(getRandom(this.textWidth * 0.25, this.textWidth * 0.35));
+		let posX12 =  Math.round(getRandom(0, -20)); // -10
+		let posY12 =  Math.round(getRandom(0, 20)); // 10
 
 
-		let posX3 = -80;
-		let posY3 = -50;
-		let width3 = this.textWidth * 0.4;
+		let margeX2 =  Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
+		let width2 =  Math.round(getRandom(this.textWidth * 0.6, this.textWidth * 0.25));
+		let width22 =   Math.round(getRandom(this.textWidth * 0.4, this.textWidth * 0.25));
 
-		let margeX4 = 550;
-		let posX4 = 10;
-		let posY4 = 50;
-		let width4 = this.textWidth * 0.3;
 
-		// Draw Second Comp
+		let margeX3 = -Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
+		let posX3 =  Math.round(getRandom(30, -100));
+		let posY3 =  Math.round(getRandom(100, -10));
+		let width3 =  Math.round(getRandom(this.textWidth * 0.6, this.textWidth * 0.25));
+		let margeX32 = -Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
+		let posX32 =  Math.round(getRandom(-10, -70));
+		let posY32 =  Math.round(getRandom(-60, 30));
+		let width32 = this.textWidth * 0.5;
+
+		let margeX4 = -Math.round(getRandom(this.textWidth * 0.3, this.textWidth * 0.4));
+		let posX4 =  Math.round(getRandom(-80, -100));
+		let posY4 =  Math.round(getRandom(-50, -10));
+		let width4 =  Math.round(getRandom(this.textWidth * 0.4, this.textWidth * 0.5));
+
+		let margeX5 =  Math.round(getRandom(this.textWidth * 0.7, this.textWidth * 0.8));
+		let posX5 =  Math.round(getRandom(10, 20));
+		let posY5 =  Math.round(getRandom(10, 20));
+		let width5 =  Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.2));
+
+		// Draw First Comp
 		// Start of Text, Offset Left, white, with image
 		this.ctxTemp.save();
 		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
@@ -270,45 +297,64 @@ export default class GlitchView {
 
 			this.ctxTemp.rect(startClip + margeX12,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxTemp.clip();
-			this.ctxTemp.drawImage(this.ui.img3, startClip + margeX12 + 2, top, this.textWidth + 30, this.textWidth + 30);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX12 + 2, top, this.textWidth - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
 			this.ctxTemp.fillText(this.text, x2 + posX12, centerY + posY12);
 		} else {
 
 			this.ctxTemp.rect(startClip + margeX1,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxTemp.clip();
-			this.ctxTemp.drawImage(this.ui.img3, startClip + margeX1 + 2, top, this.textWidth + 30, this.textWidth + 30);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX1 + 2, top, this.textWidth - 2 , this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
 			this.ctxTemp.fillText(this.text, x2 + posX1, centerY + posY1);
 		}
-
 
 		this.ctxTemp.restore();
 
 		this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
 
 
-		// Draw first Comp
+
+
+
+		// Draw Second Comp
 		// DEFAULT
 		// Normal Text, center white, with image
 		this.ctxTemp.save();
 		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+		this.ctxTemp.beginPath();
 
-		// Draw image that gonna be use as mask.
-		this.ctxTemp.drawImage(this.ui.img, x1, top, this.textWidth + 30, this.textWidth + 30);
+		if (this.channel === 0) {
+			this.ctxTemp.rect(startClip + margeX2, top, width2, this.height); // create clip rectangle
+			this.ctxTemp.clip();
+			// Draw image that gonna be use as mask.
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX2 + 2, top, width2 - 2, this.height);
+			// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
+		} else if (this.channel === 2) {
+			this.ctxTemp.rect(startClip, 0, width22, this.height); // create clip rectangle
+			this.ctxTemp.clip();
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + 2, top, width22 - 2, this.height);
+			// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
+		} else {
+			this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.height);
+		}
+
 		this.ctxTemp.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
+
 
 		this.ctxTemp.fillStyle = 'rgb(255,255,255)';
 		this.ctxTemp.fillText(this.text, x1, centerY); // First Text
+		// this.ctxTemp.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
+		// this.ctxTemp.fillText(this.text, x2, centerY); // Second Text
 
-		this.ctxTemp.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
-		this.ctxTemp.fillText(this.text, x2, centerY); // Second Text
+		this.ctxTemp.restore();
 
 		this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
 
 
 
-		// Draw Second Comp
+
+		// Draw Third Comp
 		// Start of Text, Offset Left, white, with image
 		this.ctxTemp.save();
 		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
@@ -321,24 +367,21 @@ export default class GlitchView {
 
 		} else if (this.channel === 1) {
 
-			this.ctxTemp.rect(startClip,0, width2,this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + margeX3,0, width3,this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.img3, startClip + 2, centerY + posY2 - this.textHeight , width2 - 2, width2 - 2);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX3 + 2, centerY + posY3 - this.textHeight , width3 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x2 + posX2, centerY + posY2);
+			this.ctxTemp.fillText(this.text, x2 + posX3, centerY + posY3);
 		} else {
 
-			this.ctxTemp.rect(startClip,0, width22 - 10,this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + margeX32,0, width32 - 10,this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.img3, startClip + 2, centerY + posY22 - this.textHeight , width22 - 20, width22 - 2);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX32 + 2, centerY + posY32 - this.textHeight , width32 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x2 + posX22, centerY + posY22);
+			this.ctxTemp.fillText(this.text, x2 + posX32, centerY + posY32);
 		}
-
-
-
 
 		this.ctxTemp.restore();
 
@@ -346,35 +389,7 @@ export default class GlitchView {
 
 
 
-		// Draw Third Comp
-		// Start of Text, Offset Left, white, with image
-		this.ctxTemp.save();
-		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-		this.ctxTemp.beginPath(); // avoid Drop fps
-
-		this.ctxTemp.fillStyle = 'rgb(255,255,255)'; // Third Text
-
-		if (this.channel === 2) {
-
-			this.ctxTemp.rect(startClip,0, width3,this.height); // create clip rectangle
-			this.ctxTemp.clip();
-
-			this.ctxTemp.drawImage(this.ui.img, startClip + 2, top - posY3 - this.textHeight + 50, width3 - 2, width3 - 2);
-			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x3 + posX3, centerY + posY3);
-
-		} else {
-
-		}
-
-
-		this.ctxTemp.restore();
-
-		this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
-
-
-
-		// Draw Third Comp
+		// Draw Fourth Comp
 		// Start of Text, Offset Left, white, with image
 		this.ctxTemp.save();
 		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
@@ -384,12 +399,11 @@ export default class GlitchView {
 
 		if (this.channel === 1) {
 
-			this.ctxTemp.rect(startClip + margeX4,0, width4 - 2,this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + margeX4, 0, width4,this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.img, startClip + margeX4 + 2, top - posY4 - this.textHeight + 50 , width4 - 10, this.textWidth + 30);
+			this.ctxTemp.drawImage(this.ui.img, startClip + margeX4 + 2, top - posY4 - this.textHeight + 50, width4 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-
 			this.ctxTemp.fillText(this.text, x3 + posX4, centerY + posY4);
 
 		} else {
@@ -402,14 +416,34 @@ export default class GlitchView {
 		this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
 
 
-		// }
-		// if (this.channel === 1) {
-		// 	this.ctx.fillText(this.text, x3 - margeX + 5, centerY - margeY + 10);
-		// }
 
-		// this.ctx.globalCompositeOperation = this.compOp;
+		// Draw Fifth Comp
+		// Start of Text, Offset Left, white, with image
+		this.ctxTemp.save();
+		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+		this.ctxTemp.beginPath(); // avoid Drop fps
 
-		// this.ctx.globalCompositeOperation = 'destination-over';
+		this.ctxTemp.fillStyle = 'rgb(255,255,255)'; // Third Text
+
+		if (this.channel === 1) {
+
+			this.ctxTemp.rect(startClip + margeX5,0, width5, this.height); // create clip rectangle
+			this.ctxTemp.clip();
+
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX5 + 2, top, width5 - 2, this.height);
+			this.ctxTemp.globalCompositeOperation = 'destination-atop';
+
+			this.ctxTemp.fillText(this.text, x3 + posX5, centerY + posY5);
+
+		} else {
+
+		}
+
+
+		this.ctxTemp.restore();
+
+		this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
+
 
 		this.time++;
 
