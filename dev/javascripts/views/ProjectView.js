@@ -112,6 +112,8 @@ export default class ProjectView extends AbstractView {
 		EmitterManager[onListener]('raf', this.raf);
 
 		if (method === true) {
+			bean.on(document.body, 'mouseenter.project', '.glitch', () => { this.glitch.hover = true; });
+			bean.on(document.body, 'mouseleave.project', '.glitch', () => { this.glitch.hover = false; });
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			bean.on(document.body, 'click.project', '.gallery__arrow-r', this.slideUp);
 			bean.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
@@ -325,22 +327,6 @@ export default class ProjectView extends AbstractView {
 		// Set CssContainers
 		this.setCssContainers();
 
-		setTimeout(() => {
-			// wait Handlebars
-			console.log();
-			// Add glitcher
-			// wait for
-			this.glitch = new GlitchView({
-				el: this.el.querySelector('.glitch'),
-				color: 'blue',
-				txt: this.data.title
-			});
-
-		}, 1000);
-
-
-
-
 		////////////////////
 		// EVENTS
 		////////////////////
@@ -365,6 +351,12 @@ export default class ProjectView extends AbstractView {
 
 			this.ui.projectContainer = this.el.querySelector('.project__container');
 			this.ui.projectImg = this.el.querySelectorAll('.project__image img')[0];
+
+			this.glitch = new GlitchView({
+				el: this.el.querySelector('.glitch'),
+				color: this.data.color,
+				txt: this.data.title
+			});
 
 			// Start transition In
 			if (this.fromUrl === true) {
@@ -900,6 +892,7 @@ export default class ProjectView extends AbstractView {
 				this.cameraMove = true;
 				this.animating = false;
 				ScrollManager.on(); // start scrollmanager
+				this.glitch.stop = true;
 			},
 		});
 
@@ -942,6 +935,7 @@ export default class ProjectView extends AbstractView {
 	backFromContent() {
 
 		this.cameraMove = true;
+		this.glitch.stop = false;
 		ScrollManager.off(); // stop scrollmanager
 
 		const trigo = { angle: 0 };
@@ -1398,9 +1392,16 @@ export default class ProjectView extends AbstractView {
 
 		this.render();
 
-
+		// glitch title
 		if (this.glitch) {
-			this.glitch.raf();
+
+			if (this.glitch.stop !== true) {
+				if (this.glitch.hover === true ) {
+					this.glitch.raf();
+				} else {
+					this.glitch.raf(true);
+				}
+			}
 		}
 
 	}
@@ -1583,7 +1584,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-		tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+		tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
 			y: 40
 		}, {

@@ -124,7 +124,7 @@ class RouterManager {
 
 				this.currentPage = new GlitchView({
 					el: document.querySelector('.glitch'),
-					txt: 'BMW Motorshow',
+					txt: 'AKTR',
 					color: 'rgb(41,64,16)',
 					debug: true
 				});

@@ -92,6 +92,7 @@ export default class GlitchView {
 		this.textSize = this.ui.canvas.offsetHeight / 3;
 		this.textHeight = this.textSize; // need a real calcul
 		this.time = 0;
+		this.last = 0;
 
 		this.init();
 
@@ -118,26 +119,6 @@ export default class GlitchView {
 			current = gui.addFolder('Current'),
 			controls = gui.addFolder('Controls');
 
-		// this.width = document.documentElement.offsetWidth;
-		this.height = this.ui.canvas.offsetHeight;
-
-		// this.textSize = Math.floor(this.width / 7);
-		// // sets text size based on window size
-		// if (this.textSize > this.height) {
-		// 	this.textSize = Math.floor(this.height / 2);
-		// }
-		// tries to make text fit if window is
-		// very wide, but not very tall
-		console.log(this.textSize, this.width, this.height);
-		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-		this.ctxTemp.font = this.font;
-		this.text = this.txt;
-		this.textWidth = Math.round((this.ctxTemp.measureText(this.text)).width);
-		this.width = this.textWidth * 2;
-
-		console.log(this.width);
-		// this.textHeight = (this.ctx.measureText(this.text)).height;
-		// console.log((this.ctx.measureText(this.text)));
 
 		this.fps = 60;
 
@@ -149,6 +130,7 @@ export default class GlitchView {
 		this.amplitudeBase = 2; //2.0;
 		this.amplitudeRange = 3; // 2.0;
 		this.alphaMin = 0.8;
+		this.biggestRange = 200; // - 100 max X , +100 max X
 
 		this.glitchAmplitude = 20.0;
 		this.glitchThreshold = 0.9;
@@ -176,7 +158,7 @@ export default class GlitchView {
 		gui.close(); // start the control panel cloased
 	}
 
-	raf() {
+	raf(calm = false) {
 
 		this.phase += this.phaseStep;
 
@@ -212,25 +194,28 @@ export default class GlitchView {
 
 		switch (this.channel) {
 			case 0:
-				this.renderChannels(x1, x2, x3);
+				this.renderChannels(x1, x2, x3, calm);
 				break;
 			case 1:
-				this.renderChannels(x2, x3, x1);
+				this.renderChannels(x2, x3, x1, calm);
 				break;
 			case 2:
-				this.renderChannels(x3, x1, x2);
+				this.renderChannels(x3, x1, x2, calm);
 				break;
 		}
 
-		this.renderScanline();
-		if (Math.floor(Math.random() * 2) > 1) {
+
+		if (calm === true) {
 			this.renderScanline();
-			// renders a second scanline 50% of the time
+			if (Math.floor(Math.random() * 2) > 1) {
+				this.renderScanline();
+				// renders a second scanline 50% of the time
+			}
 		}
 	}
 
 
-	renderChannels(x1, x2, x3) {
+	renderChannels(x1, x2, x3, calm) {
 
 		// It's important to note that a canvas context can only support one composite operation throughout its life cycle.
 		// if we want to use multiple composite operations, as this tutorial does, we need to apply the operations on a hidden canvas and then copy the results onto a visible canvas.
@@ -262,40 +247,58 @@ export default class GlitchView {
 		// }];
 
 		// offset gesture
-		let margeX1 = Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
-		let posX1 =  Math.round(getRandom(30, 80)); // 50
-		let posY1 =  Math.round(getRandom(-10, -30)); // -20
-		let margeX12 =  Math.round(getRandom(this.textWidth * 0.25, this.textWidth * 0.35));
-		let posX12 =  Math.round(getRandom(0, -20)); // -10
-		let posY12 =  Math.round(getRandom(0, 20)); // 10
+		this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
+		this.posX1 =  this.randomTimed(30, 80, this.posX1); // 50
+		this.posY1 =  this.randomTimed(-5, -15, this.posY1); // -20
+		this.margeX12 =  this.randomTimed(this.textWidth * 0.25, this.textWidth * 0.35, this.margeX12);
+		this.posX12 =  this.randomTimed(0, -20, this.posX12); // -10
+		this.posY12 =  this.randomTimed(0, 20, this.posY12); // 10
 
 
-		let margeX2 =  Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
-		// let posX2 =  Math.round(getRandom(x2, x2));
-		// let posY2 =  Math.round(getRandom(0, 0));
-		let width2 =  Math.round(getRandom(this.textWidth * 0.6, this.textWidth * 0.25));
-		let width22 =   Math.round(getRandom(this.textWidth * 0.4, this.textWidth * 0.25));
-		// let posX22 =  Math.round(getRandom(x2, x2));
-		// let posY22 =  Math.round(getRandom(0, 0));
+		this.margeX2 =  this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX2);
+		// this.posX2 =  this.randomTimed(x2, x2, this.);
+		// this.posY2 =  this.randomTimed(0, 0, this.);
+		this.width2 =  this.randomTimed(this.textWidth * 0.6, this.textWidth * 0.25, this.width2);
+		this.width22 =   this.randomTimed(this.textWidth * 0.4, this.textWidth * 0.25, this.width22);
+		// this.posX22 =  this.randomTimed(x2, x2, this.);
+		// this.posY22 =  this.randomTimed(0, 0, this.);
 
-		let margeX3 = -Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
-		let posX3 =  Math.round(getRandom(30, -100));
-		let posY3 =  Math.round(getRandom(100, -10));
-		let width3 =  Math.round(getRandom(this.textWidth * 0.6, this.textWidth * 0.25));
-		let margeX32 = -Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
-		let posX32 =  Math.round(getRandom(-10, -70));
-		let posY32 =  Math.round(getRandom(-60, 30));
-		let width32 = this.textWidth * 0.5;
+		this.margeX3 = this.randomTimed(-this.textWidth * 0.2, -this.textWidth * 0.3, this.margeX3);
+		this.posX3 =  this.randomTimed(30, -30, this.posX3);
+		this.posY3 =  this.randomTimed(30, -10, this.posY3);
+		this.width3 =  this.randomTimed(this.textWidth * 0.6, this.textWidth * 0.25, this.width3);
+		this.margeX32 = this.randomTimed(-this.textWidth * 0.2, -this.textWidth * 0.3, this.margeX32);
+		this.posX32 =  this.randomTimed(-10, -20, this.posX32);
+		this.posY32 =  this.randomTimed(-20, 30, this.posY32);
+		this.width32 = this.textWidth * 0.5;
 
-		let margeX4 = -Math.round(getRandom(this.textWidth * 0.3, this.textWidth * 0.4));
-		let posX4 =  Math.round(getRandom(-80, -100));
-		let posY4 =  Math.round(getRandom(-50, -10));
-		let width4 =  Math.round(getRandom(this.textWidth * 0.4, this.textWidth * 0.5));
+		this.margeX4 = this.randomTimed(-this.textWidth * 0.3, -this.textWidth * 0.4, this.margeX4);
+		this.posX4 =  this.randomTimed(-80, -30, this.posX4);
+		this.posY4 =  this.randomTimed(-30, -10, this.posY4);
+		this.width4 =  this.randomTimed(this.textWidth * 0.4, this.textWidth * 0.5, this.width4);
 
-		let margeX5 =  Math.round(getRandom(this.textWidth * 0.7, this.textWidth * 0.8));
-		let posX5 =  Math.round(getRandom(10, 20));
-		let posY5 =  Math.round(getRandom(10, 20));
-		let width5 =  Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.2));
+		this.margeX5 =  this.randomTimed(this.textWidth * 0.7, this.textWidth * 0.8, this.margeX5);
+		this.posX5 =  this.randomTimed(10, 20, this.posX5);
+		this.posY5 =  this.randomTimed(10, 20, this.posY5);
+		this.width5 =  this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.2, this.width5);
+
+
+		if (calm === true) {
+			// DEFAULT
+			// Normal Text, center white, with image
+			// this.ctxTemp.save();
+			this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+
+			this.ctxTemp.fillStyle = 'rgb(255,255,255)';
+			this.ctxTemp.drawImage(this.ui.imgAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+			this.ctxTemp.globalCompositeOperation = 'destination-atop';
+			this.ctxTemp.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+
+			this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
+
+			this.time++;
+			return false;
+		}
 
 		// Draw First Comp
 		// Start of Text, Offset Left, white, with image
@@ -313,18 +316,18 @@ export default class GlitchView {
 
 		} else if (this.channel === 2) {
 
-			this.ctxTemp.rect(startClip + margeX12,0, this.textWidth, this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX12.val,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxTemp.clip();
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX12 + 2, top, this.textWidth - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, startClip + posX12, centerY + posY12);
+			this.ctxTemp.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 		} else {
 
-			this.ctxTemp.rect(startClip + margeX1,0, this.textWidth, this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX1.val,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxTemp.clip();
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX1 + 2, top, this.textWidth - 2 , this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX1.val + 2, top, this.textWidth - 2 , this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, startClip + posX1, centerY + posY1);
+			this.ctxTemp.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 		}
 
 		this.ctxTemp.restore();
@@ -345,17 +348,17 @@ export default class GlitchView {
 		this.ctxTemp.fillStyle = 'rgb(255,255,255)';
 
 		if (this.channel === 0) {
-			this.ctxTemp.rect(startClip + margeX2, top, width2, this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
 			this.ctxTemp.clip();
 			// Draw image that gonna be use as mask.
-			this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + margeX2 + 2, top, width2 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
 			// this.ctxTemp.fillText(this.text, x3 + posX2, centerY + posY2);
 			// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 		} else if (this.channel === 2) {
-			this.ctxTemp.rect(x3, 0, width22, this.height); // create clip rectangle
+			this.ctxTemp.rect(x3, 0, this.width22.val, this.height); // create clip rectangle
 			this.ctxTemp.clip();
-			this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + 2, top, width22 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + 2, top, this.width22.val - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
 			// this.ctxTemp.fillText(this.text, x3 + posX22, centerY + posY22);
 			// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
@@ -391,20 +394,20 @@ export default class GlitchView {
 
 		} else if (this.channel === 1) {
 
-			this.ctxTemp.rect(startClip + margeX3,0, width3,this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX3.val,0, this.width3.val,this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX3 + 2, centerY + posY3 - this.textHeight , width3 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , this.width3.val - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, startClip + posX3, centerY + posY3);
+			this.ctxTemp.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 		} else {
 
-			this.ctxTemp.rect(startClip + margeX32,0, width32 - 10,this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX32.val,0, this.width32.val - 10,this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX32 + 2, centerY + posY32 - this.textHeight , width32 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , this.width32.val - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, startClip + posX32, centerY + posY32);
+			this.ctxTemp.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 		}
 
 		this.ctxTemp.restore();
@@ -423,12 +426,12 @@ export default class GlitchView {
 
 		if (this.channel === 1) {
 
-			this.ctxTemp.rect(startClip + margeX4, 0, width4,this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX4.val, 0, this.width4.val,this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.img, startClip + margeX4 + 2, top - posY4 - this.textHeight + 50, width4 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, startClip + posX4, centerY + posY4);
+			this.ctxTemp.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 
 		} else {
 
@@ -451,13 +454,13 @@ export default class GlitchView {
 
 		if (this.channel === 1) {
 
-			this.ctxTemp.rect(startClip + margeX5,0, width5, this.height); // create clip rectangle
+			this.ctxTemp.rect(startClip + this.margeX5.val,0, this.width5.val, this.height); // create clip rectangle
 			this.ctxTemp.clip();
 
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX5 + 2, top, width5 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
 
-			this.ctxTemp.fillText(this.text, startClip + posX5, centerY + posY5);
+			this.ctxTemp.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 
 		} else {
 
@@ -468,13 +471,41 @@ export default class GlitchView {
 
 		this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
 
+		if (this.time >= this.last + 1.5) { // 60 = 1 second
+			this.last = this.time;
+			this.breakTime = true;
+
+		} else {
+			this.breakTime = false;
+		}
 
 		this.time++;
 
 
 	}
 
-	defaultText() {
+	randomTimed(val1, val2, obj) {
+
+		let lastVal, val;
+
+		if (!obj) {
+			lastVal = val = Math.round(getRandom(val1,val2));
+			// console.log('non at all');
+		} else {
+			lastVal = obj.lastVal;
+			// console.log('ok');
+			// each 2 seconds call the createNewObject() function
+			if (this.breakTime === true) {
+				lastVal = Math.round(getRandom(val1,val2));
+			}
+
+			val = lastVal;
+		}
+
+		return {
+			val,
+			lastVal
+		};
 
 	}
 
@@ -504,27 +535,17 @@ export default class GlitchView {
 		this.textSize = this.ui.canvas.offsetHeight / 3;
 		this.textHeight = this.textSize; // need a real calcul
 		this.height = this.ui.canvas.offsetHeight;
+		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+		this.ctxTemp.font = this.font;
+		this.text = this.txt;
+		this.textWidth = Math.round((this.ctxTemp.measureText(this.text)).width);
+		this.width = this.textWidth + this.biggestRange;
 
 		if (this.ui.canvas) {
 			this.ui.canvas.height = this.height;
 			this.ui.canvasTemp.height = this.height;
-
 			this.ui.canvas.width = this.width;
 			this.ui.canvasTemp.width = this.width;
-
-
-			//document.documentElement.offsetWidth;
-			// RE-sets text size based on window size
-			// if (this.textSize > this.height) {
-			// 	this.textSize = Math.floor(this.ui.canvas.height / 1.5);
-			// 	this.textSize = Math.floor(this.ui.canvas.height / 1.5);
-			// }
-			// tries to make text fit if window is
-			// very wide, but not very tall
-
-
-			this.width = this.textWidth * 2;
-			this.ui.canvas.width = this.width;
 			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
 			this.ctx.font = this.ctxTemp.font = this.font;
 		}

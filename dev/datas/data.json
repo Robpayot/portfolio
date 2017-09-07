@@ -7,7 +7,8 @@
         "technos": "WebGL, Three.js",
         "awards": "1 x SOTD FWA, 1 x SOTD AWWWARDS",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
-        "link": "http://mondialautomobile.bmw.fr/"
+        "link": "http://mondialautomobile.bmw.fr/",
+        "color": "#53E1FF"
     },{
         "title": "The Forest",
         "context": "UNIT 9",
@@ -16,6 +17,7 @@
         "technos": "WebGL, Three.js",
         "awards": "1 x SOTD FWA, 1 x SOTD FWA Mobile",
         "imgs": ["theforest-1.jpg", "theforest-2.jpg"],
-        "link": "http://thesuicideforest.com/"
+        "link": "http://thesuicideforest.com/",
+        "color": "rgb(41,64,16)"
     }]
 }
