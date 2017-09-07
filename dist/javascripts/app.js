@@ -5920,6 +5920,7 @@ var GlitchView = function () {
 
 		// bind
 		this.raf = this.raf.bind(this);
+		this.resizeHandler = this.resizeHandler.bind(this);
 
 		if (this.debug !== true) {
 			this.start();
@@ -5963,6 +5964,7 @@ var GlitchView = function () {
 				// console.log(html);
 
 				this.el.innerHTML = html;
+				console.log(this.el.querySelector('.glitch__canvas'));
 			}
 
 			this.ui = {
@@ -6010,7 +6012,7 @@ var GlitchView = function () {
 			    current = gui.addFolder('Current'),
 			    controls = gui.addFolder('Controls');
 
-			this.width = document.documentElement.offsetWidth;
+			// this.width = document.documentElement.offsetWidth;
 			this.height = this.ui.canvas.offsetHeight;
 
 			// this.textSize = Math.floor(this.width / 7);
@@ -6370,17 +6372,18 @@ var GlitchView = function () {
 		value: function resizeHandler() {
 
 			// return false;
-			this.width = document.documentElement.offsetWidth;
 			//this.height = window.innerHeight;
 			this.textSize = this.ui.canvas.offsetHeight / 3;
 			this.textHeight = this.textSize; // need a real calcul
 			this.height = this.ui.canvas.offsetHeight;
+
 			if (this.ui.canvas) {
 				this.ui.canvas.height = this.height;
 				this.ui.canvasTemp.height = this.height;
-				//document.documentElement.offsetHeight;
+
 				this.ui.canvas.width = this.width;
 				this.ui.canvasTemp.width = this.width;
+
 				//document.documentElement.offsetWidth;
 				// RE-sets text size based on window size
 				// if (this.textSize > this.height) {
@@ -6389,10 +6392,12 @@ var GlitchView = function () {
 				// }
 				// tries to make text fit if window is
 				// very wide, but not very tall
-				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
-				this.ctx.font = this.ctxTemp.font = this.font;
+
+
 				this.width = this.textWidth * 2;
 				this.ui.canvas.width = this.width;
+				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
+				this.ctx.font = this.ctxTemp.font = this.font;
 			}
 		}
 	}, {
