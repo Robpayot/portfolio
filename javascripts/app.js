@@ -6686,7 +6686,7 @@ var IntroView = function (_AbstractView) {
 			this.initWater();
 
 			this.setAsteroids();
-			this.setSymbol();
+			// this.setSymbol();
 
 			// reset Water bits to 64
 			// setInterval(() => {
@@ -7087,31 +7087,31 @@ var IntroView = function (_AbstractView) {
 			var tl = new TimelineMax();
 
 			// glitch
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 5, x: 0 });
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 3, x: 1 }, 0.01);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 3, x: 2 }, 0.03);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 4, x: -2 }, 0.05);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 1, x: 3 }, 0.07);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 5, x: 2 }, 0.09);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY, x: 0 }, 0.12);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 0});
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 3, x: 1}, 0.01);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 2}, 0.03);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -2}, 0.05);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 3}, 0.07);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 2}, 0.09);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
 
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 2, x: -4 });
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 2, x: 3 }, 0.2);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 4, x: 2 }, 0.23);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 2, x: -4 }, 0.25);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 2, x: 3 }, 0.27);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 2, x: 2 }, 0.29);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 4, x: -3 }, 0.32);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 4, x: -2 }, 0.37);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 2, x: 2 }, 0.39);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY, x: 0 }, 0.40);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4});
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.2);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: 2}, 0.23);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4}, 0.25);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.27);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 2, x: 2}, 0.29);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -3}, 0.32);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: -2}, 0.37);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 2}, 0.39);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.40);
 
 			tl.add(function () {
 				_this6.transitionOut();
 			}, '+=0.5');
 
-			tl.to(this.symbol.mesh.position, 10, { y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
-			tl.to(this.symbol.mesh.material, 0.5, { opacity: 0 }, 1.5);
+			// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
+			// tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
 
 			tl.to(this.UI.button, 0.5, { opacity: 0 }, 0);
 			tl.set(this.UI.button, { opacity: 0, display: 'none' }, 0.5);
@@ -7173,9 +7173,9 @@ var IntroView = function (_AbstractView) {
 
 			// Rotate Symbol
 
-			this.symbol.mesh.rotation.y = (0, _utils.toRadian)(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			this.symbol.mesh.rotation.x = (0, _utils.toRadian)(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			this.symbol.mesh.rotation.z = (0, _utils.toRadian)(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
 
 			// Moving Icebergs
 			this.asteroids.forEach(function (el) {
@@ -7378,7 +7378,7 @@ var IntroView = function (_AbstractView) {
 				_this9.asteroidsMove = true;
 			}, 0);
 
-			tl.to(this.symbol.mesh.position, 7, { y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
+			// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
 			tl.set(this.UI.button, { opacity: 0, display: 'block' }, '-=3');
 			tl.to(this.UI.button, 3, { opacity: 1 }, '-=3');
 		}
@@ -7412,8 +7412,8 @@ var IntroView = function (_AbstractView) {
 					'z': 10
 				}, {
 					'x': 0,
-					'y': this.symbol.endPointY,
-					'z': this.symbol.endPointZ
+					'y': 2000, // symbol.endPointY = 2000;
+					'z': 5000 // symbol.endPointZ = 5000;
 				}]
 			};
 
@@ -7705,7 +7705,7 @@ var ProjectView = function (_AbstractView) {
 			if (this.gravity === true) this.initPhysics();
 
 			// Set symbol
-			this.setSymbol();
+			// this.setSymbol();
 
 			// Set asteroid
 			this.setAsteroids();
@@ -8657,13 +8657,13 @@ var ProjectView = function (_AbstractView) {
 			var tl = new TimelineMax();
 
 			// glitch
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 3, x: 0 });
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 1, x: 1 }, 0.01);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 1, x: 1 }, 0.03);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 2, x: -1 }, 0.05);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY - 1, x: 2 }, 0.07);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY + 3, x: 1 }, 0.09);
-			tl.set(this.symbol.mesh.position, { y: this.symbol.initPointY, x: 0 }, 0.12);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 0});
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 1}, 0.01);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 1, x: 1}, 0.03);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -1}, 0.05);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 2}, 0.07);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 1}, 0.09);
+			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
 
 			tl.add(function () {
 				console.log('add called');
@@ -8671,7 +8671,7 @@ var ProjectView = function (_AbstractView) {
 				_this7.transitionOut(dest);
 			}, '+=0.5');
 
-			tl.to(this.symbol.mesh.position, 10, { y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
+			// tl.to(this.symbol.mesh.position, 10, {y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
 
 			tl.staggerTo(['.project__next', '.project__title'], 0.5, { opacity: 0 }, 0.2, 0);
 
@@ -8739,15 +8739,16 @@ var ProjectView = function (_AbstractView) {
 
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			var intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
+			// const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
 
-			if (intersects.length > 0) {
-				this.ui.body.style.cursor = 'pointer';
-				this.clickSymbol = true;
-			} else {
+			// if (intersects.length > 0) {
+			// 	this.ui.body.style.cursor = 'pointer';
+			// 	this.clickSymbol = true;
 
-				this.clickSymbol = false;
-			}
+			// } else {
+
+			// 	this.clickSymbol = false;
+			// }
 
 			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
@@ -8765,8 +8766,8 @@ var ProjectView = function (_AbstractView) {
 				this.world.step();
 
 				// Symbol body
-				this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-				this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
+				// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
+				// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
 				// Asteroids bodies
 				this.asteroids.forEach(function (el) {
 
@@ -8803,9 +8804,9 @@ var ProjectView = function (_AbstractView) {
 			} else {
 				// Rotate Symbol
 
-				this.symbol.mesh.rotation.y = (0, _utils.toRadian)(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-				this.symbol.mesh.rotation.x = (0, _utils.toRadian)(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-				this.symbol.mesh.rotation.z = (0, _utils.toRadian)(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+				// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+				// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+				// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
 
 				// Asteroids meshs
 				this.asteroids.forEach(function (el) {
@@ -9071,7 +9072,7 @@ var ProjectView = function (_AbstractView) {
 				_this9.ui.overlay.classList.remove('black');
 			});
 
-			tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ }, { y: 0, z: 0, ease: ease }, 0); // window.Power3.easeInOut
+			// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
 			tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
 				opacity: 0,
