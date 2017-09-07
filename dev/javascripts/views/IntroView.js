@@ -180,7 +180,7 @@ export default class IntroView extends AbstractView {
 		this.initWater();
 
 		this.setAsteroids();
-		this.setSymbol();
+		// this.setSymbol();
 
 		// reset Water bits to 64
 		// setInterval(() => {
@@ -582,31 +582,31 @@ export default class IntroView extends AbstractView {
 		const tl = new TimelineMax();
 
 		// glitch
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 0});
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 3, x: 1}, 0.01);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 2}, 0.03);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -2}, 0.05);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 3}, 0.07);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 2}, 0.09);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 0});
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 3, x: 1}, 0.01);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 2}, 0.03);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -2}, 0.05);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 3}, 0.07);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 2}, 0.09);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
 
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4});
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.2);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: 2}, 0.23);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4}, 0.25);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.27);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 2, x: 2}, 0.29);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -3}, 0.32);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: -2}, 0.37);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 2}, 0.39);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.40);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4});
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.2);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: 2}, 0.23);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4}, 0.25);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.27);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 2, x: 2}, 0.29);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -3}, 0.32);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: -2}, 0.37);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 2}, 0.39);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.40);
 
 		tl.add(() => {
 			this.transitionOut();
 		}, '+=0.5');
 
-		tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
-		tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
+		// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
+		// tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
 
 		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
 		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
@@ -668,9 +668,9 @@ export default class IntroView extends AbstractView {
 
 		// Rotate Symbol
 
-		this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-		this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-		this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+		// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+		// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+		// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
 
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
@@ -876,7 +876,7 @@ export default class IntroView extends AbstractView {
 			this.asteroidsMove = true;
 		}, 0);
 
-		tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
+		// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
 		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
 		tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
 
@@ -909,8 +909,8 @@ export default class IntroView extends AbstractView {
 				'z': 10
 			}, {
 				'x': 0,
-				'y': this.symbol.endPointY,
-				'z': this.symbol.endPointZ
+				'y': 2000, // symbol.endPointY = 2000;
+				'z': 5000 // symbol.endPointZ = 5000;
 			}]
 		};
 

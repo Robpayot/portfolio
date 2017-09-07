@@ -157,7 +157,7 @@ export default class ProjectView extends AbstractView {
 		if (this.gravity === true) this.initPhysics();
 
 		// Set symbol
-		this.setSymbol();
+		// this.setSymbol();
 
 		// Set asteroid
 		this.setAsteroids();
@@ -1154,13 +1154,13 @@ export default class ProjectView extends AbstractView {
 		const tl = new TimelineMax();
 
 		// glitch
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 0});
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 1}, 0.01);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 1, x: 1}, 0.03);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -1}, 0.05);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 2}, 0.07);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 1}, 0.09);
-		tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 0});
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 1}, 0.01);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 1, x: 1}, 0.03);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -1}, 0.05);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 2}, 0.07);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 1}, 0.09);
+		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
 
 		tl.add(() => {
 			console.log('add called');
@@ -1169,7 +1169,7 @@ export default class ProjectView extends AbstractView {
 
 		}, '+=0.5');
 
-		tl.to(this.symbol.mesh.position, 10, {y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
+		// tl.to(this.symbol.mesh.position, 10, {y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
 
 		tl.staggerTo(['.project__next', '.project__title'], 0.5, {opacity: 0}, 0.2, 0);
 
@@ -1234,16 +1234,16 @@ export default class ProjectView extends AbstractView {
 
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
+		// const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
 
-		if (intersects.length > 0) {
-			this.ui.body.style.cursor = 'pointer';
-			this.clickSymbol = true;
+		// if (intersects.length > 0) {
+		// 	this.ui.body.style.cursor = 'pointer';
+		// 	this.clickSymbol = true;
 
-		} else {
+		// } else {
 
-			this.clickSymbol = false;
-		}
+		// 	this.clickSymbol = false;
+		// }
 
 		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
@@ -1263,8 +1263,8 @@ export default class ProjectView extends AbstractView {
 			this.world.step();
 
 			// Symbol body
-			this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-			this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
+			// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
+			// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
 			// Asteroids bodies
 			this.asteroids.forEach( (el) => {
 
@@ -1303,9 +1303,9 @@ export default class ProjectView extends AbstractView {
 		} else {
 			// Rotate Symbol
 
-			this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
+			// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
 
 			// Asteroids meshs
 			this.asteroids.forEach( (el)=> {
@@ -1582,7 +1582,7 @@ export default class ProjectView extends AbstractView {
 			this.ui.overlay.classList.remove('black');
 		});
 
-		tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
+		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
 		tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
