@@ -8,7 +8,8 @@ module.exports={
         "technos": "WebGL, Three.js",
         "awards": "1 x SOTD FWA, 1 x SOTD AWWWARDS",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
-        "link": "http://mondialautomobile.bmw.fr/"
+        "link": "http://mondialautomobile.bmw.fr/",
+        "color": "#53E1FF"
     },{
         "title": "The Forest",
         "context": "UNIT 9",
@@ -17,7 +18,8 @@ module.exports={
         "technos": "WebGL, Three.js",
         "awards": "1 x SOTD FWA, 1 x SOTD FWA Mobile",
         "imgs": ["theforest-1.jpg", "theforest-2.jpg"],
-        "link": "http://thesuicideforest.com/"
+        "link": "http://thesuicideforest.com/",
+        "color": "rgb(41,64,16)"
     }]
 }
 
@@ -1020,7 +1022,7 @@ var RouterManager = function () {
 
 					this.currentPage = new _GlitchView2.default({
 						el: document.querySelector('.glitch'),
-						txt: 'BMW Motorshow',
+						txt: 'AKTR',
 						color: 'rgb(41,64,16)',
 						debug: true
 					});
@@ -5986,6 +5988,7 @@ var GlitchView = function () {
 			this.textSize = this.ui.canvas.offsetHeight / 3;
 			this.textHeight = this.textSize; // need a real calcul
 			this.time = 0;
+			this.last = 0;
 
 			this.init();
 		}
@@ -6012,27 +6015,6 @@ var GlitchView = function () {
 			    current = gui.addFolder('Current'),
 			    controls = gui.addFolder('Controls');
 
-			// this.width = document.documentElement.offsetWidth;
-			this.height = this.ui.canvas.offsetHeight;
-
-			// this.textSize = Math.floor(this.width / 7);
-			// // sets text size based on window size
-			// if (this.textSize > this.height) {
-			// 	this.textSize = Math.floor(this.height / 2);
-			// }
-			// tries to make text fit if window is
-			// very wide, but not very tall
-			console.log(this.textSize, this.width, this.height);
-			this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
-			this.ctxTemp.font = this.font;
-			this.text = this.txt;
-			this.textWidth = Math.round(this.ctxTemp.measureText(this.text).width);
-			this.width = this.textWidth * 2;
-
-			console.log(this.width);
-			// this.textHeight = (this.ctx.measureText(this.text)).height;
-			// console.log((this.ctx.measureText(this.text)));
-
 			this.fps = 60;
 
 			this.channel = 0; // 0 = red, 1 = green, 2 = blue
@@ -6043,6 +6025,7 @@ var GlitchView = function () {
 			this.amplitudeBase = 2; //2.0;
 			this.amplitudeRange = 3; // 2.0;
 			this.alphaMin = 0.8;
+			this.biggestRange = 200; // - 100 max X , +100 max X
 
 			this.glitchAmplitude = 20.0;
 			this.glitchThreshold = 0.9;
@@ -6072,6 +6055,8 @@ var GlitchView = function () {
 	}, {
 		key: 'raf',
 		value: function raf() {
+			var calm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 
 			this.phase += this.phaseStep;
 
@@ -6111,25 +6096,27 @@ var GlitchView = function () {
 
 			switch (this.channel) {
 				case 0:
-					this.renderChannels(x1, x2, x3);
+					this.renderChannels(x1, x2, x3, calm);
 					break;
 				case 1:
-					this.renderChannels(x2, x3, x1);
+					this.renderChannels(x2, x3, x1, calm);
 					break;
 				case 2:
-					this.renderChannels(x3, x1, x2);
+					this.renderChannels(x3, x1, x2, calm);
 					break;
 			}
 
-			this.renderScanline();
-			if (Math.floor(Math.random() * 2) > 1) {
+			if (calm === true) {
 				this.renderScanline();
-				// renders a second scanline 50% of the time
+				if (Math.floor(Math.random() * 2) > 1) {
+					this.renderScanline();
+					// renders a second scanline 50% of the time
+				}
 			}
 		}
 	}, {
 		key: 'renderChannels',
-		value: function renderChannels(x1, x2, x3) {
+		value: function renderChannels(x1, x2, x3, calm) {
 
 			// It's important to note that a canvas context can only support one composite operation throughout its life cycle.
 			// if we want to use multiple composite operations, as this tutorial does, we need to apply the operations on a hidden canvas and then copy the results onto a visible canvas.
@@ -6161,40 +6148,57 @@ var GlitchView = function () {
 			// }];
 
 			// offset gesture
-			var margeX1 = Math.round((0, _utils.getRandom)(this.textWidth * 0.2, this.textWidth * 0.3));
-			var posX1 = Math.round((0, _utils.getRandom)(30, 80)); // 50
-			var posY1 = Math.round((0, _utils.getRandom)(-10, -30)); // -20
-			var margeX12 = Math.round((0, _utils.getRandom)(this.textWidth * 0.25, this.textWidth * 0.35));
-			var posX12 = Math.round((0, _utils.getRandom)(0, -20)); // -10
-			var posY12 = Math.round((0, _utils.getRandom)(0, 20)); // 10
+			this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
+			this.posX1 = this.randomTimed(30, 80, this.posX1); // 50
+			this.posY1 = this.randomTimed(-5, -15, this.posY1); // -20
+			this.margeX12 = this.randomTimed(this.textWidth * 0.25, this.textWidth * 0.35, this.margeX12);
+			this.posX12 = this.randomTimed(0, -20, this.posX12); // -10
+			this.posY12 = this.randomTimed(0, 20, this.posY12); // 10
 
 
-			var margeX2 = Math.round((0, _utils.getRandom)(this.textWidth * 0.2, this.textWidth * 0.3));
-			// let posX2 =  Math.round(getRandom(x2, x2));
-			// let posY2 =  Math.round(getRandom(0, 0));
-			var width2 = Math.round((0, _utils.getRandom)(this.textWidth * 0.6, this.textWidth * 0.25));
-			var width22 = Math.round((0, _utils.getRandom)(this.textWidth * 0.4, this.textWidth * 0.25));
-			// let posX22 =  Math.round(getRandom(x2, x2));
-			// let posY22 =  Math.round(getRandom(0, 0));
+			this.margeX2 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX2);
+			// this.posX2 =  this.randomTimed(x2, x2, this.);
+			// this.posY2 =  this.randomTimed(0, 0, this.);
+			this.width2 = this.randomTimed(this.textWidth * 0.6, this.textWidth * 0.25, this.width2);
+			this.width22 = this.randomTimed(this.textWidth * 0.4, this.textWidth * 0.25, this.width22);
+			// this.posX22 =  this.randomTimed(x2, x2, this.);
+			// this.posY22 =  this.randomTimed(0, 0, this.);
 
-			var margeX3 = -Math.round((0, _utils.getRandom)(this.textWidth * 0.2, this.textWidth * 0.3));
-			var posX3 = Math.round((0, _utils.getRandom)(30, -100));
-			var posY3 = Math.round((0, _utils.getRandom)(100, -10));
-			var width3 = Math.round((0, _utils.getRandom)(this.textWidth * 0.6, this.textWidth * 0.25));
-			var margeX32 = -Math.round((0, _utils.getRandom)(this.textWidth * 0.2, this.textWidth * 0.3));
-			var posX32 = Math.round((0, _utils.getRandom)(-10, -70));
-			var posY32 = Math.round((0, _utils.getRandom)(-60, 30));
-			var width32 = this.textWidth * 0.5;
+			this.margeX3 = this.randomTimed(-this.textWidth * 0.2, -this.textWidth * 0.3, this.margeX3);
+			this.posX3 = this.randomTimed(30, -30, this.posX3);
+			this.posY3 = this.randomTimed(30, -10, this.posY3);
+			this.width3 = this.randomTimed(this.textWidth * 0.6, this.textWidth * 0.25, this.width3);
+			this.margeX32 = this.randomTimed(-this.textWidth * 0.2, -this.textWidth * 0.3, this.margeX32);
+			this.posX32 = this.randomTimed(-10, -20, this.posX32);
+			this.posY32 = this.randomTimed(-20, 30, this.posY32);
+			this.width32 = this.textWidth * 0.5;
 
-			var margeX4 = -Math.round((0, _utils.getRandom)(this.textWidth * 0.3, this.textWidth * 0.4));
-			var posX4 = Math.round((0, _utils.getRandom)(-80, -100));
-			var posY4 = Math.round((0, _utils.getRandom)(-50, -10));
-			var width4 = Math.round((0, _utils.getRandom)(this.textWidth * 0.4, this.textWidth * 0.5));
+			this.margeX4 = this.randomTimed(-this.textWidth * 0.3, -this.textWidth * 0.4, this.margeX4);
+			this.posX4 = this.randomTimed(-80, -30, this.posX4);
+			this.posY4 = this.randomTimed(-30, -10, this.posY4);
+			this.width4 = this.randomTimed(this.textWidth * 0.4, this.textWidth * 0.5, this.width4);
 
-			var margeX5 = Math.round((0, _utils.getRandom)(this.textWidth * 0.7, this.textWidth * 0.8));
-			var posX5 = Math.round((0, _utils.getRandom)(10, 20));
-			var posY5 = Math.round((0, _utils.getRandom)(10, 20));
-			var width5 = Math.round((0, _utils.getRandom)(this.textWidth * 0.2, this.textWidth * 0.2));
+			this.margeX5 = this.randomTimed(this.textWidth * 0.7, this.textWidth * 0.8, this.margeX5);
+			this.posX5 = this.randomTimed(10, 20, this.posX5);
+			this.posY5 = this.randomTimed(10, 20, this.posY5);
+			this.width5 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.2, this.width5);
+
+			if (calm === true) {
+				// DEFAULT
+				// Normal Text, center white, with image
+				// this.ctxTemp.save();
+				this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+
+				this.ctxTemp.fillStyle = 'rgb(255,255,255)';
+				this.ctxTemp.drawImage(this.ui.imgAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+				this.ctxTemp.globalCompositeOperation = 'destination-atop';
+				this.ctxTemp.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+
+				this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
+
+				this.time++;
+				return false;
+			}
 
 			// Draw First Comp
 			// Start of Text, Offset Left, white, with image
@@ -6209,18 +6213,18 @@ var GlitchView = function () {
 
 			if (this.channel === 1) {} else if (this.channel === 2) {
 
-				this.ctxTemp.rect(startClip + margeX12, 0, this.textWidth, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX12.val, 0, this.textWidth, this.height); // create clip rectangle
 				this.ctxTemp.clip();
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX12 + 2, top, this.textWidth - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + posX12, centerY + posY12);
+				this.ctxTemp.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 			} else {
 
-				this.ctxTemp.rect(startClip + margeX1, 0, this.textWidth, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX1.val, 0, this.textWidth, this.height); // create clip rectangle
 				this.ctxTemp.clip();
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX1 + 2, top, this.textWidth - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX1.val + 2, top, this.textWidth - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + posX1, centerY + posY1);
+				this.ctxTemp.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 			}
 
 			this.ctxTemp.restore();
@@ -6237,17 +6241,17 @@ var GlitchView = function () {
 			this.ctxTemp.fillStyle = 'rgb(255,255,255)';
 
 			if (this.channel === 0) {
-				this.ctxTemp.rect(startClip + margeX2, top, width2, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
 				this.ctxTemp.clip();
 				// Draw image that gonna be use as mask.
-				this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + margeX2 + 2, top, width2 - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
 				// this.ctxTemp.fillText(this.text, x3 + posX2, centerY + posY2);
 				// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 			} else if (this.channel === 2) {
-				this.ctxTemp.rect(x3, 0, width22, this.height); // create clip rectangle
+				this.ctxTemp.rect(x3, 0, this.width22.val, this.height); // create clip rectangle
 				this.ctxTemp.clip();
-				this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + 2, top, width22 - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + 2, top, this.width22.val - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
 				// this.ctxTemp.fillText(this.text, x3 + posX22, centerY + posY22);
 				// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
@@ -6277,20 +6281,20 @@ var GlitchView = function () {
 
 			if (this.channel === 0) {} else if (this.channel === 1) {
 
-				this.ctxTemp.rect(startClip + margeX3, 0, width3, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX3.val, 0, this.width3.val, this.height); // create clip rectangle
 				this.ctxTemp.clip();
 
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX3 + 2, centerY + posY3 - this.textHeight, width3 - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + posX3, centerY + posY3);
+				this.ctxTemp.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 			} else {
 
-				this.ctxTemp.rect(startClip + margeX32, 0, width32 - 10, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX32.val, 0, this.width32.val - 10, this.height); // create clip rectangle
 				this.ctxTemp.clip();
 
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX32 + 2, centerY + posY32 - this.textHeight, width32 - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + posX32, centerY + posY32);
+				this.ctxTemp.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 			}
 
 			this.ctxTemp.restore();
@@ -6307,12 +6311,12 @@ var GlitchView = function () {
 
 			if (this.channel === 1) {
 
-				this.ctxTemp.rect(startClip + margeX4, 0, width4, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX4.val, 0, this.width4.val, this.height); // create clip rectangle
 				this.ctxTemp.clip();
 
-				this.ctxTemp.drawImage(this.ui.img, startClip + margeX4 + 2, top - posY4 - this.textHeight + 50, width4 - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + posX4, centerY + posY4);
+				this.ctxTemp.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 			} else {}
 
 			this.ctxTemp.restore();
@@ -6329,24 +6333,55 @@ var GlitchView = function () {
 
 			if (this.channel === 1) {
 
-				this.ctxTemp.rect(startClip + margeX5, 0, width5, this.height); // create clip rectangle
+				this.ctxTemp.rect(startClip + this.margeX5.val, 0, this.width5.val, this.height); // create clip rectangle
 				this.ctxTemp.clip();
 
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX5 + 2, top, width5 - 2, this.height);
+				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
 				this.ctxTemp.globalCompositeOperation = 'destination-atop';
 
-				this.ctxTemp.fillText(this.text, startClip + posX5, centerY + posY5);
+				this.ctxTemp.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 			} else {}
 
 			this.ctxTemp.restore();
 
 			this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
 
+			if (this.time >= this.last + 1.5) {
+				// 60 = 1 second
+				this.last = this.time;
+				this.breakTime = true;
+			} else {
+				this.breakTime = false;
+			}
+
 			this.time++;
 		}
 	}, {
-		key: 'defaultText',
-		value: function defaultText() {}
+		key: 'randomTimed',
+		value: function randomTimed(val1, val2, obj) {
+
+			var lastVal = void 0,
+			    val = void 0;
+
+			if (!obj) {
+				lastVal = val = Math.round((0, _utils.getRandom)(val1, val2));
+				// console.log('non at all');
+			} else {
+				lastVal = obj.lastVal;
+				// console.log('ok');
+				// each 2 seconds call the createNewObject() function
+				if (this.breakTime === true) {
+					lastVal = Math.round((0, _utils.getRandom)(val1, val2));
+				}
+
+				val = lastVal;
+			}
+
+			return {
+				val: val,
+				lastVal: lastVal
+			};
+		}
 	}, {
 		key: 'renderScanline',
 		value: function renderScanline() {
@@ -6376,26 +6411,17 @@ var GlitchView = function () {
 			this.textSize = this.ui.canvas.offsetHeight / 3;
 			this.textHeight = this.textSize; // need a real calcul
 			this.height = this.ui.canvas.offsetHeight;
+			this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
+			this.ctxTemp.font = this.font;
+			this.text = this.txt;
+			this.textWidth = Math.round(this.ctxTemp.measureText(this.text).width);
+			this.width = this.textWidth + this.biggestRange;
 
 			if (this.ui.canvas) {
 				this.ui.canvas.height = this.height;
 				this.ui.canvasTemp.height = this.height;
-
 				this.ui.canvas.width = this.width;
 				this.ui.canvasTemp.width = this.width;
-
-				//document.documentElement.offsetWidth;
-				// RE-sets text size based on window size
-				// if (this.textSize > this.height) {
-				// 	this.textSize = Math.floor(this.ui.canvas.height / 1.5);
-				// 	this.textSize = Math.floor(this.ui.canvas.height / 1.5);
-				// }
-				// tries to make text fit if window is
-				// very wide, but not very tall
-
-
-				this.width = this.textWidth * 2;
-				this.ui.canvas.width = this.width;
 				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
 				this.ctx.font = this.ctxTemp.font = this.font;
 			}
@@ -7613,6 +7639,7 @@ var ProjectView = function (_AbstractView) {
 	_createClass(ProjectView, [{
 		key: 'events',
 		value: function events(method) {
+			var _this2 = this;
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			var onListener = method === false ? 'off' : 'on';
@@ -7632,6 +7659,12 @@ var ProjectView = function (_AbstractView) {
 			_EmitterManager2.default[onListener]('raf', this.raf);
 
 			if (method === true) {
+				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', function () {
+					_this2.glitch.hover = true;
+				});
+				_bean2.default.on(document.body, 'mouseleave.project', '.glitch', function () {
+					_this2.glitch.hover = false;
+				});
 				_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
 				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-r', this.slideUp);
 				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
@@ -7806,7 +7839,6 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'start',
 		value: function start() {
-			var _this2 = this;
 
 			_PreloadManager2.default.off('complete', this.preloadCb);
 
@@ -7829,18 +7861,6 @@ var ProjectView = function (_AbstractView) {
 
 			// Set CssContainers
 			this.setCssContainers();
-
-			setTimeout(function () {
-				// wait Handlebars
-				console.log();
-				// Add glitcher
-				// wait for
-				_this2.glitch = new _GlitchView2.default({
-					el: _this2.el.querySelector('.glitch'),
-					color: 'blue',
-					txt: _this2.data.title
-				});
-			}, 1000);
 
 			////////////////////
 			// EVENTS
@@ -7865,6 +7885,12 @@ var ProjectView = function (_AbstractView) {
 
 				this.ui.projectContainer = this.el.querySelector('.project__container');
 				this.ui.projectImg = this.el.querySelectorAll('.project__image img')[0];
+
+				this.glitch = new _GlitchView2.default({
+					el: this.el.querySelector('.glitch'),
+					color: this.data.color,
+					txt: this.data.title
+				});
 
 				// Start transition In
 				if (this.fromUrl === true) {
@@ -8369,6 +8395,7 @@ var ProjectView = function (_AbstractView) {
 					_this3.cameraMove = true;
 					_this3.animating = false;
 					_ScrollManager2.default.on(); // start scrollmanager
+					_this3.glitch.stop = true;
 				}
 			});
 
@@ -8411,6 +8438,7 @@ var ProjectView = function (_AbstractView) {
 			var _this4 = this;
 
 			this.cameraMove = true;
+			this.glitch.stop = false;
 			_ScrollManager2.default.off(); // stop scrollmanager
 
 			var trigo = { angle: 0 };
@@ -8853,8 +8881,16 @@ var ProjectView = function (_AbstractView) {
 
 			this.render();
 
+			// glitch title
 			if (this.glitch) {
-				this.glitch.raf();
+
+				if (this.glitch.stop !== true) {
+					if (this.glitch.hover === true) {
+						this.glitch.raf();
+					} else {
+						this.glitch.raf(true);
+					}
+				}
 			}
 		}
 
@@ -9037,7 +9073,7 @@ var ProjectView = function (_AbstractView) {
 
 			tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ }, { y: 0, z: 0, ease: ease }, 0); // window.Power3.easeInOut
 
-			tl.staggerFromTo(['.project__title span', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+			tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
 				opacity: 0,
 				y: 40
 			}, {
