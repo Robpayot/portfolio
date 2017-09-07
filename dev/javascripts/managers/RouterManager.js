@@ -123,7 +123,10 @@ class RouterManager {
 			case '/glitch':
 
 				this.currentPage = new GlitchView({
-					gravity: true,
+					el: document.querySelector('.glitch'),
+					txt: 'BMW Motorshow',
+					color: 'rgb(41,64,16)',
+					debug: true
 				});
 				window.location = '#glitch';
 				break;

@@ -17,6 +17,8 @@ import Ui from '../components/Ui';
 import Menu from '../components/Menu';
 import Handlebars from 'handlebars';
 
+import GlitchView from './GlitchView';
+
 
 // THREE JS
 import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
@@ -322,6 +324,22 @@ export default class ProjectView extends AbstractView {
 
 		// Set CssContainers
 		this.setCssContainers();
+
+		setTimeout(() => {
+			// wait Handlebars
+			console.log();
+			// Add glitcher
+			// wait for
+			this.glitch = new GlitchView({
+				el: this.el.querySelector('.glitch'),
+				color: 'blue',
+				txt: this.data.title
+			});
+
+		}, 1000);
+
+
+
 
 		////////////////////
 		// EVENTS
@@ -1379,6 +1397,11 @@ export default class ProjectView extends AbstractView {
 		}
 
 		this.render();
+
+
+		if (this.glitch) {
+			this.glitch.raf();
+		}
 
 	}
 

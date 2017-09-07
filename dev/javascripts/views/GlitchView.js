@@ -7,38 +7,43 @@ import { getRandom } from '../helpers/utils';
 
 export default class GlitchView {
 
-	constructor() {
+	constructor(obj) {
 
 		// Load data
-		this.el = document.querySelector('.glitch');
+		this.el = obj.el;
+		this.color = obj.color;
+		this.txt = obj.txt;
+		this.debug = obj.debug;
+
 		this.el.style.display = 'block';
 
 		// bind
 		this.raf = this.raf.bind(this);
 
-		// Preloader
-		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
+		if (this.debug !== true) {
+			this.start();
+		} else {
+			// Preloader
+			this.preloadCb = PreloadManager.on('complete', this.start, this, true);
 
-		let prod;
+			let prod;
 
-		if (window.location.host === 'robpayot.github.io') {
-			prod = true;
+			if (window.location.host === 'robpayot.github.io') {
+				prod = true;
 
+			}
+
+			let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
+
+			console.log(`${base}/templates/glitch.hbs`, Handlebars);
+
+
+			PreloadManager.loadManifest([
+				{ id: 'template-glitch', src: `templates/glitch.hbs` },
+			]);
+
+			PreloadManager.load();
 		}
-
-		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-		console.log(`${base}/templates/glitch.hbs`, Handlebars);
-
-
-		PreloadManager.loadManifest([
-			{ id: 'template-glitch', src: `templates/glitch.hbs` },
-		]);
-
-		PreloadManager.load();
-
-
-
 
 
 	}
@@ -58,22 +63,23 @@ export default class GlitchView {
 
 	start() {
 
+		if (this.debug === true) {
+			let template = Handlebars.compile(PreloadManager.getResult('template-glitch'));
+			let html  = template();
+			// console.log(html);
 
-		let template = Handlebars.compile(PreloadManager.getResult('template-glitch'));
-		let html  = template();
-		// console.log(html);
-
-		this.el.innerHTML = html;
+			this.el.innerHTML = html;
+		}
 
 		this.ui = {
 			xp: document.querySelector('.xp'),
-			img: this.el.querySelector('.glitch__img'),
-			img2: this.el.querySelector('.glitch__img-2'),
-			imgAlpha: this.el.querySelector('.glitch__img-3'),
+			img: document.querySelector('.glitch__img'),
+			img2: document.querySelector('.glitch__img-2'),
+			imgAlpha: document.querySelector('.glitch__img-3'),
 			canvas: this.el.querySelector('.glitch__canvas'),
 			canvasTemp: this.el.querySelector('.glitch__canvas-temp')
 		};
-		console.log(this.ui.img);
+		console.log(this.el);
 		// Nathan Gordon <3
 		// //Create a canvas that is to become our reference image
 		// const baseCanvas = document.createElement('canvas');
@@ -81,8 +87,8 @@ export default class GlitchView {
 		// baseCanvas.height = 200;
 		// const basectx = baseCanvas.getctx('2d');
 
-		this.textSize = 120;
-		this.textHeight = this.textSize - 33; // need a real calcul
+		this.textSize = this.ui.canvas.offsetHeight / 3;
+		this.textHeight = this.textSize; // need a real calcul
 		this.time = 0;
 
 		this.init();
@@ -96,7 +102,12 @@ export default class GlitchView {
 
 		this.initOptions();
 		this.resizeHandler();
-		this.events(true);
+		if (this.debug === true) {
+			this.events(true);
+		} else {
+			this.raf();
+		}
+
 	}
 
 	initOptions() {
@@ -106,8 +117,7 @@ export default class GlitchView {
 			controls = gui.addFolder('Controls');
 
 		this.width = document.documentElement.offsetWidth;
-		this.forceHeight = window.innerHeight * 0.5;
-		this.height = this.forceHeight;
+		this.height = this.ui.canvas.offsetHeight;
 
 		// this.textSize = Math.floor(this.width / 7);
 		// // sets text size based on window size
@@ -116,11 +126,14 @@ export default class GlitchView {
 		// }
 		// tries to make text fit if window is
 		// very wide, but not very tall
-		console.log(this.textSize);
+		console.log(this.textSize, this.width, this.height);
 		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
 		this.ctxTemp.font = this.font;
-		this.text = 'Withings';
+		this.text = this.txt;
 		this.textWidth = Math.round((this.ctxTemp.measureText(this.text)).width);
+		this.width = this.textWidth * 2;
+
+		console.log(this.width);
 		// this.textHeight = (this.ctx.measureText(this.text)).height;
 		// console.log((this.ctx.measureText(this.text)));
 
@@ -225,7 +238,7 @@ export default class GlitchView {
 		const top = Math.sin(this.time / 60 ) * 30; // move image
 		const centerY = this.height / 2 + this.textHeight / 2;
 		// let margeStart = this.textWidth * 0.2;
-		let startClip = (window.innerWidth - this.textWidth) / 2 ;
+		let startClip = (this.width - this.textWidth) / 2 ;
 
 		// const arr = [{
 		// 	channel:[{
@@ -256,9 +269,12 @@ export default class GlitchView {
 
 
 		let margeX2 =  Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
+		// let posX2 =  Math.round(getRandom(x2, x2));
+		// let posY2 =  Math.round(getRandom(0, 0));
 		let width2 =  Math.round(getRandom(this.textWidth * 0.6, this.textWidth * 0.25));
 		let width22 =   Math.round(getRandom(this.textWidth * 0.4, this.textWidth * 0.25));
-
+		// let posX22 =  Math.round(getRandom(x2, x2));
+		// let posY22 =  Math.round(getRandom(0, 0));
 
 		let margeX3 = -Math.round(getRandom(this.textWidth * 0.2, this.textWidth * 0.3));
 		let posX3 =  Math.round(getRandom(30, -100));
@@ -288,7 +304,7 @@ export default class GlitchView {
 		// // // // Ici on veut que une fois sur 3 (tt les 3 seconds ? ou moins, on mais le Y en décallé haut gauche.)
 		// // // // et 2 fois sur 3 gauche
 		// // // // et par défaut normal
-		this.ctxTemp.fillStyle = 'rgb(41,64,16)'; // Third Text
+		this.ctxTemp.fillStyle = this.color; // Third Text
 
 		if (this.channel === 1) {
 
@@ -299,14 +315,14 @@ export default class GlitchView {
 			this.ctxTemp.clip();
 			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX12 + 2, top, this.textWidth - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x2 + posX12, centerY + posY12);
+			this.ctxTemp.fillText(this.text, startClip + posX12, centerY + posY12);
 		} else {
 
 			this.ctxTemp.rect(startClip + margeX1,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxTemp.clip();
 			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX1 + 2, top, this.textWidth - 2 , this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x2 + posX1, centerY + posY1);
+			this.ctxTemp.fillText(this.text, startClip + posX1, centerY + posY1);
 		}
 
 		this.ctxTemp.restore();
@@ -324,26 +340,32 @@ export default class GlitchView {
 		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 		this.ctxTemp.beginPath();
 
+		this.ctxTemp.fillStyle = 'rgb(255,255,255)';
+
 		if (this.channel === 0) {
 			this.ctxTemp.rect(startClip + margeX2, top, width2, this.height); // create clip rectangle
 			this.ctxTemp.clip();
 			// Draw image that gonna be use as mask.
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX2 + 2, top, width2 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + margeX2 + 2, top, width2 - 2, this.height);
+			this.ctxTemp.globalCompositeOperation = 'destination-atop';
+			// this.ctxTemp.fillText(this.text, x3 + posX2, centerY + posY2);
 			// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 		} else if (this.channel === 2) {
-			this.ctxTemp.rect(startClip, 0, width22, this.height); // create clip rectangle
+			this.ctxTemp.rect(x3, 0, width22, this.height); // create clip rectangle
 			this.ctxTemp.clip();
-			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + 2, top, width22 - 2, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + 2, top, width22 - 2, this.height);
+			this.ctxTemp.globalCompositeOperation = 'destination-atop';
+			// this.ctxTemp.fillText(this.text, x3 + posX22, centerY + posY22);
 			// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 		} else {
-			this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.height);
+			this.ctxTemp.drawImage(this.ui.imgAlpha, x3, top, this.textWidth + 30, this.height);
+			this.ctxTemp.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
+
 		}
 
-		this.ctxTemp.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
+		this.ctxTemp.fillText(this.text, x3, centerY); // First Text
 
 
-		this.ctxTemp.fillStyle = 'rgb(255,255,255)';
-		this.ctxTemp.fillText(this.text, x1, centerY); // First Text
 		// this.ctxTemp.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
 		// this.ctxTemp.fillText(this.text, x2, centerY); // Second Text
 
@@ -360,7 +382,7 @@ export default class GlitchView {
 		this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 		this.ctxTemp.beginPath(); // avoid Drop fps
 
-		this.ctxTemp.fillStyle = 'rgb(41,64,16)'; // Third Text
+		this.ctxTemp.fillStyle = this.color; // Third Text
 
 		if (this.channel === 0) {
 
@@ -372,7 +394,7 @@ export default class GlitchView {
 
 			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX3 + 2, centerY + posY3 - this.textHeight , width3 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x2 + posX3, centerY + posY3);
+			this.ctxTemp.fillText(this.text, startClip + posX3, centerY + posY3);
 		} else {
 
 			this.ctxTemp.rect(startClip + margeX32,0, width32 - 10,this.height); // create clip rectangle
@@ -380,7 +402,7 @@ export default class GlitchView {
 
 			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX32 + 2, centerY + posY32 - this.textHeight , width32 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x2 + posX32, centerY + posY32);
+			this.ctxTemp.fillText(this.text, startClip + posX32, centerY + posY32);
 		}
 
 		this.ctxTemp.restore();
@@ -404,7 +426,7 @@ export default class GlitchView {
 
 			this.ctxTemp.drawImage(this.ui.img, startClip + margeX4 + 2, top - posY4 - this.textHeight + 50, width4 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
-			this.ctxTemp.fillText(this.text, x3 + posX4, centerY + posY4);
+			this.ctxTemp.fillText(this.text, startClip + posX4, centerY + posY4);
 
 		} else {
 
@@ -433,7 +455,7 @@ export default class GlitchView {
 			this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + margeX5 + 2, top, width5 - 2, this.height);
 			this.ctxTemp.globalCompositeOperation = 'destination-atop';
 
-			this.ctxTemp.fillText(this.text, x3 + posX5, centerY + posY5);
+			this.ctxTemp.fillText(this.text, startClip + posX5, centerY + posY5);
 
 		} else {
 
@@ -478,7 +500,9 @@ export default class GlitchView {
 		// return false;
 		this.width = document.documentElement.offsetWidth;
 		//this.height = window.innerHeight;
-		this.height = this.forceHeight;
+		this.textSize = this.ui.canvas.offsetHeight / 3;
+		this.textHeight = this.textSize; // need a real calcul
+		this.height = this.ui.canvas.offsetHeight;
 		if (this.ui.canvas) {
 			this.ui.canvas.height = this.height;
 			this.ui.canvasTemp.height = this.height;
@@ -486,17 +510,17 @@ export default class GlitchView {
 			this.ui.canvas.width = this.width;
 			this.ui.canvasTemp.width = this.width;
 			//document.documentElement.offsetWidth;
-			this.textSize = this.textSize;
 			// RE-sets text size based on window size
-			if (this.textSize > this.height) {
-				this.textSize = Math.floor(this.ui.canvas.height / 1.5);
-				this.textSize = Math.floor(this.ui.canvas.height / 1.5);
-			}
+			// if (this.textSize > this.height) {
+			// 	this.textSize = Math.floor(this.ui.canvas.height / 1.5);
+			// 	this.textSize = Math.floor(this.ui.canvas.height / 1.5);
+			// }
 			// tries to make text fit if window is
 			// very wide, but not very tall
 			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
 			this.ctx.font = this.ctxTemp.font = this.font;
-			console.log(this.textSize);
+			this.width = this.textWidth * 2;
+			this.ui.canvas.width = this.width;
 		}
 	}
 
