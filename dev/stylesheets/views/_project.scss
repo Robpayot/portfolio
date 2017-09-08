@@ -164,6 +164,7 @@
         transform: translateX(50%);
         span {
             opacity: 0;
+            visibility: hidden;
             display: inline-block;
         }
         svg {

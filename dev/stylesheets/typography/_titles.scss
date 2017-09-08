@@ -10,14 +10,17 @@
     // if your prefer order your titles by slugs
 
     &--1 {
-		font-size: 4.8rem;
+		font-size: 2.6rem;
 		line-height: 1.6em;
+		letter-spacing: 0.5em;
+		text-transform: uppercase;
     }
 
     &--2 {
-    	font-family: 'Theinhardt-ita';
-		font-size: 3.8rem;
+    	// font-family: 'Theinhardt-ita';
+		font-size: 1.2rem;
 		line-height: 1.6em;
+		letter-spacing: 0.3em;
     }
 
     &--3 {
