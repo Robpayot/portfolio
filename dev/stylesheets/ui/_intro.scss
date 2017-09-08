@@ -1,16 +1,18 @@
 &-intro {
 	display: none;
+	text-transform: uppercase;
 	
 	& > div:first-child {
 		z-index: 1;
 	}
 	.start {
 		@include center;
-		color: white;
+		color: black;
 		font-size: 2rem;
 		pointer-events: auto;
 		display: none;
 		cursor: pointer;
+		letter-spacing: 0.4em;
 	}
 
 	&__overlay {
@@ -22,6 +24,7 @@
 		background-color: white;
 		opacity: 0;
 		z-index: 0;
+
 
 	}
 }

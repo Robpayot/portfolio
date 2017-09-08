@@ -149,9 +149,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.WIDTH = 62; // Texture width for simulation bits
-		this.BOUNDS = 712; // Water size
-		this.nbAst = 20;
+		this.nbAst = 16;
 		this.mouseSize = 32.0; // wave agitation
 		this.time = 0;
 		this.asteroids = [];
@@ -236,6 +234,9 @@ export default class IntroView extends AbstractView {
 
 	initWater() {
 
+		this.WIDTH = 62; // Texture width for simulation bits
+		this.BOUNDS = 712; // Water size
+
 		let materialColor = 0xffffff;
 
 		let geometry = new PlaneGeometry( this.BOUNDS, this.BOUNDS , this.WIDTH - 1, this.WIDTH - 1 );
@@ -303,7 +304,7 @@ export default class IntroView extends AbstractView {
 		this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
 
 		this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
-		this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.03 };
+		this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
 		this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
 
 		let error = this.gpuCompute.init();
@@ -320,31 +321,33 @@ export default class IntroView extends AbstractView {
 
 	setAsteroids() {
 		// ADD Iceberg
-
+		this.astXMin = -180;
+		this.astXMax = 180;
 		for (let i = 0; i < this.nbAst; i++) {
-			let finalMat = new MeshPhongMaterial( {color: 0xFFFFFF, transparent: true} );
-			finalMat.shininess = 50;
+			let finalMat = new MeshLambertMaterial( {color: 0xFFFFFF, transparent: true} );
+			finalMat.shininess = 1;
 
 			const rot = {
 				x: 0,
 				y: getRandom(-180, 180),
-				z: 0,
+				z: 90,
 			};
 
+
 			let pos = {
-				x: getRandom(-180, 180),
-				y: -2,
-				z: getRandom(130, 400),
+				x: getRandom(this.astXMin, this.astXMax),
+				y: 4,
+				z: getRandom(-700, -200),
 			};
 
 			//  force impulsion
 			const force = {
 				x: 0,
 				y: 0,
-				z: -getRandom(40, 50)
+				z: getRandom(40, 50)
 			};
 
-			const scale = getRandom(1, 8);
+			const scale = getRandom(3, 8);
 			const speed = getRandom(500, 600); // more is slower
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
@@ -646,9 +649,10 @@ export default class IntroView extends AbstractView {
 
 		// }
 
+
 		// Manual simulation of infinite waves
-		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 30 ) * this.BOUNDS / 4;
-		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z + 30 : -this.BOUNDS / 2;
+		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 15 ) * this.BOUNDS / 4;
+		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z + 60 : -this.BOUNDS / 2;
 
 		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
 		this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
@@ -664,7 +668,7 @@ export default class IntroView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 
-		if (this.gravity === true) this.world.step();
+		if (this.gravity === true && this.startMove === true) this.world.step();
 
 		// Rotate Symbol
 
@@ -676,7 +680,7 @@ export default class IntroView extends AbstractView {
 		this.asteroids.forEach((el) => {
 
 			// el.mesh.position.z -= 1 * el.speedZ;
-			if (el.mesh.position.z <= -200) el.mesh.position.z = 300;
+			// if (el.mesh.position.z >= 200) el.mesh.position.z = -300;
 
 			// Move top and bottom --> Float effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
@@ -692,6 +696,7 @@ export default class IntroView extends AbstractView {
 			el.mesh.rotation.y = el.body.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			el.mesh.rotation.x = el.body.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			el.mesh.rotation.z = el.body.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+
 
 			if (el.body !== undefined ) {
 
@@ -711,9 +716,9 @@ export default class IntroView extends AbstractView {
 
 				el.mesh.position.copy(el.body.getPosition());
 				el.mesh.quaternion.copy(el.body.getQuaternion());
-				if (el.mesh.position.z <= -200) {
-					el.mesh.position.z = 300;
-					el.body.position.z = 300;
+				if (el.mesh.position.z >= 200) {
+					el.mesh.position.z = el.body.position.z = -300;
+					el.body.position.x = el.mesh.position.x = getRandom(this.astXMin, this.astXMax);
 					el.clicked = false;
 					TweenMax.fromTo(el.mesh.material, 0.5, {opacity: 0}, {opacity: 1}); // convert in time raf
 					// reboot
@@ -743,8 +748,8 @@ export default class IntroView extends AbstractView {
 		if (this.cameraMove === false) {
 
 			// Specify target we want
-			this.camRotTarget.x = -toRadian(round(this.mouse.y * 4, 100));
-			this.camRotTarget.y = toRadian(round(this.mouse.x * 8, 100));
+			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+			this.camRotTarget.y = -toRadian(round(this.mouse.x * 8, 100));
 
 			// Smooth it with deceleration
 			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
@@ -755,7 +760,8 @@ export default class IntroView extends AbstractView {
 			// console.log(this.camRotSmooth.x, this.camRotSmooth.y, this.camera.rotation.x, this.camera.rotation.y);
 
 			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-			this.camera.rotation.y = this.camRotSmooth.y;
+			this.camera.rotation.y =  clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+			// console.log(this.camera.rotation.x, this.camera.rotation.y);
 
 		}
 
@@ -782,6 +788,7 @@ export default class IntroView extends AbstractView {
 
 		tl.set(this.UI.overlay, {opacity: 1});
 		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
+		// tl.set(this.asteroidsM.material, {opacity: 0});
 
 		tl.staggerFromTo(title1Arr.chars, 0.7, {
 			opacity: 0,
@@ -806,12 +813,91 @@ export default class IntroView extends AbstractView {
 		tl.add(() => {
 			this.moveCameraIn();
 		});
-		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=1');
+		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=6');
+		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
+		tl.to(this.UI.button, 3, {opacity: 1});
 
+		tl.add(() => {
+			// start move Ast
+			this.startMove = true;
+		}, 1);
+
+		// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
 
 	}
 
 	moveCameraIn(dest) {
+
+		if (this.animating === true) return false;
+		this.animating = true;
+
+		this.cameraMove = true;
+		// Set camera Dolly
+		const points = {
+			'camera': [{
+				'x': 0,
+				'y': 70,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 150,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 400,
+				'z': 0
+			}],
+			'lookat': [{
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 0,
+				'z': 0
+			}]
+		};
+
+		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+
+		this.dolly.cameraPosition = 0;
+		this.dolly.lookatPosition = 0;
+		this.dolly.range = [0, 1];
+		this.dolly.both = 0;
+
+		const tl = new TimelineMax({
+			onComplete: () => {
+				this.cameraMove = false;
+				this.currentCameraRotX = this.camera.rotation.x;
+				// this.moveCameraIn2();
+				// this.dolly.destroy();
+			}
+		});
+
+		tl.to(this.dolly, 7, {
+			cameraPosition: 1,
+			lookatPosition: 1,
+			ease: window.Power3.easeInOut,
+			onUpdate: () => {
+				this.dolly.update();
+			}
+		});
+		tl.add(() => {
+
+			this.asteroidsMove = true;
+		}, 0);
+
+		// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
+		// tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
+		// tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
+
+	}
+
+	moveCameraIn2(dest) {
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -875,10 +961,6 @@ export default class IntroView extends AbstractView {
 
 			this.asteroidsMove = true;
 		}, 0);
-
-		// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
-		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
-		tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
 
 	}
 
