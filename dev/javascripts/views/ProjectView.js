@@ -367,7 +367,7 @@ export default class ProjectView extends AbstractView {
 			}
 
 			// Position Gallery
-			// Pixel to Units magic
+			// Pixel to Units magic FORMULE
 			const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
 			const wHeight = 2 * Math.tan( vFOV / 2 ) * 60; // visible height dist = 60 (160 - 100)
 			// wHeight === window.innerHeight in Units equivalent
