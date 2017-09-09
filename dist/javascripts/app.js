@@ -6466,6 +6466,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _AbstractView2 = require('./AbstractView');
 
 var _AbstractView3 = _interopRequireDefault(_AbstractView2);
@@ -6759,6 +6761,8 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'initWater',
 		value: function initWater() {
+			var destroy = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
 
 			this.WIDTH = 62; // Texture width for simulation bits
 
@@ -6814,6 +6818,7 @@ var IntroView = function (_AbstractView) {
 			this.waterMesh = new _three.Mesh(geometry, material);
 			this.waterMesh.rotation.x = -Math.PI / 2;
 			this.waterMesh.position.set(0, 0, 0);
+			this.waterMesh.name = 'water';
 			// this.waterMesh.matrixAutoUpdate = false;
 			// this.waterMesh.updateMatrix();
 
@@ -6832,32 +6837,34 @@ var IntroView = function (_AbstractView) {
 			// Creates the gpu computation class and sets it up
 			// console.log(GPUComputationRenderer);
 
-			this.gpuCompute = new _GPUComputationRenderer2.default(this.WIDTH, this.WIDTH, _SceneManager2.default.renderer);
+			if (destroy === false) {
+				this.gpuCompute = new _GPUComputationRenderer2.default(this.WIDTH, this.WIDTH, _SceneManager2.default.renderer);
 
-			var heightmap0 = this.gpuCompute.createTexture();
+				var heightmap0 = this.gpuCompute.createTexture();
 
-			this.fillTexture(heightmap0);
+				this.fillTexture(heightmap0);
 
-			this.heightmapVariable = this.gpuCompute.addVariable('heightmap', _HeightmapFragmentShader2.default.fragmentShader, heightmap0);
+				this.heightmapVariable = this.gpuCompute.addVariable('heightmap', _HeightmapFragmentShader2.default.fragmentShader, heightmap0);
 
-			// console.log(this.heightmapVariable);
+				// console.log(this.heightmapVariable);
 
-			this.gpuCompute.setVariableDependencies(this.heightmapVariable, [this.heightmapVariable]);
+				this.gpuCompute.setVariableDependencies(this.heightmapVariable, [this.heightmapVariable]);
 
-			this.heightmapVariable.material.uniforms.debug = { value: new _three.Vector2(0, 0) };
-			this.heightmapVariable.material.uniforms.mousePos = { value: new _three.Vector2(10000, 10000) };
-			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
-			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(1);
+				this.heightmapVariable.material.uniforms.debug = { value: new _three.Vector2(0, 0) };
+				this.heightmapVariable.material.uniforms.mousePos = { value: new _three.Vector2(10000, 10000) };
+				this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
+				this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(1);
 
-			var error = this.gpuCompute.init();
-			if (error !== null) {
-				console.error(error);
+				var error = this.gpuCompute.init();
+				if (error !== null) {
+					console.error(error);
+				}
+
+				// Create compute shader to smooth the water surface and velocity
+				// this.smoothShader = this.gpuCompute.createShaderMaterial( SmoothFragmentShader.fragmentShader, { texture: { value: null } } ); --> A étudier
+
+				// console.log(this.heightmapVariable, this.smoothShader);
 			}
-
-			// Create compute shader to smooth the water surface and velocity
-			// this.smoothShader = this.gpuCompute.createShaderMaterial( SmoothFragmentShader.fragmentShader, { texture: { value: null } } ); --> A étudier
-
-			// console.log(this.heightmapVariable, this.smoothShader);
 		}
 	}, {
 		key: 'setGround',
@@ -7546,6 +7553,55 @@ var IntroView = function (_AbstractView) {
 			tl.to('.overlay', 0.5, {
 				opacity: 1
 			}, 1.7);
+		}
+	}, {
+		key: 'resizeHandler',
+		value: function resizeHandler() {
+			_get(IntroView.prototype.__proto__ || Object.getPrototypeOf(IntroView.prototype), 'resizeHandler', this).call(this);
+			var obj = this.scene.getObjectByName('water');
+			if (obj.geometry) obj.geometry.dispose();
+
+			if (obj.material) {
+
+				if (obj.material.materials) {
+					var _iteratorNormalCompletion = true;
+					var _didIteratorError = false;
+					var _iteratorError = undefined;
+
+					try {
+
+						for (var _iterator = obj.material.materials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+							var mat = _step.value;
+
+
+							if (mat.map) mat.map.dispose();
+
+							mat.dispose();
+						}
+					} catch (err) {
+						_didIteratorError = true;
+						_iteratorError = err;
+					} finally {
+						try {
+							if (!_iteratorNormalCompletion && _iterator.return) {
+								_iterator.return();
+							}
+						} finally {
+							if (_didIteratorError) {
+								throw _iteratorError;
+							}
+						}
+					}
+				} else {
+
+					if (obj.material.map) obj.material.map.dispose();
+
+					obj.material.dispose();
+				}
+			}
+			this.scene.remove(obj);
+
+			this.initWater(true);
 		}
 	}]);
 

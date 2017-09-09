@@ -233,7 +233,7 @@ export default class IntroView extends AbstractView {
 		this.scene.add( sun2 );
 	}
 
-	initWater() {
+	initWater(destroy = false) {
 
 		this.WIDTH = 62; // Texture width for simulation bits
 
@@ -292,6 +292,7 @@ export default class IntroView extends AbstractView {
 		this.waterMesh = new Mesh( geometry, material );
 		this.waterMesh.rotation.x = -Math.PI / 2;
 		this.waterMesh.position.set( 0, 0, 0);
+		this.waterMesh.name = 'water';
 		// this.waterMesh.matrixAutoUpdate = false;
 		// this.waterMesh.updateMatrix();
 
@@ -310,32 +311,34 @@ export default class IntroView extends AbstractView {
 		// Creates the gpu computation class and sets it up
 		// console.log(GPUComputationRenderer);
 
-		this.gpuCompute = new GPUComputationRenderer( this.WIDTH, this.WIDTH, SceneManager.renderer );
+		if (destroy === false ) {
+			this.gpuCompute = new GPUComputationRenderer( this.WIDTH, this.WIDTH, SceneManager.renderer );
 
-		let heightmap0 = this.gpuCompute.createTexture();
+			let heightmap0 = this.gpuCompute.createTexture();
 
-		this.fillTexture( heightmap0 );
+			this.fillTexture( heightmap0 );
 
-		this.heightmapVariable = this.gpuCompute.addVariable( 'heightmap', HeightmapFragmentShader.fragmentShader, heightmap0 );
+			this.heightmapVariable = this.gpuCompute.addVariable( 'heightmap', HeightmapFragmentShader.fragmentShader, heightmap0 );
 
-		// console.log(this.heightmapVariable);
+			// console.log(this.heightmapVariable);
 
-		this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
+			this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
 
-		this.heightmapVariable.material.uniforms.debug = { value: new Vector2( 0, 0 ) };
-		this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
-		this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
-		this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
+			this.heightmapVariable.material.uniforms.debug = { value: new Vector2( 0, 0 ) };
+			this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
+			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
+			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
 
-		let error = this.gpuCompute.init();
-		if ( error !== null ) {
-			console.error( error );
+			let error = this.gpuCompute.init();
+			if ( error !== null ) {
+				console.error( error );
+			}
+
+			// Create compute shader to smooth the water surface and velocity
+			// this.smoothShader = this.gpuCompute.createShaderMaterial( SmoothFragmentShader.fragmentShader, { texture: { value: null } } ); --> A étudier
+
+			// console.log(this.heightmapVariable, this.smoothShader);
 		}
-
-		// Create compute shader to smooth the water surface and velocity
-		// this.smoothShader = this.gpuCompute.createShaderMaterial( SmoothFragmentShader.fragmentShader, { texture: { value: null } } ); --> A étudier
-
-		// console.log(this.heightmapVariable, this.smoothShader);
 
 	}
 
@@ -1028,5 +1031,33 @@ export default class IntroView extends AbstractView {
 		}, 1.7);
 
 	}
+
+	resizeHandler() {
+		super.resizeHandler();
+		const obj = this.scene.getObjectByName('water');
+		if (obj.geometry) obj.geometry.dispose();
+
+		if (obj.material) {
+
+			if (obj.material.materials) {
+
+				for (const mat of obj.material.materials) {
+
+					if (mat.map) mat.map.dispose();
+
+					mat.dispose();
+				}
+			} else {
+
+				if (obj.material.map) obj.material.map.dispose();
+
+				obj.material.dispose();
+			}
+		}
+		this.scene.remove( obj );
+
+		this.initWater(true);
+	}
+
 
 }
