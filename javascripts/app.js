@@ -11,6 +11,16 @@ module.exports={
         "link": "http://thesuicideforest.com/",
         "color": "#1FB04C"
     },{
+        "title": "AKTR",
+        "context": "personnal project",
+        "date": "2017",
+        "descr": "Portfolio BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.",
+        "technos": "WebGL, Pixi.js",
+        "awards": "",
+        "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
+        "link": "http://mondialautomobile.bmw.fr/",
+        "color": "#EF1300"
+    },{
         "title": "BMW Motorshow",
         "context": "84.Paris",
         "date": "2016",
@@ -1517,10 +1527,12 @@ var RouterManager = function () {
 
 			var url = window.location.href;
 
-			if (/\/#project-1/.test(url) === true) {
-				this.switchView('/project-1', 1, true);
-			} else if (/\/#project-0/.test(url) === true) {
+			if (/\/#project-0/.test(url) === true) {
 				this.switchView('/project-0', 0, true);
+			} else if (/\/#project-1/.test(url) === true) {
+				this.switchView('/project-1', 1, true);
+			} else if (/\/#project-2/.test(url) === true) {
+				this.switchView('/project-2', 2, true);
 			} else if (/\/#glitch/.test(url) === true) {
 				this.switchView('/glitch', 0, true);
 			} else {
@@ -1570,7 +1582,7 @@ var RouterManager = function () {
 				case '/project-0':
 
 					if (this.project0 === null) {
-						this.currentPage = this.project0 = new _Levit2.default({
+						this.currentPage = this.project0 = new _Levit2.default({ // Attention, Garde en mémoire une cette variable très lourde !
 							id: 0,
 							bkg: 0x0101010,
 							astd: 'cubes',
@@ -1588,6 +1600,7 @@ var RouterManager = function () {
 
 					window.location = '#project-0';
 					break;
+
 				case '/project-1':
 
 					if (this.project1 === null) {
@@ -1607,6 +1620,27 @@ var RouterManager = function () {
 						this.currentPage.start();
 					}
 					window.location = '#project-1';
+					break;
+
+				case '/project-2':
+
+					if (this.project2 === null) {
+						this.currentPage = this.project2 = new _Blob2.default({
+							id: 2,
+							bkg: 0x0101010,
+							astd: 'spheres',
+							gravity: false,
+							pointsLight: true,
+							glow: true,
+							alt: false,
+							data: _data2.default.projects[2],
+							fromUrl: fromUrl
+						});
+					} else {
+						this.currentPage = this.project2;
+						this.currentPage.start();
+					}
+					window.location = '#project-2';
 					break;
 
 				case '/intro':
@@ -1967,14 +2001,6 @@ var _PreloadManager = require('../managers/PreloadManager');
 
 var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
 
-var _EmitterManager = require('../managers/EmitterManager');
-
-var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
-
-var _SoundManager = require('../managers/SoundManager');
-
-var _SoundManager2 = _interopRequireDefault(_SoundManager);
-
 var _utils = require('../helpers/utils');
 
 var _utilsThree = require('../helpers/utils-three');
@@ -2180,211 +2206,51 @@ var Blob = function (_ProjectView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			var _this2 = this;
+			// update world
+			// if (this.gravity === true) {
+			// 	this.world.step();
+
+			// 	// Symbol body
+			// 	// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
+			// 	// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
+			// 	// Asteroids bodies
+			// 	this.asteroids.forEach( (el) => {
+
+			// 		if (el.mesh.position.x > this.bounceArea / 2 - 50 || el.mesh.position.x < -this.bounceArea / 2 + 50 || el.mesh.position.y > this.bounceArea / 2 - 50 || el.mesh.position.y < -this.bounceArea / 2 + 50 || el.mesh.position.z > this.bounceArea / 2 - 50 || el.mesh.position.z < -this.bounceArea / 2 + 50) {
+			// 			// Reverse Force Vector
+			// 			if (el.annilled !== true) {
+
+			// 				el.changeDirection();
+			// 				el.annilled = true;
+			// 			}
+			// 		}
+
+			// 		if (el.body !== undefined) {
+
+			// 			// APPLY IMPULSE
+			// 			el.body.linearVelocity.x = el.force.x;
+			// 			el.body.linearVelocity.y = el.force.y;
+			// 			el.body.linearVelocity.z = el.force.z;
+
+			// 			// console.log(el.body.angularVelocity);
+			// 			// angular Velocity always inferior to 1 (or too much rotations)
+
+			// 			el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -1, 1);
+			// 			el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -1, 1);
+			// 			el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -1, 1);
+			// 			// if (i === 0) {
+			// 			//   console.log(el.body.angularVelocity.x);
+			// 			// }
+
+			// 			el.mesh.position.copy(el.body.getPosition());
+			// 			el.mesh.quaternion.copy(el.body.getQuaternion());
+
+
+			// 		}
+			// 	});
+			// }
 
 			_get(Blob.prototype.__proto__ || Object.getPrototypeOf(Blob.prototype), 'raf', this).call(this);
-			return false;
-			// // Update meth size
-
-			// ////////////
-			// // hight
-			// ///////////
-
-			// let coefAttenuate = 0.01;
-			// const hightAvg = this.sound.hightAvg * coefAttenuate + 0.5;
-
-			// for (let i = 0; i < this.spheres.length; i++) {
-			//     this.spheres[i].scale.x = hightAvg;
-			//     this.spheres[i].scale.y = hightAvg;
-			//     this.spheres[i].scale.z = hightAvg;
-			// }
-
-			// ////////////
-			// // medium
-			// ///////////
-
-			// const mediumAvg = this.sound.mediumAvg * coefAttenuate + 0.5;
-
-			// for (let i = 0; i < this.pyramides.length; i++) {
-			//     this.pyramides[i].scale.x = mediumAvg;
-			//     this.pyramides[i].scale.y = mediumAvg;
-			//     this.pyramides[i].scale.z = mediumAvg;
-			// }
-
-			// ////////////
-			// // low
-			// ///////////
-
-			// const lowAvg = this.sound.lowAvg * coefAttenuate + 0.5;
-
-			// for (let i = 0; i < this.cubes.length; i++) {
-			//     this.cubes[i].scale.x = lowAvg;
-			//     this.cubes[i].scale.y = lowAvg;
-			//     this.cubes[i].scale.z = lowAvg;
-			// }
-
-			//////////////////
-			// Raycasters
-			//////////////////
-
-			if (this.ui.body.style.cursor !== 'auto') this.ui.body.style.cursor = 'auto';
-
-			this.raycaster.setFromCamera(this.mouse, this.camera);
-
-			// const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
-
-			// if (intersects.length > 0) {
-			// 	this.ui.body.style.cursor = 'pointer';
-			// 	this.clickSymbol = true;
-
-			// } else {
-
-			// 	this.clickSymbol = false;
-			// }
-
-			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-
-			if (intersectsAst.length > 0) {
-				this.ui.body.style.cursor = 'pointer';
-				this.clickAsteroid = true;
-				this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-			} else {
-				// this.ui.body.style.cursor = 'auto';
-				this.clickAsteroid = false;
-			}
-
-			// update world
-			if (this.gravity === true) {
-				this.world.step();
-
-				// Symbol body
-				// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-				// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
-				// Asteroids bodies
-				this.asteroids.forEach(function (el) {
-
-					if (el.mesh.position.x > _this2.bounceArea / 2 - 50 || el.mesh.position.x < -_this2.bounceArea / 2 + 50 || el.mesh.position.y > _this2.bounceArea / 2 - 50 || el.mesh.position.y < -_this2.bounceArea / 2 + 50 || el.mesh.position.z > _this2.bounceArea / 2 - 50 || el.mesh.position.z < -_this2.bounceArea / 2 + 50) {
-						// Reverse Force Vector
-						if (el.annilled !== true) {
-
-							el.changeDirection();
-							el.annilled = true;
-						}
-					}
-
-					if (el.body !== undefined) {
-
-						// APPLY IMPULSE
-						el.body.linearVelocity.x = el.force.x;
-						el.body.linearVelocity.y = el.force.y;
-						el.body.linearVelocity.z = el.force.z;
-
-						// console.log(el.body.angularVelocity);
-						// angular Velocity always inferior to 1 (or too much rotations)
-
-						el.body.angularVelocity.x = (0, _utils.clamp)(el.body.angularVelocity.x, -1, 1);
-						el.body.angularVelocity.y = (0, _utils.clamp)(el.body.angularVelocity.y, -1, 1);
-						el.body.angularVelocity.z = (0, _utils.clamp)(el.body.angularVelocity.z, -1, 1);
-						// if (i === 0) {
-						//   console.log(el.body.angularVelocity.x);
-						// }
-
-						el.mesh.position.copy(el.body.getPosition());
-						el.mesh.quaternion.copy(el.body.getQuaternion());
-					}
-				});
-			} else {
-				// Rotate Symbol
-
-				// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-				// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-				// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-
-				// Asteroids meshs
-				this.asteroids.forEach(function (el) {
-					// Move top and bottom --> Float effect
-					// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-					el.mesh.position.y = el.endY + Math.sin(_this2.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-					// rotate
-					// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-					el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-					el.mesh.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this2.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-					el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				});
-			}
-
-			// Glow continuously
-			// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.time / 30) + 1) / 5;
-
-			// console.log(this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value);
-			// Glow arrows
-			if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-				this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
-				this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
-				// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
-			}
-
-			// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
-			if (this.glow === true) {
-				// Glow brightness material Asteroids
-				this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
-				this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
-			}
-
-			// scroll gallery
-			if (this.initGalleryY) {
-				this.topContent.position.y = this.topContentY;
-				this.gallery.position.y = this.topContentY + this.initGalleryY;
-				this.footer.position.y = this.topContentY + this.initFooterY;
-			}
-
-			// Zoom ??
-
-			// const delta = (this.finalFov - this.camera.fov) * 0.25;
-
-			// if (Math.abs(delta) > 0.01) {
-
-			//     this.camera.fov += delta;
-			//     this.camera.updateProjectionMatrix();
-
-			//     // console.log(this.camera.fov);
-
-			//     // FOV : 70 : zoom middle
-			//     // FOV : 60 : zoom max
-			// }
-
-			// On mouse Move Camera movement
-
-			// deceleration duplicate /!\
-			if (this.cameraMove === false) {
-
-				// Specify target we want
-				this.camRotTarget.x = (0, _utils.toRadian)((0, _utils.round)(this.mouse.y * 4, 100));
-				this.camRotTarget.y = -(0, _utils.toRadian)((0, _utils.round)(this.mouse.x * 8, 100));
-
-				// Smooth it with deceleration
-				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-				this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
-
-				// Apply rotation
-
-				this.camera.rotation.x = this.camRotSmooth.x;
-				this.camera.rotation.y = this.camRotSmooth.y;
-			}
-
-			this.render();
-
-			// glitch title
-			if (this.glitch) {
-
-				if (this.glitch.stop !== true) {
-					if (this.glitch.hover === true) {
-						this.glitch.raf();
-					} else {
-						this.glitch.raf(true);
-					}
-				}
-			}
 		}
 	}]);
 
@@ -2393,7 +2259,7 @@ var Blob = function (_ProjectView) {
 
 exports.default = Blob;
 
-},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SoundManager":18,"../shaders/BrightnessShader":21,"../shapes/Asteroid":29,"../vendors/OrbitControls":35,"../vendors/three-camera-dolly-custom":40,"../views/ProjectView":43,"three":103,"three-effectcomposer-es6":97}],20:[function(require,module,exports){
+},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/PreloadManager":14,"../shaders/BrightnessShader":21,"../shapes/Asteroid":29,"../vendors/OrbitControls":35,"../vendors/three-camera-dolly-custom":40,"../views/ProjectView":43,"three":103,"three-effectcomposer-es6":97}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2408,33 +2274,11 @@ var _ProjectView2 = require('../views/ProjectView');
 
 var _ProjectView3 = _interopRequireDefault(_ProjectView2);
 
-var _EmitterManager = require('../managers/EmitterManager');
-
-var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
-
-var _SoundManager = require('../managers/SoundManager');
-
-var _SoundManager2 = _interopRequireDefault(_SoundManager);
-
 var _utils = require('../helpers/utils');
 
 var _utilsThree = require('../helpers/utils-three');
 
-var _PreloadManager = require('../managers/PreloadManager');
-
-var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
-
 var _three = require('three');
-
-var _threeEffectcomposerEs = require('three-effectcomposer-es6');
-
-var _threeEffectcomposerEs2 = _interopRequireDefault(_threeEffectcomposerEs);
-
-var _OrbitControls = require('../vendors/OrbitControls');
-
-var _OrbitControls2 = _interopRequireDefault(_OrbitControls);
-
-var _threeCameraDollyCustom = require('../vendors/three-camera-dolly-custom');
 
 var _Asteroid = require('../shapes/Asteroid');
 
@@ -2470,7 +2314,6 @@ var Levit = function (_ProjectView) {
 		Promise.all([(0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
 			// when all is loaded
 			_this.models = results;
-			console.log(_this.models);
 			_this.init();
 		}, function (err) {
 			console.log(err);
@@ -2607,30 +2450,24 @@ var Levit = function (_ProjectView) {
 		value: function raf() {
 			var _this2 = this;
 
-			// Rotate Symbol
-
-			// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-
 			// Asteroids meshs
 			this.asteroids.forEach(function (el) {
-				// Move top and bottom --> Float effect
+
+				// Move top and bottom --> Levit effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
 				el.mesh.position.y = el.endY + Math.sin(_this2.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 				// rotate
-				// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
+
 				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 				// el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateZ + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ); // -30 to 30 deg rotation
-				// console.log(el.mesh.rotation.x);
+
 				// if (el.mesh.index === 0) {
 				// 	console.log(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeZ, el.rotateRangeZ);
 				// }
 			});
 
 			_get(Levit.prototype.__proto__ || Object.getPrototypeOf(Levit.prototype), 'raf', this).call(this);
-			return false;
 		}
 	}]);
 
@@ -2639,7 +2476,7 @@ var Levit = function (_ProjectView) {
 
 exports.default = Levit;
 
-},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SoundManager":18,"../shapes/Asteroid":29,"../vendors/OrbitControls":35,"../vendors/three-camera-dolly-custom":40,"../views/ProjectView":43,"three":103,"three-effectcomposer-es6":97}],21:[function(require,module,exports){
+},{"../helpers/utils":11,"../helpers/utils-three":10,"../shapes/Asteroid":29,"../views/ProjectView":43,"three":103}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8400,6 +8237,10 @@ var _handlebars = require('handlebars');
 
 var _handlebars2 = _interopRequireDefault(_handlebars);
 
+var _data = require('../../datas/data.json');
+
+var _data2 = _interopRequireDefault(_data);
+
 var _Glitch = require('../components/Glitch');
 
 var _Glitch2 = _interopRequireDefault(_Glitch);
@@ -9314,7 +9155,10 @@ var ProjectView = function (_AbstractView) {
 			var _this7 = this;
 
 			console.log('go To');
-			var dest = this.id === 0 ? 1 : 0;
+			var dest = this.id + 1;
+
+			if (dest < 0) dest = _data2.default.projects.length - 1;
+			if (dest > _data2.default.projects.length - 1) dest = 0;
 
 			if (this.clicked === true) return false;
 			this.clicked = true;
@@ -9356,8 +9200,6 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			var _this8 = this;
-
 			// // Update meth size
 
 			// ////////////
@@ -9405,17 +9247,6 @@ var ProjectView = function (_AbstractView) {
 
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			// const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
-
-			// if (intersects.length > 0) {
-			// 	this.ui.body.style.cursor = 'pointer';
-			// 	this.clickSymbol = true;
-
-			// } else {
-
-			// 	this.clickSymbol = false;
-			// }
-
 			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
 			if (intersectsAst.length > 0) {
@@ -9425,48 +9256,6 @@ var ProjectView = function (_AbstractView) {
 			} else {
 				// this.ui.body.style.cursor = 'auto';
 				this.clickAsteroid = false;
-			}
-
-			// update world
-			if (this.gravity === true) {
-				this.world.step();
-
-				// Symbol body
-				// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-				// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
-				// Asteroids bodies
-				this.asteroids.forEach(function (el) {
-
-					if (el.mesh.position.x > _this8.bounceArea / 2 - 50 || el.mesh.position.x < -_this8.bounceArea / 2 + 50 || el.mesh.position.y > _this8.bounceArea / 2 - 50 || el.mesh.position.y < -_this8.bounceArea / 2 + 50 || el.mesh.position.z > _this8.bounceArea / 2 - 50 || el.mesh.position.z < -_this8.bounceArea / 2 + 50) {
-						// Reverse Force Vector
-						if (el.annilled !== true) {
-
-							el.changeDirection();
-							el.annilled = true;
-						}
-					}
-
-					if (el.body !== undefined) {
-
-						// APPLY IMPULSE
-						el.body.linearVelocity.x = el.force.x;
-						el.body.linearVelocity.y = el.force.y;
-						el.body.linearVelocity.z = el.force.z;
-
-						// console.log(el.body.angularVelocity);
-						// angular Velocity always inferior to 1 (or too much rotations)
-
-						el.body.angularVelocity.x = (0, _utils.clamp)(el.body.angularVelocity.x, -1, 1);
-						el.body.angularVelocity.y = (0, _utils.clamp)(el.body.angularVelocity.y, -1, 1);
-						el.body.angularVelocity.z = (0, _utils.clamp)(el.body.angularVelocity.z, -1, 1);
-						// if (i === 0) {
-						//   console.log(el.body.angularVelocity.x);
-						// }
-
-						el.mesh.position.copy(el.body.getPosition());
-						el.mesh.quaternion.copy(el.body.getQuaternion());
-					}
-				});
 			}
 
 			// Glow continuously
@@ -9494,24 +9283,9 @@ var ProjectView = function (_AbstractView) {
 				this.footer.position.y = this.topContentY + this.initFooterY;
 			}
 
-			// Zoom ??
-
-			// const delta = (this.finalFov - this.camera.fov) * 0.25;
-
-			// if (Math.abs(delta) > 0.01) {
-
-			//     this.camera.fov += delta;
-			//     this.camera.updateProjectionMatrix();
-
-			//     // console.log(this.camera.fov);
-
-			//     // FOV : 70 : zoom middle
-			//     // FOV : 60 : zoom max
-			// }
-
 			// On mouse Move Camera movement
 
-			// deceleration duplicate /!\
+			// deceleration
 			if (this.cameraMove === false) {
 
 				// Specify target we want
@@ -9550,7 +9324,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'transitionIn',
 		value: function transitionIn() {
-			var _this9 = this;
+			var _this8 = this;
 
 			var fromUrl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
@@ -9692,9 +9466,9 @@ var ProjectView = function (_AbstractView) {
 
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this9.camera.position.set(0, 0, 160);
-					if (noDolly === false) _this9.cameraMove = false;
-					_this9.clicked = false;
+					_this8.camera.position.set(0, 0, 160);
+					if (noDolly === false) _this8.cameraMove = false;
+					_this8.clicked = false;
 				}
 			});
 
@@ -9704,7 +9478,7 @@ var ProjectView = function (_AbstractView) {
 					lookatPosition: 1,
 					ease: window.Power4.easeOut,
 					onUpdate: function onUpdate() {
-						_this9.dolly.update();
+						_this8.dolly.update();
 					}
 				});
 			} else {
@@ -9741,7 +9515,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'transitionOut',
 		value: function transitionOut(dest) {
-			var _this10 = this;
+			var _this9 = this;
 
 			if (this.animating === true) return false;
 			this.animating = true;
@@ -9787,7 +9561,7 @@ var ProjectView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					// this.cameraMove = false;
-					_this10.animating = false;
+					_this9.animating = false;
 
 					TweenMax.killAll();
 					// TweenMax.killTweensOf(this.symbol.mesh.position);
@@ -9897,7 +9671,7 @@ var ProjectView = function (_AbstractView) {
 
 exports.default = ProjectView;
 
-},{"../components/CssContainer":3,"../components/Glitch":4,"../components/Menu":6,"../components/Ui":7,"../helpers/Device":8,"../helpers/ease":9,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/RouterManager":15,"../managers/SceneManager":16,"../managers/ScrollManager":17,"../managers/SoundManager":18,"../shaders/FXAAShader":22,"../shaders/HorizontalTiltShiftShader":24,"../shaders/VerticalTiltShiftShader":26,"../shapes/Envelop":30,"../shapes/Symbol":31,"../vendors/OrbitControls":35,"../vendors/three-camera-dolly-custom":40,"./AbstractView":41,"bean":44,"handlebars":82,"three":103,"three-effectcomposer-es6":97}],44:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":4,"../components/Menu":6,"../components/Ui":7,"../helpers/Device":8,"../helpers/ease":9,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/RouterManager":15,"../managers/SceneManager":16,"../managers/ScrollManager":17,"../managers/SoundManager":18,"../shaders/FXAAShader":22,"../shaders/HorizontalTiltShiftShader":24,"../shaders/VerticalTiltShiftShader":26,"../shapes/Envelop":30,"../shapes/Symbol":31,"../vendors/OrbitControls":35,"../vendors/three-camera-dolly-custom":40,"./AbstractView":41,"bean":44,"handlebars":82,"three":103,"three-effectcomposer-es6":97}],44:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
