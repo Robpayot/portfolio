@@ -4,7 +4,6 @@ import SoundManager from '../managers/SoundManager';
 import { getRandom, toRadian, clamp, round } from '../helpers/utils';
 import Envelop from '../shapes/Envelop';
 import Symbol from '../shapes/Symbol';
-import Asteroid from '../shapes/Asteroid';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
@@ -32,7 +31,7 @@ import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import { FXAAShader } from '../shaders/FXAAShader'; // FXAA shader
 import { HorizontalTiltShiftShader } from '../shaders/HorizontalTiltShiftShader'; // HorizontalTiltShiftShader shader
 import { VerticalTiltShiftShader } from '../shaders/VerticalTiltShiftShader'; // VerticalTiltShiftShader shader
-import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltShiftShader shader
+
 
 
 export default class ProjectView extends AbstractView {
@@ -81,9 +80,6 @@ export default class ProjectView extends AbstractView {
 		this.onChangeDolly = this.onChangeDolly.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
 
-
-		// init
-		this.init();
 
 		console.log('mon id', this.id);
 
@@ -217,7 +213,8 @@ export default class ProjectView extends AbstractView {
 			contrast: 0,
 			// Camera dolly
 			position: 0,
-			lookAt: 0
+			lookAt: 0,
+			astColor: 0xffffff
 
 		};
 
@@ -227,7 +224,7 @@ export default class ProjectView extends AbstractView {
 			blurFolder.add(this.effectController, 'blur', 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
 			blurFolder.add(this.effectController, 'horizontalBlur', 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
 			blurFolder.add(this.effectController, 'enabled').onChange(this.onChangeBlur);
-			// blurFolder.open();
+			blurFolder.open();
 
 			// Glow
 			const glowFolder = this.sound.gui.addFolder('Glow');
@@ -243,9 +240,12 @@ export default class ProjectView extends AbstractView {
 			brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
 			brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
 			// brightnessFolder.open();
+			console.log('yoooooooooooooo');
 
 			this.sound.gui.init = true;
 		}
+
+		this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
 
 		// Camera Dolly
 		// const dollyFolder = this.sound.gui.addFolder('Camera Dolly');
@@ -531,239 +531,9 @@ export default class ProjectView extends AbstractView {
 
 	setAsteroids() {
 
-		this.asteroids = [];
-		this.asteroidsM = [];
-
-		// Set up the sphere vars
-		const props = {
-			RADIUS: 5,
-			SEGMENTS: 32,
-			RINGS: 32,
-			geometry: null,
-			glow: this.glow
-		};
-
-
-		let geometry;
-
-		switch (this.astd) {
-			case 'spheres':
-				geometry = new SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
-				break;
-			case 'cubes':
-				geometry = new BoxGeometry(props.RADIUS, props.RADIUS, props.RADIUS);
-				break;
-		}
-
-		// const material = new MeshLambertMaterial({ color: 0x4682b4 });
-		const img = PreloadManager.getResult('texture-asteroid');
-
-		const tex = new Texture(img);
-		tex.needsUpdate = true;
-
-		const matPhongParams = {
-			// specular: 0xFFFFFF,
-			// shininess: 3000,
-			// color: 0x4682b4,
-			transparent: true,
-			opacity: 1,
-			map: tex,
-			// alphaMap: tex,
-			// lightmap: tex
-			// emissive: new Color('rgb(255, 255, 255)'),
-			// specular: new Color('rgb(255, 255, 255)')
-		};
-		// const material = new MeshLambertMaterial(matPhongParams);
-
-		if (this.glow === true) {
-			this.brightness = new BrightnessShader();
-
-			this.brightness2 = new BrightnessShader();
-
-			this.brightness.uniforms.tInput.value = tex;
-			this.brightness2.uniforms.tInput.value = tex;
-
-
-			this.materialAst1 = new ShaderMaterial({
-				uniforms: this.brightness.uniforms,
-				vertexShader: this.brightness.vertexShader,
-				fragmentShader: this.brightness.fragmentShader,
-				transparent: true,
-				opacity: 0.5
-			});
-
-			this.materialAst2 = new ShaderMaterial({
-				uniforms: this.brightness2.uniforms,
-				vertexShader: this.brightness2.vertexShader,
-				fragmentShader: this.brightness2.fragmentShader,
-				transparent: true,
-				opacity: 0.5
-			});
-
-		} else {
-			this.materialAst1 = new MeshLambertMaterial({
-				color: 0xffb732,
-				transparent: true,
-				opacity: 0.9
-			});
-
-			this.materialAst2 = new MeshLambertMaterial({
-				color: 0xfee4c0,
-				transparent: true,
-				opacity: 0.9
-			});
-		}
-
-		let pos;
-		let posFixed;
-		if (this.astd !== 'spheres') {
-			// get positions from a json
-			// /! nu;brer of astd needed
-			posFixed = [
-				{ x: -40, y: -10, z: 80 },
-				{ x: -50, y: 5, z: 10 },
-				{ x: -30, y: -60, z: -20 },
-				{ x: -10, y: 40, z: -40 },
-				{ x: -60, y: 10, z: -40 },
-				{ x: 0, y: -40, z: -60 },
-				{ x: 30, y: 20, z: 60 },
-				{ x: 20, y: -20, z: -30 },
-				{ x: 50, y: -40, z: 30 },
-				{ x: 40, y: 20, z: -80 }
-			];
-
-		}
-
-
-		for (let i = 0; i < this.nbAst; i++) {
-
-			const rot = {
-				x: getRandom(-180, 180),
-				y: getRandom(-180, 180),
-				z: getRandom(-180, 180),
-			};
-			// Intra perimeter radius
-			const ipRadius = 50;
-
-			if (this.astd === 'spheres') {
-				pos = {
-					x: getRandom(-80, 80),
-					y: getRandom(-80, 80),
-					z: getRandom(-80, 80),
-				};
-
-				if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-					console.log(i, ' dans le périmetre !');
-					pos.x += ipRadius;
-					pos.y += ipRadius;
-					pos.z += ipRadius;
-
-				}
-			} else {
-				pos = posFixed[i];
-			}
-
-			//  force impulsion
-			const force = {
-				x: getRandom(-10, 10),
-				y: getRandom(-10, 10),
-				z: getRandom(-10, 10)
-			};
-
-			const scale = this.astd === 'spheres' ? 1 : getRandom(1, 4);
-			const speed = getRandom(500, 800); // more is slower
-			const range = getRandom(3, 8);
-			const timeRotate = getRandom(15000, 17000);
-
-			let finalMat;
-
-			if (i % 2 === 0) {
-				finalMat = this.materialAst1;
-			} else {
-				finalMat = this.materialAst2;
-			}
-
-			const asteroid = new Asteroid({
-				geometry,
-				material: finalMat,
-				pos,
-				rot,
-				force,
-				scale,
-				range,
-				speed,
-				timeRotate
-			});
-
-			if (this.gravity === true) {
-				// add physic body to world
-				asteroid.body = this.world.add(asteroid.physics);
-
-				// Set rotation impulsion
-				asteroid.body.angularVelocity.x = getRandom(-0.3, 0.3);
-				asteroid.body.angularVelocity.y = getRandom(-0.3, 0.3);
-				asteroid.body.angularVelocity.z = getRandom(-0.3, 0.3);
-			}
-
-			asteroid.mesh.index = i;
-
-			this.asteroids.push(asteroid);
-			this.asteroidsM.push(asteroid.mesh);
-
-			// add mesh to the scene
-			this.scene.add(asteroid.mesh);
-
-		}
-
-
 	}
 
 	setLight() {
-
-
-		let paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			{ x: -100, y: 0, z: 0 },
-			{ x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 170 },
-			{ x: 0, y: -0, z: 0 }
-		];
-
-		// Check Ambient Light
-		// scene.add( new THREE.AmbientLight( 0x00020 ) );
-
-		for (let i = 0; i < paramsLight.length; i++) {
-
-			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 600, 2);
-			// set its position
-			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			// pointLight.power = 20;
-			pointLight.visible = true;
-
-			// add to the scene
-			this.scene.add(pointLight);
-		}
-
-		// white spotlight shining from the side, casting a shadow
-
-		// var spotLight = new SpotLight(0xffffff);
-		// spotLight.position.set(0, 0, -100);
-		// spotLight.angle = toRadian(180);
-
-		// spotLight.castShadow = false;
-
-		// spotLight.shadow.mapSize.width = 1024;
-		// spotLight.shadow.mapSize.height = 1024;
-
-		// spotLight.shadow.camera.near = 500;
-		// spotLight.shadow.camera.far = 4;
-		// spotLight.shadow.camera.fov = 120;
-
-		// this.scene.add(spotLight);
-
-		// var directionalLight = new DirectionalLight(0xffffff, 0.5);
-		// this.scene.add(directionalLight);
 
 
 	}
@@ -779,9 +549,15 @@ export default class ProjectView extends AbstractView {
 		title.position.set(20, 0, 10);
 		title.scale.multiplyScalar(1 / 14);
 
+		// Prev project
+		const prevProject = new CssContainer('<div class="project__prev transi">Prev</div>', this.cssScene, this.cssObjects);
+		prevProject.position.set(0, -50, 10);
+		prevProject.scale.multiplyScalar(1 / 14);
+
+
 		// Next project
 		const nextProject = new CssContainer('<div class="project__next transi">Next</div>', this.cssScene, this.cssObjects);
-		nextProject.position.set(0, -15, 10);
+		nextProject.position.set(0, 50, 10);
 		nextProject.scale.multiplyScalar(1 / 14);
 
 		// Gallery
@@ -1300,33 +1076,7 @@ export default class ProjectView extends AbstractView {
 
 				}
 			});
-		} else {
-			// Rotate Symbol
-
-			// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-
-			// Asteroids meshs
-			this.asteroids.forEach( (el)=> {
-				// Move top and bottom --> Float effect
-				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-				// rotate
-				// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
-				el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-			});
-
 		}
-
-
-
-
-
-
-
 
 		// Glow continuously
 		// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.time / 30) + 1) / 5;
@@ -1397,9 +1147,9 @@ export default class ProjectView extends AbstractView {
 
 			if (this.glitch.stop !== true) {
 				if (this.glitch.hover === true ) {
-					this.glitch.raf();
+					this.glitch.render();
 				} else {
-					this.glitch.raf(true);
+					this.glitch.render(true);
 				}
 			}
 		}
@@ -1579,7 +1329,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.add(() => {
 			// remover overlay class
-			this.ui.overlay.classList.remove('black');
+			// this.ui.overlay.classList.remove('black');
 		});
 
 		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut

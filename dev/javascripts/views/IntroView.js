@@ -8,9 +8,10 @@ import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
 import Menu from '../components/Menu';
+import { loadJSON } from '../helpers/utils-three';
 
 
-import { Vector2, Raycaster, Vector3, Scene, Box3, DirectionalLight, JSONLoader, BoxGeometry, PerspectiveCamera, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, BoxGeometry, PerspectiveCamera, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -62,9 +63,9 @@ export default class IntroView extends AbstractView {
 
 		// preload Models
 		Promise.all([
-			this.loadJSON('datas/models/iceberg-1.json'),
-			this.loadJSON('datas/models/iceberg-2.json'),
-			this.loadJSON('datas/models/iceberg-3.json')
+			loadJSON('datas/models/iceberg-1.json'),
+			loadJSON('datas/models/iceberg-2.json'),
+			loadJSON('datas/models/iceberg-3.json')
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
@@ -84,26 +85,6 @@ export default class IntroView extends AbstractView {
 
 		// this.onClickStart();
 
-	}
-
-	loadJSON(source) {
-		this.loaderM = new JSONLoader();
-
-		return new Promise((resolve, reject) => {
-			this.loaderM.load(source, (geometry) => {
-
-				const model = geometry;
-
-				geometry.computeVertexNormals();
-				geometry.computeFaceNormals();
-
-				const mesh = new Mesh( model, new MeshBasicMaterial());
-				const box = new Box3().setFromObject( mesh );
-				model.size = box.getSize();
-
-				resolve(model);
-			});
-		});
 	}
 
 	events(method) {
@@ -372,7 +353,7 @@ export default class IntroView extends AbstractView {
 			let pos = {
 				x: getRandom(this.astXMin, this.astXMax),
 				y: 4,
-				z: getRandom(-600, -100),
+				z: getRandom(-550, 50),
 			};
 
 			//  force impulsion
@@ -726,6 +707,7 @@ export default class IntroView extends AbstractView {
 
 			// Move top and bottom --> Float effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
+			el.mesh.position.y = el.body.position.y = Math.min(el.mesh.position.y, el.height * el.scale);
 			if (el.animated === false) {
 				// el.mesh.position.y = el.body.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 			}
@@ -852,7 +834,7 @@ export default class IntroView extends AbstractView {
 		tl.to(this.UI.overlay, 1.5, {opacity: 0});
 		tl.add(() => {
 			this.moveCameraIn();
-		});
+		}, 1);
 		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=3');
 		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
 		tl.to(this.UI.button, 3, {opacity: 1});
@@ -959,19 +941,21 @@ export default class IntroView extends AbstractView {
 
 	transitionOut(dest) {
 
+
 		this.animating = true;
 
 		this.cameraMove = true;
 
-		const tl2 = new TimelineMax();
+		// const tl2 = new TimelineMax();
 
-		tl2.to(this.camera.position, 1, {y: 500});
-		tl2.to(this.camera.rotation, 2, {x: toRadian(0), ease: window.Expo.easeOut}, 0);
-		// tl2.to(this.camera.position, 2, {z: 0}, 2);
-		tl2.to(this.camera.position, 2, {z: -5000}, 1);
-		// tl2.to(this.camera.rotation, 2, {x: toRadian(90)})
+		// tl2.to(this.camera.position, 2, {y: 100, ease: window.Expo.easeOut});
+		// tl2.to(this.camera.rotation, 3, {x: toRadian(0), ease: window.Expo.easeOut}, 0);
+		// // tl2.to(this.camera.position, 2, {z: 0}, 2);
+		// tl2.to(this.camera.rotation, 2, {x: toRadian(45), ease: window.Expo.easeOut}, '-=1');
+		// tl2.to(this.camera.position, 4, {z: -5000, y: 2000}, '-=2');
+		// // tl2.to(this.camera.rotation, 2, {x: toRadian(90)})
 
-		return false;
+		// return false;
 
 		// if (this.animating === true) return false;
 
@@ -985,17 +969,25 @@ export default class IntroView extends AbstractView {
 				'z': this.camera.position.z
 			}, {
 				'x': 0,
-				'y': 640,
-				'z': 800
+				'y': 100,
+				'z': 0
+			}, {
+				'x': 0,
+				'y': 2000,
+				'z': -5000
 			}],
 			'lookat': [{
 				'x': 0,
-				'y': 40,
-				'z': 10
+				'y': 0,
+				'z': -1
+			}, {
+				'x': 0,
+				'y': 100, // symbol.endPointY = 2000;
+				'z': -300 // symbol.endPointZ = 5000;
 			}, {
 				'x': 0,
 				'y': 2000, // symbol.endPointY = 2000;
-				'z': 5000 // symbol.endPointZ = 5000;
+				'z': -5000 // symbol.endPointZ = 5000;
 			}]
 		};
 
@@ -1017,10 +1009,10 @@ export default class IntroView extends AbstractView {
 			}
 		});
 
-		tl.to(this.dolly, 2, {
+		tl.to(this.dolly, 3, {
 			cameraPosition: 1,
 			lookatPosition: 1,
-			ease: window.Power1.easeIn,
+			ease: window.Power4.easeIn,
 			onUpdate: () => {
 				this.dolly.update();
 			}
@@ -1028,7 +1020,7 @@ export default class IntroView extends AbstractView {
 
 		tl.to('.overlay', 0.5, {
 			opacity: 1
-		}, 1.7);
+		}, 2);
 
 	}
 

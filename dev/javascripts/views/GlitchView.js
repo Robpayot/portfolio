@@ -18,7 +18,7 @@ export default class GlitchView {
 		this.el.style.display = 'block';
 
 		// bind
-		this.raf = this.raf.bind(this);
+		this.render = this.render.bind(this);
 		this.resizeHandler = this.resizeHandler.bind(this);
 
 		if (this.debug !== true) {
@@ -56,7 +56,7 @@ export default class GlitchView {
 		let onListener = method === false ? 'off' : 'on';
 
 		EmitterManager[onListener]('resize', this.resizeHandler);
-		EmitterManager[onListener]('raf', this.raf);
+		EmitterManager[onListener]('raf', this.render);
 
 
 
@@ -108,7 +108,7 @@ export default class GlitchView {
 		if (this.debug === true) {
 			this.events(true);
 		} else {
-			this.raf();
+			this.render();
 		}
 
 	}
@@ -158,7 +158,7 @@ export default class GlitchView {
 		gui.close(); // start the control panel cloased
 	}
 
-	raf(calm = false) {
+	render(calm = false) {
 
 		this.phase += this.phaseStep;
 

@@ -3,6 +3,8 @@ import EmitterManager from './EmitterManager';
 import ProjectView from '../views/ProjectView';
 import IntroView from '../views/IntroView';
 import GlitchView from '../views/GlitchView';
+import LevitView from '../views/LevitView';
+import BlobView from '../views/BlobView';
 import data from '../../datas/data.json';
 import Menu from '../components/Menu';
 
@@ -73,13 +75,13 @@ class RouterManager {
 			case '/project-0':
 
 				if (this.project0 === null) {
-					this.currentPage = this.project0 = new ProjectView({
+					this.currentPage = this.project0 = new LevitView({
 						id: 0,
 						bkg: 0x0101010,
-						astd: 'spheres',
+						astd: 'cubes',
 						gravity: false,
 						pointsLight: true,
-						glow: true,
+						glow: false,
 						alt: false,
 						data: data.projects[0],
 						fromUrl
@@ -94,14 +96,14 @@ class RouterManager {
 			case '/project-1':
 
 				if (this.project1 === null) {
-					this.currentPage = this.project1 = new ProjectView({
+					this.currentPage = this.project1 = new BlobView({
 						id: 1,
-						bkg: 0xcafefd,
-						astd: 'cubes',
+						bkg: 0x0101010,
+						astd: 'spheres',
 						gravity: false,
-						pointsLight: false,
-						glow: false,
-						alt: true,
+						pointsLight: true,
+						glow: true,
+						alt: false,
 						data: data.projects[1],
 						fromUrl
 					});
