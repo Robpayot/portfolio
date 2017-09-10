@@ -1,16 +1,9 @@
 import ProjectView from '../views/ProjectView';
-import EmitterManager from '../managers/EmitterManager';
-import SoundManager from '../managers/SoundManager';
-import { getRandom, toRadian, clamp, round } from '../helpers/utils';
+import { getRandom, toRadian } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
-import PreloadManager from '../managers/PreloadManager';
-
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
-import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
-import OrbitControls from '../vendors/OrbitControls';
-import { CameraDolly } from '../vendors/three-camera-dolly-custom';
+import { MeshLambertMaterial, PointLight } from 'three';
 import Asteroid from '../shapes/Asteroid';
 
 
@@ -35,7 +28,6 @@ export default class Levit extends ProjectView {
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
-			console.log(this.models);
 			this.init();
 
 		}, (err) => {
@@ -182,30 +174,25 @@ export default class Levit extends ProjectView {
 	}
 
 	raf() {
-		// Rotate Symbol
-
-		// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-		// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-		// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
 
 		// Asteroids meshs
 		this.asteroids.forEach( (el)=> {
-			// Move top and bottom --> Float effect
+
+			// Move top and bottom --> Levit effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
 			el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
 			// rotate
-			// console.log(Math.sin(this.time * 2 * Math.PI / 5000) * (360 / 2) + (360 / 2));
+
 			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			// el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 			el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
-			// console.log(el.mesh.rotation.x);
+
 			// if (el.mesh.index === 0) {
 			// 	console.log(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeZ, el.rotateRangeZ);
 			// }
 		});
 
 		super.raf();
-		return false;
 	}
 
 }
