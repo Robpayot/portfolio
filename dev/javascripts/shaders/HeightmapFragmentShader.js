@@ -8,6 +8,7 @@ class HeightmapFragmentShader {
 			'#include <common>',
 
 			'uniform vec2 mousePos;',
+			'uniform vec2 debug;',
 			'uniform float mouseSize;',
 			'uniform float viscosityConstant;',
 
@@ -36,7 +37,8 @@ class HeightmapFragmentShader {
 				'float accel = sump * GRAVITY_CONSTANT;',
 
 				// Dynamics
-				'heightmapValue.y += accel;',
+				'heightmapValue.y += accel;', // ça monte lentement si += accel. Il faut réussir à clamp cette valeur
+				// 'heightmapValue.y = clamp(heightmapValue.y,0.0,3.0);',
 				'heightmapValue.x += heightmapValue.y * deltaTime;',
 
 				// Viscosity
@@ -44,6 +46,18 @@ class HeightmapFragmentShader {
 				// Mouse influence,
 				'float mousePhase = clamp( length( ( uv - vec2( 0.5 ) ) * BOUNDS - vec2( mousePos.x, - mousePos.y ) ) * PI / mouseSize, 0.0, PI );',
 				'heightmapValue.x += cos( mousePhase ) + 1.0;',
+				// 'heightmapValue.x = -10.0;',
+
+				// 'heightmapValue.x = clamp(heightmapValue.x,-10.0,1.0);', // clamp wave height and depth
+				// 'heightmapValue.x = 5.0;',
+
+				// Problem : Waves go up
+				// if x and y = constant. Problem is resolved, but no waves
+				// If y constant, it's constant but no wave cause x is based on y
+				// If x constant, and y move, it's constant, but no waves.
+				// If y = accel, it's constant but weird waves Or its going up but very slowly
+
+				// Plus heightmapValue.x est fort, plus son heightmapValue.y est haut, pareil négatif
 
 				'gl_FragColor = heightmapValue;',
 

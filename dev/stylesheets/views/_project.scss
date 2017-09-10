@@ -180,7 +180,7 @@
         }
     }
 
-    &__next {
+    &__next, &__prev {
         font-size: 40px;
         display: inline-block;
         vertical-align: middle;
@@ -195,6 +195,12 @@
             transform: scale(1.15) !important;
         }
     }
+
+    &__prev {
+    	display: none;
+    }
+
+
 
     .link {
         img {
