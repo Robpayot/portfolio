@@ -1,10 +1,10 @@
 import EmitterManager from './EmitterManager';
 // import PreloadManager from './PreloadManager';
-import ProjectView from '../views/ProjectView';
+// import ProjectView from '../views/ProjectView';
 import IntroView from '../views/IntroView';
-import GlitchView from '../views/GlitchView';
-import LevitView from '../views/LevitView';
-import BlobView from '../views/BlobView';
+import Glitch from '../components/Glitch';
+import Levit from '../projects/Levit';
+import Blob from '../projects/Blob';
 import data from '../../datas/data.json';
 import Menu from '../components/Menu';
 
@@ -75,7 +75,7 @@ class RouterManager {
 			case '/project-0':
 
 				if (this.project0 === null) {
-					this.currentPage = this.project0 = new LevitView({
+					this.currentPage = this.project0 = new Levit({
 						id: 0,
 						bkg: 0x0101010,
 						astd: 'cubes',
@@ -96,7 +96,7 @@ class RouterManager {
 			case '/project-1':
 
 				if (this.project1 === null) {
-					this.currentPage = this.project1 = new BlobView({
+					this.currentPage = this.project1 = new Blob({
 						id: 1,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -124,7 +124,7 @@ class RouterManager {
 
 			case '/glitch':
 
-				this.currentPage = new GlitchView({
+				this.currentPage = new Glitch({
 					el: document.querySelector('.glitch'),
 					txt: 'AKTR',
 					color: 'rgb(41,64,16)',

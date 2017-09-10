@@ -5,7 +5,7 @@ import PreloadManager from '../managers/PreloadManager';
 import dat from 'dat-gui';
 import { getRandom } from '../helpers/utils';
 
-export default class GlitchView {
+export default class Glitch {
 
 	constructor(obj) {
 

@@ -1,4 +1,4 @@
-import ProjectView from './ProjectView';
+import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
@@ -18,7 +18,7 @@ import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltS
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 
 
-export default class LevitView extends ProjectView {
+export default class Blob extends ProjectView {
 
 	constructor(obj) {
 

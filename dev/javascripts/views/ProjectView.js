@@ -16,7 +16,7 @@ import Ui from '../components/Ui';
 import Menu from '../components/Menu';
 import Handlebars from 'handlebars';
 
-import GlitchView from './GlitchView';
+import Glitch from '../components/Glitch';
 
 
 // THREE JS
@@ -352,7 +352,7 @@ export default class ProjectView extends AbstractView {
 			this.ui.projectContainer = this.el.querySelector('.project__container');
 			this.ui.projectImg = this.el.querySelectorAll('.project__image img')[0];
 
-			this.glitch = new GlitchView({
+			this.glitch = new Glitch({
 				el: this.el.querySelector('.glitch'),
 				color: this.data.color,
 				txt: this.data.title

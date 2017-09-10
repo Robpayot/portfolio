@@ -1,4 +1,4 @@
-import ProjectView from './ProjectView';
+import ProjectView from '../views/ProjectView';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
 import { getRandom, toRadian, clamp, round } from '../helpers/utils';
@@ -18,7 +18,7 @@ import Asteroid from '../shapes/Asteroid';
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 
 
-export default class LevitView extends ProjectView {
+export default class Levit extends ProjectView {
 
 	constructor(obj) {
 
