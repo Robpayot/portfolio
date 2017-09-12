@@ -5,6 +5,7 @@ import IntroView from '../views/IntroView';
 import Glitch from '../components/Glitch';
 import Levit from '../projects/Levit';
 import Blob from '../projects/Blob';
+import Stars from '../projects/Stars';
 import data from '../../datas/data.json';
 import Menu from '../components/Menu';
 
@@ -83,7 +84,6 @@ class RouterManager {
 						astd: 'cubes',
 						gravity: false,
 						pointsLight: true,
-						glow: false,
 						alt: false,
 						data: data.projects[0],
 						fromUrl
@@ -99,13 +99,12 @@ class RouterManager {
 			case '/project-1':
 
 				if (this.project1 === null) {
-					this.currentPage = this.project1 = new Blob({
+					this.currentPage = this.project1 = new Stars({
 						id: 1,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
-						glow: true,
 						alt: false,
 						data: data.projects[1],
 						fromUrl
@@ -126,7 +125,6 @@ class RouterManager {
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
-						glow: true,
 						alt: false,
 						data: data.projects[2],
 						fromUrl

@@ -49,7 +49,6 @@ export default class ProjectView extends AbstractView {
 		this.astd = obj.astd;
 		this.gravity = obj.gravity;
 		this.pointsLight = obj.pointsLight;
-		this.glow = obj.glow;
 		this.alt = obj.alt;
 		this.fromUrl = obj.fromUrl;
 		this.sound = SoundManager;
@@ -1035,13 +1034,6 @@ export default class ProjectView extends AbstractView {
 			// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
 		}
 
-
-		// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
-		if (this.glow === true) {
-			// Glow brightness material Asteroids
-			this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
-			this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
-		}
 
 		// scroll gallery
 		if (this.initGalleryY) {

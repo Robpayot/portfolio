@@ -227,6 +227,9 @@ export default class Blob extends ProjectView {
 		// 		}
 		// 	});
 		// }
+		// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
+		this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
+		this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
 
 		super.raf();
 
