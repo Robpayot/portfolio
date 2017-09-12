@@ -22,6 +22,8 @@ export default class Blob extends ProjectView {
 
 		super(obj);
 
+		this.nbAst = 10;
+
 		this.init();
 
 

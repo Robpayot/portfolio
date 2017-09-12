@@ -124,11 +124,10 @@ export default class ProjectView extends AbstractView {
 	init() {
 
 
-		this.isControls = false;
+		this.isControls = true;
 
 		this.cssObjects = [];
 		this.time = 1;
-		this.nbAst = 10;
 		this.finalFov = 45;
 		this.composer = null;
 		this.bounceArea = 480;

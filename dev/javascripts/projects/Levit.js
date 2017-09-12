@@ -20,6 +20,8 @@ export default class Levit extends ProjectView {
 		// bind
 		this.setAsteroids = this.setAsteroids.bind(this);
 
+		this.nbAst = 10;
+
 		// preload Models
 		Promise.all([
 			loadJSON('datas/models/iceberg-1.json'),
