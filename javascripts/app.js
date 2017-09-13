@@ -1194,16 +1194,61 @@ function loadJSON(source) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.oscillate = oscillate;
+exports.toDegree = toDegree;
+exports.toRadian = toRadian;
+exports.clamp = clamp;
+exports.round = round;
 exports.findAncestor = findAncestor;
 exports.getRandom = getRandom;
 exports.elementInViewport = elementInViewport;
 exports.browser = browser;
 exports.getOffsetTop = getOffsetTop;
-exports.toDegree = toDegree;
-exports.toRadian = toRadian;
-exports.clamp = clamp;
-exports.round = round;
 exports.getIndex = getIndex;
+// Math
+
+function oscillate(val1, val2) {
+
+	var coef = void 0;
+	var add = void 0;
+
+	if (val1 < 0 && val2 < 0 || val1 >= 0 && val2 >= 0) {
+		coef = Math.abs(val1 - val2) / 2;
+		add = coef + Math.min(val1, val2);
+		console.log('poulet');
+	} else {
+		coef = (Math.abs(val1) + Math.abs(val2)) / 2;
+		add = (val1 + val2) / 2;
+	}
+
+	return {
+		coef: coef,
+		add: add
+	};
+}
+
+function toDegree(radians) {
+
+	return radians * 180 / Math.PI;
+}
+
+function toRadian(degrees) {
+
+	return degrees * Math.PI / 180;
+}
+
+function clamp(value, min, max) {
+
+	return Math.min(Math.max(value, min), max);
+}
+
+function round(value, dec) {
+
+	return Math.round(value * dec) / dec;
+}
+
+// DOM
+
 function findAncestor(el, cls) {
 	while ((el = el.parentElement) && !el.classList.contains(cls)) {}
 	return el;
@@ -1254,26 +1299,6 @@ function getOffsetTop(elem) {
 		}
 	} while (elem = elem.offsetParent);
 	return offsetTop;
-}
-
-function toDegree(radians) {
-
-	return radians * 180 / Math.PI;
-}
-
-function toRadian(degrees) {
-
-	return degrees * Math.PI / 180;
-}
-
-function clamp(value, min, max) {
-
-	return Math.min(Math.max(value, min), max);
-}
-
-function round(value, dec) {
-
-	return Math.round(value * dec) / dec;
 }
 
 function getIndex(el) {
@@ -2401,6 +2426,8 @@ var Levit = function (_ProjectView) {
 				this.scene.add(asteroid.mesh);
 			}
 			// super.setAsteroids(this.models[0].geometry);
+
+			console.log(this.asteroids);
 		}
 	}, {
 		key: 'setLight',
@@ -2508,10 +2535,6 @@ var _utilsThree = require('../helpers/utils-three');
 
 var _three = require('three');
 
-var _Asteroid = require('../shapes/Asteroid');
-
-var _Asteroid2 = _interopRequireDefault(_Asteroid);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2537,7 +2560,7 @@ var Stars = function (_ProjectView) {
 
 		var _this = _possibleConstructorReturn(this, (Stars.__proto__ || Object.getPrototypeOf(Stars)).call(this, obj));
 
-		_this.nbAst = 30;
+		_this.nbAst = 200;
 
 		_this.init();
 
@@ -2552,66 +2575,105 @@ var Stars = function (_ProjectView) {
 
 			this.asteroids = [];
 			this.asteroidsM = [];
+			this.uniforms = [];
 
 			var img = _PreloadManager2.default.getResult('texture-star');
-
-			var shaderPoint = _three.ShaderLib.points;
-			var uniforms = _three.UniformsUtils.clone(shaderPoint.uniforms);
 
 			// create point
 			var geometry = new _three.Geometry();
 			geometry.vertices.push(new _three.Vector3(0, 0, 0));
 
-			uniforms.map.value = new _three.Texture(img);
-			uniforms.map.value.needsUpdate = true;
-			uniforms.size.value = 2;
-			uniforms.scale.value = window.innerHeight * 1;
-			uniforms.diffuse.value = new _three.Color(0xEF1300);
-			uniforms.fogColor.value = new _three.Color(0x000000);
+			var shaderPoint = _three.ShaderLib.points;
 
-			// for (let i = 0; i < this.nbAst; i++) {
+			this.nbUnif = 5;
+			this.topY = 35;
+			this.bottomY = -15;
 
-			var scale = (0, _utils.getRandom)(1, 4);
-			var speed = (0, _utils.getRandom)(400, 700); // more is slower
-			var range = (0, _utils.getRandom)(3, 8);
-			var pos = {
-				x: (0, _utils.getRandom)(-80, 80),
-				y: (0, _utils.getRandom)(-80, 80),
-				z: (0, _utils.getRandom)(-80, 80)
-			};
+			for (var i = 0; i < this.nbUnif; i++) {
 
-			var asteroid = {
-				pos: pos
-			};
+				var uniforms = _three.UniformsUtils.clone(shaderPoint.uniforms);
+				uniforms.map.value = new _three.Texture(img);
+				uniforms.map.value.needsUpdate = true;
+				uniforms.scale.value = window.innerHeight * 1;
 
-			asteroid.mesh = new _three.Points(geometry, /* material || */new _three.ShaderMaterial({
-				uniforms: uniforms,
-				defines: {
-					USE_MAP: '',
-					USE_SIZEATTENUATION: ''
-				},
-				transparent: true,
-				// alphaTest: .4,
-				depthWrite: false,
-				// depthTest: false,
-				blending: _three.AdditiveBlending,
-				vertexShader: shaderPoint.vertexShader,
-				fragmentShader: shaderPoint.fragmentShader
-			}));
+				switch (i) {
+					case 0:
+						uniforms.offset = 300;
+						uniforms.time = 600;
+						uniforms.range = (0, _utils.oscillate)(0.4, 0.5);
+						uniforms.diffuse.value = new _three.Color(0xEF1300);
+						break;
+					case 1:
+						uniforms.offset = 1000;
+						uniforms.time = 700;
+						uniforms.range = (0, _utils.oscillate)(0.4, 0.8);
+						uniforms.diffuse.value = new _three.Color(0xEF1300);
+						break;
+					case 2:
+						uniforms.offset = 200;
+						uniforms.time = 200;
+						uniforms.range = (0, _utils.oscillate)(0.5, 0.9);
+						uniforms.diffuse.value = new _three.Color(0xEF1300);
+						break;
+					case 3:
+						uniforms.offset = 400;
+						uniforms.time = 200;
+						uniforms.range = (0, _utils.oscillate)(0.3, 0.5);
+						uniforms.diffuse.value = new _three.Color(0xEF4007);
+						break;
+					case 4:
+						uniforms.offset = 700;
+						uniforms.time = 1000;
+						uniforms.range = (0, _utils.oscillate)(0.4, 0.7);
+						uniforms.diffuse.value = new _three.Color(0xEF4007);
+						break;
+				}
 
-			// asteroid.mesh.index = i;
-			asteroid.mesh.position.set(0, 0, 0);
+				// uniforms.fogColor.value = new Color(0x000000);
+				this.uniforms.push(uniforms);
+			}
 
-			this.asteroids.push(asteroid);
-			this.asteroidsM.push(asteroid.mesh);
+			for (var _i = 0; _i < this.nbAst; _i++) {
 
-			// add mesh to the scene
-			this.scene.add(asteroid.mesh);
+				var range = (0, _utils.getRandom)(3, 8);
+
+				var pos = {
+					x: (0, _utils.getRandom)(-60, 60),
+					y: (0, _utils.getRandom)(this.bottomY, this.topY),
+					z: (0, _utils.getRandom)(-60, 60)
+				};
+
+				var random = Math.round((0, _utils.getRandom)(0, this.nbUnif - 1));
+
+				var asteroid = new _three.Points(geometry, /* material || */new _three.ShaderMaterial({
+					uniforms: this.uniforms[random],
+					defines: {
+						USE_MAP: '',
+						USE_SIZEATTENUATION: ''
+					},
+					transparent: true,
+					// alphaTest: .4,
+					depthWrite: false,
+					// depthTest: false,
+					blending: _three.AdditiveBlending,
+					vertexShader: shaderPoint.vertexShader,
+					fragmentShader: shaderPoint.fragmentShader
+				}));
+
+				asteroid.progress = 0;
+				asteroid.position.set(pos.x, pos.y, pos.z);
+				asteroid.initPosY = pos.y;
+				asteroid.initPosX = pos.x;
+				asteroid.coefX = (0, _utils.getRandom)(0.3, 1);
+				asteroid.time = (0, _utils.getRandom)(0.01, 0.02); // more is slower
+
+				// asteroid.scale.set(20, 20, 20); --> won't work
+
+				this.asteroidsM.push(asteroid);
+
+				this.scene.add(asteroid);
+			}
 		}
-		// super.setAsteroids(this.models[0].geometry);
-
-		// }
-
 	}, {
 		key: 'setLight',
 		value: function setLight() {
@@ -2626,7 +2688,7 @@ var Stars = function (_ProjectView) {
 			for (var i = 0; i < paramsLight.length; i++) {
 
 				// create a point light
-				var pointLight = new _three.PointLight(0xFFFFFF, 0.8, 600, 2);
+				var pointLight = new _three.PointLight(0xFFFFFF, 0.8, 480, 2);
 				// set its position
 				pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 				// pointLight.power = 20;
@@ -2635,26 +2697,6 @@ var Stars = function (_ProjectView) {
 				// add to the scene
 				this.scene.add(pointLight);
 			}
-
-			// white spotlight shining from the side, casting a shadow
-
-			// var spotLight = new SpotLight(0xffffff);
-			// spotLight.position.set(0, 0, -100);
-			// spotLight.angle = toRadian(180);
-
-			// spotLight.castShadow = false;
-
-			// spotLight.shadow.mapSize.width = 1024;
-			// spotLight.shadow.mapSize.height = 1024;
-
-			// spotLight.shadow.camera.near = 500;
-			// spotLight.shadow.camera.far = 4;
-			// spotLight.shadow.camera.fov = 120;
-
-			// this.scene.add(spotLight);
-
-			// var directionalLight = new DirectionalLight(0xffffff, 0.5);
-			// this.scene.add(directionalLight);
 		}
 	}, {
 		key: 'onChangeAst',
@@ -2667,22 +2709,27 @@ var Stars = function (_ProjectView) {
 		value: function raf() {
 			var _this2 = this;
 
-			// Asteroids meshs
-			this.asteroids.forEach(function (el) {
+			// update uniforms
 
-				// Move top and bottom --> Levit effect
-				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.endY + Math.sin(_this2.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-				// rotate
-
-				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				// el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateZ + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ); // -30 to 30 deg rotation
-
-				// if (el.mesh.index === 0) {
-				// 	console.log(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeZ, el.rotateRangeZ);
-				// }
+			this.uniforms.forEach(function (el) {
+				el.size.value = Math.sin((_this2.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
 			});
+
+			// Asteroids meshs
+			this.asteroidsM.forEach(function (el) {
+
+				if (el.position.y < _this2.bottomY) {
+					// reset
+					el.progress = 0;
+					el.initPosY = (0, _utils.getRandom)(_this2.topY - 5, _this2.topY);
+				}
+				el.progress += el.time;
+				el.position.y = el.initPosY - el.progress + _this2.camRotSmooth.x * 100 * el.coefX;
+
+				el.position.x = el.initPosX - _this2.camRotSmooth.y * 100 * el.coefX;
+			});
+
+			// console.log(-this.camRotSmooth.y * 70);
 
 			_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'raf', this).call(this);
 		}
@@ -2693,7 +2740,7 @@ var Stars = function (_ProjectView) {
 
 exports.default = Stars;
 
-},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/PreloadManager":14,"../shapes/Asteroid":30,"../views/ProjectView":44,"three":104}],22:[function(require,module,exports){
+},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/PreloadManager":14,"../views/ProjectView":44,"three":104}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9462,16 +9509,16 @@ var ProjectView = function (_AbstractView) {
 
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+			// const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
-			if (intersectsAst.length > 0) {
-				this.ui.body.style.cursor = 'pointer';
-				this.clickAsteroid = true;
-				this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-			} else {
-				// this.ui.body.style.cursor = 'auto';
-				this.clickAsteroid = false;
-			}
+			// if (intersectsAst.length > 0) {
+			// 	this.ui.body.style.cursor = 'pointer';
+			// 	this.clickAsteroid = true;
+			// 	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+			// } else {
+			// 	// this.ui.body.style.cursor = 'auto';
+			// 	this.clickAsteroid = false;
+			// }
 
 			// Glow continuously
 			// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.time / 30) + 1) / 5;
