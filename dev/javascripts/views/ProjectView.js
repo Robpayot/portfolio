@@ -1011,16 +1011,16 @@ export default class ProjectView extends AbstractView {
 
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+		// const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
-		if (intersectsAst.length > 0) {
-			this.ui.body.style.cursor = 'pointer';
-			this.clickAsteroid = true;
-			this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-		} else {
-			// this.ui.body.style.cursor = 'auto';
-			this.clickAsteroid = false;
-		}
+		// if (intersectsAst.length > 0) {
+		// 	this.ui.body.style.cursor = 'pointer';
+		// 	this.clickAsteroid = true;
+		// 	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
+		// } else {
+		// 	// this.ui.body.style.cursor = 'auto';
+		// 	this.clickAsteroid = false;
+		// }
 
 		// Glow continuously
 		// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.time / 30) + 1) / 5;

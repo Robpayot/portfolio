@@ -1,11 +1,10 @@
 import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
-import { getRandom, toRadian } from '../helpers/utils';
+import { getRandom, toRadian, oscillate, round } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
 
 // THREE JS
-import { MeshLambertMaterial, PointLight, Geometry, Vector3,PointsMaterial, SphereGeometry,PlaneGeometry, MeshBasicMaterial, Mesh, BoxGeometry, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, IcosahedronGeometry, Color, Texture } from 'three';
-import Asteroid from '../shapes/Asteroid';
+import { MeshLambertMaterial, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
 
 
 // POSTPROCESSING
@@ -20,7 +19,7 @@ export default class Stars extends ProjectView {
 
 		// bind
 
-		this.nbAst = 30;
+		this.nbAst = 200;
 
 		this.init();
 
@@ -32,11 +31,9 @@ export default class Stars extends ProjectView {
 
 		this.asteroids = [];
 		this.asteroidsM = [];
+		this.uniforms = [];
 
 		const img = PreloadManager.getResult('texture-star');
-
-		const shaderPoint = ShaderLib.points;
-		let uniforms = UniformsUtils.clone(shaderPoint.uniforms);
 
 		// create point
 		const geometry = new Geometry();
@@ -44,30 +41,72 @@ export default class Stars extends ProjectView {
 			new Vector3( 0, 0, 0 )
 		);
 
-		uniforms.map.value = new Texture(img);
-		uniforms.map.value.needsUpdate = true;
-		uniforms.size.value = 2;
-		uniforms.scale.value = window.innerHeight * 1;
-		uniforms.diffuse.value = new Color(0xEF1300);
-		uniforms.fogColor.value = new Color(0x000000);
+		const shaderPoint = ShaderLib.points;
 
-		// for (let i = 0; i < this.nbAst; i++) {
+		this.nbUnif = 5;
+		this.topY = 35;
+		this.bottomY = -15;
 
-			const scale = getRandom(1, 4);
-			const speed = getRandom(400, 700); // more is slower
+		for (let i = 0; i < this.nbUnif; i++) {
+
+			let uniforms = UniformsUtils.clone(shaderPoint.uniforms);
+			uniforms.map.value = new Texture(img);
+			uniforms.map.value.needsUpdate = true;
+			uniforms.scale.value = window.innerHeight * 1;
+
+			switch (i) {
+				case 0:
+					uniforms.offset = 300;
+					uniforms.time = 600;
+					uniforms.range = oscillate(0.4,0.5);
+					uniforms.diffuse.value = new Color(0xEF1300);
+					break;
+				case 1:
+					uniforms.offset = 1000;
+					uniforms.time = 700;
+					uniforms.range = oscillate(0.4,0.8);
+					uniforms.diffuse.value = new Color(0xEF1300);
+					break;
+				case 2:
+					uniforms.offset = 200;
+					uniforms.time = 200;
+					uniforms.range = oscillate(0.5,0.9);
+					uniforms.diffuse.value = new Color(0xEF1300);
+					break;
+				case 3:
+					uniforms.offset = 400;
+					uniforms.time = 200;
+					uniforms.range = oscillate(0.3,0.5);
+					uniforms.diffuse.value = new Color(0xEF4007);
+					break;
+				case 4:
+					uniforms.offset = 700;
+					uniforms.time = 1000;
+					uniforms.range = oscillate(0.4,0.7);
+					uniforms.diffuse.value = new Color(0xEF4007);
+					break;
+			}
+
+			// uniforms.fogColor.value = new Color(0x000000);
+			this.uniforms.push(uniforms);
+
+		}
+
+
+		for (let i = 0; i < this.nbAst; i++) {
+
 			const range = getRandom(3, 8);
+
 			const pos = {
-				x: getRandom(-80, 80),
-				y: getRandom(-80, 80),
-				z: getRandom(-80, 80),
+				x: getRandom(-60, 60),
+				y: getRandom(this.bottomY, this.topY),
+				z: getRandom(-60, 60),
 			};
 
-			const asteroid = {
-				pos
-			};
+			const random = Math.round(getRandom(0,this.nbUnif - 1));
 
-			asteroid.mesh = new Points(geometry, /* material || */ new ShaderMaterial({
-				uniforms: uniforms,
+			const asteroid = new Points(geometry, /* material || */ new ShaderMaterial({
+				uniforms: this.uniforms[random],
 				defines: {
 					USE_MAP: '',
 					USE_SIZEATTENUATION: ''
@@ -81,19 +120,22 @@ export default class Stars extends ProjectView {
 				fragmentShader: shaderPoint.fragmentShader
 			}));
 
-			// asteroid.mesh.index = i;
-			asteroid.mesh.position.set(0,0,0);
+			asteroid.progress = 0;
+			asteroid.position.set(pos.x, pos.y, pos.z);
+			asteroid.initPosY = pos.y;
+			asteroid.initPosX = pos.x;
+			asteroid.coefX = getRandom(0.3, 1);
+			asteroid.time = getRandom(0.01, 0.02); // more is slower
 
-			this.asteroids.push(asteroid);
-			this.asteroidsM.push(asteroid.mesh);
+			// asteroid.scale.set(20, 20, 20); --> won't work
 
-			// add mesh to the scene
-			this.scene.add(asteroid.mesh);
+			this.asteroidsM.push(asteroid);
+
+			this.scene.add(asteroid);
 
 		}
-		// super.setAsteroids(this.models[0].geometry);
 
-	// }
+	}
 
 	setLight() {
 
@@ -111,7 +153,7 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < paramsLight.length; i++) {
 
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 600, 2);
+			let pointLight = new PointLight(0xFFFFFF, 0.8, 480, 2);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -121,25 +163,6 @@ export default class Stars extends ProjectView {
 			this.scene.add(pointLight);
 		}
 
-		// white spotlight shining from the side, casting a shadow
-
-		// var spotLight = new SpotLight(0xffffff);
-		// spotLight.position.set(0, 0, -100);
-		// spotLight.angle = toRadian(180);
-
-		// spotLight.castShadow = false;
-
-		// spotLight.shadow.mapSize.width = 1024;
-		// spotLight.shadow.mapSize.height = 1024;
-
-		// spotLight.shadow.camera.near = 500;
-		// spotLight.shadow.camera.far = 4;
-		// spotLight.shadow.camera.fov = 120;
-
-		// this.scene.add(spotLight);
-
-		// var directionalLight = new DirectionalLight(0xffffff, 0.5);
-		// this.scene.add(directionalLight);
 	}
 
 	onChangeAst() {
@@ -149,22 +172,28 @@ export default class Stars extends ProjectView {
 
 	raf() {
 
-		// Asteroids meshs
-		this.asteroids.forEach( (el)=> {
+		// update uniforms
 
-			// Move top and bottom --> Levit effect
-			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-			// rotate
-
-			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-			// el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-			el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
-
-			// if (el.mesh.index === 0) {
-			// 	console.log(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeZ, el.rotateRangeZ);
-			// }
+		this.uniforms.forEach( (el)=> {
+			el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
 		});
+
+		// Asteroids meshs
+		this.asteroidsM.forEach( (el)=> {
+
+			if (el.position.y < this.bottomY) {
+				// reset
+				el.progress = 0;
+				el.initPosY = getRandom(this.topY - 5, this.topY);
+			}
+			el.progress +=  el.time;
+			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
+
+			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
+
+		});
+
+		// console.log(-this.camRotSmooth.y * 70);
 
 		super.raf();
 	}

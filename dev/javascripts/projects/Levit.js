@@ -121,6 +121,8 @@ export default class Levit extends ProjectView {
 		}
 		// super.setAsteroids(this.models[0].geometry);
 
+		console.log(this.asteroids);
+
 	}
 
 	setLight() {
