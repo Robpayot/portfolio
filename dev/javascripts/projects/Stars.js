@@ -6,7 +6,7 @@ import SceneManager from '../managers/SceneManager';
 
 
 // THREE JS
-import { MeshLambertMaterial, Clock, Math as MathThree, Scene, WebGLRenderer, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrbitControls, OrthographicCamera, PerspectiveCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import { MeshLambertMaterial, SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrbitControls, OrthographicCamera, PerspectiveCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
 import BufferGeometryUtils from './BufferGeometryUtils';
 import ShaderTerrain from './ShaderTerrain';
 
@@ -24,7 +24,7 @@ export default class Stars extends ProjectView {
 		this.setTerrain = this.setTerrain.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 
-		this.nbAst = 100;
+		this.nbAst = 150;
 
 		this.init();
 
@@ -40,10 +40,10 @@ export default class Stars extends ProjectView {
 		let SCREEN_WIDTH = window.innerWidth;
 		let SCREEN_HEIGHT = window.innerHeight;
 
-		let camera;
-
-		this.animDelta = 0, this.animDeltaDir = -1;
-		this.lightVal = 0, this.lightDir = 1;
+		this.animDelta = 0;
+		this.animDeltaDir = -1;
+		this.lightVal = 0;
+		this.lightDir = 1;
 
 		this.clock = new Clock();
 
@@ -73,8 +73,12 @@ export default class Stars extends ProjectView {
 		// var normalShader = NormalMapShader;
 
 		// NormalMap shader
+		this.size = 150;
+		this.scaleHeight = 30;
+		this.tPosY = -20 - this.scaleHeight;
 
-		let rx = 256, ry = 256;
+		this.nbVertices = 150; /// ???
+		let rx = this.nbVertices, ry = this.nbVertices; // lié à PlaneBufferGeometry ???
 		let pars = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat };
 
 		this.heightMap  = new WebGLRenderTarget( rx, ry, pars );
@@ -83,7 +87,7 @@ export default class Stars extends ProjectView {
 		this.uniformsNoise = {
 
 			time:   { value: 1.0 },
-			scale:  { value: new Vector2( 1.5, 1.5 ) },
+			scale:  { value: new Vector2( 0.7, 0.7 ) },
 			offset: { value: new Vector2( 0, 0 ) }
 
 		}; /// HeightMap noise ????
@@ -120,12 +124,12 @@ export default class Stars extends ProjectView {
 		this.uniformsTerrain[ 'enableDiffuse2' ].value = false;
 		this.uniformsTerrain[ 'enableSpecular' ].value = true;
 
-		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x00FFFF ); // diffuse color : 0x343434
+		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x343434 ); // diffuse color : 0x343434
 		this.uniformsTerrain[ 'specular' ].value.setHex( 0xffffff );
 
-		this.uniformsTerrain[ 'shininess' ].value = 1000; // shininess of material
+		this.uniformsTerrain[ 'shininess' ].value = 100; // shininess of material
 
-		this.uniformsTerrain[ 'uDisplacementScale' ].value = 155; // max height of mountains
+		this.uniformsTerrain[ 'uDisplacementScale' ].value = this.scaleHeight; // max height of mountains
 
 		this.uniformsTerrain[ 'uRepeatOverlay' ].value.set( 6, 6 ); // ?
 
@@ -160,32 +164,17 @@ export default class Stars extends ProjectView {
 
 		// TERRAIN MESH
 
-		const geometryTerrain = new PlaneBufferGeometry( 800, 800, 516, 516 );
+		const geometryTerrain = new PlaneBufferGeometry( this.size, this.size, this.nbVertices, this.nbVertices ); // augmenter le nombre de vertices
 
 		BufferGeometryUtils.computeTangents( geometryTerrain ); //??? Boucle ? wtf
 
 		this.terrain = new Mesh( geometryTerrain, this.mlib[ 'terrain' ] );
-		this.terrain.position.set( 0, -125, 0 );
-		this.terrain.rotation.x = -Math.PI / 2;
+		this.terrain.position.set( 0, this.tPosY, -50 );
+		this.terrain.rotation.x = toRadian(-70);
+		this.terrain.rotation.z = toRadian(-45);
 		this.scene.add( this.terrain );
 
-		// RENDERER
-
-		// renderer = new WebGLRenderer();
-		// renderer.setPixelRatio( window.devicePixelRatio );
-		// renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
-		// container.appendChild( renderer.domElement );
-
-		// STATS
-
-		// stats = new Stats();
-		// container.appendChild( stats.dom );
-
 		// EVENTS
-
-		// onWindowResize();
-
-		// window.addEventListener( 'resize', onWindowResize, false );
 
 		document.addEventListener( 'keydown', this.onKeyDown, false );
 
@@ -193,13 +182,13 @@ export default class Stars extends ProjectView {
 		let paramsLight = [
 			// { x: 70, y: 70, z: 0 },
 			{ x: -10, y: 30, z: 0 },
-			{ x: 10, y: 50, z: 30 },
-			{ x: 0, y: 0, z: 10 },
-			{ x: 200, y: 30, z: 0 },
-			{ x: -200, y: 30, z: 0 },
-			{ x: 200, y: 60, z: 600 },
-			{ x: -200, y: 30, z: -200 },
-			{ x: 800, y: 60, z: 800 }
+			// { x: 10, y: 50, z: 30 },
+			// { x: 0, y: 0, z: 10 },
+			// { x: 200, y: 30, z: 0 },
+			// { x: -200, y: 30, z: 0 },
+			// { x: 200, y: 60, z: 600 },
+			// { x: -200, y: 30, z: -200 },
+			// { x: 800, y: 60, z: 800 }
 		];
 
 		// Check Ambient Light
@@ -209,7 +198,7 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < paramsLight.length; i++) {
 
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 700, 2);
+			let pointLight = new PointLight(0xFFFFFF, 0.8, 400, 2);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -219,6 +208,16 @@ export default class Stars extends ProjectView {
 			this.scene.add(pointLight);
 			this.lights.push(pointLight);
 		}
+
+		const geometry = new SphereGeometry(6,6,50);
+
+		const material = new MeshBasicMaterial({color: 0x00FFFFF});
+
+		this.test = new Points(geometry, material);
+		// this.scene.add(this.test);
+
+
+		this.animDeltaDir *= -1;
 
 	}
 
@@ -239,8 +238,8 @@ export default class Stars extends ProjectView {
 		const shaderPoint = ShaderLib.points;
 
 		this.nbUnif = 5;
-		this.topY = 35;
-		this.bottomY = -15;
+		this.topY = 25;
+		this.bottomY = -45;
 
 		for (let i = 0; i < this.nbUnif; i++) {
 
@@ -253,31 +252,31 @@ export default class Stars extends ProjectView {
 				case 0:
 					uniforms.offset = 300;
 					uniforms.time = 600;
-					uniforms.range = oscillate(0.4,0.5);
+					uniforms.range = oscillate(0.9,1);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 1:
 					uniforms.offset = 1000;
 					uniforms.time = 700;
-					uniforms.range = oscillate(0.4,0.8);
+					uniforms.range = oscillate(0.9,1.3);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 2:
 					uniforms.offset = 200;
 					uniforms.time = 200;
-					uniforms.range = oscillate(0.5,0.9);
+					uniforms.range = oscillate(1,1.2);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 3:
 					uniforms.offset = 400;
 					uniforms.time = 200;
-					uniforms.range = oscillate(0.3,0.5);
+					uniforms.range = oscillate(0.6,1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 				case 4:
 					uniforms.offset = 700;
 					uniforms.time = 1000;
-					uniforms.range = oscillate(0.4,0.7);
+					uniforms.range = oscillate(0.8,1.1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 			}
@@ -290,12 +289,12 @@ export default class Stars extends ProjectView {
 
 		for (let i = 0; i < this.nbAst; i++) {
 
-			const range = getRandom(3, 8);
+			// const range = getRandom(3, 8);
 
 			const pos = {
-				x: getRandom(-60, 60),
+				x: getRandom(-100, 100),
 				y: getRandom(this.bottomY, this.topY),
-				z: getRandom(-60, 60),
+				z: getRandom(-100, 30),
 			};
 
 			const random = Math.round(getRandom(0,this.nbUnif - 1));
@@ -320,7 +319,7 @@ export default class Stars extends ProjectView {
 			asteroid.initPosY = pos.y;
 			asteroid.initPosX = pos.x;
 			asteroid.coefX = getRandom(0.3, 1);
-			asteroid.time = getRandom(0.01, 0.02); // more is slower
+			asteroid.time = getRandom(0.03, 0.05); // more is slower
 
 			// asteroid.scale.set(20, 20, 20); --> won't work
 
@@ -335,11 +334,13 @@ export default class Stars extends ProjectView {
 	setLight() {
 
 		let paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			{ x: -100, y: 0, z: 0 },
-			{ x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 170 },
-			{ x: 0, y: -0, z: 0 }
+			{ x: -60, y: 30, z: 20 },
+			{ x: -20, y: 30, z: 20 },
+			{ x: 0, y: 30, z: 20 },
+			{ x: 100, y: 40, z: -70 },
+			{ x: -100, y: 40, z: -70 },
+			{ x: 0, y: 20, z: -100, l: 480 },
+			// { x: 0, y: -0, z: 0 }
 		];
 
 		// Check Ambient Light
@@ -347,8 +348,10 @@ export default class Stars extends ProjectView {
 
 		for (let i = 0; i < paramsLight.length; i++) {
 
+			const l = paramsLight[i].l || 200;
+
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 480, 2);
+			let pointLight = new PointLight(0xFFFFFF, 0.8, l, 2);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -362,12 +365,12 @@ export default class Stars extends ProjectView {
 
 	onKeyDown( event ) {
 
-		switch ( event.keyCode ) {
+		// switch ( event.keyCode ) {
 
-			case 78: /*N*/  this.lightDir *= -1; break;
-			case 77: /*M*/  this.animDeltaDir *= -1; break;
+		// 	case 78: /*N*/  this.lightDir *= -1; break;
+		// 	case 77: /*M*/  this.animDeltaDir *= -1; break;
 
-		}
+		// }
 
 	}
 
@@ -380,24 +383,24 @@ export default class Stars extends ProjectView {
 
 		// update uniforms
 
-		// this.uniforms.forEach( (el)=> {
-		// 	el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
-		// });
+		this.uniforms.forEach( (el)=> {
+			el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
+		});
 
-		// // Asteroids meshs
-		// this.asteroidsM.forEach( (el)=> {
+		// Asteroids meshs
+		this.asteroidsM.forEach( (el)=> {
 
-		// 	if (el.position.y < this.bottomY) {
-		// 		// reset
-		// 		el.progress = 0;
-		// 		el.initPosY = getRandom(this.topY - 5, this.topY);
-		// 	}
-		// 	el.progress +=  el.time;
-		// 	el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
+			if (el.position.y < this.bottomY) {
+				// reset
+				el.progress = 0;
+				el.initPosY = getRandom(this.topY - 5, this.topY);
+			}
+			el.progress +=  el.time;
+			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
-		// 	el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
+			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
 
-		// });
+		});
 
 		// console.log(-this.camRotSmooth.y * 70);
 
@@ -406,8 +409,6 @@ export default class Stars extends ProjectView {
 		let delta = this.clock.getDelta();
 
 		if ( this.terrain.visible ) {
-
-			let time = Date.now() * 0.001;
 
 			let fLow = 0.1, fHigh = 0.8;
 
@@ -429,12 +430,10 @@ export default class Stars extends ProjectView {
 				this.quadTarget.material = this.mlib[ 'heightmap' ];
 				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.lights[0].position.x = Math.sin(time * 2 * Math.PI / 10) * 200;
-				this.lights[0].position.z = Math.sin(time * 2 * Math.PI / 10) * 200;
+				this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
+				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 			}
-
-			time++;
 
 		}
 		super.raf();

@@ -124,7 +124,7 @@ export default class ProjectView extends AbstractView {
 	init() {
 
 
-		this.isControls = true;
+		this.isControls = false;
 
 		this.cssObjects = [];
 		this.time = 1;
