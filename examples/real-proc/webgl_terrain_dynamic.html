@@ -244,10 +244,12 @@
 
 				// SCENE (RENDER TARGET)
 
-				sceneRenderTarget = new THREE.Scene();
+				sceneRenderTarget = new THREE.Scene(); // Scene for OrthoGraphic Camera
 
 				cameraOrtho = new THREE.OrthographicCamera( SCREEN_WIDTH / - 2, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_HEIGHT / - 2, -10000, 10000 );
 				cameraOrtho.position.z = 100;
+
+				// This camera is only use for normal map and HeightMap
 
 				sceneRenderTarget.add( cameraOrtho );
 
@@ -255,6 +257,8 @@
 
 				camera = new THREE.PerspectiveCamera( 40, SCREEN_WIDTH / SCREEN_HEIGHT, 2, 4000 );
 				camera.position.set( -1200, 800, 1200 );
+
+				// Classic Camera
 
 				controls = new THREE.OrbitControls( camera );
 
@@ -267,25 +271,30 @@
 				// SCENE (FINAL)
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0x050505 );
-				scene.fog = new THREE.Fog( 0x050505, 2000, 4000 );
+				// scene.background = new THREE.Color( 0x050505 );
+				// scene.fog = new THREE.Fog( 0x050505, 2000, 4000 );
+				// Scene classic with a background and a fog
 
 				// LIGHTS
 
-				scene.add( new THREE.AmbientLight( 0x111111 ) );
+				// Add an ambiant global light and lights
 
-				directionalLight = new THREE.DirectionalLight( 0xffffff, 1.15 );
-				directionalLight.position.set( 500, 2000, 0 );
-				scene.add( directionalLight );
+				// scene.add( new THREE.AmbientLight( 0x111111 ) );
 
-				pointLight = new THREE.PointLight( 0xff4400, 1.5 );
-				pointLight.position.set( 0, 0, 0 );
-				scene.add( pointLight );
+				// directionalLight = new THREE.DirectionalLight( 0xffffff, 1.15 );
+				// directionalLight.position.set( 500, 2000, 0 );
+				// scene.add( directionalLight );
+
+				// pointLight = new THREE.PointLight( 0xff4400, 1.5 );
+				// pointLight.position.set( 0, 0, 0 );
+				// scene.add( pointLight );
 
 
 				// HEIGHT + NORMAL MAPS
 
-				var normalShader = THREE.NormalMapShader;
+				// var normalShader = THREE.NormalMapShader;
+
+				// NormalMap shader
 
 				var rx = 256, ry = 256;
 				var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
@@ -304,68 +313,78 @@
 
 				};
 
-				uniformsNormal = THREE.UniformsUtils.clone( normalShader.uniforms );
+				// uniformsNormal = THREE.UniformsUtils.clone( normalShader.uniforms );
 
-				uniformsNormal.height.value = 0.05;
-				uniformsNormal.resolution.value.set( rx, ry );
-				uniformsNormal.heightMap.value = heightMap.texture;
+				// uniformsNormal.height.value = 0.05;
+				// uniformsNormal.resolution.value.set( rx, ry );
+				// uniformsNormal.heightMap.value = heightMap.texture;
+
+				// All uniforms for this normal map
 
 				var vertexShader = document.getElementById( 'vertexShader' ).textContent;
 
 				// TEXTURES
+
+				// Gestion of texture for Grass, ground, terrain/ combi normal map
 
 				var loadingManager = new THREE.LoadingManager( function(){
 					terrain.visible = true;
 				});
 				var textureLoader = new THREE.TextureLoader( loadingManager );
 
-				var specularMap = new THREE.WebGLRenderTarget( 2048, 2048, pars );
-				specularMap.texture.generateMipmaps = false;
+				// Dont know what it is. It does nothing
+				// var specularMap = new THREE.WebGLRenderTarget( 10, 2048, pars );
+				// specularMap.texture.generateMipmaps = false;
 
 				var diffuseTexture1 = textureLoader.load( "textures/terrain/grasslight-big.jpg");
 				var diffuseTexture2 = textureLoader.load( "textures/terrain/backgrounddetailed6.jpg" );
-				var detailTexture = textureLoader.load( "textures/terrain/grasslight-big-nm.jpg" );
+				var detailTexture = textureLoader.load( "textures/terrapin/grasslight-big-nm.jpg" );
 
 				diffuseTexture1.wrapS = diffuseTexture1.wrapT = THREE.RepeatWrapping;
 				diffuseTexture2.wrapS = diffuseTexture2.wrapT = THREE.RepeatWrapping;
 				detailTexture.wrapS = detailTexture.wrapT = THREE.RepeatWrapping;
-				specularMap.texture.wrapS = specularMap.texture.wrapT = THREE.RepeatWrapping;
+				// Texture in repeat mode for infinite texturing
+
+
+				// specularMap.texture.wrapS = specularMap.texture.wrapT = THREE.RepeatWrapping;
 
 				// TERRAIN SHADER
+
+				// A lot is here....
 
 				var terrainShader = THREE.ShaderTerrain[ "terrain" ];
 	
 
 				uniformsTerrain = THREE.UniformsUtils.clone( terrainShader.uniforms );
 
-				console.log(uniformsTerrain);
+				// ShaderTerrain
 
-				uniformsTerrain[ 'tNormal' ].value = normalMap.texture;
-				uniformsTerrain[ 'uNormalScale' ].value = 1.5;
+				// uniformsTerrain[ 'tNormal' ].value = null; // The normal map texture
+				// uniformsTerrain[ 'uNormalScale' ].value = 10.5; // relative to the normal
 
-				uniformsTerrain[ 'tDisplacement' ].value = heightMap.texture;
+				uniformsTerrain[ 'tDisplacement' ].value = heightMap.texture; // Important : the Heightmap displacement (create mountains)
 
-				uniformsTerrain[ 'tDiffuse1' ].value = diffuseTexture1;
-				uniformsTerrain[ 'tDiffuse2' ].value = diffuseTexture2;
-				uniformsTerrain[ 'tSpecular' ].value = specularMap.texture;
-				uniformsTerrain[ 'tDetail' ].value = detailTexture;
+				uniformsTerrain[ 'tDiffuse1' ].value = diffuseTexture1; // texture diffusé
+				uniformsTerrain[ 'tDiffuse2' ].value = diffuseTexture2; // texture diffusé n2
+				// uniformsTerrain[ 'tSpecular' ].value = specularMap.texture; ///???
+				uniformsTerrain[ 'tDetail' ].value = null; // texture normal map
 
-				uniformsTerrain[ 'enableDiffuse1' ].value = true;
-				uniformsTerrain[ 'enableDiffuse2' ].value = true;
+				uniformsTerrain[ 'enableDiffuse1' ].value = false;
+				uniformsTerrain[ 'enableDiffuse2' ].value = false;
 				uniformsTerrain[ 'enableSpecular' ].value = true;
 
-				uniformsTerrain[ 'diffuse' ].value.setHex( 0xffffff );
+				uniformsTerrain[ 'diffuse' ].value.setHex( 0x00FFFF ); // diffuse color : 0x343434
 				uniformsTerrain[ 'specular' ].value.setHex( 0xffffff );
 
-				uniformsTerrain[ 'shininess' ].value = 100;
+				uniformsTerrain[ 'shininess' ].value = 1000; // shininess of material
 
-				uniformsTerrain[ 'uDisplacementScale' ].value = 175;
+				uniformsTerrain[ 'uDisplacementScale' ].value = 155;
 
 				uniformsTerrain[ 'uRepeatOverlay' ].value.set( 6, 6 );
 
 				var params = [
 					[ 'heightmap', 	document.getElementById( 'fragmentShaderNoise' ).textContent, 	vertexShader, uniformsNoise, false ],
-					[ 'normal', 	normalShader.fragmentShader,  normalShader.vertexShader, uniformsNormal, false ],
+					// [ 'normal', 	normalShader.fragmentShader,  normalShader.vertexShader, uniformsNormal, false ],
 					[ 'terrain', 	terrainShader.fragmentShader, terrainShader.vertexShader, uniformsTerrain, true ]
 				 ];
 
@@ -385,7 +404,7 @@
 				}
 
 
-				var plane = new THREE.PlaneBufferGeometry( 100, 100 );
+				var plane = new THREE.PlaneBufferGeometry( SCREEN_WIDTH, SCREEN_HEIGHT );
 
 				quadTarget = new THREE.Mesh( plane, new THREE.MeshBasicMaterial( { color: 0xFF0000 } ) );
 				quadTarget.position.z = -500;
@@ -397,7 +416,7 @@
 
 				// TERRAIN MESH
 
-				var geometryTerrain = new THREE.PlaneBufferGeometry( 6000, 6000, 256, 256 );
+				var geometryTerrain = new THREE.PlaneBufferGeometry( 800, 800, 516, 516 );
 
 				THREE.BufferGeometryUtils.computeTangents( geometryTerrain );
 
@@ -430,10 +449,14 @@
 				// Add light
 				let paramsLight = [
 					// { x: 70, y: 70, z: 0 },
-					{ x: -10, y: 0, z: 0 },
-					{ x: 10, y: 0, z: 0 },
+					{ x: -10, y: 30, z: 0 },
+					{ x: 10, y: 50, z: 30 },
 					{ x: 0, y: 0, z: 10 },
-					{ x: 0, y: -0, z: 0 }
+					{ x: 200, y: 30, z: 0 },
+					{ x: -200, y: 30, z: 0 },
+					{ x: 200, y: 60, z: 600 },
+					{ x: -200, y: 30, z: -200 },
+					{ x: 800, y: 60, z: 800 }
 				];
 
 				// Check Ambient Light
@@ -442,7 +465,7 @@
 				for (let i = 0; i < paramsLight.length; i++) {
 
 					// create a point light
-					let pointLight = new THREE.PointLight(0x00FFFF, 0.8, 480, 2);
+					let pointLight = new THREE.PointLight(0xFFFFFF, 0.8, 700, 2);
 					// set its position
 					pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 					// pointLight.power = 20;
@@ -506,11 +529,11 @@
 
 					var valNorm = ( lightVal - fLow ) / ( fHigh - fLow );
 
-					scene.background.setHSL( 0.1, 0.5, lightVal );
-					scene.fog.color.setHSL( 0.1, 0.5, lightVal );
+					// scene.background.setHSL( 0.1, 0.5, lightVal );
+					// scene.fog.color.setHSL( 0.1, 0.5, lightVal );
 
-					directionalLight.intensity = THREE.Math.mapLinear( valNorm, 0, 1, 0.1, 1.15 );
-					pointLight.intensity = THREE.Math.mapLinear( valNorm, 0, 1, 0.9, 1.5 );
+					// directionalLight.intensity = THREE.Math.mapLinear( valNorm, 0, 1, 0.1, 1.15 );
+					// pointLight.intensity = THREE.Math.mapLinear( valNorm, 0, 1, 0.9, 1.5 );
 
 					uniformsTerrain[ 'uNormalScale' ].value = THREE.Math.mapLinear( valNorm, 0, 1, 0.6, 3.5 );
 
@@ -519,14 +542,14 @@
 						animDelta = THREE.Math.clamp( animDelta + 0.00075 * animDeltaDir, 0, 0.05 );
 						uniformsNoise[ 'time' ].value += delta * animDelta;
 
-						uniformsNoise[ 'offset' ].value.x += delta * 0.05;
+						// uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
 
 						uniformsTerrain[ 'uOffset' ].value.x = 4 * uniformsNoise[ 'offset' ].value.x;
 
 						quadTarget.material = mlib[ 'heightmap' ];
 						renderer.render( sceneRenderTarget, cameraOrtho, heightMap, true );
 
-						quadTarget.material = mlib[ 'normal' ];
+						// quadTarget.material = mlib[ 'normal' ];
 						// renderer.render( sceneRenderTarget, cameraOrtho, normalMap, true );
 
 					}
