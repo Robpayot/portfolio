@@ -15,8 +15,8 @@ import RouterManager from '../managers/RouterManager';
 import Ui from '../components/Ui';
 import Menu from '../components/Menu';
 import Handlebars from 'handlebars';
-
-import GlitchView from './GlitchView';
+import DATA from '../../datas/data.json';
+import Glitch from '../components/Glitch';
 
 
 // THREE JS
@@ -49,7 +49,6 @@ export default class ProjectView extends AbstractView {
 		this.astd = obj.astd;
 		this.gravity = obj.gravity;
 		this.pointsLight = obj.pointsLight;
-		this.glow = obj.glow;
 		this.alt = obj.alt;
 		this.fromUrl = obj.fromUrl;
 		this.sound = SoundManager;
@@ -129,7 +128,6 @@ export default class ProjectView extends AbstractView {
 
 		this.cssObjects = [];
 		this.time = 1;
-		this.nbAst = 10;
 		this.finalFov = 45;
 		this.composer = null;
 		this.bounceArea = 480;
@@ -352,7 +350,7 @@ export default class ProjectView extends AbstractView {
 			this.ui.projectContainer = this.el.querySelector('.project__container');
 			this.ui.projectImg = this.el.querySelectorAll('.project__image img')[0];
 
-			this.glitch = new GlitchView({
+			this.glitch = new Glitch({
 				el: this.el.querySelector('.glitch'),
 				color: this.data.color,
 				txt: this.data.title
@@ -921,7 +919,10 @@ export default class ProjectView extends AbstractView {
 	goTo() {
 
 		console.log('go To');
-		const dest = this.id === 0 ? 1 : 0;
+		let dest = this.id + 1;
+
+		if (dest < 0) dest = DATA.projects.length - 1;
+		if (dest > DATA.projects.length - 1) dest = 0;
 
 		if (this.clicked === true) return false;
 		this.clicked = true;
@@ -1010,73 +1011,16 @@ export default class ProjectView extends AbstractView {
 
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		// const intersects = this.raycaster.intersectObjects([this.symbol.mesh]);
+		// const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
-		// if (intersects.length > 0) {
+		// if (intersectsAst.length > 0) {
 		// 	this.ui.body.style.cursor = 'pointer';
-		// 	this.clickSymbol = true;
-
+		// 	this.clickAsteroid = true;
+		// 	this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
 		// } else {
-
-		// 	this.clickSymbol = false;
+		// 	// this.ui.body.style.cursor = 'auto';
+		// 	this.clickAsteroid = false;
 		// }
-
-		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-
-		if (intersectsAst.length > 0) {
-			this.ui.body.style.cursor = 'pointer';
-			this.clickAsteroid = true;
-			this.currentAstClicked = this.asteroids[intersectsAst[0].object.index];
-		} else {
-			// this.ui.body.style.cursor = 'auto';
-			this.clickAsteroid = false;
-		}
-
-
-
-		// update world
-		if (this.gravity === true) {
-			this.world.step();
-
-			// Symbol body
-			// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-			// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
-			// Asteroids bodies
-			this.asteroids.forEach( (el) => {
-
-				if (el.mesh.position.x > this.bounceArea / 2 - 50 || el.mesh.position.x < -this.bounceArea / 2 + 50 || el.mesh.position.y > this.bounceArea / 2 - 50 || el.mesh.position.y < -this.bounceArea / 2 + 50 || el.mesh.position.z > this.bounceArea / 2 - 50 || el.mesh.position.z < -this.bounceArea / 2 + 50) {
-					// Reverse Force Vector
-					if (el.annilled !== true) {
-
-						el.changeDirection();
-						el.annilled = true;
-					}
-				}
-
-				if (el.body !== undefined) {
-
-					// APPLY IMPULSE
-					el.body.linearVelocity.x = el.force.x;
-					el.body.linearVelocity.y = el.force.y;
-					el.body.linearVelocity.z = el.force.z;
-
-					// console.log(el.body.angularVelocity);
-					// angular Velocity always inferior to 1 (or too much rotations)
-
-					el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -1, 1);
-					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -1, 1);
-					el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -1, 1);
-					// if (i === 0) {
-					//   console.log(el.body.angularVelocity.x);
-					// }
-
-					el.mesh.position.copy(el.body.getPosition());
-					el.mesh.quaternion.copy(el.body.getQuaternion());
-
-
-				}
-			});
-		}
 
 		// Glow continuously
 		// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = (Math.sin(this.time / 30) + 1) / 5;
@@ -1090,13 +1034,6 @@ export default class ProjectView extends AbstractView {
 		}
 
 
-		// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
-		if (this.glow === true) {
-			// Glow brightness material Asteroids
-			this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
-			this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
-		}
-
 		// scroll gallery
 		if (this.initGalleryY) {
 			this.topContent.position.y = this.topContentY;
@@ -1104,25 +1041,9 @@ export default class ProjectView extends AbstractView {
 			this.footer.position.y = this.topContentY + this.initFooterY;
 		}
 
-
-		// Zoom ??
-
-		// const delta = (this.finalFov - this.camera.fov) * 0.25;
-
-		// if (Math.abs(delta) > 0.01) {
-
-		//     this.camera.fov += delta;
-		//     this.camera.updateProjectionMatrix();
-
-		//     // console.log(this.camera.fov);
-
-		//     // FOV : 70 : zoom middle
-		//     // FOV : 60 : zoom max
-		// }
-
 		// On mouse Move Camera movement
 
-		// deceleration duplicate /!\
+		// deceleration
 		if (this.cameraMove === false) {
 
 			// Specify target we want

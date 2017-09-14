@@ -1,10 +1,11 @@
 import EmitterManager from './EmitterManager';
 // import PreloadManager from './PreloadManager';
-import ProjectView from '../views/ProjectView';
+// import ProjectView from '../views/ProjectView';
 import IntroView from '../views/IntroView';
-import GlitchView from '../views/GlitchView';
-import LevitView from '../views/LevitView';
-import BlobView from '../views/BlobView';
+import Glitch from '../components/Glitch';
+import Levit from '../projects/Levit';
+import Blob from '../projects/Blob';
+import Stars from '../projects/Stars';
 import data from '../../datas/data.json';
 import Menu from '../components/Menu';
 
@@ -29,10 +30,12 @@ class RouterManager {
 
 		const url = window.location.href;
 
-		if (/\/#project-1/.test(url) === true) {
-			this.switchView('/project-1', 1, true);
-		} else if (/\/#project-0/.test(url) === true) {
+		if (/\/#project-0/.test(url) === true) {
 			this.switchView('/project-0', 0, true);
+		} else if (/\/#project-1/.test(url) === true) {
+			this.switchView('/project-1', 1, true);
+		} else if (/\/#project-2/.test(url) === true) {
+			this.switchView('/project-2', 2, true);
 		} else if (/\/#glitch/.test(url) === true) {
 			this.switchView('/glitch', 0, true);
 		} else {
@@ -75,13 +78,12 @@ class RouterManager {
 			case '/project-0':
 
 				if (this.project0 === null) {
-					this.currentPage = this.project0 = new LevitView({
+					this.currentPage = this.project0 = new Levit({ // Attention, Garde en mémoire une cette variable très lourde !
 						id: 0,
 						bkg: 0x0101010,
 						astd: 'cubes',
 						gravity: false,
 						pointsLight: true,
-						glow: false,
 						alt: false,
 						data: data.projects[0],
 						fromUrl
@@ -93,16 +95,16 @@ class RouterManager {
 
 				window.location = '#project-0';
 				break;
+
 			case '/project-1':
 
 				if (this.project1 === null) {
-					this.currentPage = this.project1 = new BlobView({
+					this.currentPage = this.project1 = new Stars({
 						id: 1,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
-						glow: true,
 						alt: false,
 						data: data.projects[1],
 						fromUrl
@@ -112,6 +114,26 @@ class RouterManager {
 					this.currentPage.start();
 				}
 				window.location = '#project-1';
+				break;
+
+			case '/project-2':
+
+				if (this.project2 === null) {
+					this.currentPage = this.project2 = new Blob({
+						id: 2,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: data.projects[2],
+						fromUrl
+					});
+				} else {
+					this.currentPage = this.project2;
+					this.currentPage.start();
+				}
+				window.location = '#project-2';
 				break;
 
 			case '/intro':
@@ -124,7 +146,7 @@ class RouterManager {
 
 			case '/glitch':
 
-				this.currentPage = new GlitchView({
+				this.currentPage = new Glitch({
 					el: document.querySelector('.glitch'),
 					txt: 'AKTR',
 					color: 'rgb(41,64,16)',

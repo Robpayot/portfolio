@@ -34,6 +34,7 @@ import PreloadManager from './managers/PreloadManager';
 
 
 	PreloadManager.loadFile({ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' });
+	PreloadManager.loadFile({ id: 'texture-star', src: 'images/textures/star-2.png' });
 	PreloadManager.loadFile({ id: 'damier', src: 'images/textures/damier.jpg' });
 
 

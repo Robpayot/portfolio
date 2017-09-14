@@ -70,8 +70,6 @@ class SceneManager {
 		opts.camera.aspect = window.innerWidth / window.innerHeight;
 		opts.camera.updateProjectionMatrix();
 
-		console.log('allo');
-
 		// Update canvas size
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);

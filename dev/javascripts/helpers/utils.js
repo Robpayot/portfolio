@@ -1,3 +1,46 @@
+// Math
+
+export function oscillate(val1, val2) {
+
+	let coef;
+	let add;
+
+	if (val1 < 0 && val2 < 0 || val1 >= 0 && val2 >= 0) {
+		coef = Math.abs(val1 - val2) / 2;
+		add = coef + Math.min(val1, val2);
+	} else {
+		coef = (Math.abs(val1) + Math.abs(val2)) / 2;
+		add = (val1 + val2) / 2;
+	}
+
+	return {
+		coef,
+		add
+	};
+}
+
+export function toDegree(radians) {
+
+	return radians * 180 / Math.PI;
+}
+
+export function toRadian(degrees) {
+
+	return degrees * Math.PI / 180;
+}
+
+export function clamp(value, min, max) {
+
+	return Math.min(Math.max(value, min), max);
+}
+
+export function round(value, dec) {
+
+	return Math.round(value * dec) / dec;
+}
+
+// DOM
+
 export function findAncestor(el, cls) {
 	while ((el = el.parentElement) && !el.classList.contains(cls));
 	return el;
@@ -54,26 +97,6 @@ export function getOffsetTop(elem) {
 		}
 	} while (elem = elem.offsetParent);
 	return offsetTop;
-}
-
-export function toDegree(radians) {
-
-	return radians * 180 / Math.PI;
-}
-
-export function toRadian(degrees) {
-
-	return degrees * Math.PI / 180;
-}
-
-export function clamp(value, min, max) {
-
-	return Math.min(Math.max(value, min), max);
-}
-
-export function round(value, dec) {
-
-	return Math.round(value * dec) / dec;
 }
 
 export function getIndex(el) {
