@@ -8,7 +8,6 @@ export function oscillate(val1, val2) {
 	if (val1 < 0 && val2 < 0 || val1 >= 0 && val2 >= 0) {
 		coef = Math.abs(val1 - val2) / 2;
 		add = coef + Math.min(val1, val2);
-		console.log('poulet');
 	} else {
 		coef = (Math.abs(val1) + Math.abs(val2)) / 2;
 		add = (val1 + val2) / 2;

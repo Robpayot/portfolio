@@ -53,11 +53,7 @@
 
 		<script src="js/BufferGeometryUtils.js"></script>
 
-<!-- 		<script src="js/shaders/NormalMapShader.js"></script> -->
 		<script src="js/ShaderTerrain.js"></script>
-
-		<script src="js/Detector.js"></script>
-		<script src="js/libs/stats.min.js"></script>
 
 		<script id="fragmentShaderNoise" type="x-shader/x-fragment">
 
@@ -204,7 +200,7 @@
 
 		<script>
 
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 			var SCREEN_WIDTH = window.innerWidth;
 			var SCREEN_HEIGHT = window.innerHeight;
@@ -234,6 +230,9 @@
 			var animateTerrain = false;
 
 			var mlib = {};
+
+			var lights = [];
+			var time = 0;
 
 			init();
 			animate();
@@ -381,14 +380,14 @@
 
 				// STATS
 
-				stats = new Stats();
-				container.appendChild( stats.dom );
+				// stats = new Stats();
+				// container.appendChild( stats.dom );
 
 				// EVENTS
 
-				onWindowResize();
+				// onWindowResize();
 
-				window.addEventListener( 'resize', onWindowResize, false );
+				// window.addEventListener( 'resize', onWindowResize, false );
 
 				document.addEventListener( 'keydown', onKeyDown, false );
 
@@ -408,6 +407,7 @@
 				// Check Ambient Light
 				// scene.add( new THREE.AmbientLight( 0x00020 ) );
 
+
 				for (let i = 0; i < paramsLight.length; i++) {
 
 					// create a point light
@@ -419,23 +419,24 @@
 
 					// add to the scene
 					scene.add(pointLight);
+					lights.push(pointLight);
 				}
 
 			}
 
 			//
 
-			function onWindowResize( event ) {
+			// function onWindowResize( event ) {
 
-				SCREEN_WIDTH = window.innerWidth;
-				SCREEN_HEIGHT = window.innerHeight;
+			// 	SCREEN_WIDTH = window.innerWidth;
+			// 	SCREEN_HEIGHT = window.innerHeight;
 
-				renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+			// 	renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 
-				camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-				camera.updateProjectionMatrix();
+			// 	camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+			// 	camera.updateProjectionMatrix();
 
-			}
+			// }
 
 			//
 
@@ -457,7 +458,7 @@
 				requestAnimationFrame( animate );
 
 				render();
-				stats.update();
+				// stats.update();
 
 			}
 
@@ -489,9 +490,14 @@
 						quadTarget.material = mlib[ 'heightmap' ];
 						renderer.render( sceneRenderTarget, cameraOrtho, heightMap, true );
 
+						lights[0].position.x = Math.sin(time * 2 * Math.PI / 10) * 200;
+						lights[0].position.z = Math.sin(time * 2 * Math.PI / 10) * 200;
+
 					}
 
 					renderer.render( scene, camera );
+
+					time++;
 
 				}
 
