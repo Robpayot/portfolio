@@ -7,8 +7,9 @@ import SceneManager from '../managers/SceneManager';
 
 // THREE JS
 import { MeshLambertMaterial, SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrbitControls, OrthographicCamera, PerspectiveCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
-import BufferGeometryUtils from './BufferGeometryUtils';
-import ShaderTerrain from './ShaderTerrain';
+import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
+import TerrainShader from '../shaders/TerrainShader';
+import NoiseShader from '../shaders/NoiseShader';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -94,8 +95,6 @@ export default class Stars extends ProjectView {
 
 		// All uniforms for this normal map
 
-		let vertexShader = document.getElementById( 'vertexShader' ).textContent;
-
 		// TEXTURES
 
 		// Gestion of texture for Grass, ground, terrain/ combi normal map
@@ -110,11 +109,11 @@ export default class Stars extends ProjectView {
 
 		// A lot is here....
 
-		const terrainShader = ShaderTerrain[ 'terrain' ];
+		const terrainShader = TerrainShader[ 'terrain' ];
 
 		this.uniformsTerrain = UniformsUtils.clone( terrainShader.uniforms );
 
-		// ShaderTerrain
+		// TerrainShader
 
 		this.uniformsTerrain[ 'tDisplacement' ].value = this.heightMap.texture; // Important : the Heightmap displacement (create mountains)
 
@@ -133,8 +132,10 @@ export default class Stars extends ProjectView {
 
 		this.uniformsTerrain[ 'uRepeatOverlay' ].value.set( 6, 6 ); // ?
 
+
+
 		const params = [
-			[ 'heightmap', 	document.getElementById( 'fragmentShaderNoise' ).textContent, 	vertexShader, this.uniformsNoise, false ],
+			[ 'heightmap', 	NoiseShader.fragmentShader, NoiseShader.vertexShader, this.uniformsNoise, false ],
 			[ 'terrain', 	terrainShader.fragmentShader, terrainShader.vertexShader, this.uniformsTerrain, true ]
 		];
 
