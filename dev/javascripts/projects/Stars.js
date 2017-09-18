@@ -1,12 +1,11 @@
 import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
-import { getRandom, toRadian, oscillate, round } from '../helpers/utils';
-import { loadJSON } from '../helpers/utils-three';
+import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 
 
 // THREE JS
-import { MeshLambertMaterial, SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrbitControls, OrthographicCamera, PerspectiveCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import { SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -36,7 +35,6 @@ export default class Stars extends ProjectView {
 	}
 
 	setTerrain() {
-		console.log('yo');
 
 		let SCREEN_WIDTH = window.innerWidth;
 		let SCREEN_HEIGHT = window.innerHeight;
@@ -412,6 +410,8 @@ export default class Stars extends ProjectView {
 		if ( this.terrain.visible ) {
 
 			let fLow = 0.1, fHigh = 0.8;
+
+			// relative to light ???
 
 			this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
 

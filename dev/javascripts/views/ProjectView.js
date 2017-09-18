@@ -133,7 +133,7 @@ export default class ProjectView extends AbstractView {
 		this.bounceArea = 480;
 		this.pixelToUnits = 8.1;
 		this.coefText = 0.04;
-		this.coefImage = 1 / 14;
+		this.coefImage = 0.04;
 
 		// retina screen size
 		this.width = window.innerWidth * window.devicePixelRatio;
@@ -373,7 +373,7 @@ export default class ProjectView extends AbstractView {
 			// wHeight === window.innerHeight in Units equivalent
 			// let aspect = window.width / window.height;
 			// let width = height * aspect;                  // visible width
-			const margeTop = 4;
+			const margeTop = 2;
 
 			let percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight; // half because centered
 			let finalHeight = wHeight * percent;
@@ -382,7 +382,7 @@ export default class ProjectView extends AbstractView {
 			// Position Footer
 			percent = this.ui.projectImg.offsetHeight / window.innerHeight; // half because centered
 			let finalHeightFooter = wHeight * percent;
-			this.footer.position.y = this.initFooterY = this.initGalleryY - finalHeightFooter - margeTop - 2;
+			this.footer.position.y = this.initFooterY = this.initGalleryY - finalHeightFooter - margeTop + 6;
 
 			let globalMargeScrollBot = 5;
 
@@ -678,7 +678,7 @@ export default class ProjectView extends AbstractView {
 			ease: Power2.easeOut
 		});
 
-		tl.to(trigo, 0, { // 3
+		tl.to(trigo, 3, { // 3
 			angle: 0,
 			ease: window.Power3.easeInOut,
 			onUpdate: () => {
@@ -689,10 +689,10 @@ export default class ProjectView extends AbstractView {
 			}
 		});
 
-		tl.set(['.project__footer', '.gallery__arrow', '.project__image', '.project__container'], { visibility: 'visible' });  // ,3
+		tl.set(['.project__footer', '.gallery__arrow', '.project__image', '.project__container'], { visibility: 'visible' }, 3);  // ,3
 
 
-		tl.staggerFromTo(['.project__footer', '.gallery__arrow', '.project__container', '.project__image' ], 0, { // 1.2
+		tl.staggerFromTo(['.project__footer', '.gallery__arrow', '.project__container', '.project__image' ], 1.2, { // 1.2
 			opacity: 0,
 			y: 80
 		}, {
@@ -701,7 +701,7 @@ export default class ProjectView extends AbstractView {
 			ease: window.Power4.easeOut
 		}, 0.2, 2.8);
 
-		tl.staggerTo(['.project__next','.project__title'], 0, { // 0.6
+		tl.staggerTo(['.project__next','.project__title'], 0.6, { // 0.6
 			opacity: 0,
 			ease: window.Power4.easeOut
 		},0.2,2.2);
@@ -1241,7 +1241,7 @@ export default class ProjectView extends AbstractView {
 			});
 
 		} else {
-			tl.fromTo(this.camera.position, 0, {z : 240}, {z : 160, ease: window.Power4.easeOut}); // 2
+			tl.fromTo(this.camera.position, 2, {z : 240}, {z : 160, ease: window.Power4.easeOut}); // 2
 		}
 
 
@@ -1254,12 +1254,11 @@ export default class ProjectView extends AbstractView {
 			// remover overlay class
 			// this.ui.overlay.classList.remove('black');
 
-			this.showContent();
 		});
 
 		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-		tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 0, { // 1.2
+		tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
 			y: 40
 		}, {
