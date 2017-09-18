@@ -132,6 +132,7 @@ export default class ProjectView extends AbstractView {
 		this.composer = null;
 		this.bounceArea = 480;
 		this.pixelToUnits = 8.1;
+		this.coefText = 0.07;
 
 		// retina screen size
 		this.width = window.innerWidth * window.devicePixelRatio;
@@ -545,18 +546,18 @@ export default class ProjectView extends AbstractView {
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
 		title.position.set(20, 0, 10);
-		title.scale.multiplyScalar(1 / 14);
+		title.scale.multiplyScalar(this.coefText);
 
 		// Prev project
 		const prevProject = new CssContainer('<div class="project__prev transi">Prev</div>', this.cssScene, this.cssObjects);
 		prevProject.position.set(0, -50, 10);
-		prevProject.scale.multiplyScalar(1 / 14);
+		prevProject.scale.multiplyScalar(this.coefText);
 
 
 		// Next project
 		const nextProject = new CssContainer('<div class="project__next transi">Next</div>', this.cssScene, this.cssObjects);
 		nextProject.position.set(0, 50, 10);
-		nextProject.scale.multiplyScalar(1 / 14);
+		nextProject.scale.multiplyScalar(this.coefText);
 
 		// Gallery
 		const radius = 100; // radius circonference of gallery circle
@@ -579,7 +580,7 @@ export default class ProjectView extends AbstractView {
 			const image = new CssContainer(`<div class="project__image"><img src="images/projects/${data.imgs[i]}" alt="project image" /></div>`, this.gallery, this.cssObjects);
 			image.position.set(radius * Math.sin(this.galleryAngle * i), 0, radius * Math.cos(this.galleryAngle * i));
 			image.rotation.set(0, this.galleryAngle * i, 0);
-			image.scale.multiplyScalar(1 / 14);
+			image.scale.multiplyScalar(this.coefText);
 		}
 
 		this.galleryPivot = new Object3D();
@@ -597,7 +598,7 @@ export default class ProjectView extends AbstractView {
 		// Rename Details in Content
 		this.topContent.position.set(radius, 0, 0);
 		this.topContent.rotation.set(0, toRadian(90), 0);
-		this.topContent.scale.multiplyScalar(1 / 14);
+		this.topContent.scale.multiplyScalar(this.coefText);
 
 		this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 0;
 
@@ -607,7 +608,7 @@ export default class ProjectView extends AbstractView {
 		this.footer = new CssContainer(html, this.cssScene, this.cssObjects);
 		this.footer.position.set(radius, 0, 0);
 		this.footer.rotation.set(0, toRadian(90), 0);
-		this.footer.scale.multiplyScalar(1 / 14);
+		this.footer.scale.multiplyScalar(this.coefText);
 
 		// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 0;
 	}
