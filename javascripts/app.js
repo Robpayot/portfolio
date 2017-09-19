@@ -66,6 +66,7 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 
 // import Xp from './xp/xp';
 
+global.MENU;
 global.PROD = false;
 global.BASE = '';
 
@@ -76,12 +77,9 @@ if (window.location.host === 'robpayot.github.io') {
 
 (function () {
 
-	_PreloadManager2.default.on('complete', function () {
+	_PreloadManager2.default.on('complete', _AppManager2.default.start, undefined, true);
 
-		_AppManager2.default.start();
-	}, undefined, true);
-
-	_PreloadManager2.default.loadManifest([{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' }, { id: 'texture-star', src: 'images/textures/star-2.png' }, { id: 'damier', src: 'images/textures/damier.jpg' }, { id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }
+	_PreloadManager2.default.loadManifest([{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' }, { id: 'texture-star', src: 'images/textures/star-2.png' }, { id: 'damier', src: 'images/textures/damier.jpg' }, { id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }
 	// { id: 'template-menu', src: ''}
 	]);
 
@@ -848,21 +846,16 @@ var Menu = function () {
 	function Menu() {
 		_classCallCheck(this, Menu);
 
-		console.log(_data2.default);
-
-		// let template = Handlebars.compile(PreloadManager.getResult('template-menu'));
-		// // let html  = template(data);
-		// console.log(html);
-
-
 		this.el = document.querySelector('.menu');
+		var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-menu'));
+		var html = template(_data2.default);
+		this.el.innerHTML = html;
 
 		this.ui = {
 			button: this.el.querySelector('.menu__button'),
 			overlay: this.el.querySelector('.menu__overlay'),
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
 			links: this.el.querySelectorAll('.menu__link')
-
 		};
 
 		// bind
@@ -891,6 +884,14 @@ var Menu = function () {
 	}, {
 		key: 'toggleOpen',
 		value: function toggleOpen() {
+			var close = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+
+			if (close === true) {
+				this.el.classList.remove('is-open');
+				return false;
+			}
+
 			if (this.el.classList.contains('is-open') === true) this.el.classList.remove('is-open');else this.el.classList.add('is-open');
 		}
 	}, {
@@ -921,21 +922,22 @@ var Menu = function () {
 	}, {
 		key: 'goTo',
 		value: function goTo(e) {
-			var el = e.currentTarget;
+			// const el = e.currentTarget;
 
-			switch ((0, _utils.getIndex)(el)) {
-				case 0:
-					_EmitterManager2.default.emit('router:switch', '/intro', 0);
-					_EmitterManager2.default.emit('view:transition:out');
-					break;
-			}
+			// switch (getIndex(el)) {
+			// 	case 0:
+			// 		EmitterManager.emit('router:switch', '/intro', 0);
+			// 		EmitterManager.emit('view:transition:out');
+			// 		break;
+			// }
+
 		}
 	}]);
 
 	return Menu;
 }();
 
-exports.default = new Menu();
+exports.default = Menu;
 
 },{"../../datas/data.json":1,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"handlebars":86}],7:[function(require,module,exports){
 'use strict';
@@ -1336,6 +1338,7 @@ function getIndex(el) {
 }
 
 },{}],12:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1366,9 +1369,17 @@ var _SceneManager = require('./SceneManager');
 
 var _SceneManager2 = _interopRequireDefault(_SceneManager);
 
+var _Menu = require('../components/Menu');
+
+var _Menu2 = _interopRequireDefault(_Menu);
+
 var _bean = require('bean');
 
 var _bean2 = _interopRequireDefault(_bean);
+
+var _handlebars = require('handlebars');
+
+var _handlebars2 = _interopRequireDefault(_handlebars);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1389,9 +1400,24 @@ var AppManager = function () {
 
 			this.events(true);
 
+			// HandlebarRegisters
+			_handlebars2.default.registerHelper('math', function (lvalue, operator, rvalue, options) {
+				lvalue = parseFloat(lvalue);
+				rvalue = parseFloat(rvalue);
+
+				return {
+					'+': lvalue + rvalue,
+					'-': lvalue - rvalue,
+					'*': lvalue * rvalue,
+					'/': lvalue / rvalue,
+					'%': lvalue % rvalue
+				}[operator];
+			});
+
 			// SoundManager
 
 			this.graphicBars = new _GraphicBars2.default();
+			this.menu = global.MENU = new _Menu2.default();
 
 			// Set up scene
 			_SceneManager2.default.start();
@@ -1478,7 +1504,9 @@ var AppManager = function () {
 
 exports.default = new AppManager();
 
-},{"../components/GraphicBars":5,"../helpers/Device":8,"./EmitterManager":13,"./RouterManager":15,"./SceneManager":16,"bean":48}],13:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../components/GraphicBars":5,"../components/Menu":6,"../helpers/Device":8,"./EmitterManager":13,"./RouterManager":15,"./SceneManager":16,"bean":48,"handlebars":86}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1517,6 +1545,7 @@ queue.maintainScriptOrder = false;
 exports.default = queue;
 
 },{"preload-js":100}],15:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1556,10 +1585,6 @@ var _data = require('../../datas/data.json');
 
 var _data2 = _interopRequireDefault(_data);
 
-var _Menu = require('../components/Menu');
-
-var _Menu2 = _interopRequireDefault(_Menu);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1573,9 +1598,32 @@ var RouterManager = function () {
 
 		this.switchView = this.switchView.bind(this);
 		this.initView = this.initView.bind(this);
+		this.onChange = this.onChange.bind(this);
+
+		window.addEventListener('hashchange', this.onChange, false);
 	}
 
 	_createClass(RouterManager, [{
+		key: 'onChange',
+		value: function onChange() {
+			console.log('change');
+			var url = window.location.href;
+
+			if (/\/#project-0/.test(url) === true) {
+				this.switchView('/project-0', 0, true);
+			} else if (/\/#project-1/.test(url) === true) {
+				this.switchView('/project-1', 1, true);
+			} else if (/\/#project-2/.test(url) === true) {
+				this.switchView('/project-2', 2, true);
+			} else if (/\/#glitch/.test(url) === true) {
+				this.switchView('/glitch', 0, true);
+			} else {
+				this.switchView('/intro', 0, true);
+			}
+
+			_EmitterManager2.default.on('router:switch', this.switchView);
+		}
+	}, {
 		key: 'start',
 		value: function start() {
 
@@ -1616,10 +1664,14 @@ var RouterManager = function () {
 
 				this.lastPage = this.currentPage.name;
 
-				this.currentPage.destroy(false);
+				this.currentPage.transitionOut(); // animation Out
+				global.MENU.toggleOpen(true); // close Menu
 
 				_EmitterManager2.default.once('view:transition:out', function () {
 
+					// When animation out, destroy scene, init new view
+
+					_this.currentPage.destroy(false);
 					_this.initView(goToPage, index, false);
 				});
 			} else {
@@ -1700,6 +1752,7 @@ var RouterManager = function () {
 					break;
 
 				case '/intro':
+					console.log('introooooooo');
 
 					this.currentPage = new _IntroView2.default({
 						gravity: true
@@ -1719,7 +1772,7 @@ var RouterManager = function () {
 					break;
 			}
 
-			_Menu2.default.update(this.currentPage.name, this.currentPage.id);
+			global.MENU.update(this.currentPage.name, this.currentPage.id);
 
 			this.fromLoad = false;
 		}
@@ -1730,7 +1783,9 @@ var RouterManager = function () {
 
 exports.default = new RouterManager();
 
-},{"../../datas/data.json":1,"../components/Glitch":4,"../components/Menu":6,"../projects/Blob":19,"../projects/Levit":20,"../projects/Stars":21,"../views/IntroView":46,"./EmitterManager":13}],16:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../../datas/data.json":1,"../components/Glitch":4,"../projects/Blob":19,"../projects/Levit":20,"../projects/Stars":21,"../views/IntroView":46,"./EmitterManager":13}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7766,6 +7821,7 @@ var AbstractView = function () {
 			var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
+			console.log('destroy');
 			if (all === true) {
 
 				this.scene.traverse(function (obj) {
@@ -7898,6 +7954,7 @@ var AbstractView = function () {
 exports.default = AbstractView;
 
 },{"../managers/AppManager":12,"../managers/SceneManager":16,"oimo":99,"three":107}],46:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7939,10 +7996,6 @@ var _Device = require('../helpers/Device');
 var _Ui = require('../components/Ui');
 
 var _Ui2 = _interopRequireDefault(_Ui);
-
-var _Menu = require('../components/Menu');
-
-var _Menu2 = _interopRequireDefault(_Menu);
 
 var _utilsThree = require('../helpers/utils-three');
 
@@ -8557,7 +8610,6 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'onClickStart',
 		value: function onClickStart() {
-			var _this5 = this;
 
 			if (this.clicked === true) return false;
 			this.clicked = true;
@@ -8586,7 +8638,7 @@ var IntroView = function (_AbstractView) {
 			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.40);
 
 			tl.add(function () {
-				_this5.transitionOut();
+				// this.transitionOut();
 			}, '+=0.5');
 
 			// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
@@ -8598,7 +8650,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			var _this6 = this;
+			var _this5 = this;
 
 			// console.log(this.waterMesh.position);
 
@@ -8679,13 +8731,13 @@ var IntroView = function (_AbstractView) {
 
 				// rotate Manually
 
-				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this6.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this6.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this6.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.y = el.body.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this5.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.x = el.body.rotation.x = (0, _utils.toRadian)(el.initRotateY + Math.cos(_this5.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				el.mesh.rotation.z = el.body.rotation.z = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this5.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 
 				if (el.body !== undefined) {
 
-					if (_this6.asteroidsMove === true) {
+					if (_this5.asteroidsMove === true) {
 						// APPLY IMPULSE
 						el.body.linearVelocity.x = el.force.x;
 						el.body.linearVelocity.y = el.force.y;
@@ -8702,7 +8754,7 @@ var IntroView = function (_AbstractView) {
 					el.mesh.quaternion.copy(el.body.getQuaternion());
 					if (el.mesh.position.z >= 200) {
 						el.mesh.position.z = el.body.position.z = el.mesh.index % 2 === 0 ? (0, _utils.getRandom)(0, -300) : -300;
-						el.body.position.x = el.mesh.position.x = (0, _utils.getRandom)(_this6.astXMin, _this6.astXMax);
+						el.body.position.x = el.mesh.position.x = (0, _utils.getRandom)(_this5.astXMin, _this5.astXMax);
 						el.animated = true;
 						var dest = el.height * el.scale;
 						// TweenMax.fromTo(el.mesh.material, 0.5, {opacity: 0}, {opacity: 1}); // convert in time raf
@@ -8753,14 +8805,14 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'transitionIn',
 		value: function transitionIn() {
-			var _this7 = this;
+			var _this6 = this;
 
 			this.el.classList.add('intro');
 			this.el.classList.remove('project');
 
 			// set ui
 			this.UI.intro.style.display = 'block';
-			_Menu2.default.el.classList.remove('is-active');
+			global.MENU.el.classList.remove('is-active');
 
 			_Ui2.default.el.style.display = 'block';
 
@@ -8794,7 +8846,7 @@ var IntroView = function (_AbstractView) {
 			}, 0.07);
 			tl.to(this.UI.overlay, 1.5, { opacity: 0 });
 			tl.add(function () {
-				_this7.moveCameraIn();
+				_this6.moveCameraIn();
 			}, 1);
 			tl.to([this.UI.title1, this.UI.title2], 2, { autoAlpha: 0 }, '+=3');
 			tl.set(this.UI.button, { opacity: 0, display: 'block' }, '+=1.5');
@@ -8802,15 +8854,18 @@ var IntroView = function (_AbstractView) {
 
 			tl.add(function () {
 				// start move Ast
-				_this7.startMove = true;
+				_this6.startMove = true;
 			}, 0);
 
+			tl.to('.overlay', 1, {
+				opacity: 0
+			}, 0);
 			// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
 		}
 	}, {
 		key: 'moveCameraIn',
 		value: function moveCameraIn(dest) {
-			var _this8 = this;
+			var _this7 = this;
 
 			// this.camera.lookAt(new Vector3(0,0,0));
 			// const tl2 = new TimelineMax();
@@ -8825,14 +8880,14 @@ var IntroView = function (_AbstractView) {
 
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this8.cameraMove = false;
-					_this8.currentCameraRotX = _this8.camera.rotation.x;
+					_this7.cameraMove = false;
+					_this7.currentCameraRotX = _this7.camera.rotation.x;
 				}
 			});
 			tl.to(this.camera.position, 7, { y: 400, ease: window.Expo.easeInOut });
 			tl.add(function () {
 
-				_this8.asteroidsMove = true;
+				_this7.asteroidsMove = true;
 			}, 0);
 
 			// this.cameraMove = true;
@@ -8901,7 +8956,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'transitionOut',
 		value: function transitionOut(dest) {
-			var _this9 = this;
+			var _this8 = this;
 
 			this.animating = true;
 
@@ -8962,10 +9017,10 @@ var IntroView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 
-					_this9.cameraMove = false;
+					_this8.cameraMove = false;
 					// this.currentCameraRotX = this.camera.rotation.x;
 
-					_EmitterManager2.default.emit('router:switch', '/project-0', 0);
+					// EmitterManager.emit('router:switch', '/project-0', 0);
 					_EmitterManager2.default.emit('view:transition:out');
 				}
 			});
@@ -8975,7 +9030,7 @@ var IntroView = function (_AbstractView) {
 				lookatPosition: 1,
 				ease: window.Power4.easeIn,
 				onUpdate: function onUpdate() {
-					_this9.dolly.update();
+					_this8.dolly.update();
 				}
 			});
 
@@ -9039,7 +9094,10 @@ var IntroView = function (_AbstractView) {
 
 exports.default = IntroView;
 
-},{"../components/Menu":6,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":24,"../shaders/SmoothFragmentShader":27,"../shaders/WaterVertexShader":30,"../shapes/Asteroid":32,"../shapes/Symbol":34,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":45,"dat-gui":53,"three":107}],47:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":24,"../shaders/SmoothFragmentShader":27,"../shaders/WaterVertexShader":30,"../shapes/Asteroid":32,"../shapes/Symbol":34,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":45,"dat-gui":53,"three":107}],47:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9103,10 +9161,6 @@ var _RouterManager2 = _interopRequireDefault(_RouterManager);
 var _Ui = require('../components/Ui');
 
 var _Ui2 = _interopRequireDefault(_Ui);
-
-var _Menu = require('../components/Menu');
-
-var _Menu2 = _interopRequireDefault(_Menu);
 
 var _handlebars = require('handlebars');
 
@@ -9424,15 +9478,15 @@ var ProjectView = function (_AbstractView) {
 
 			// set ui
 			this.UI.intro.style.display = 'none';
-			_Menu2.default.el.classList.add('is-active');
-			_Menu2.default.el.classList.remove('is-open');
+			global.MENU.el.classList.add('is-active');
+			global.MENU.el.classList.remove('is-open');
 
 			if (this.alt === true) {
 				this.el.classList.add('alt');
-				_Menu2.default.el.classList.add('alt');
+				global.MENU.el.classList.add('alt');
 			} else {
 				this.el.classList.remove('alt');
-				_Menu2.default.el.classList.remove('alt');
+				global.MENU.el.classList.remove('alt');
 			}
 
 			// Set CssContainers
@@ -9606,7 +9660,7 @@ var ProjectView = function (_AbstractView) {
 			prevProject.scale.multiplyScalar(this.coefText);
 
 			// Next project
-			var nextProject = new _CssContainer2.default('<div class="project__next transi">Next</div>', this.cssScene, this.cssObjects);
+			var nextProject = new _CssContainer2.default('<a href="#project-' + (this.id + 1) + '" class="project__next transi">Next</a>', this.cssScene, this.cssObjects);
 			nextProject.position.set(0, 50, 10);
 			nextProject.scale.multiplyScalar(this.coefText);
 
@@ -10449,7 +10503,7 @@ var ProjectView = function (_AbstractView) {
 					TweenMax.killAll();
 					// TweenMax.killTweensOf(this.symbol.mesh.position);
 
-					_EmitterManager2.default.emit('router:switch', '/project-' + dest, dest);
+					// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 					_EmitterManager2.default.emit('view:transition:out');
 					// console.log('transition out', this.id);
 				}
@@ -10562,7 +10616,9 @@ var ProjectView = function (_AbstractView) {
 
 exports.default = ProjectView;
 
-},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":4,"../components/Menu":6,"../components/Ui":7,"../helpers/Device":8,"../helpers/ease":9,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/RouterManager":15,"../managers/SceneManager":16,"../managers/ScrollManager":17,"../managers/SoundManager":18,"../shaders/FXAAShader":23,"../shaders/HorizontalTiltShiftShader":25,"../shaders/VerticalTiltShiftShader":29,"../shapes/Envelop":33,"../shapes/Symbol":34,"../vendors/OrbitControls":39,"../vendors/three-camera-dolly-custom":44,"./AbstractView":45,"bean":48,"handlebars":86,"three":107,"three-effectcomposer-es6":101}],48:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":4,"../components/Ui":7,"../helpers/Device":8,"../helpers/ease":9,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/RouterManager":15,"../managers/SceneManager":16,"../managers/ScrollManager":17,"../managers/SoundManager":18,"../shaders/FXAAShader":23,"../shaders/HorizontalTiltShiftShader":25,"../shaders/VerticalTiltShiftShader":29,"../shapes/Envelop":33,"../shapes/Symbol":34,"../vendors/OrbitControls":39,"../vendors/three-camera-dolly-custom":44,"./AbstractView":45,"bean":48,"handlebars":86,"three":107,"three-effectcomposer-es6":101}],48:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
