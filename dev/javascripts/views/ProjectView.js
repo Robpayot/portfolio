@@ -485,14 +485,19 @@ export default class ProjectView extends AbstractView {
 		title.position.set(20, 0, 10);
 		title.scale.multiplyScalar(this.coefText);
 
+		const prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
+		const nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
+
+
 		// Prev project
-		const prevProject = new CssContainer('<div class="project__prev transi">Prev</div>', this.cssScene, this.cssObjects);
+		const prevProject = new CssContainer(`<a href="#project-${prevId}" class="project__prev transi">Prev</a>`, this.cssScene, this.cssObjects);
 		prevProject.position.set(0, -50, 10);
 		prevProject.scale.multiplyScalar(this.coefText);
 
 
 		// Next project
-		const nextProject = new CssContainer(`<a href="#project-${this.id + 1}" class="project__next transi">Next</a>`, this.cssScene, this.cssObjects);
+
+		const nextProject = new CssContainer(`<a href="#project-${nextId}" class="project__next transi">Next</a>`, this.cssScene, this.cssObjects);
 		nextProject.position.set(0, 50, 10);
 		nextProject.scale.multiplyScalar(this.coefText);
 
@@ -526,7 +531,6 @@ export default class ProjectView extends AbstractView {
 		// this.cssScene.add(this.galleryPivot);
 
 		// arrows
-		console.log(data);
 
 		// Context + gallery arrows
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'));

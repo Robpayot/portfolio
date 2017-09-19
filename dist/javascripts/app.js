@@ -9654,13 +9654,17 @@ var ProjectView = function (_AbstractView) {
 			title.position.set(20, 0, 10);
 			title.scale.multiplyScalar(this.coefText);
 
+			var prevId = this.id - 1 < 0 ? _data2.default.projects.length - 1 : this.id - 1;
+			var nextId = this.id + 1 > _data2.default.projects.length - 1 ? 0 : this.id + 1;
+
 			// Prev project
-			var prevProject = new _CssContainer2.default('<div class="project__prev transi">Prev</div>', this.cssScene, this.cssObjects);
+			var prevProject = new _CssContainer2.default('<a href="#project-' + prevId + '" class="project__prev transi">Prev</a>', this.cssScene, this.cssObjects);
 			prevProject.position.set(0, -50, 10);
 			prevProject.scale.multiplyScalar(this.coefText);
 
 			// Next project
-			var nextProject = new _CssContainer2.default('<a href="#project-' + (this.id + 1) + '" class="project__next transi">Next</a>', this.cssScene, this.cssObjects);
+
+			var nextProject = new _CssContainer2.default('<a href="#project-' + nextId + '" class="project__next transi">Next</a>', this.cssScene, this.cssObjects);
 			nextProject.position.set(0, 50, 10);
 			nextProject.scale.multiplyScalar(this.coefText);
 
@@ -9694,7 +9698,6 @@ var ProjectView = function (_AbstractView) {
 			// this.cssScene.add(this.galleryPivot);
 
 			// arrows
-			console.log(data);
 
 			// Context + gallery arrows
 			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-content'));
