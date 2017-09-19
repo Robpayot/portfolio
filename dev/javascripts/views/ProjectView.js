@@ -20,7 +20,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
+import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, Scene, Color, MeshPhongMaterial, Vector3, BoxGeometry } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -273,29 +273,7 @@ export default class ProjectView extends AbstractView {
 		// Set BLUR EFFECT
 		this.setBlur();
 
-		// Load data
-
-		// Preloader
-		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
-
-		let prod;
-
-		if (window.location.host === 'robpayot.github.io') {
-			prod = true;
-
-		}
-
-		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-		PreloadManager.loadManifest([
-			{ id: 'template-title', src: `${base}/templates/projectTitle.hbs`},
-			{ id: 'template-content', src: `${base}/templates/projectContent.hbs` },
-			{ id: 'template-footer', src: `${base}/templates/projectFooter.hbs` },
-		]);
-
-		PreloadManager.load();
-
-		// this.start();
+		this.start();
 
 		// const p = new VirtualScroll();
 
@@ -502,7 +480,7 @@ export default class ProjectView extends AbstractView {
 		const data = this.data;
 
 		// Title
-		let template = Handlebars.compile(PreloadManager.getResult('template-title'));
+		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
 		title.position.set(20, 0, 10);
@@ -552,7 +530,7 @@ export default class ProjectView extends AbstractView {
 		console.log(data);
 
 		// Context + gallery arrows
-		template = Handlebars.compile(PreloadManager.getResult('template-content'));
+		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'));
 		html  = template(data);
 		this.topContent = new CssContainer(html, this.cssScene, this.cssObjects);
 		// Rename context to container or projectContainer

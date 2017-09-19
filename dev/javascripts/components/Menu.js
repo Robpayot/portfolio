@@ -1,10 +1,20 @@
 // import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
 import { getIndex } from '../helpers/utils';
+import Handlebars from 'handlebars';
+import PreloadManager from '../managers/PreloadManager';
+import DATA from '../../datas/data.json';
 
 class Menu {
 
 	constructor() {
+
+		console.log(DATA);
+
+		// let template = Handlebars.compile(PreloadManager.getResult('template-menu'));
+		// // let html  = template(data);
+		// console.log(html);
+
 
 		this.el = document.querySelector('.menu');
 
