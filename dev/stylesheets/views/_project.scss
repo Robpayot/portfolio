@@ -22,7 +22,7 @@ $project3D-w : 1075px;
         text-align: left;
         user-select: none;
         font-size: 0.8em;
-        transform: translateY(50%);
+        transform: translateY(50%) !important;
         opacity: 0;
 
     }
@@ -86,18 +86,26 @@ $project3D-w : 1075px;
     	}
     }
 
-    &__image {
+    &__gallery {
+    	margin-top: 100px;
+    	margin-bottom: 60px;
+    	position: relative;
         max-width: $project3D-w;
         width: $project3D-w;
+    }
+
+    &__image {
+		width: 100%;
         // max-height: 300px;
         opacity: 0.9;
         user-select: none;
         visibility: hidden;
+        margin-bottom: 40px;
 
         img {
             width: 100%;
             border: 1px solid rgba(128, 128, 128, 0.15);
-            transform: translateY(50%);
+            // transform: translateY(50%);
         }
     }
 
@@ -128,6 +136,7 @@ $project3D-w : 1075px;
 		transform: translateX(-50%);
 		text-align: center;
 		text-transform: uppercase;
+		cursor: pointer;
 
 		.button {
 			text-transform: none;
