@@ -34,6 +34,7 @@ module.exports={
 }
 
 },{}],2:[function(require,module,exports){
+(function (global){
 'use strict';
 
 // Default Babel Polyfill, be careful, be sure you need it
@@ -65,6 +66,14 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 
 // import Xp from './xp/xp';
 
+global.PROD = false;
+global.BASE = '';
+
+if (window.location.host === 'robpayot.github.io') {
+	global.PROD = true;
+	global.BASE = 'https://robpayot.github.io/xp-son/dist';
+}
+
 (function () {
 
 	_PreloadManager2.default.on('complete', function () {
@@ -72,12 +81,14 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 		_AppManager2.default.start();
 	}, undefined, true);
 
-	_PreloadManager2.default.loadFile({ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' });
-	_PreloadManager2.default.loadFile({ id: 'texture-star', src: 'images/textures/star-2.png' });
-	_PreloadManager2.default.loadFile({ id: 'damier', src: 'images/textures/damier.jpg' });
+	_PreloadManager2.default.loadManifest([{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' }, { id: 'texture-star', src: 'images/textures/star-2.png' }, { id: 'damier', src: 'images/textures/damier.jpg' }, { id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }
+	// { id: 'template-menu', src: ''}
+	]);
 
 	_PreloadManager2.default.load();
 })();
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"./managers/AppManager":12,"./managers/PreloadManager":14,"./vendors/modernizr-custom":43,"gsap":56}],3:[function(require,module,exports){
 'use strict';
@@ -817,6 +828,18 @@ var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 
 var _utils = require('../helpers/utils');
 
+var _handlebars = require('handlebars');
+
+var _handlebars2 = _interopRequireDefault(_handlebars);
+
+var _PreloadManager = require('../managers/PreloadManager');
+
+var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
+
+var _data = require('../../datas/data.json');
+
+var _data2 = _interopRequireDefault(_data);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -824,6 +847,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Menu = function () {
 	function Menu() {
 		_classCallCheck(this, Menu);
+
+		console.log(_data2.default);
+
+		// let template = Handlebars.compile(PreloadManager.getResult('template-menu'));
+		// // let html  = template(data);
+		// console.log(html);
+
 
 		this.el = document.querySelector('.menu');
 
@@ -907,7 +937,7 @@ var Menu = function () {
 
 exports.default = new Menu();
 
-},{"../helpers/utils":11,"../managers/EmitterManager":13}],7:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"handlebars":86}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9367,24 +9397,7 @@ var ProjectView = function (_AbstractView) {
 			// Set BLUR EFFECT
 			this.setBlur();
 
-			// Load data
-
-			// Preloader
-			this.preloadCb = _PreloadManager2.default.on('complete', this.start, this, true);
-
-			var prod = void 0;
-
-			if (window.location.host === 'robpayot.github.io') {
-				prod = true;
-			}
-
-			var base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-			_PreloadManager2.default.loadManifest([{ id: 'template-title', src: base + '/templates/projectTitle.hbs' }, { id: 'template-content', src: base + '/templates/projectContent.hbs' }, { id: 'template-footer', src: base + '/templates/projectFooter.hbs' }]);
-
-			_PreloadManager2.default.load();
-
-			// this.start();
+			this.start();
 
 			// const p = new VirtualScroll();
 
@@ -9581,7 +9594,7 @@ var ProjectView = function (_AbstractView) {
 			var data = this.data;
 
 			// Title
-			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('template-title'));
+			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-title'));
 			var html = template(data);
 			var title = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			title.position.set(20, 0, 10);
@@ -9630,7 +9643,7 @@ var ProjectView = function (_AbstractView) {
 			console.log(data);
 
 			// Context + gallery arrows
-			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('template-content'));
+			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-content'));
 			html = template(data);
 			this.topContent = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			// Rename context to container or projectContainer
