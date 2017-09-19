@@ -9173,6 +9173,7 @@ var ProjectView = function (_AbstractView) {
 		_this.onChangeBlur = _this.onChangeBlur.bind(_this);
 		_this.onChangeBrightness = _this.onChangeBrightness.bind(_this);
 		_this.onChangeDolly = _this.onChangeDolly.bind(_this);
+		_this.onChangeCameraRot = _this.onChangeCameraRot.bind(_this);
 		_this.checkCssContainer = _this.checkCssContainer.bind(_this);
 
 		console.log('mon id', _this.id);
@@ -9230,6 +9231,8 @@ var ProjectView = function (_AbstractView) {
 			this.cssObjects = [];
 			this.time = 1;
 			this.finalFov = 45;
+			this.currentRotateY = { angle: 0 };
+			this.cameraRotX = true;
 			this.composer = null;
 			this.bounceArea = 480;
 			this.pixelToUnits = 8.1;
@@ -9244,6 +9247,7 @@ var ProjectView = function (_AbstractView) {
 			this.scene = new _three.Scene();
 			this.scene.background = new _three.Color(this.bkg);
 			this.cssScene = new _three.Scene();
+			this.cameraTarget = new _three.Vector3(0, 0, 0);
 
 			// Set Camera
 			this.setCamera();
@@ -9275,11 +9279,11 @@ var ProjectView = function (_AbstractView) {
 			this.cameraRot = new _three.Vector3(0, 0, 0);
 			this.cameraPos = new _three.Vector3(0, 0, 0);
 
-			this.cameraTarget = new _three.Vector3(0, 0, 0);
 			this.camRotTarget = new _three.Vector3(0, 0, 0);
 			this.camRotSmooth = new _three.Vector3(0, 0, 0);
 
-			this.camera.lookAt(this.cameraTarget);
+			// this.camera.lookAt(this.cameraTarget);
+
 
 			// Camera controls
 			if (this.isControls === true) {
@@ -9309,7 +9313,10 @@ var ProjectView = function (_AbstractView) {
 				// Camera dolly
 				position: 0,
 				lookAt: 0,
-				astColor: 0xffffff
+				astColor: 0xffffff,
+				rotX: 0,
+				rotY: 0,
+				rotZ: 0
 
 			};
 
@@ -9335,7 +9342,11 @@ var ProjectView = function (_AbstractView) {
 				brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
 				brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
 				// brightnessFolder.open();
-				console.log('yoooooooooooooo');
+
+				// Cam
+				this.sound.gui.add(this.effectController, 'rotX', -90, 90).listen().onChange(this.onChangeCameraRot);
+				this.sound.gui.add(this.effectController, 'rotY', -90, 90).listen().onChange(this.onChangeCameraRot);
+				this.sound.gui.add(this.effectController, 'rotZ', -90, 90).listen().onChange(this.onChangeCameraRot);
 
 				this.sound.gui.init = true;
 			}
@@ -9459,7 +9470,7 @@ var ProjectView = function (_AbstractView) {
 				// wHeight === window.innerHeight in Units equivalent
 				// let aspect = window.width / window.height;
 				// let width = height * aspect;                  // visible width
-				var margeTop = 2; // test
+				var margeTop = 2; // test getBoundingRectClient is not giving the right height !!!
 
 				var percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight; // half because centered
 				var finalHeight = wHeight * percent;
@@ -9484,6 +9495,8 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'setCameraPos',
 		value: function setCameraPos() {
+			// this.camera.useTarget = false;
+			this.camera.lookAt(this.cameraTarget);
 
 			this.pathRadius = 160;
 			this.camera.position.set(-60, 170, 70);
@@ -9737,14 +9750,17 @@ var ProjectView = function (_AbstractView) {
 
 			if (this.animating === true) return false;
 			this.animating = true;
+			// this.cameraRotX = true;
+			this.camera.rotation.order = 'YXZ'; // need to change order to rotate correclty X
 
 			// Turn around the perimeter of a circle
-			this.cameraMove = true;
+			// this.cameraMove = true;
 
 			var trigo = { angle: 1 };
+			this.currentRotateY = { angle: 0 };
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this3.cameraMove = true;
+					// this.cameraRotX = true;
 					_this3.animating = false;
 					_ScrollManager2.default.on(); // start scrollmanager
 					_this3.glitch.stop = true;
@@ -9753,19 +9769,7 @@ var ProjectView = function (_AbstractView) {
 
 			tl.to(this.camera.rotation, 0.8, {
 				x: 0,
-				y: 0,
 				ease: Power2.easeOut
-			});
-
-			tl.to(trigo, 3, { // 3
-				angle: 0,
-				ease: window.Power3.easeInOut,
-				onUpdate: function onUpdate() {
-					// Math.PI / 2 start rotation at 90deg
-					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this3.camera.lookAt(_this3.cameraTarget);
-				}
 			});
 
 			tl.set(['.project__footer', '.gallery__arrow', '.project__image', '.project__container'], { visibility: 'visible' }, 3); // ,3
@@ -9784,19 +9788,44 @@ var ProjectView = function (_AbstractView) {
 				opacity: 0,
 				ease: window.Power4.easeOut
 			}, 0.2, 2.2);
+
+			// angle
+
+			tl.to(trigo, 3, { // 3
+				angle: 0,
+				ease: window.Power3.easeInOut,
+				onUpdate: function onUpdate() {
+					// Math.PI / 2 start rotation at 90deg
+					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					// this.camera.lookAt(this.cameraTarget);
+					// this.camera.rotation.y = toRadian(90);
+					// this.currentRotateY = toRadian((trigo.angle / 1) * 90);
+					// console.log();
+					_this3.camera.updateProjectionMatrix();
+					console.log(_this3.currentRotateY.angle);
+				}
+			}, 0.8);
+
+			tl.to(this.currentRotateY, 3, {
+				angle: (0, _utils.toRadian)(90),
+				ease: window.Power3.easeInOut
+			}, 0.8);
 		}
 	}, {
 		key: 'backFromContent',
 		value: function backFromContent() {
 			var _this4 = this;
 
-			this.cameraMove = true;
+			this.cameraRotX = true;
 			this.glitch.stop = false;
 			_ScrollManager2.default.off(); // stop scrollmanager
 
 			var trigo = { angle: 0 };
+			this.currentRotateY = { angle: (0, _utils.toRadian)(90) };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
 					_this4.cameraMove = false;
+					_this4.camera.rotation.order = 'XYZ';
 				} });
 
 			tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], 1.2, {
@@ -9813,8 +9842,13 @@ var ProjectView = function (_AbstractView) {
 					// Math.PI / 2 start rotation at 90deg
 					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
 					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-					_this4.camera.lookAt(_this4.cameraTarget);
+					// this.camera.lookAt(this.cameraTarget);
 				}
+			}, 0.5);
+
+			tl.to(this.currentRotateY, 3, {
+				angle: (0, _utils.toRadian)(0),
+				ease: window.Power3.easeInOut
 			}, 0.5);
 
 			tl.staggerTo(['.project__next', '.project__title'], 0.6, {
@@ -10137,8 +10171,10 @@ var ProjectView = function (_AbstractView) {
 
 				// Apply rotation
 
-				this.camera.rotation.x = this.camRotSmooth.x;
-				this.camera.rotation.y = this.camRotSmooth.y;
+				if (this.cameraRotX) this.camera.rotation.x = this.camRotSmooth.x;
+				this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
+				// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
+				// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 			}
 
 			this.render();
@@ -10250,53 +10286,54 @@ var ProjectView = function (_AbstractView) {
 
 			if (fromUrl === true) {
 
-				noDolly = false;
+				// noDolly = false;
 
-				time = 4;
-				ease = window.Power3.easeInOut;
-				delay = 2.5;
+				// time = 4;
+				// ease = window.Power3.easeInOut;
+				// delay = 2.5;
 
-				points = {
-					'camera': [{
-						'x': -60,
-						'y': 170,
-						'z': 70
-					}, {
-						'x': -40,
-						'y': 100,
-						'z': 100
-					}, {
-						'x': -20,
-						'y': 50,
-						'z': 130
-					}, {
-						'x': 0,
-						'y': 0,
-						'z': 160
-					}],
-					'lookat': [{
-						'x': 0,
-						'y': 0,
-						'z': 0
-					}, {
-						'x': 0,
-						'y': -3,
-						'z': 3
-					}, {
-						'x': 0,
-						'y': -3,
-						'z': 3
-					}, {
-						'x': 0,
-						'y': 0,
-						'z': 0
-					}]
-				};
+				// points = {
+				// 	'camera': [{
+				// 		'x': -60,
+				// 		'y': 170,
+				// 		'z': 70
+				// 	}, {
+				// 		'x': -40,
+				// 		'y': 100,
+				// 		'z': 100
+				// 	}, {
+				// 		'x': -20,
+				// 		'y': 50,
+				// 		'z': 130
+				// 	}, {
+				// 		'x': 0,
+				// 		'y': 0,
+				// 		'z': 160
+				// 	}],
+				// 	'lookat': [{
+				// 		'x': 0,
+				// 		'y': 0,
+				// 		'z': 0
+				// 	}, {
+				// 		'x': 0,
+				// 		'y': -3,
+				// 		'z': 3
+				// 	}, {
+				// 		'x': 0,
+				// 		'y': -3,
+				// 		'z': 3
+				// 	}, {
+				// 		'x': 0,
+				// 		'y': 0,
+				// 		'z': 0
+				// 	}]
+				// };
 			}
 
 			this.cameraMove = !noDolly;
 
 			this.dolly = new _threeCameraDollyCustom.CameraDolly(this.camera, this.scene, points, null, false);
+			// this.dolly = null;
 
 			this.dolly.cameraPosition = 0;
 			this.dolly.lookatPosition = 0;
@@ -10503,6 +10540,14 @@ var ProjectView = function (_AbstractView) {
 			this.dolly.cameraPosition = this.effectController.position;
 			this.dolly.lookatPosition = this.effectController.lookAt;
 			this.dolly.update();
+		}
+	}, {
+		key: 'onChangeCameraRot',
+		value: function onChangeCameraRot() {
+			this.camera.rotation.x = (0, _utils.toRadian)(this.effectController.rotX);
+			this.camera.rotation.y = (0, _utils.toRadian)(this.effectController.rotY);
+			this.camera.rotation.z = (0, _utils.toRadian)(this.effectController.rotZ);
+			// this.camera.updateProjectionMatrix();
 		}
 	}]);
 
