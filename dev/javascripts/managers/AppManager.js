@@ -6,7 +6,9 @@ import { Device } from '../helpers/Device';
 // import SoundManager from './SoundManager';
 import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
+import Menu from '../components/Menu';
 import bean from 'bean';
+import Handlebars from 'handlebars';
 
 
 class AppManager {
@@ -23,9 +25,24 @@ class AppManager {
 
 		this.events(true);
 
+		// HandlebarRegisters
+		Handlebars.registerHelper('math', (lvalue, operator, rvalue, options) => {
+			lvalue = parseFloat(lvalue);
+			rvalue = parseFloat(rvalue);
+
+			return {
+				'+': lvalue + rvalue,
+				'-': lvalue - rvalue,
+				'*': lvalue * rvalue,
+				'/': lvalue / rvalue,
+				'%': lvalue % rvalue
+			}[operator];
+		});
+
 		// SoundManager
 
 		this.graphicBars = new GraphicBars();
+		this.menu = global.MENU = new Menu();
 
 		// Set up scene
 		SceneManager.start();

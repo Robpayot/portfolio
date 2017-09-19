@@ -7,7 +7,6 @@ import Symbol from '../shapes/Symbol';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
-import Menu from '../components/Menu';
 import { loadJSON } from '../helpers/utils-three';
 
 
@@ -621,7 +620,7 @@ export default class IntroView extends AbstractView {
 		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.40);
 
 		tl.add(() => {
-			this.transitionOut();
+			// this.transitionOut();
 		}, '+=0.5');
 
 		// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
@@ -799,7 +798,7 @@ export default class IntroView extends AbstractView {
 
 		// set ui
 		this.UI.intro.style.display = 'block';
-		Menu.el.classList.remove('is-active');
+		global.MENU.el.classList.remove('is-active');
 
 		Ui.el.style.display = 'block';
 
@@ -844,6 +843,10 @@ export default class IntroView extends AbstractView {
 			this.startMove = true;
 		},0);
 
+
+		tl.to('.overlay', 1, {
+			opacity: 0
+		}, 0);
 		// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
 
 	}
@@ -1004,7 +1007,7 @@ export default class IntroView extends AbstractView {
 				this.cameraMove = false;
 				// this.currentCameraRotX = this.camera.rotation.x;
 
-				EmitterManager.emit('router:switch', '/project-0', 0);
+				// EmitterManager.emit('router:switch', '/project-0', 0);
 				EmitterManager.emit('view:transition:out');
 			}
 		});

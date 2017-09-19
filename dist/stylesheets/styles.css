@@ -822,10 +822,12 @@ body {
       color: white;
       border-color: white; }
     .ui .menu.is-open .menu__overlay {
-      opacity: 0.9; }
+      opacity: 0.85; }
     .ui .menu.is-open .menu__links {
       opacity: 1;
       pointer-events: auto; }
+    .ui .menu a {
+      display: block; }
     .ui .menu__button {
       position: absolute;
       top: 50%;

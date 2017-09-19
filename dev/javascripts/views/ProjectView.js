@@ -13,7 +13,6 @@ import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
 import Ui from '../components/Ui';
-import Menu from '../components/Menu';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import Glitch from '../components/Glitch';
@@ -303,15 +302,15 @@ export default class ProjectView extends AbstractView {
 
 		// set ui
 		this.UI.intro.style.display = 'none';
-		Menu.el.classList.add('is-active');
-		Menu.el.classList.remove('is-open');
+		global.MENU.el.classList.add('is-active');
+		global.MENU.el.classList.remove('is-open');
 
 		if (this.alt === true) {
 			this.el.classList.add('alt');
-			Menu.el.classList.add('alt');
+			global.MENU.el.classList.add('alt');
 		} else {
 			this.el.classList.remove('alt');
-			Menu.el.classList.remove('alt');
+			global.MENU.el.classList.remove('alt');
 		}
 
 		// Set CssContainers
@@ -493,7 +492,7 @@ export default class ProjectView extends AbstractView {
 
 
 		// Next project
-		const nextProject = new CssContainer('<div class="project__next transi">Next</div>', this.cssScene, this.cssObjects);
+		const nextProject = new CssContainer(`<a href="#project-${this.id + 1}" class="project__next transi">Next</a>`, this.cssScene, this.cssObjects);
 		nextProject.position.set(0, 50, 10);
 		nextProject.scale.multiplyScalar(this.coefText);
 
@@ -1337,7 +1336,7 @@ export default class ProjectView extends AbstractView {
 				TweenMax.killAll();
 				// TweenMax.killTweensOf(this.symbol.mesh.position);
 
-				EmitterManager.emit('router:switch', `/project-${dest}`, dest);
+				// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 				EmitterManager.emit('view:transition:out');
 				// console.log('transition out', this.id);
 			}

@@ -7,7 +7,6 @@ import Levit from '../projects/Levit';
 import Blob from '../projects/Blob';
 import Stars from '../projects/Stars';
 import data from '../../datas/data.json';
-import Menu from '../components/Menu';
 
 // console.log(ListView);
 
@@ -18,7 +17,30 @@ class RouterManager {
 
 		this.switchView = this.switchView.bind(this);
 		this.initView = this.initView.bind(this);
+		this.onChange = this.onChange.bind(this);
 
+
+		window.addEventListener('hashchange', this.onChange, false);
+
+	}
+
+	onChange() {
+		console.log('change');
+		const url = window.location.href;
+
+		if (/\/#project-0/.test(url) === true) {
+			this.switchView('/project-0', 0, true);
+		} else if (/\/#project-1/.test(url) === true) {
+			this.switchView('/project-1', 1, true);
+		} else if (/\/#project-2/.test(url) === true) {
+			this.switchView('/project-2', 2, true);
+		} else if (/\/#glitch/.test(url) === true) {
+			this.switchView('/glitch', 0, true);
+		} else {
+			this.switchView('/intro', 0, true);
+		}
+
+		EmitterManager.on('router:switch', this.switchView);
 	}
 
 	start() {
@@ -54,10 +76,14 @@ class RouterManager {
 
 			this.lastPage = this.currentPage.name;
 
-			this.currentPage.destroy(false);
+			this.currentPage.transitionOut(); // animation Out
+			global.MENU.toggleOpen(true); // close Menu
 
 			EmitterManager.once('view:transition:out', () => {
 
+				// When animation out, destroy scene, init new view
+
+				this.currentPage.destroy(false);
 				this.initView(goToPage, index, false);
 
 			});
@@ -137,6 +163,7 @@ class RouterManager {
 				break;
 
 			case '/intro':
+				console.log('introooooooo');
 
 				this.currentPage = new IntroView({
 					gravity: true,
@@ -156,7 +183,7 @@ class RouterManager {
 				break;
 		}
 
-		Menu.update(this.currentPage.name, this.currentPage.id);
+		global.MENU.update(this.currentPage.name, this.currentPage.id);
 
 		this.fromLoad = false;
 

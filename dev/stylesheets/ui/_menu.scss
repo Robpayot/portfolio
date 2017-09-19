@@ -29,7 +29,7 @@
 				border-color: white;
 			}
 			&__overlay {
-				opacity: 0.9;
+				opacity: 0.85;
 			}
 			&__links {
 				opacity: 1;
@@ -37,6 +37,10 @@
 			}
 		}
 
+	}
+
+	a {
+		display: block;
 	}
 
 

@@ -21,6 +21,7 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 import AppManager from './managers/AppManager';
 import PreloadManager from './managers/PreloadManager';
 
+global.MENU;
 global.PROD = false;
 global.BASE = '';
 
@@ -32,20 +33,15 @@ if (window.location.host === 'robpayot.github.io') {
 
 (() => {
 
-	PreloadManager.on('complete', () => {
-
-		AppManager.start();
-
-	}, this, true);
-
-
+	PreloadManager.on('complete', AppManager.start, this, true);
 
 	PreloadManager.loadManifest([
 		{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' },
 		{ id: 'texture-star', src: 'images/textures/star-2.png' },
 		{ id: 'damier', src: 'images/textures/damier.jpg' },
 		{ id: 'tpl-project-title', src: `${global.BASE}/templates/projectTitle.hbs` },
-		{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` }
+		{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` },
+		{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` }
 		// { id: 'template-menu', src: ''}
 	]);
 

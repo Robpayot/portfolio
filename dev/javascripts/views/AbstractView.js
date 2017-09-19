@@ -73,6 +73,7 @@ export default class AbstractView {
 
 	destroy(all = false) {
 
+		console.log('destroy');
 		if (all === true) {
 
 			this.scene.traverse((obj) => {

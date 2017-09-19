@@ -5,25 +5,20 @@ import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import DATA from '../../datas/data.json';
 
-class Menu {
+export default class Menu {
 
 	constructor() {
 
-		console.log(DATA);
-
-		// let template = Handlebars.compile(PreloadManager.getResult('template-menu'));
-		// // let html  = template(data);
-		// console.log(html);
-
-
 		this.el = document.querySelector('.menu');
+		let template = Handlebars.compile(PreloadManager.getResult('tpl-menu'));
+		let html  = template(DATA);
+		this.el.innerHTML = html;
 
 		this.ui = {
 			button: this.el.querySelector('.menu__button'),
 			overlay: this.el.querySelector('.menu__overlay'),
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
-			links: this.el.querySelectorAll('.menu__link'),
-
+			links: this.el.querySelectorAll('.menu__link')
 		};
 
 		// bind
@@ -49,7 +44,13 @@ class Menu {
 
 	}
 
-	toggleOpen() {
+	toggleOpen(close = false) {
+
+		if (close === true) {
+			this.el.classList.remove('is-open');
+			return false;
+		}
+
 		if (this.el.classList.contains('is-open') === true) this.el.classList.remove('is-open');
 		else this.el.classList.add('is-open');
 	}
@@ -80,16 +81,14 @@ class Menu {
 	}
 
 	goTo(e) {
-		const el = e.currentTarget;
+		// const el = e.currentTarget;
 
-		switch (getIndex(el)) {
-			case 0:
-				EmitterManager.emit('router:switch', '/intro', 0);
-				EmitterManager.emit('view:transition:out');
-				break;
-		}
+		// switch (getIndex(el)) {
+		// 	case 0:
+		// 		EmitterManager.emit('router:switch', '/intro', 0);
+		// 		EmitterManager.emit('view:transition:out');
+		// 		break;
+		// }
 
 	}
 }
-
-export default new Menu();
