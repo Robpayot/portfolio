@@ -373,7 +373,7 @@ export default class ProjectView extends AbstractView {
 			// wHeight === window.innerHeight in Units equivalent
 			// let aspect = window.width / window.height;
 			// let width = height * aspect;                  // visible width
-			const margeTop = 2;
+			const margeTop = 2; // test
 
 			let percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight; // half because centered
 			let finalHeight = wHeight * percent;
