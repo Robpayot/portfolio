@@ -9459,7 +9459,7 @@ var ProjectView = function (_AbstractView) {
 				// wHeight === window.innerHeight in Units equivalent
 				// let aspect = window.width / window.height;
 				// let width = height * aspect;                  // visible width
-				var margeTop = 2;
+				var margeTop = 2; // test
 
 				var percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight; // half because centered
 				var finalHeight = wHeight * percent;
