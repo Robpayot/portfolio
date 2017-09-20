@@ -191,6 +191,12 @@ $project3D-w : 1075px;
             svg {
                 transform: translateX(15px) !important;
             }
+            .project__more {
+            	padding-left: 100px;
+            }
+            .project__more::after {
+            	width: 60px;
+            }
         }
     }
 
@@ -205,26 +211,28 @@ $project3D-w : 1075px;
     	position: absolute;
     	top: -300px;
     	font-size: 3rem;
-    	left: 70px;
+    	left: 5px;
     }
 
     &__more {
-    	// position: relative;
-    	left: calc(0% + 150px);
+    	left: 0px;
+    	padding-left: 0px;
     	font-size: 2.2rem;
     	letter-spacing: 4px;
     	font-family: 'Theinhardt-regular';
 		top: 150px;
-		opacity: 0;
+		opacity: 1;
+		transition: padding 0.8s $easeToinou;
 		&:after {
 			content: '';
 			position: absolute;
-			width: 60px;
+			width: 0px;
 			height: 3px;
 			background-color: $color-grey;
-			left: -100px;
+			left: 0px;
 			top: 50%;
 			transform: translateY(-50%);
+			transition: width 0.8s $easeToinou;
 		}
 		// font-size: 2em;
 

@@ -653,6 +653,7 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 		this.animating = true;
+		this.contentOpen = true;
 		// this.cameraRotX = true;
 		this.camera.rotation.order = 'YXZ'; // need to change order to rotate correclty X
 
@@ -723,6 +724,7 @@ export default class ProjectView extends AbstractView {
 			this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
 			this.cameraMove = false;
 			this.camera.rotation.order = 'XYZ';
+			this.contentOpen = false;
 		} });
 
 		tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer' ], 1.2, {
@@ -1370,8 +1372,37 @@ export default class ProjectView extends AbstractView {
 	}
 
 	reset() {
+		console.log('reset');
 
-		this.destroy();
+		this.cameraRotX = true;
+		this.glitch.stop = false;
+		ScrollManager.off(); // stop scrollmanager
+
+		const tl = new TimelineMax({ onComplete: () => {
+			this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
+			this.cameraMove = false;
+			this.camera.rotation.order = 'XYZ';
+		} });
+
+		tl.set(['.project__container', '.project__image', '.gallery__arrow', '.project__footer' ], {
+			opacity: 0,
+			ease: window.Power4.easeOut
+		});
+
+		tl.set(['.project__image', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
+
+		this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * 1);
+		this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * 1);
+
+		tl.set(this.currentRotateY, {
+			angle: toRadian(0)
+		});
+
+		tl.set(['.project__next','.project__title'], {
+			opacity: 1
+		});
+
+		// this.destroy();
 
 		// // Set symbol
 		// this.setSymbol();

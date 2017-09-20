@@ -28,8 +28,8 @@ body {
 		z-index: 9000;
 		position: absolute;
 		top: 50%;
-		left: 50%;
-		transform: translate(-50%,-50%);
+		left: -108px;
+		transform: translate(0%,-50%);
 		// height: 800px;
 
 		&-temp {

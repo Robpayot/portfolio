@@ -76,6 +76,14 @@ export default class Menu {
 				this.ui.links[1].classList.add('is-active');
 				this.ui.subLinks[1].classList.add('is-active');
 				break;
+			case 'project-2':
+				this.ui.links[2].classList.add('is-active');
+				this.ui.subLinks[2].classList.add('is-active');
+				break;
+			case 'project-3':
+				this.ui.links[3].classList.add('is-active');
+				this.ui.subLinks[3].classList.add('is-active');
+				break;
 		}
 
 	}

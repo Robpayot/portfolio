@@ -29,7 +29,7 @@ module.exports={
         "awards": "",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
         "link": "http://mondialautomobile.bmw.fr/",
-        "color": "pink"
+        "color": "#EF489C"
     },{
         "title": "BMW Motorshow",
         "context": "84.Paris",
@@ -926,6 +926,14 @@ var Menu = function () {
 				case 'project-1':
 					this.ui.links[1].classList.add('is-active');
 					this.ui.subLinks[1].classList.add('is-active');
+					break;
+				case 'project-2':
+					this.ui.links[2].classList.add('is-active');
+					this.ui.subLinks[2].classList.add('is-active');
+					break;
+				case 'project-3':
+					this.ui.links[3].classList.add('is-active');
+					this.ui.subLinks[3].classList.add('is-active');
 					break;
 			}
 		}
@@ -8144,6 +8152,8 @@ var AbstractView = function () {
 
 
 			console.log('destroy');
+			if (this.contentOpen) this.reset();
+
 			if (all === true) {
 
 				this.scene.traverse(function (obj) {
@@ -10143,6 +10153,7 @@ var ProjectView = function (_AbstractView) {
 
 			if (this.animating === true) return false;
 			this.animating = true;
+			this.contentOpen = true;
 			// this.cameraRotX = true;
 			this.camera.rotation.order = 'YXZ'; // need to change order to rotate correclty X
 
@@ -10212,6 +10223,7 @@ var ProjectView = function (_AbstractView) {
 					_this4.initTopContentY = _this4.topContentTargetY = _this4.topContentSmoothY = _this4.topContentY = 5;
 					_this4.cameraMove = false;
 					_this4.camera.rotation.order = 'XYZ';
+					_this4.contentOpen = false;
 				} });
 
 			tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], 1.2, {
@@ -10858,8 +10870,39 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'reset',
 		value: function reset() {
+			var _this10 = this;
 
-			this.destroy();
+			console.log('reset');
+
+			this.cameraRotX = true;
+			this.glitch.stop = false;
+			_ScrollManager2.default.off(); // stop scrollmanager
+
+			var tl = new TimelineMax({ onComplete: function onComplete() {
+					_this10.initTopContentY = _this10.topContentTargetY = _this10.topContentSmoothY = _this10.topContentY = 5;
+					_this10.cameraMove = false;
+					_this10.camera.rotation.order = 'XYZ';
+				} });
+
+			tl.set(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], {
+				opacity: 0,
+				ease: window.Power4.easeOut
+			});
+
+			tl.set(['.project__image', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
+
+			this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * 1);
+			this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * 1);
+
+			tl.set(this.currentRotateY, {
+				angle: (0, _utils.toRadian)(0)
+			});
+
+			tl.set(['.project__next', '.project__title'], {
+				opacity: 1
+			});
+
+			// this.destroy();
 
 			// // Set symbol
 			// this.setSymbol();
