@@ -2488,7 +2488,10 @@ var Circular = function (_ProjectView) {
 
 		var _this = _possibleConstructorReturn(this, (Circular.__proto__ || Object.getPrototypeOf(Circular)).call(this, obj));
 
-		_this.nbAst = 10;
+		_this.nbAst = 25;
+		_this.color1 = 0xEF2178;
+		_this.color2 = 0x8F28EF;
+		_this.color3 = 0x4e4e4e;
 
 		_this.init();
 
@@ -2501,124 +2504,86 @@ var Circular = function (_ProjectView) {
 		key: 'setAsteroids',
 		value: function setAsteroids() {
 
-			var props = {
-				RADIUS: 5,
-				SEGMENTS: 32,
-				RINGS: 32,
-				geometry: null,
-				glow: this.glow
-			};
-
 			this.asteroids = [];
 			this.asteroidsM = [];
+			this.materials = [new _three.MeshLambertMaterial({ color: this.color1 }), new _three.MeshLambertMaterial({ color: this.color2 }), new _three.MeshLambertMaterial({ color: this.color3 })];
 
-			var geometry = new _three.SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
-
-			// const material = new MeshLambertMaterial({ color: 0x4682b4 });
-			var img = _PreloadManager2.default.getResult('texture-asteroid');
-
-			var tex = new _three.Texture(img);
-			tex.needsUpdate = true;
-
-			this.brightness = new _BrightnessShader.BrightnessShader();
-
-			this.brightness2 = new _BrightnessShader.BrightnessShader();
-
-			this.brightness.uniforms.tInput.value = tex;
-			this.brightness2.uniforms.tInput.value = tex;
-
-			this.materialAst1 = new _three.ShaderMaterial({
-				uniforms: this.brightness.uniforms,
-				vertexShader: this.brightness.vertexShader,
-				fragmentShader: this.brightness.fragmentShader,
-				transparent: true,
-				opacity: 0.5
-			});
-
-			this.materialAst2 = new _three.ShaderMaterial({
-				uniforms: this.brightness2.uniforms,
-				vertexShader: this.brightness2.vertexShader,
-				fragmentShader: this.brightness2.fragmentShader,
-				transparent: true,
-				opacity: 0.5
-			});
-
-			var pos = void 0;
+			this.groupAst = new _three.Group();
 
 			for (var i = 0; i < this.nbAst; i++) {
 
-				var rot = {
-					x: (0, _utils.getRandom)(-180, 180),
-					y: (0, _utils.getRandom)(-180, 180),
-					z: (0, _utils.getRandom)(-180, 180)
-				};
-				// Intra perimeter radius
-				var ipRadius = 50;
+				var asteroid = new _three.Group();
+				var width = (0, _utils.getRandom)(3, 4);
+				var height = (0, _utils.getRandom)(6, 12);
+				var radius = (0, _utils.getRandom)(80, 160);
+				var pivotY = 20;
+				var coefRot = (0, _utils.getRandom)(3, 4);
+				var initRot = (0, _utils.getRandom)((0, _utils.toRadian)(0), (0, _utils.toRadian)(360));
 
-				pos = {
-					x: (0, _utils.getRandom)(-80, 80),
-					y: (0, _utils.getRandom)(-80, 80),
-					z: (0, _utils.getRandom)(-80, 80)
-				};
+				var nbPalm = (0, _utils.getRandom)(2, 5);
 
-				if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-					console.log(i, ' dans le périmetre !');
-					pos.x += ipRadius;
-					pos.y += ipRadius;
-					pos.z += ipRadius;
+				var geometry = new _three.PlaneGeometry(width, height);
+
+				// const material = this.materials[Math.round(getRandom(0, this.materials.length - 1))];
+				var material = this.materials[i % 3]; // every 3 times
+
+
+				for (var _i = 0; _i < nbPalm; _i++) {
+
+					var palm = new _three.Mesh(geometry, material);
+
+					palm.position.x = 0;
+					palm.position.y = radius - pivotY;
+
+					// create point
+					var geometryp = new _three.Geometry();
+					geometryp.vertices.push(new _three.Vector3(0, 0, 0));
+
+					var pivotPalm = new _three.Points(geometryp, material);
+					pivotPalm.position.y = -pivotY;
+
+					// Pivot each palms
+					if (nbPalm % 2 === 0) {
+
+						if (_i <= nbPalm / 2 - 1) {
+							var rot = nbPalm / 2 - _i;
+							pivotPalm.rotation.z = (0, _utils.toRadian)(rot * coefRot) + (0, _utils.toRadian)(coefRot * (rot - 1));
+						}
+
+						if (_i > nbPalm / 2 - 1) {
+							var _rot = _i - (nbPalm / 2 - 1);
+							pivotPalm.rotation.z = (0, _utils.toRadian)(-_rot * coefRot) + (0, _utils.toRadian)(-coefRot * (_rot - 1));
+						}
+					} else {
+
+						if (_i < nbPalm / 2 - 0.5) {
+							var _rot2 = nbPalm / 2 - _i;
+							pivotPalm.rotation.z = (0, _utils.toRadian)(_rot2 * coefRot) + (0, _utils.toRadian)(coefRot * (_rot2 - 1));
+						}
+
+						if (_i > nbPalm / 2 - 0.5) {
+							var _rot3 = _i - (nbPalm / 2 - 1);
+							pivotPalm.rotation.z = (0, _utils.toRadian)(-_rot3 * coefRot) + (0, _utils.toRadian)(-coefRot * (_rot3 - 1));
+						}
+					}
+
+					pivotPalm.add(palm);
+
+					asteroid.add(pivotPalm);
+					// this.pivotPalm.push(pivotPalm);
 				}
 
-				//  force impulsion
-				var force = {
-					x: (0, _utils.getRandom)(-10, 10),
-					y: (0, _utils.getRandom)(-10, 10),
-					z: (0, _utils.getRandom)(-10, 10)
-				};
+				asteroid.dir = (0, _utils.getRandom)(-1, 1);
+				asteroid.speed = (0, _utils.getRandom)(0.2, 1);
+				asteroid.position.z = (0, _utils.getRandom)(-160, 10);
+				asteroid.rotation.z = asteroid.initRot = initRot;
 
-				var scale = this.astd === 'spheres' ? 1 : (0, _utils.getRandom)(1, 4);
-				var speed = (0, _utils.getRandom)(500, 800); // more is slower
-				var range = (0, _utils.getRandom)(3, 8);
-				var timeRotate = (0, _utils.getRandom)(15000, 17000);
+				this.asteroidsM.push(asteroid);
 
-				var finalMat = void 0;
-
-				if (i % 2 === 0) {
-					finalMat = this.materialAst1;
-				} else {
-					finalMat = this.materialAst2;
-				}
-
-				var asteroid = new _Asteroid2.default({
-					geometry: geometry,
-					material: finalMat,
-					pos: pos,
-					rot: rot,
-					force: force,
-					scale: scale,
-					range: range,
-					speed: speed,
-					timeRotate: timeRotate
-				});
-
-				if (this.gravity === true) {
-					// add physic body to world
-					asteroid.body = this.world.add(asteroid.physics);
-
-					// Set rotation impulsion
-					asteroid.body.angularVelocity.x = (0, _utils.getRandom)(-0.3, 0.3);
-					asteroid.body.angularVelocity.y = (0, _utils.getRandom)(-0.3, 0.3);
-					asteroid.body.angularVelocity.z = (0, _utils.getRandom)(-0.3, 0.3);
-				}
-
-				asteroid.mesh.index = i;
-
-				this.asteroids.push(asteroid);
-				this.asteroidsM.push(asteroid.mesh);
-
-				// add mesh to the scene
-				this.scene.add(asteroid.mesh);
+				this.groupAst.add(asteroid);
 			}
-			// super.setAsteroids(this.models[0].geometry);
+
+			this.scene.add(this.groupAst);
 		}
 	}, {
 		key: 'setLight',
@@ -2626,15 +2591,19 @@ var Circular = function (_ProjectView) {
 
 			var paramsLight = [
 			// { x: 70, y: 70, z: 0 },
-			{ x: -100, y: 0, z: 0 }, { x: 100, y: 0, z: 0 }, { x: 0, y: 0, z: 170 }, { x: 0, y: -0, z: 0 }];
+			// { x: -100, y: 0, z: 0 },
+			// { x: 100, y: 0, z: 0 },
+			{ x: 0, y: 0, z: 170 }, { x: 0, y: -0, z: 0 }, { x: 0, y: 20, z: -100, l: 480 }];
 
 			// Check Ambient Light
 			// scene.add( new THREE.AmbientLight( 0x00020 ) );
 
 			for (var i = 0; i < paramsLight.length; i++) {
 
+				var l = paramsLight[i].l || 480;
+
 				// create a point light
-				var pointLight = new _three.PointLight(0xFFFFFF, 0.8, 600, 2);
+				var pointLight = new _three.PointLight(0xFFFFFF, 0.8, l, 2);
 				// set its position
 				pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 				// pointLight.power = 20;
@@ -2647,52 +2616,21 @@ var Circular = function (_ProjectView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			// update world
-			// if (this.gravity === true) {
-			// 	this.world.step();
+			var _this2 = this;
 
-			// 	// Symbol body
-			// 	// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-			// 	// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
-			// 	// Asteroids bodies
-			// 	this.asteroids.forEach( (el) => {
+			// Asteroids meshs
+			this.asteroidsM.forEach(function (el) {
 
-			// 		if (el.mesh.position.x > this.bounceArea / 2 - 50 || el.mesh.position.x < -this.bounceArea / 2 + 50 || el.mesh.position.y > this.bounceArea / 2 - 50 || el.mesh.position.y < -this.bounceArea / 2 + 50 || el.mesh.position.z > this.bounceArea / 2 - 50 || el.mesh.position.z < -this.bounceArea / 2 + 50) {
-			// 			// Reverse Force Vector
-			// 			if (el.annilled !== true) {
+				el.rotation.z = el.initRot + (0, _utils.toRadian)(_this2.time * el.speed * el.dir);
+				// el.position.x = -this.camRotSmooth.y * 400;
+			});
 
-			// 				el.changeDirection();
-			// 				el.annilled = true;
-			// 			}
-			// 		}
+			// console.log(this.camRotSmooth.y);
 
-			// 		if (el.body !== undefined) {
+			this.groupAst.rotation.y = (0, _utils.toRadian)(this.camRotSmooth.y * 50);
+			this.groupAst.rotation.x = (0, _utils.toRadian)(this.camRotSmooth.x * 50);
 
-			// 			// APPLY IMPULSE
-			// 			el.body.linearVelocity.x = el.force.x;
-			// 			el.body.linearVelocity.y = el.force.y;
-			// 			el.body.linearVelocity.z = el.force.z;
-
-			// 			// console.log(el.body.angularVelocity);
-			// 			// angular Velocity always inferior to 1 (or too much rotations)
-
-			// 			el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -1, 1);
-			// 			el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -1, 1);
-			// 			el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -1, 1);
-			// 			// if (i === 0) {
-			// 			//   console.log(el.body.angularVelocity.x);
-			// 			// }
-
-			// 			el.mesh.position.copy(el.body.getPosition());
-			// 			el.mesh.quaternion.copy(el.body.getQuaternion());
-
-
-			// 		}
-			// 	});
-			// }
-			// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
-			this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
-			this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
+			// this.groupAst.rotateOnAxis(new Vector3(0,1,0),toRadian(this.camRotSmooth.y * 1));
 
 			_get(Circular.prototype.__proto__ || Object.getPrototypeOf(Circular.prototype), 'raf', this).call(this);
 		}
