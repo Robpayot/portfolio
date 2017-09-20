@@ -6,8 +6,8 @@ import Glitch from '../components/Glitch';
 import Levit from '../projects/Levit';
 import Blob from '../projects/Blob';
 import Stars from '../projects/Stars';
+import Circular from '../projects/Circular';
 import data from '../../datas/data.json';
-import Menu from '../components/Menu';
 
 // console.log(ListView);
 
@@ -18,7 +18,32 @@ class RouterManager {
 
 		this.switchView = this.switchView.bind(this);
 		this.initView = this.initView.bind(this);
+		this.onChange = this.onChange.bind(this);
 
+
+		window.addEventListener('hashchange', this.onChange, false);
+
+	}
+
+	onChange() {
+		console.log('change');
+		const url = window.location.href;
+
+		if (/\/#project-0/.test(url) === true) {
+			this.switchView('/project-0', 0, true);
+		} else if (/\/#project-1/.test(url) === true) {
+			this.switchView('/project-1', 1, true);
+		} else if (/\/#project-2/.test(url) === true) {
+			this.switchView('/project-2', 2, true);
+		} else if (/\/#project-3/.test(url) === true) {
+			this.switchView('/project-3', 3, true);
+		} else if (/\/#glitch/.test(url) === true) {
+			this.switchView('/glitch', 0, true);
+		} else {
+			this.switchView('/intro', 0, true);
+		}
+
+		EmitterManager.on('router:switch', this.switchView);
 	}
 
 	start() {
@@ -27,6 +52,8 @@ class RouterManager {
 		this.currentRoute = null;
 		this.project0 = null;
 		this.project1 = null;
+		this.project2 = null;
+		this.project3 = null;
 
 		const url = window.location.href;
 
@@ -36,6 +63,8 @@ class RouterManager {
 			this.switchView('/project-1', 1, true);
 		} else if (/\/#project-2/.test(url) === true) {
 			this.switchView('/project-2', 2, true);
+		} else if (/\/#project-3/.test(url) === true) {
+			this.switchView('/project-3', 3, true);
 		} else if (/\/#glitch/.test(url) === true) {
 			this.switchView('/glitch', 0, true);
 		} else {
@@ -54,10 +83,14 @@ class RouterManager {
 
 			this.lastPage = this.currentPage.name;
 
-			this.currentPage.destroy(false);
+			this.currentPage.transitionOut(); // animation Out
+			global.MENU.toggleOpen(true); // close Menu
 
 			EmitterManager.once('view:transition:out', () => {
 
+				// When animation out, destroy scene, init new view
+
+				this.currentPage.destroy(false);
 				this.initView(goToPage, index, false);
 
 			});
@@ -119,7 +152,7 @@ class RouterManager {
 			case '/project-2':
 
 				if (this.project2 === null) {
-					this.currentPage = this.project2 = new Blob({
+					this.currentPage = this.project2 = new Circular({
 						id: 2,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -136,7 +169,28 @@ class RouterManager {
 				window.location = '#project-2';
 				break;
 
+			case '/project-3':
+
+				if (this.project3 === null) {
+					this.currentPage = this.project3 = new Blob({
+						id: 3,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: data.projects[3],
+						fromUrl
+					});
+				} else {
+					this.currentPage = this.project3;
+					this.currentPage.start();
+				}
+				window.location = '#project-3';
+				break;
+
 			case '/intro':
+				console.log('introooooooo');
 
 				this.currentPage = new IntroView({
 					gravity: true,
@@ -156,7 +210,7 @@ class RouterManager {
 				break;
 		}
 
-		Menu.update(this.currentPage.name, this.currentPage.id);
+		global.MENU.update(this.currentPage.name, this.currentPage.id);
 
 		this.fromLoad = false;
 

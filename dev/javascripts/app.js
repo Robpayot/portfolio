@@ -21,23 +21,29 @@ console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; col
 import AppManager from './managers/AppManager';
 import PreloadManager from './managers/PreloadManager';
 
+global.MENU;
+global.PROD = false;
+global.BASE = '';
 
+if (window.location.host === 'robpayot.github.io') {
+	global.PROD = true;
+	global.BASE = 'https://robpayot.github.io/xp-son/dist';
+
+}
 
 (() => {
 
-	PreloadManager.on('complete', () => {
+	PreloadManager.on('complete', AppManager.start, this, true);
 
-		AppManager.start();
-
-	}, this, true);
-
-
-
-	PreloadManager.loadFile({ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' });
-	PreloadManager.loadFile({ id: 'texture-star', src: 'images/textures/star-2.png' });
-	PreloadManager.loadFile({ id: 'damier', src: 'images/textures/damier.jpg' });
-
-
+	PreloadManager.loadManifest([
+		{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' },
+		{ id: 'texture-star', src: 'images/textures/star-2.png' },
+		{ id: 'damier', src: 'images/textures/damier.jpg' },
+		{ id: 'tpl-project-title', src: `${global.BASE}/templates/projectTitle.hbs` },
+		{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` },
+		{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` }
+		// { id: 'template-menu', src: ''}
+	]);
 
 	PreloadManager.load();
 

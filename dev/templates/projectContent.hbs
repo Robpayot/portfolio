@@ -1,25 +1,55 @@
 <div class="project__container">
-	<div class="project__header">
-		<h1 class="title--4">{{title}}</h1>
-		<span class="project__date">{{date}}</span>
+	<div class="project__top">
+		<div class="project__header">
+			<h1 class="title--4">{{title}}</h1>
+			<span class="project__date">{{date}}</span>
+		</div>
+		<p class="project__descr">{{descr}}</p>
+		<div class="project__subHeader">
+			<div class="project__context">
+				<p>Agency</p>
+				<p>{{context}}</p>
+			</div>
+			<div class="project__role">
+				<p>Role</p>
+				<p>Front-end</p>
+			</div>
+			<div class="project__technos">
+				<p>In</p>
+				<p>{{technos}}</p>
+			</div>
+			<div class="project__link">
+				<span>Live</span>
+				<a href="{{link}}" target="_blank" class="project__button button"><i>i</i></a>
+			</div>
+		</div>
 	</div>
-	<p class="project__descr">{{descr}}</p>
+	<div class="project__gallery">
+		{{#each imgs}}
+			<div class="project__image"><img src="images/projects/{{this}}" alt="project image" /></div>
+		{{/each}}
+	</div>
 	<div class="project__footer">
-		<div class="project__context">
-			<p>Agency</p>
-			<p>{{context}}</p>
-		</div>
-		<div class="project__role">
-			<p>Role</p>
-			<p>Front-end</p>
-		</div>
-		<div class="project__technos">
-			<p>In</p>
-			<p>{{technos}}</p>
-		</div>
-		<div class="project__link">
-			<span>Live</span>
-			<a href="{{link}}" target="_blank" class="project__button button"><i>i</i></a>
+		<div class="project__awards">{{awards}}</div>
+{{!-- 		<div class="gallery__arrows">
+			<svg class="icon gallery__arrow gallery__arrow-l" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+				<g transform="translate(0,-952.36218)">
+					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+					L404.9,1271.9L404.9,1271.9z" />
+				</g>
+			</svg>
+			<svg class="icon gallery__arrow gallery__arrow-r" version="1.1" viewBox="207.1 132.3 197.8 374.5" enable-background="new 207.1 132.3 197.8 374.5" xml:space="preserve">
+				<g transform="translate(0,-952.36218)">
+					<path d="M404.9,1271.9l-13.6-15.9l-146.9-171.4l-37.3,31.7l133.3,155.5l-133.3,155.5l37.3,31.7l146.9-171.4
+					L404.9,1271.9L404.9,1271.9z" />
+				</g>
+			</svg>
+		</div> --}}
+		<div class="project__back">
+			<p>Back</p>
+			<div class="button">
+				<i>i</i>
+			</div>
 		</div>
 	</div>
 </div>

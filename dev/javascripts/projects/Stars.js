@@ -1,14 +1,14 @@
 import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
-import { getRandom, toRadian, oscillate, round } from '../helpers/utils';
-import { loadJSON } from '../helpers/utils-three';
+import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 
 
 // THREE JS
-import { MeshLambertMaterial, SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrbitControls, OrthographicCamera, PerspectiveCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
-import BufferGeometryUtils from './BufferGeometryUtils';
-import ShaderTerrain from './ShaderTerrain';
+import { SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
+import TerrainShader from '../shaders/TerrainShader';
+import NoiseShader from '../shaders/NoiseShader';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -35,7 +35,6 @@ export default class Stars extends ProjectView {
 	}
 
 	setTerrain() {
-		console.log('yo');
 
 		let SCREEN_WIDTH = window.innerWidth;
 		let SCREEN_HEIGHT = window.innerHeight;
@@ -94,8 +93,6 @@ export default class Stars extends ProjectView {
 
 		// All uniforms for this normal map
 
-		let vertexShader = document.getElementById( 'vertexShader' ).textContent;
-
 		// TEXTURES
 
 		// Gestion of texture for Grass, ground, terrain/ combi normal map
@@ -110,11 +107,11 @@ export default class Stars extends ProjectView {
 
 		// A lot is here....
 
-		const terrainShader = ShaderTerrain[ 'terrain' ];
+		const terrainShader = TerrainShader[ 'terrain' ];
 
 		this.uniformsTerrain = UniformsUtils.clone( terrainShader.uniforms );
 
-		// ShaderTerrain
+		// TerrainShader
 
 		this.uniformsTerrain[ 'tDisplacement' ].value = this.heightMap.texture; // Important : the Heightmap displacement (create mountains)
 
@@ -133,8 +130,10 @@ export default class Stars extends ProjectView {
 
 		this.uniformsTerrain[ 'uRepeatOverlay' ].value.set( 6, 6 ); // ?
 
+
+
 		const params = [
-			[ 'heightmap', 	document.getElementById( 'fragmentShaderNoise' ).textContent, 	vertexShader, this.uniformsNoise, false ],
+			[ 'heightmap', 	NoiseShader.fragmentShader, NoiseShader.vertexShader, this.uniformsNoise, false ],
 			[ 'terrain', 	terrainShader.fragmentShader, terrainShader.vertexShader, this.uniformsTerrain, true ]
 		];
 
@@ -252,31 +251,31 @@ export default class Stars extends ProjectView {
 				case 0:
 					uniforms.offset = 300;
 					uniforms.time = 600;
-					uniforms.range = oscillate(0.9,1);
+					uniforms.range = oscillate(0.4,1);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 1:
 					uniforms.offset = 1000;
 					uniforms.time = 700;
-					uniforms.range = oscillate(0.9,1.3);
+					uniforms.range = oscillate(0.4,1.3);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 2:
 					uniforms.offset = 200;
 					uniforms.time = 200;
-					uniforms.range = oscillate(1,1.2);
+					uniforms.range = oscillate(0.7,1.2);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 3:
 					uniforms.offset = 400;
 					uniforms.time = 200;
-					uniforms.range = oscillate(0.6,1);
+					uniforms.range = oscillate(0.3,1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 				case 4:
 					uniforms.offset = 700;
 					uniforms.time = 1000;
-					uniforms.range = oscillate(0.8,1.1);
+					uniforms.range = oscillate(0.4,1.1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 			}
@@ -411,6 +410,8 @@ export default class Stars extends ProjectView {
 		if ( this.terrain.visible ) {
 
 			let fLow = 0.1, fHigh = 0.8;
+
+			// relative to light ???
 
 			this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
 

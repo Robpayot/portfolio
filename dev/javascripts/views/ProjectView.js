@@ -13,14 +13,13 @@ import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
 import Ui from '../components/Ui';
-import Menu from '../components/Menu';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
+import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, Scene, Color, MeshPhongMaterial, Vector3, BoxGeometry } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -77,7 +76,9 @@ export default class ProjectView extends AbstractView {
 		this.onChangeBlur = this.onChangeBlur.bind(this);
 		this.onChangeBrightness = this.onChangeBrightness.bind(this);
 		this.onChangeDolly = this.onChangeDolly.bind(this);
+		this.onChangeCameraRot = this.onChangeCameraRot.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
+
 
 
 		console.log('mon id', this.id);
@@ -129,9 +130,13 @@ export default class ProjectView extends AbstractView {
 		this.cssObjects = [];
 		this.time = 1;
 		this.finalFov = 45;
+		this.currentRotateY = { angle: 0};
+		this.cameraRotX = true;
 		this.composer = null;
 		this.bounceArea = 480;
 		this.pixelToUnits = 8.1;
+		this.coefText = 0.04;
+		this.coefImage = 0.04;
 
 		// retina screen size
 		this.width = window.innerWidth * window.devicePixelRatio;
@@ -141,6 +146,7 @@ export default class ProjectView extends AbstractView {
 		this.scene = new Scene();
 		this.scene.background = new Color(this.bkg);
 		this.cssScene = new Scene();
+		this.cameraTarget = new Vector3(0, 0, 0);
 
 		// Set Camera
 		this.setCamera();
@@ -174,11 +180,10 @@ export default class ProjectView extends AbstractView {
 		this.cameraRot = new Vector3(0, 0, 0);
 		this.cameraPos = new Vector3(0, 0, 0);
 
-		this.cameraTarget = new Vector3(0, 0, 0);
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
-		this.camera.lookAt(this.cameraTarget);
+		// this.camera.lookAt(this.cameraTarget);
 
 
 
@@ -212,7 +217,10 @@ export default class ProjectView extends AbstractView {
 			// Camera dolly
 			position: 0,
 			lookAt: 0,
-			astColor: 0xffffff
+			astColor: 0xffffff,
+			rotX: 0,
+			rotY: 0,
+			rotZ: 0,
 
 		};
 
@@ -238,12 +246,17 @@ export default class ProjectView extends AbstractView {
 			brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
 			brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
 			// brightnessFolder.open();
-			console.log('yoooooooooooooo');
+
+			// Cam
+			this.sound.gui.add(this.effectController, 'rotX', -90, 90).listen().onChange(this.onChangeCameraRot);
+			this.sound.gui.add(this.effectController, 'rotY', -90, 90).listen().onChange(this.onChangeCameraRot);
+			this.sound.gui.add(this.effectController, 'rotZ', -90, 90).listen().onChange(this.onChangeCameraRot);
 
 			this.sound.gui.init = true;
 		}
 
 		this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
+
 
 		// Camera Dolly
 		// const dollyFolder = this.sound.gui.addFolder('Camera Dolly');
@@ -259,29 +272,7 @@ export default class ProjectView extends AbstractView {
 		// Set BLUR EFFECT
 		this.setBlur();
 
-		// Load data
-
-		// Preloader
-		this.preloadCb = PreloadManager.on('complete', this.start, this, true);
-
-		let prod;
-
-		if (window.location.host === 'robpayot.github.io') {
-			prod = true;
-
-		}
-
-		let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-		PreloadManager.loadManifest([
-			{ id: 'template-title', src: `${base}/templates/projectTitle.hbs`},
-			{ id: 'template-content', src: `${base}/templates/projectContent.hbs` },
-			{ id: 'template-footer', src: `${base}/templates/projectFooter.hbs` },
-		]);
-
-		PreloadManager.load();
-
-		// this.start();
+		this.start();
 
 		// const p = new VirtualScroll();
 
@@ -311,15 +302,15 @@ export default class ProjectView extends AbstractView {
 
 		// set ui
 		this.UI.intro.style.display = 'none';
-		Menu.el.classList.add('is-active');
-		Menu.el.classList.remove('is-open');
+		global.MENU.el.classList.add('is-active');
+		global.MENU.el.classList.remove('is-open');
 
 		if (this.alt === true) {
 			this.el.classList.add('alt');
-			Menu.el.classList.add('alt');
+			global.MENU.el.classList.add('alt');
 		} else {
 			this.el.classList.remove('alt');
-			Menu.el.classList.remove('alt');
+			global.MENU.el.classList.remove('alt');
 		}
 
 		// Set CssContainers
@@ -337,66 +328,13 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	checkCssContainer() {
-
-		this.ui.projectFooter = this.el.querySelector('.project__footer');
-
-		if (this.ui.projectFooter === null) {
-			//ok
-		} else {
-			// cssContainer Ready
-			clearInterval(this.refreshIntervalId);
-
-			this.ui.projectContainer = this.el.querySelector('.project__container');
-			this.ui.projectImg = this.el.querySelectorAll('.project__image img')[0];
-
-			this.glitch = new Glitch({
-				el: this.el.querySelector('.glitch'),
-				color: this.data.color,
-				txt: this.data.title
-			});
-
-			// Start transition In
-			if (this.fromUrl === true) {
-				this.transitionIn(true);
-				this.fromUrl = false;
-			} else {
-				this.transitionIn();
-			}
-
-			// Position Gallery
-			// Pixel to Units magic FORMULE
-			const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-			const wHeight = 2 * Math.tan( vFOV / 2 ) * 60; // visible height dist = 60 (160 - 100)
-			// wHeight === window.innerHeight in Units equivalent
-			// let aspect = window.width / window.height;
-			// let width = height * aspect;                  // visible width
-			const margeTop = 4;
-
-			let percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight; // half because centered
-			let finalHeight = wHeight * percent;
-			this.gallery.position.y = this.initGalleryY = -finalHeight - margeTop;
-
-			// Position Footer
-			percent = this.ui.projectImg.offsetHeight / window.innerHeight; // half because centered
-			let finalHeightFooter = wHeight * percent;
-			this.footer.position.y = this.initFooterY = this.initGalleryY - finalHeightFooter - margeTop - 2;
-
-			let globalMargeScrollBot = 5;
-
-
-			percent = (this.ui.projectContainer.offsetHeight + this.ui.projectImg.offsetHeight + this.ui.projectFooter.offsetHeight) / window.innerHeight;
-			this.maxHeightUnits = wHeight * percent - globalMargeScrollBot;
-
-		}
-
-	}
-
 	////////////////////
 	// SET SCENE
 	////////////////////
 
 	setCameraPos() {
+		// this.camera.useTarget = false;
+		this.camera.lookAt(this.cameraTarget);
 
 		this.pathRadius = 160;
 		this.camera.position.set(-60, 170, 70);
@@ -540,78 +478,137 @@ export default class ProjectView extends AbstractView {
 
 		const data = this.data;
 
+		data.id = this.id;
+
 		// Title
-		let template = Handlebars.compile(PreloadManager.getResult('template-title'));
+		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
 		title.position.set(20, 0, 10);
-		title.scale.multiplyScalar(1 / 14);
+		title.scale.multiplyScalar(this.coefText);
+
+		const prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
+		const nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
+
 
 		// Prev project
-		const prevProject = new CssContainer('<div class="project__prev transi">Prev</div>', this.cssScene, this.cssObjects);
+		const prevProject = new CssContainer(`<a href="#project-${prevId}" class="project__prev transi">Prev</a>`, this.cssScene, this.cssObjects);
 		prevProject.position.set(0, -50, 10);
-		prevProject.scale.multiplyScalar(1 / 14);
+		prevProject.scale.multiplyScalar(this.coefText);
 
 
 		// Next project
-		const nextProject = new CssContainer('<div class="project__next transi">Next</div>', this.cssScene, this.cssObjects);
+
+		const nextProject = new CssContainer(`<a href="#project-${nextId}" class="project__next transi">Next</a>`, this.cssScene, this.cssObjects);
 		nextProject.position.set(0, 50, 10);
-		nextProject.scale.multiplyScalar(1 / 14);
+		nextProject.scale.multiplyScalar(this.coefText);
 
-		// Gallery
+		// // Gallery
 		const radius = 100; // radius circonference of gallery circle
-		this.galleryAngle = Math.PI / 6; // Space of 30 degree PI / 6
-		this.gallery = new Object3D(); // DESTROY CONTAINER ????
-		this.gallery.position.set(0, -15, 0);
-		this.gallery.rotation.set(0, toRadian(90), 0);
-		this.cssScene.add(this.gallery);
-		this.currentSlide = 0;
-		this.nbSlides = data.imgs.length;
+		// this.galleryAngle = Math.PI / 6; // Space of 30 degree PI / 6
+		// this.gallery = new Object3D(); // DESTROY CONTAINER ????
+		// this.gallery.position.set(0, -15, 0);
+		// this.gallery.rotation.set(0, toRadian(90), 0);
+		// this.cssScene.add(this.gallery);
+		// this.currentSlide = 0;
+		// this.nbSlides = data.imgs.length;
 
-		this.initGalleryY = this.targetGalleryY = 0;
+		// this.initGalleryY = this.targetGalleryY = 0;
 
-		// Formules coordonnée d'un cercle
-		// x = x0 + r * cos(t)
-		// y = y0 + r * sin(t)
+		// // Formules coordonnée d'un cercle
+		// // x = x0 + r * cos(t)
+		// // y = y0 + r * sin(t)
 
-		for (let i = 0; i < this.nbSlides; i++) {
-			// image 1
-			const image = new CssContainer(`<div class="project__image"><img src="images/projects/${data.imgs[i]}" alt="project image" /></div>`, this.gallery, this.cssObjects);
-			image.position.set(radius * Math.sin(this.galleryAngle * i), 0, radius * Math.cos(this.galleryAngle * i));
-			image.rotation.set(0, this.galleryAngle * i, 0);
-			image.scale.multiplyScalar(1 / 14);
-		}
+		// for (let i = 0; i < this.nbSlides; i++) {
+		// 	// image 1
+		// 	const image = new CssContainer(`<div class="project__image"><img src="images/projects/${data.imgs[i]}" alt="project image" /></div>`, this.gallery, this.cssObjects);
+		// 	image.position.set(radius * Math.sin(this.galleryAngle * i), 0, radius * Math.cos(this.galleryAngle * i));
+		// 	image.rotation.set(0, this.galleryAngle * i, 0);
+		// 	image.scale.multiplyScalar(this.coefImage);
+		// }
 
-		this.galleryPivot = new Object3D();
-		this.galleryPivot.add(this.gallery);
+		// this.galleryPivot = new Object3D();
+		// this.galleryPivot.add(this.gallery);
 
-		this.cssScene.add(this.galleryPivot);
+		// this.cssScene.add(this.galleryPivot);
 
 		// arrows
 
 		// Context + gallery arrows
-		template = Handlebars.compile(PreloadManager.getResult('template-content'));
+		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'));
 		html  = template(data);
 		this.topContent = new CssContainer(html, this.cssScene, this.cssObjects);
 		// Rename context to container or projectContainer
 		// Rename Details in Content
 		this.topContent.position.set(radius, 0, 0);
 		this.topContent.rotation.set(0, toRadian(90), 0);
-		this.topContent.scale.multiplyScalar(1 / 14);
+		this.topContent.scale.multiplyScalar(this.coefText);
 
-		this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 0;
+		this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
 
 		// Top Content + gallery arrows
-		template = Handlebars.compile(PreloadManager.getResult('template-footer'));
-		html  = template(data);
-		this.footer = new CssContainer(html, this.cssScene, this.cssObjects);
-		this.footer.position.set(radius, 0, 0);
-		this.footer.rotation.set(0, toRadian(90), 0);
-		this.footer.scale.multiplyScalar(1 / 14);
+		// template = Handlebars.compile(PreloadManager.getResult('template-footer'));
+		// html  = template(data);
+		// this.footer = new CssContainer(html, this.cssScene, this.cssObjects);
+		// this.footer.position.set(radius, 0, 0);
+		// this.footer.rotation.set(0, toRadian(90), 0);
+		// this.footer.scale.multiplyScalar(this.coefText);
 
 		// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 0;
 	}
 
+	checkCssContainer() {
+
+		this.ui.projectFooter = this.el.querySelector('.project__footer');
+
+		if (this.ui.projectFooter === null) {
+			//ok
+		} else {
+			// cssContainer Ready
+			clearInterval(this.refreshIntervalId);
+
+			this.ui.projectContainer = this.el.querySelector('.project__container');
+			this.ui.projectImg = this.el.querySelectorAll('.project__image img')[0];
+
+			this.glitch = new Glitch({
+				el: this.el.querySelector('.glitch'),
+				color: this.data.color,
+				txt: this.data.title
+			});
+
+			// Start transition In
+			if (this.fromUrl === true) {
+				this.transitionIn(true);
+				this.fromUrl = false;
+			} else {
+				this.transitionIn();
+			}
+
+			// Position Gallery
+			// Pixel to Units magic FORMULE
+			const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+			const wHeight = 2 * Math.tan( vFOV / 2 ) * 60; // visible height dist = 60 (160 - 100)
+			// wHeight === window.innerHeight in Units equivalent
+			// let aspect = window.width / window.height;
+			// let width = height * aspect;                  // visible width
+			// const margeTop = 2; // test getBoundingRectClient is not giving the right height !!!
+
+			this.initGalleryY = 0;
+
+			// Position Footer
+			// percent = this.ui.projectImg.offsetHeight / window.innerHeight; // half because centered
+			// let finalHeightFooter = wHeight * percent;
+			// this.footer.position.y = this.initFooterY = this.initGalleryY - finalHeightFooter - margeTop + 6;
+
+			let globalMargeScrollBot = 7;
+
+
+			let percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight;
+			this.maxHeightUnits = wHeight * percent + globalMargeScrollBot;
+
+		}
+
+	}
 	setBlur() {
 
 		// COMPOSER
@@ -656,65 +653,79 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 		this.animating = true;
+		this.contentOpen = true;
+		// this.cameraRotX = true;
+		this.camera.rotation.order = 'YXZ'; // need to change order to rotate correclty X
 
 		// Turn around the perimeter of a circle
-		this.cameraMove = true;
-
 		const trigo = { angle: 1 };
+		this.currentRotateY = { angle: 0};
 		const tl = new TimelineMax({
 			onComplete: () => {
-				this.cameraMove = true;
+				// this.cameraRotX = true;
 				this.animating = false;
 				ScrollManager.on(); // start scrollmanager
 				this.glitch.stop = true;
 			},
 		});
 
-		tl.to(this.camera.rotation, 0.8, {
+		tl.to(this.camera.rotation, 0, {
 			x: 0,
-			y: 0,
 			ease: Power2.easeOut
 		});
 
-		tl.to(trigo, 3, { // 3.5
-			angle: 0,
-			ease: window.Power3.easeInOut,
-			onUpdate: () => {
-				// Math.PI / 2 start rotation at 90deg
-				this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-				this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-				this.camera.lookAt(this.cameraTarget);
-			}
-		});
-
-		tl.set(['.project__footer', '.gallery__arrow', '.project__image', '.project__container'], { visibility: 'visible' }, 3);
+		tl.set(['.project__top', '.project__image', '.project__footer'], { visibility: 'visible' }, 2.4);  // ,2.4
+		tl.set(['.project__container'], { visibility: 'visible', opacity: 1 }, 2.4);
 
 
-		tl.staggerFromTo(['.project__footer', '.gallery__arrow', '.project__container', '.project__image' ], 1.2, { // 1.2
+		tl.staggerFromTo(['.project__top', '.project__image', '.project__footer' ], 1.2, { // 1.2
 			opacity: 0,
 			y: 80
 		}, {
 			opacity: 0.9,
 			y: 0,
 			ease: window.Power4.easeOut
-		}, 0.2, 2.8);
+		}, 0.2, 2.4);
 
-		tl.staggerTo(['.project__next','.project__title'], 0.6, {
+		tl.staggerTo(['.project__next','.project__title'], 0.6, { // 0.6
 			opacity: 0,
 			ease: window.Power4.easeOut
-		},0.2,2.2);
+		},0.2,1.6);
+
+		// angle
+
+		tl.to(trigo, 3, { // 3
+			angle: 0,
+			ease: window.Power3.easeInOut,
+			onUpdate: () => {
+				// Math.PI / 2 start rotation at 90deg
+				this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+				this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+
+			}
+		}, 0);
+
+		tl.to(this.currentRotateY, 3, {
+			angle: toRadian(90),
+			ease: window.Power3.easeInOut
+		}, 0);
 
 	}
 
 	backFromContent() {
 
-		this.cameraMove = true;
+		this.cameraRotX = true;
 		this.glitch.stop = false;
 		ScrollManager.off(); // stop scrollmanager
 
 		const trigo = { angle: 0 };
-		const tl = new TimelineMax({ onComplete: () => { this.cameraMove = false; } });
-
+		this.currentRotateY = { angle: toRadian(90)};
+		const tl = new TimelineMax({ onComplete: () => {
+			this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
+			this.cameraMove = false;
+			this.camera.rotation.order = 'XYZ';
+			this.contentOpen = false;
+		} });
 
 		tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer' ], 1.2, {
 			opacity: 0,
@@ -731,8 +742,13 @@ export default class ProjectView extends AbstractView {
 				// Math.PI / 2 start rotation at 90deg
 				this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
 				this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
-				this.camera.lookAt(this.cameraTarget);
+				// this.camera.lookAt(this.cameraTarget);
 			}
+		}, 0.5);
+
+		tl.to(this.currentRotateY, 3, {
+			angle: toRadian(0),
+			ease: window.Power3.easeInOut
 		}, 0.5);
 
 		tl.staggerTo(['.project__next','.project__title'], 0.6, {
@@ -797,6 +813,7 @@ export default class ProjectView extends AbstractView {
 
 		// console.log(this.topContentY, this.topContent);
 		// this.ui.context.offsetHeight --> Get Threejs Unit !!!
+
 		if (this.topContentY <= this.initTopContentY) this.topContentY = this.topContentTargetY = this.topContentSmoothY = this.initTopContentY;
 		if (this.topContentY >= this.maxHeightUnits) this.topContentY = this.topContentTargetY = this.topContentSmoothY = this.maxHeightUnits;
 
@@ -1035,10 +1052,10 @@ export default class ProjectView extends AbstractView {
 
 
 		// scroll gallery
-		if (this.initGalleryY) {
+		if (this.initGalleryY !== undefined) {
 			this.topContent.position.y = this.topContentY;
-			this.gallery.position.y = this.topContentY + this.initGalleryY;
-			this.footer.position.y = this.topContentY + this.initFooterY;
+			// this.gallery.position.y = this.topContentY + this.initGalleryY;
+			// this.footer.position.y = this.topContentY + this.initFooterY;
 		}
 
 		// On mouse Move Camera movement
@@ -1056,8 +1073,10 @@ export default class ProjectView extends AbstractView {
 
 			// Apply rotation
 
-			this.camera.rotation.x = this.camRotSmooth.x;
-			this.camera.rotation.y = this.camRotSmooth.y;
+			if (this.cameraRotX) this.camera.rotation.x = this.camRotSmooth.x;
+			this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
+			// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
+			// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 
 		}
 
@@ -1166,53 +1185,54 @@ export default class ProjectView extends AbstractView {
 
 		if (fromUrl === true) {
 
-			noDolly = false;
+			// noDolly = false;
 
-			time = 4;
-			ease = window.Power3.easeInOut;
-			delay = 2.5;
+			// time = 4;
+			// ease = window.Power3.easeInOut;
+			// delay = 2.5;
 
-			points = {
-				'camera': [{
-					'x': -60,
-					'y': 170,
-					'z': 70
-				}, {
-					'x': -40,
-					'y': 100,
-					'z': 100
-				}, {
-					'x': -20,
-					'y': 50,
-					'z': 130
-				}, {
-					'x': 0,
-					'y': 0,
-					'z': 160
-				}],
-				'lookat': [{
-					'x': 0,
-					'y': 0,
-					'z': 0
-				}, {
-					'x': 0,
-					'y': -3,
-					'z': 3
-				}, {
-					'x': 0,
-					'y': -3,
-					'z': 3
-				}, {
-					'x': 0,
-					'y': 0,
-					'z': 0
-				}]
-			};
+			// points = {
+			// 	'camera': [{
+			// 		'x': -60,
+			// 		'y': 170,
+			// 		'z': 70
+			// 	}, {
+			// 		'x': -40,
+			// 		'y': 100,
+			// 		'z': 100
+			// 	}, {
+			// 		'x': -20,
+			// 		'y': 50,
+			// 		'z': 130
+			// 	}, {
+			// 		'x': 0,
+			// 		'y': 0,
+			// 		'z': 160
+			// 	}],
+			// 	'lookat': [{
+			// 		'x': 0,
+			// 		'y': 0,
+			// 		'z': 0
+			// 	}, {
+			// 		'x': 0,
+			// 		'y': -3,
+			// 		'z': 3
+			// 	}, {
+			// 		'x': 0,
+			// 		'y': -3,
+			// 		'z': 3
+			// 	}, {
+			// 		'x': 0,
+			// 		'y': 0,
+			// 		'z': 0
+			// 	}]
+			// };
 		}
 
 		this.cameraMove = !noDolly;
 
 		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+		// this.dolly = null;
 
 		this.dolly.cameraPosition = 0;
 		this.dolly.lookatPosition = 0;
@@ -1239,7 +1259,7 @@ export default class ProjectView extends AbstractView {
 			});
 
 		} else {
-			tl.fromTo(this.camera.position, 2, {z : 240}, {z : 160, ease: window.Power4.easeOut});
+			tl.fromTo(this.camera.position, 2, {z : 240}, {z : 160, ease: window.Power4.easeOut}); // 2
 		}
 
 
@@ -1251,13 +1271,14 @@ export default class ProjectView extends AbstractView {
 		tl.add(() => {
 			// remover overlay class
 			// this.ui.overlay.classList.remove('black');
+
 		});
 
 		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-		tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+		tl.staggerFromTo(['.glitch', '.project__more', '.project__number', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
-			y: 40
+			y: 20
 		}, {
 			opacity: 0.8,
 			y: 0,
@@ -1323,7 +1344,7 @@ export default class ProjectView extends AbstractView {
 				TweenMax.killAll();
 				// TweenMax.killTweensOf(this.symbol.mesh.position);
 
-				EmitterManager.emit('router:switch', `/project-${dest}`, dest);
+				// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 				EmitterManager.emit('view:transition:out');
 				// console.log('transition out', this.id);
 			}
@@ -1351,8 +1372,37 @@ export default class ProjectView extends AbstractView {
 	}
 
 	reset() {
+		console.log('reset');
 
-		this.destroy();
+		this.cameraRotX = true;
+		this.glitch.stop = false;
+		ScrollManager.off(); // stop scrollmanager
+
+		const tl = new TimelineMax({ onComplete: () => {
+			this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
+			this.cameraMove = false;
+			this.camera.rotation.order = 'XYZ';
+		} });
+
+		tl.set(['.project__container', '.project__image', '.gallery__arrow', '.project__footer' ], {
+			opacity: 0,
+			ease: window.Power4.easeOut
+		});
+
+		tl.set(['.project__image', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
+
+		this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * 1);
+		this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * 1);
+
+		tl.set(this.currentRotateY, {
+			angle: toRadian(0)
+		});
+
+		tl.set(['.project__next','.project__title'], {
+			opacity: 1
+		});
+
+		// this.destroy();
 
 		// // Set symbol
 		// this.setSymbol();
@@ -1416,6 +1466,13 @@ export default class ProjectView extends AbstractView {
 		this.dolly.cameraPosition = this.effectController.position;
 		this.dolly.lookatPosition = this.effectController.lookAt;
 		this.dolly.update();
+	}
+
+	onChangeCameraRot() {
+		this.camera.rotation.x = toRadian(this.effectController.rotX);
+		this.camera.rotation.y = toRadian(this.effectController.rotY);
+		this.camera.rotation.z = toRadian(this.effectController.rotZ);
+		// this.camera.updateProjectionMatrix();
 	}
 
 }

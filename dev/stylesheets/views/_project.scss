@@ -1,3 +1,5 @@
+$project3D-w : 1075px;
+
 .project {
 
 	&.alt {
@@ -12,15 +14,15 @@
     }
 
     &__container {
-    	width: 600px;
-        max-width: 600px;
+    	width: $project3D-w;
+        // max-width: 2160px;
         // margin-top: 70px;
         line-height: 1.4em;
         z-index: 10;
         text-align: left;
         user-select: none;
-        font-size: 0.8rem;
-        transform: translateY(50%);
+        font-size: 0.8em;
+        transform: translateY(50%) !important;
         opacity: 0;
 
     }
@@ -80,20 +82,30 @@
 
     	a {
     		transform: rotate(90deg);
+
     	}
     }
 
+    &__gallery {
+    	margin-top: 100px;
+    	margin-bottom: 60px;
+    	position: relative;
+        max-width: $project3D-w;
+        width: $project3D-w;
+    }
+
     &__image {
-        max-width: 600px;
+		width: 100%;
         // max-height: 300px;
         opacity: 0.9;
         user-select: none;
         visibility: hidden;
+        margin-bottom: 40px;
 
         img {
             width: 100%;
             border: 1px solid rgba(128, 128, 128, 0.15);
-            transform: translateY(50%);
+            // transform: translateY(50%);
         }
     }
 
@@ -106,9 +118,9 @@
     	display: flex;
     	justify-content: space-between;
     	align-items: baseline;
-    	font-size: 0.8rem;
+    	font-size: 0.8em;
     	text-align: left;
-    	width: 600px;
+    	width: $project3D-w;
     	position: relative;
     	// transform: translateY(50%);
     }
@@ -119,11 +131,12 @@
 
 	&__back {
 		position: absolute;
-		top: 120px;
+		top: 180px;
 		left: 50%;
 		transform: translateX(-50%);
 		text-align: center;
 		text-transform: uppercase;
+		cursor: pointer;
 
 		.button {
 			text-transform: none;
@@ -156,7 +169,7 @@
     }
 
     &__title {
-        font-size: 80px;
+        font-size: 4.6em;
         display: inline-block;
         vertical-align: middle;
         cursor: pointer;
@@ -169,6 +182,7 @@
         }
         svg {
             opacity: 0;
+            display: none;
             &.transi {
                 transition: transform 0.6s $easeToinou;
             }
@@ -177,7 +191,51 @@
             svg {
                 transform: translateX(15px) !important;
             }
+            .project__more {
+            	padding-left: 100px;
+            }
+            .project__more::after {
+            	width: 60px;
+            }
         }
+    }
+
+    &__number, &__more {
+    	position: absolute;
+    	color: $color-grey;
+    	// display: none;
+    	opacity: 0;
+    }
+
+    &__number {
+    	position: absolute;
+    	top: -300px;
+    	font-size: 3rem;
+    	left: 5px;
+    }
+
+    &__more {
+    	left: 0px;
+    	padding-left: 0px;
+    	font-size: 2.2rem;
+    	letter-spacing: 4px;
+    	font-family: 'Theinhardt-regular';
+		top: 150px;
+		opacity: 1;
+		transition: padding 0.8s $easeToinou;
+		&:after {
+			content: '';
+			position: absolute;
+			width: 0px;
+			height: 3px;
+			background-color: $color-grey;
+			left: 0px;
+			top: 50%;
+			transform: translateY(-50%);
+			transition: width 0.8s $easeToinou;
+		}
+		// font-size: 2em;
+
     }
 
     &__next, &__prev {
@@ -212,8 +270,8 @@
 
     .gallery {
         &__arrow {
-            width: 30px;
-            height: 25px;
+            width: 25px;
+            height: 35px;
             display: inline-block;
             cursor: pointer;
             visibility: hidden;
