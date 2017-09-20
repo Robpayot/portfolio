@@ -478,6 +478,8 @@ export default class ProjectView extends AbstractView {
 
 		const data = this.data;
 
+		data.id = this.id;
+
 		// Title
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
@@ -1272,9 +1274,9 @@ export default class ProjectView extends AbstractView {
 
 		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-		tl.staggerFromTo(['.glitch', '.project__arrow-r', '.project__next'], 1.2, { // 1.2
+		tl.staggerFromTo(['.glitch', '.project__more', '.project__number', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
-			y: 40
+			y: 20
 		}, {
 			opacity: 0.8,
 			y: 0,

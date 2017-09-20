@@ -20,6 +20,16 @@
         "link": "http://mondialautomobile.bmw.fr/",
         "color": "#EF1300"
     },{
+        "title": "Withings",
+        "context": "84.Paris",
+        "date": "2016",
+        "descr": "3Js project animation",
+        "technos": "Canvas, Three.js",
+        "awards": "",
+        "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
+        "link": "http://mondialautomobile.bmw.fr/",
+        "color": "pink"
+    },{
         "title": "BMW Motorshow",
         "context": "84.Paris",
         "date": "2016",

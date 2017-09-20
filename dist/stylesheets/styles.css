@@ -313,6 +313,12 @@ body {
   font-weight: 500;
   font-style: italic; }
 
+@font-face {
+  font-family: 'Theinhardt-medium';
+  src: url("../fonts/THEINHARDT-MEDIUM.OTF");
+  font-weight: 500;
+  font-style: normal; }
+
 /*
 
 @font-face {
@@ -519,7 +525,7 @@ body {
   margin-bottom: 20px; }
 
 .project__date {
-  color: grey; }
+  color: #4e4e4e; }
 
 .project__descr {
   width: 100%;
@@ -545,7 +551,7 @@ body {
   .project__role p:first-child, .project__technos p:first-child, .project__context p:first-child {
     margin-bottom: 10px; }
   .project__role p:last-child, .project__technos p:last-child, .project__context p:last-child {
-    color: grey; }
+    color: #4e4e4e; }
 
 .project__link {
   width: 40%;
@@ -605,7 +611,7 @@ body {
   position: relative; }
 
 .project__awards {
-  color: grey; }
+  color: #4e4e4e; }
 
 .project__back {
   position: absolute;
@@ -661,7 +667,8 @@ body {
     visibility: hidden;
     display: inline-block; }
   .project__title svg {
-    opacity: 0; }
+    opacity: 0;
+    display: none; }
     .project__title svg.transi {
       transition: -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
       transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
@@ -670,6 +677,36 @@ body {
     -webkit-transform: translateX(15px) !important;
     -ms-transform: translateX(15px) !important;
     transform: translateX(15px) !important; }
+
+.project__number, .project__more {
+  position: absolute;
+  color: #4e4e4e;
+  opacity: 0; }
+
+.project__number {
+  position: absolute;
+  top: -300px;
+  font-size: 3rem;
+  left: 70px; }
+
+.project__more {
+  left: calc(0% + 150px);
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  font-family: 'Theinhardt-regular';
+  top: 150px;
+  opacity: 0; }
+  .project__more:after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 3px;
+    background-color: #4e4e4e;
+    left: -100px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%); }
 
 .project__next, .project__prev {
   font-size: 40px;
@@ -760,7 +797,7 @@ body {
     background: none;
     opacity: 0; }
     .project__title .glitch__canvas {
-      height: 600%;
+      height: 350px;
       top: 3%; }
 
 .ui {

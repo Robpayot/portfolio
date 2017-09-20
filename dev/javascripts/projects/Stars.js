@@ -251,31 +251,31 @@ export default class Stars extends ProjectView {
 				case 0:
 					uniforms.offset = 300;
 					uniforms.time = 600;
-					uniforms.range = oscillate(0.9,1);
+					uniforms.range = oscillate(0.4,1);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 1:
 					uniforms.offset = 1000;
 					uniforms.time = 700;
-					uniforms.range = oscillate(0.9,1.3);
+					uniforms.range = oscillate(0.4,1.3);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 2:
 					uniforms.offset = 200;
 					uniforms.time = 200;
-					uniforms.range = oscillate(1,1.2);
+					uniforms.range = oscillate(0.7,1.2);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 3:
 					uniforms.offset = 400;
 					uniforms.time = 200;
-					uniforms.range = oscillate(0.6,1);
+					uniforms.range = oscillate(0.3,1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 				case 4:
 					uniforms.offset = 700;
 					uniforms.time = 1000;
-					uniforms.range = oscillate(0.8,1.1);
+					uniforms.range = oscillate(0.4,1.1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 			}

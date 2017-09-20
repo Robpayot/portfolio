@@ -6,6 +6,7 @@ import Glitch from '../components/Glitch';
 import Levit from '../projects/Levit';
 import Blob from '../projects/Blob';
 import Stars from '../projects/Stars';
+import Circular from '../projects/Circular';
 import data from '../../datas/data.json';
 
 // console.log(ListView);
@@ -34,6 +35,8 @@ class RouterManager {
 			this.switchView('/project-1', 1, true);
 		} else if (/\/#project-2/.test(url) === true) {
 			this.switchView('/project-2', 2, true);
+		} else if (/\/#project-3/.test(url) === true) {
+			this.switchView('/project-3', 3, true);
 		} else if (/\/#glitch/.test(url) === true) {
 			this.switchView('/glitch', 0, true);
 		} else {
@@ -49,6 +52,8 @@ class RouterManager {
 		this.currentRoute = null;
 		this.project0 = null;
 		this.project1 = null;
+		this.project2 = null;
+		this.project3 = null;
 
 		const url = window.location.href;
 
@@ -58,6 +63,8 @@ class RouterManager {
 			this.switchView('/project-1', 1, true);
 		} else if (/\/#project-2/.test(url) === true) {
 			this.switchView('/project-2', 2, true);
+		} else if (/\/#project-3/.test(url) === true) {
+			this.switchView('/project-3', 3, true);
 		} else if (/\/#glitch/.test(url) === true) {
 			this.switchView('/glitch', 0, true);
 		} else {
@@ -145,7 +152,7 @@ class RouterManager {
 			case '/project-2':
 
 				if (this.project2 === null) {
-					this.currentPage = this.project2 = new Blob({
+					this.currentPage = this.project2 = new Circular({
 						id: 2,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -160,6 +167,26 @@ class RouterManager {
 					this.currentPage.start();
 				}
 				window.location = '#project-2';
+				break;
+
+			case '/project-3':
+
+				if (this.project3 === null) {
+					this.currentPage = this.project3 = new Blob({
+						id: 3,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: data.projects[3],
+						fromUrl
+					});
+				} else {
+					this.currentPage = this.project3;
+					this.currentPage.start();
+				}
+				window.location = '#project-3';
 				break;
 
 			case '/intro':

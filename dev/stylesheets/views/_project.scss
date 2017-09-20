@@ -182,6 +182,7 @@ $project3D-w : 1075px;
         }
         svg {
             opacity: 0;
+            display: none;
             &.transi {
                 transition: transform 0.6s $easeToinou;
             }
@@ -191,6 +192,42 @@ $project3D-w : 1075px;
                 transform: translateX(15px) !important;
             }
         }
+    }
+
+    &__number, &__more {
+    	position: absolute;
+    	color: $color-grey;
+    	// display: none;
+    	opacity: 0;
+    }
+
+    &__number {
+    	position: absolute;
+    	top: -300px;
+    	font-size: 3rem;
+    	left: 70px;
+    }
+
+    &__more {
+    	// position: relative;
+    	left: calc(0% + 150px);
+    	font-size: 2.2rem;
+    	letter-spacing: 4px;
+    	font-family: 'Theinhardt-regular';
+		top: 150px;
+		opacity: 0;
+		&:after {
+			content: '';
+			position: absolute;
+			width: 60px;
+			height: 3px;
+			background-color: $color-grey;
+			left: -100px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+		// font-size: 2em;
+
     }
 
     &__next, &__prev {
