@@ -1,11 +1,11 @@
 import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
-import { getRandom, toRadian, clamp, round } from '../helpers/utils';
+import { getRandom, toRadian, clamp, round, oscillate } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
 import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
+import { ShaderMaterial, VideoTexture, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -22,7 +22,7 @@ export default class Blob extends ProjectView {
 
 		super(obj);
 
-		this.nbAst = 10;
+		this.nbAst = 6;
 
 		this.init();
 
@@ -48,38 +48,68 @@ export default class Blob extends ProjectView {
 		const geometry = new SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
 
 		// const material = new MeshLambertMaterial({ color: 0x4682b4 });
-		const img = PreloadManager.getResult('texture-asteroid');
 
-		const tex = new Texture(img);
+		const video = document.getElementById( 'video' );
+		const tex = new VideoTexture( video );
+		tex.minFilter = LinearFilter;
+		tex.magFilter = LinearFilter;
+		tex.format = RGBFormat;
+		// const img = PreloadManager.getResult('texture-asteroid');
+		// const tex = new Texture(img);
 		tex.needsUpdate = true;
 
 		this.brightness = new BrightnessShader();
 
-		this.brightness2 = new BrightnessShader();
+		// this.brightness2 = new BrightnessShader();
 
 		this.brightness.uniforms.tInput.value = tex;
-		this.brightness2.uniforms.tInput.value = tex;
+		this.brightness.range = oscillate(1,1.5);
+		this.brightness.time = 200;
+		// this.brightness2.uniforms.tInput.value = tex;
 
+		// const material = new MeshBasicMaterial({
+		// 	color: 0xFFFFFF,
+		// 	map: tex
+		// });
 
-		this.materialAst1 = new ShaderMaterial({
+		const material = new ShaderMaterial({
 			uniforms: this.brightness.uniforms,
 			vertexShader: this.brightness.vertexShader,
 			fragmentShader: this.brightness.fragmentShader,
 			transparent: true,
-			opacity: 0.5
+			// opacity: 0.5
 		});
 
-		this.materialAst2 = new ShaderMaterial({
-			uniforms: this.brightness2.uniforms,
-			vertexShader: this.brightness2.vertexShader,
-			fragmentShader: this.brightness2.fragmentShader,
-			transparent: true,
-			opacity: 0.5
-		});
+
+		// this.materialAst1 = new ShaderMaterial({
+		// 	uniforms: this.brightness.uniforms,
+		// 	vertexShader: this.brightness.vertexShader,
+		// 	fragmentShader: this.brightness.fragmentShader,
+		// 	transparent: true,
+		// 	opacity: 0.5
+		// });
+
+		// this.materialAst2 = new ShaderMaterial({
+		// 	uniforms: this.brightness2.uniforms,
+		// 	vertexShader: this.brightness2.vertexShader,
+		// 	fragmentShader: this.brightness2.fragmentShader,
+		// 	transparent: true,
+		// 	opacity: 0.5
+		// });
 
 		let pos;
+		const posFixed = [
+			{ x: 0, y: 0, z: 0, s: 6 },
+			{ x: -50, y: 15, z: 20 },
+			{ x: 40, y: -90, z: -80 },
+			{ x: -40, y: 70, z: -50 },
+			{ x: 60, y: 20, z: -40 },
+			{ x: 80, y: -30, z: 10 },
+			{ x: -40, y: -40, z: -100 },
+		];
 
-		for (let i = 0; i < this.nbAst; i++) {
+
+		for (let i = 0; i < posFixed.length - 1; i++) {
 
 			const rot = {
 				x: getRandom(-180, 180),
@@ -89,19 +119,15 @@ export default class Blob extends ProjectView {
 			// Intra perimeter radius
 			const ipRadius = 50;
 
-			pos = {
-				x: getRandom(-80, 80),
-				y: getRandom(-80, 80),
-				z: getRandom(-80, 80),
-			};
+			pos = posFixed[i];
 
-			if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-				console.log(i, ' dans le périmetre !');
-				pos.x += ipRadius;
-				pos.y += ipRadius;
-				pos.z += ipRadius;
+			// if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
+			// 	console.log(i, ' dans le périmetre !');
+			// 	pos.x += ipRadius;
+			// 	pos.y += ipRadius;
+			// 	pos.z += ipRadius;
 
-			}
+			// }
 
 			//  force impulsion
 			const force = {
@@ -110,22 +136,22 @@ export default class Blob extends ProjectView {
 				z: getRandom(-10, 10)
 			};
 
-			const scale = this.astd === 'spheres' ? 1 : getRandom(1, 4);
-			const speed = getRandom(500, 800); // more is slower
-			const range = getRandom(3, 8);
+			const scale = posFixed[i].s || getRandom(2,4.5);
+			const speed = getRandom(300, 400); // more is slower
+			const range = oscillate(10,15);
 			const timeRotate = getRandom(15000, 17000);
 
-			let finalMat;
+			// let finalMat;
 
-			if (i % 2 === 0) {
-				finalMat = this.materialAst1;
-			} else {
-				finalMat = this.materialAst2;
-			}
+			// if (i % 2 === 0) {
+			// 	finalMat = this.materialAst1;
+			// } else {
+			// 	finalMat = this.materialAst2;
+			// }
 
 			const asteroid = new Asteroid({
 				geometry,
-				material: finalMat,
+				material: material,
 				pos,
 				rot,
 				force,
@@ -135,17 +161,9 @@ export default class Blob extends ProjectView {
 				timeRotate
 			});
 
-			if (this.gravity === true) {
-				// add physic body to world
-				asteroid.body = this.world.add(asteroid.physics);
-
-				// Set rotation impulsion
-				asteroid.body.angularVelocity.x = getRandom(-0.3, 0.3);
-				asteroid.body.angularVelocity.y = getRandom(-0.3, 0.3);
-				asteroid.body.angularVelocity.z = getRandom(-0.3, 0.3);
-			}
-
 			asteroid.mesh.index = i;
+			asteroid.initY = posFixed[i].y;
+			asteroid.offset = getRandom(0,1000);
 
 			this.asteroids.push(asteroid);
 			this.asteroidsM.push(asteroid.mesh);
@@ -193,45 +211,27 @@ export default class Blob extends ProjectView {
 		// 	// Symbol body
 		// 	// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
 		// 	// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
-		// 	// Asteroids bodies
-		// 	this.asteroids.forEach( (el) => {
-
-		// 		if (el.mesh.position.x > this.bounceArea / 2 - 50 || el.mesh.position.x < -this.bounceArea / 2 + 50 || el.mesh.position.y > this.bounceArea / 2 - 50 || el.mesh.position.y < -this.bounceArea / 2 + 50 || el.mesh.position.z > this.bounceArea / 2 - 50 || el.mesh.position.z < -this.bounceArea / 2 + 50) {
-		// 			// Reverse Force Vector
-		// 			if (el.annilled !== true) {
-
-		// 				el.changeDirection();
-		// 				el.annilled = true;
-		// 			}
-		// 		}
-
-		// 		if (el.body !== undefined) {
-
-		// 			// APPLY IMPULSE
-		// 			el.body.linearVelocity.x = el.force.x;
-		// 			el.body.linearVelocity.y = el.force.y;
-		// 			el.body.linearVelocity.z = el.force.z;
-
-		// 			// console.log(el.body.angularVelocity);
-		// 			// angular Velocity always inferior to 1 (or too much rotations)
-
-		// 			el.body.angularVelocity.x = clamp(el.body.angularVelocity.x, -1, 1);
-		// 			el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -1, 1);
-		// 			el.body.angularVelocity.z = clamp(el.body.angularVelocity.z, -1, 1);
-		// 			// if (i === 0) {
-		// 			//   console.log(el.body.angularVelocity.x);
-		// 			// }
-
-		// 			el.mesh.position.copy(el.body.getPosition());
-		// 			el.mesh.quaternion.copy(el.body.getQuaternion());
 
 
-		// 		}
-		// 	});
-		// }
+		// Asteroids meshs
+		this.asteroids.forEach( (el)=> {
+
+			// Move top and bottom --> Levit effect
+			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
+			el.mesh.position.y = el.initY + Math.sin((this.time + el.offset) * 2 * Math.PI / el.speed) * el.range.coef + el.range.add;
+			// rotate
+
+			// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			// // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
+			// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
+
+		});
+
+
 		// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
-		this.brightness.uniforms['contrast'].value = (Math.sin(this.time / 40) + 1.2) * 3;
-		this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
+		this.brightness.uniforms['contrast'].value = Math.sin(this.time * 2 * Math.PI / this.brightness.time) * this.brightness.range.coef + this.brightness.range.add;
+
+		// this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
 
 		super.raf();
 

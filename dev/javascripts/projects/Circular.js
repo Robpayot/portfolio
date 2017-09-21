@@ -74,12 +74,13 @@ export default class Circular extends ProjectView {
 				palm.position.y = radius - pivotY;
 
 				// create point
-				const geometryp = new Geometry();
-				geometryp.vertices.push(
-					new Vector3( 0, 0, 0 )
-				);
+				// const geometryp = new Geometry();
+				// geometryp.vertices.push(
+				// 	new Vector3( 0, 0, 0 )
+				// );
 
-				const pivotPalm = new Points(geometryp, material);
+				// const pivotPalm = new Points(geometryp, material);
+				const pivotPalm = new Object3D();
 				pivotPalm.position.y = -pivotY;
 
 				// Pivot each palms

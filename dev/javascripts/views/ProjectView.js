@@ -1061,7 +1061,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if (this.cameraMove === false) {
+		if (this.cameraMove === false && this.isControls === false) {
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
