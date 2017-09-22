@@ -1024,9 +1024,9 @@ export default class ProjectView extends AbstractView {
 		// Raycasters
 		//////////////////
 
-		if (this.ui.body.style.cursor !== 'auto') this.ui.body.style.cursor = 'auto';
+		// if (this.ui.body.style.cursor !== 'auto') this.ui.body.style.cursor = 'auto';
 
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+		// this.raycaster.setFromCamera(this.mouse, this.camera);
 
 		// const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
