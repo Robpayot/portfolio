@@ -1024,9 +1024,9 @@ export default class ProjectView extends AbstractView {
 		// Raycasters
 		//////////////////
 
-		if (this.ui.body.style.cursor !== 'auto') this.ui.body.style.cursor = 'auto';
+		// if (this.ui.body.style.cursor !== 'auto') this.ui.body.style.cursor = 'auto';
 
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+		// this.raycaster.setFromCamera(this.mouse, this.camera);
 
 		// const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
@@ -1061,7 +1061,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if (this.cameraMove === false) {
+		if (this.cameraMove === false && this.isControls === false) {
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
