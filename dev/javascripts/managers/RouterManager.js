@@ -90,7 +90,7 @@ class RouterManager {
 
 				// When animation out, destroy scene, init new view
 
-				this.currentPage.destroy(false);
+				this.currentPage.destroy(true);
 				this.initView(goToPage, index, false);
 
 			});
@@ -110,7 +110,7 @@ class RouterManager {
 		switch (goToPage) {
 			case '/project-0':
 
-				if (this.project0 === null) {
+				// if (this.project0 === null) {
 					this.currentPage = this.project0 = new Levit({ // Attention, Garde en mémoire une cette variable très lourde !
 						id: 0,
 						bkg: 0x0101010,
@@ -121,17 +121,17 @@ class RouterManager {
 						data: data.projects[0],
 						fromUrl
 					});
-				} else {
-					this.currentPage = this.project0;
-					this.currentPage.start();
-				}
+				// } else {
+				// 	this.currentPage = this.project0;
+				// 	this.currentPage.start();
+				// }
 
 				window.location = '#project-0';
 				break;
 
 			case '/project-1':
 
-				if (this.project1 === null) {
+				// if (this.project1 === null) {
 					this.currentPage = this.project1 = new Stars({
 						id: 1,
 						bkg: 0x0101010,
@@ -142,16 +142,16 @@ class RouterManager {
 						data: data.projects[1],
 						fromUrl
 					});
-				} else {
-					this.currentPage = this.project1;
-					this.currentPage.start();
-				}
+				// } else {
+				// 	this.currentPage = this.project1;
+				// 	this.currentPage.start();
+				// }
 				window.location = '#project-1';
 				break;
 
 			case '/project-2':
 
-				if (this.project2 === null) {
+				// if (this.project2 === null) {
 					this.currentPage = this.project2 = new Circular({
 						id: 2,
 						bkg: 0x0101010,
@@ -162,16 +162,16 @@ class RouterManager {
 						data: data.projects[2],
 						fromUrl
 					});
-				} else {
-					this.currentPage = this.project2;
-					this.currentPage.start();
-				}
+				// } else {
+				// 	this.currentPage = this.project2;
+				// 	this.currentPage.start();
+				// }
 				window.location = '#project-2';
 				break;
 
 			case '/project-3':
 
-				if (this.project3 === null) {
+				// if (this.project3 === null) {
 					this.currentPage = this.project3 = new Blob({
 						id: 3,
 						bkg: 0x0101010,
@@ -182,10 +182,10 @@ class RouterManager {
 						data: data.projects[3],
 						fromUrl
 					});
-				} else {
-					this.currentPage = this.project3;
-					this.currentPage.start();
-				}
+				// } else {
+				// 	this.currentPage = this.project3;
+				// 	this.currentPage.start();
+				// }
 				window.location = '#project-3';
 				break;
 

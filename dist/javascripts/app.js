@@ -1699,7 +1699,7 @@ var RouterManager = function () {
 
 					// When animation out, destroy scene, init new view
 
-					_this.currentPage.destroy(false);
+					_this.currentPage.destroy(true);
 					_this.initView(goToPage, index, false);
 				});
 			} else {
@@ -1720,82 +1720,82 @@ var RouterManager = function () {
 			switch (goToPage) {
 				case '/project-0':
 
-					if (this.project0 === null) {
-						this.currentPage = this.project0 = new _Levit2.default({ // Attention, Garde en mémoire une cette variable très lourde !
-							id: 0,
-							bkg: 0x0101010,
-							astd: 'cubes',
-							gravity: false,
-							pointsLight: true,
-							alt: false,
-							data: _data2.default.projects[0],
-							fromUrl: fromUrl
-						});
-					} else {
-						this.currentPage = this.project0;
-						this.currentPage.start();
-					}
+					// if (this.project0 === null) {
+					this.currentPage = this.project0 = new _Levit2.default({ // Attention, Garde en mémoire une cette variable très lourde !
+						id: 0,
+						bkg: 0x0101010,
+						astd: 'cubes',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: _data2.default.projects[0],
+						fromUrl: fromUrl
+					});
+					// } else {
+					// 	this.currentPage = this.project0;
+					// 	this.currentPage.start();
+					// }
 
 					window.location = '#project-0';
 					break;
 
 				case '/project-1':
 
-					if (this.project1 === null) {
-						this.currentPage = this.project1 = new _Stars2.default({
-							id: 1,
-							bkg: 0x0101010,
-							astd: 'spheres',
-							gravity: false,
-							pointsLight: true,
-							alt: false,
-							data: _data2.default.projects[1],
-							fromUrl: fromUrl
-						});
-					} else {
-						this.currentPage = this.project1;
-						this.currentPage.start();
-					}
+					// if (this.project1 === null) {
+					this.currentPage = this.project1 = new _Stars2.default({
+						id: 1,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: _data2.default.projects[1],
+						fromUrl: fromUrl
+					});
+					// } else {
+					// 	this.currentPage = this.project1;
+					// 	this.currentPage.start();
+					// }
 					window.location = '#project-1';
 					break;
 
 				case '/project-2':
 
-					if (this.project2 === null) {
-						this.currentPage = this.project2 = new _Circular2.default({
-							id: 2,
-							bkg: 0x0101010,
-							astd: 'spheres',
-							gravity: false,
-							pointsLight: true,
-							alt: false,
-							data: _data2.default.projects[2],
-							fromUrl: fromUrl
-						});
-					} else {
-						this.currentPage = this.project2;
-						this.currentPage.start();
-					}
+					// if (this.project2 === null) {
+					this.currentPage = this.project2 = new _Circular2.default({
+						id: 2,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: _data2.default.projects[2],
+						fromUrl: fromUrl
+					});
+					// } else {
+					// 	this.currentPage = this.project2;
+					// 	this.currentPage.start();
+					// }
 					window.location = '#project-2';
 					break;
 
 				case '/project-3':
 
-					if (this.project3 === null) {
-						this.currentPage = this.project3 = new _Blob2.default({
-							id: 3,
-							bkg: 0x0101010,
-							astd: 'spheres',
-							gravity: false,
-							pointsLight: true,
-							alt: false,
-							data: _data2.default.projects[3],
-							fromUrl: fromUrl
-						});
-					} else {
-						this.currentPage = this.project3;
-						this.currentPage.start();
-					}
+					// if (this.project3 === null) {
+					this.currentPage = this.project3 = new _Blob2.default({
+						id: 3,
+						bkg: 0x0101010,
+						astd: 'spheres',
+						gravity: false,
+						pointsLight: true,
+						alt: false,
+						data: _data2.default.projects[3],
+						fromUrl: fromUrl
+					});
+					// } else {
+					// 	this.currentPage = this.project3;
+					// 	this.currentPage.start();
+					// }
 					window.location = '#project-3';
 					break;
 
