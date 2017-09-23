@@ -5,7 +5,7 @@ import { loadJSON } from '../helpers/utils-three';
 import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
-import { ShaderMaterial, VideoTexture, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
+import { ShaderMaterial, VideoTexture, RGBFormat, LinearFilter, IcosahedronGeometry, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -23,6 +23,7 @@ export default class Blob extends ProjectView {
 		super(obj);
 
 		this.nbAst = 6;
+		this.inc = Date.now();
 
 		this.init();
 
@@ -45,8 +46,8 @@ export default class Blob extends ProjectView {
 		this.asteroids = [];
 		this.asteroidsM = [];
 
-		const geometry = new SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
-
+		// const geometry = new SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
+		const geometry = new IcosahedronGeometry( 5, 5 );
 		// const material = new MeshLambertMaterial({ color: 0x4682b4 });
 
 		const video = document.getElementById( 'video' );
@@ -54,8 +55,6 @@ export default class Blob extends ProjectView {
 		tex.minFilter = LinearFilter;
 		tex.magFilter = LinearFilter;
 		tex.format = RGBFormat;
-		// const img = PreloadManager.getResult('texture-asteroid');
-		// const tex = new Texture(img);
 		tex.needsUpdate = true;
 
 
@@ -82,54 +81,57 @@ export default class Blob extends ProjectView {
 			{ x: 40, y: -90, z: -80 },
 			{ x: -40, y: 70, z: -50 },
 			{ x: 60, y: 20, z: -40 },
-			{ x: 80, y: -30, z: 50 },
-			{ x: -40, y: -40, z: -100 },
+			// { x: 80, y: -30, z: 50 },
+			// { x: -40, y: -40, z: -100 },
 		];
 
 
-		for (let i = 0; i < posFixed.length - 1; i++) {
+		for (let i = 0; i < posFixed.length; i++) {
 
 			// Material shader
 
-			const brightness = new BrightnessShader();
+			// const brightness = new BrightnessShader();
 
-			// this.brightness2 = new BrightnessShader();
+			// // this.brightness2 = new BrightnessShader();
 
-			brightness.uniforms.tInput.value = tex;
-			brightness.range = oscillate(3,3);
-			brightness.time = 200;
+			// brightness.uniforms.tInput.value = tex;
+			// brightness.range = oscillate(3,3);
+			// brightness.time = 200;
 			// this.brightness2.uniforms.tInput.value = tex;
 
 			// const material = new MeshBasicMaterial({
 			// 	color: 0xFFFFFF,
 			// 	map: tex
 			// });
+			const material = new ShaderMaterial( {
 
-			const material = new ShaderMaterial({
-				uniforms: brightness.uniforms,
-				vertexShader: brightness.vertexShader,
-				fragmentShader: brightness.fragmentShader,
-				transparent: true,
-				// opacity: 0.5
-			});
+				uniforms: {
+					tShine: { type: 't', value: tex },
+					time: { type: 'f', value: 0 },
+					weight: { type: 'f', value: 0 },
+					brightness: { type: 'f', value: 0 },
+					contrast: { type: 'f', value: 0.5 },
+				},
+				vertexShader: document.getElementById( 'vertexShader' ).textContent,
+				fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+
+			} );
+
+			// const material = new ShaderMaterial({
+			// 	uniforms: brightness.uniforms,
+			// 	vertexShader: brightness.vertexShader,
+			// 	fragmentShader: brightness.fragmentShader,
+			// 	transparent: true,
+			// 	// opacity: 0.5
+			// });
 
 			const rot = {
 				x: 0,
 				y: 0,
 				z: 0,
 			};
-			// Intra perimeter radius
-			const ipRadius = 50;
 
 			pos = posFixed[i];
-
-			// if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-			// 	console.log(i, ' dans le périmetre !');
-			// 	pos.x += ipRadius;
-			// 	pos.y += ipRadius;
-			// 	pos.z += ipRadius;
-
-			// }
 
 			//  force impulsion
 			const force = {
@@ -166,7 +168,10 @@ export default class Blob extends ProjectView {
 			asteroid.mesh.index = i;
 			asteroid.initY = posFixed[i].y;
 			asteroid.offset = getRandom(0,1000);
-			asteroid.brightness = brightness;
+			asteroid.initW = 0.0;
+			asteroid.rangeMat = oscillate(0.0,2.0);
+			asteroid.speedMat = getRandom(800,1000);
+			// asteroid.brightness = brightness;
 
 			this.asteroids.push(asteroid);
 			this.asteroidsM.push(asteroid.mesh);
@@ -195,7 +200,7 @@ export default class Blob extends ProjectView {
 		for (let i = 0; i < paramsLight.length; i++) {
 
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 1000, 2);
+			let pointLight = new PointLight(0xFFFFFF, 0.8, 800, 2);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -240,15 +245,22 @@ export default class Blob extends ProjectView {
 			el.mesh.position.y = el.initY + Math.sin((this.time + el.offset) * 2 * Math.PI / el.speed) * el.range.coef + el.range.add;
 			// el.mesh.position.y = el.initY;
 			// rotate
-
+			el.mesh.material.uniforms[ 'time' ].value = .00015 * ( Date.now() - this.inc );
+			el.mesh.material.uniforms[ 'weight' ].value = el.initW + Math.sin((this.time + el.offset) * 2 * Math.PI / el.speedMat) * el.rangeMat.coef + el.rangeMat.add;
+			// el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
+			// console.log(el.mesh.material.uniforms[ 'weight' ].value);
 			// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 			// // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 			// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
-			if (el.active === true) {
-				el.brightness.uniforms['contrast'].value = 5;
-			} else {
-				el.brightness.uniforms['contrast'].value = Math.sin(this.time * 2 * Math.PI / el.brightness.time) * el.brightness.range.coef + el.brightness.range.add;
+
+			if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
+				if (el.active === true) {
+					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5 , 5);
+				} else {
+					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
+				}
 			}
+
 
 		});
 
