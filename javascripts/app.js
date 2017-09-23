@@ -2207,6 +2207,7 @@ var Blob = function (_ProjectView) {
 		var _this = _possibleConstructorReturn(this, (Blob.__proto__ || Object.getPrototypeOf(Blob)).call(this, obj));
 
 		_this.nbAst = 6;
+		_this.inc = Date.now();
 
 		_this.init();
 
@@ -2230,8 +2231,8 @@ var Blob = function (_ProjectView) {
 			this.asteroids = [];
 			this.asteroidsM = [];
 
-			var geometry = new _three.SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
-
+			// const geometry = new SphereGeometry(props.RADIUS, props.SEGMENTS, props.RINGS);
+			var geometry = new _three.IcosahedronGeometry(5, 5);
 			// const material = new MeshLambertMaterial({ color: 0x4682b4 });
 
 			var video = document.getElementById('video');
@@ -2239,8 +2240,6 @@ var Blob = function (_ProjectView) {
 			tex.minFilter = _three.LinearFilter;
 			tex.magFilter = _three.LinearFilter;
 			tex.format = _three.RGBFormat;
-			// const img = PreloadManager.getResult('texture-asteroid');
-			// const tex = new Texture(img);
 			tex.needsUpdate = true;
 
 			// this.materialAst1 = new ShaderMaterial({
@@ -2260,50 +2259,54 @@ var Blob = function (_ProjectView) {
 			// });
 
 			var pos = void 0;
-			var posFixed = [{ x: 0, y: 0, z: 0, s: 6 }, { x: -50, y: 15, z: 30 }, { x: 40, y: -90, z: -80 }, { x: -40, y: 70, z: -50 }, { x: 60, y: 20, z: -40 }, { x: 80, y: -30, z: 50 }, { x: -40, y: -40, z: -100 }];
+			var posFixed = [{ x: 0, y: 0, z: 0, s: 6 }, { x: -50, y: 15, z: 30 }, { x: 40, y: -90, z: -80 }, { x: -40, y: 70, z: -50 }, { x: 60, y: 20, z: -40 }];
 
-			for (var i = 0; i < posFixed.length - 1; i++) {
+			for (var i = 0; i < posFixed.length; i++) {
 
 				// Material shader
 
-				var brightness = new _BrightnessShader.BrightnessShader();
+				// const brightness = new BrightnessShader();
 
-				// this.brightness2 = new BrightnessShader();
+				// // this.brightness2 = new BrightnessShader();
 
-				brightness.uniforms.tInput.value = tex;
-				brightness.range = (0, _utils.oscillate)(3, 3);
-				brightness.time = 200;
+				// brightness.uniforms.tInput.value = tex;
+				// brightness.range = oscillate(3,3);
+				// brightness.time = 200;
 				// this.brightness2.uniforms.tInput.value = tex;
 
 				// const material = new MeshBasicMaterial({
 				// 	color: 0xFFFFFF,
 				// 	map: tex
 				// });
-
 				var material = new _three.ShaderMaterial({
-					uniforms: brightness.uniforms,
-					vertexShader: brightness.vertexShader,
-					fragmentShader: brightness.fragmentShader,
-					transparent: true
+
+					uniforms: {
+						tShine: { type: 't', value: tex },
+						time: { type: 'f', value: 0 },
+						weight: { type: 'f', value: 0 },
+						brightness: { type: 'f', value: 0 },
+						contrast: { type: 'f', value: 0.5 }
+					},
+					vertexShader: document.getElementById('vertexShader').textContent,
+					fragmentShader: document.getElementById('fragmentShader').textContent
+
 				});
+
+				// const material = new ShaderMaterial({
+				// 	uniforms: brightness.uniforms,
+				// 	vertexShader: brightness.vertexShader,
+				// 	fragmentShader: brightness.fragmentShader,
+				// 	transparent: true,
+				// 	// opacity: 0.5
+				// });
 
 				var rot = {
 					x: 0,
 					y: 0,
 					z: 0
 				};
-				// Intra perimeter radius
-				var ipRadius = 50;
 
 				pos = posFixed[i];
-
-				// if (pos.x < ipRadius && pos.x > -ipRadius && pos.y < ipRadius && pos.y > -ipRadius && pos.z < ipRadius && pos.z > -ipRadius) {
-				// 	console.log(i, ' dans le périmetre !');
-				// 	pos.x += ipRadius;
-				// 	pos.y += ipRadius;
-				// 	pos.z += ipRadius;
-
-				// }
 
 				//  force impulsion
 				var force = {
@@ -2340,7 +2343,10 @@ var Blob = function (_ProjectView) {
 				asteroid.mesh.index = i;
 				asteroid.initY = posFixed[i].y;
 				asteroid.offset = (0, _utils.getRandom)(0, 1000);
-				asteroid.brightness = brightness;
+				asteroid.initW = 0.0;
+				asteroid.rangeMat = (0, _utils.oscillate)(0.0, 2.0);
+				asteroid.speedMat = (0, _utils.getRandom)(800, 1000);
+				// asteroid.brightness = brightness;
 
 				this.asteroids.push(asteroid);
 				this.asteroidsM.push(asteroid.mesh);
@@ -2364,7 +2370,7 @@ var Blob = function (_ProjectView) {
 			for (var i = 0; i < paramsLight.length; i++) {
 
 				// create a point light
-				var pointLight = new _three.PointLight(0xFFFFFF, 0.8, 1000, 2);
+				var pointLight = new _three.PointLight(0xFFFFFF, 0.8, 800, 2);
 				// set its position
 				pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 				// pointLight.power = 20;
@@ -2412,14 +2418,20 @@ var Blob = function (_ProjectView) {
 				el.mesh.position.y = el.initY + Math.sin((_this2.time + el.offset) * 2 * Math.PI / el.speed) * el.range.coef + el.range.add;
 				// el.mesh.position.y = el.initY;
 				// rotate
-
+				el.mesh.material.uniforms['time'].value = .00015 * (Date.now() - _this2.inc);
+				el.mesh.material.uniforms['weight'].value = el.initW + Math.sin((_this2.time + el.offset) * 2 * Math.PI / el.speedMat) * el.rangeMat.coef + el.rangeMat.add;
+				// el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
+				// console.log(el.mesh.material.uniforms[ 'weight' ].value);
 				// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 				// // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 				// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
-				if (el.active === true) {
-					el.brightness.uniforms['contrast'].value = 5;
-				} else {
-					el.brightness.uniforms['contrast'].value = Math.sin(_this2.time * 2 * Math.PI / el.brightness.time) * el.brightness.range.coef + el.brightness.range.add;
+
+				if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
+					if (el.active === true) {
+						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5, 5);
+					} else {
+						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5, 5);
+					}
 				}
 			});
 
@@ -9541,7 +9553,6 @@ var ProjectView = function (_AbstractView) {
 		_this.raf = _this.raf.bind(_this);
 		_this.events = _this.events.bind(_this);
 		_this.start = _this.start.bind(_this);
-		_this.setSymbol = _this.setSymbol.bind(_this);
 		_this.resizeHandler = _this.resizeHandler.bind(_this);
 		_this.reset = _this.reset.bind(_this);
 		_this.destroy = _this.destroy.bind(_this);
@@ -9643,7 +9654,6 @@ var ProjectView = function (_AbstractView) {
 			if (this.gravity === true) this.initPhysics();
 
 			// Set symbol
-			// this.setSymbol();
 
 			// Set asteroid
 			this.setAsteroids();
@@ -9751,7 +9761,7 @@ var ProjectView = function (_AbstractView) {
 			////////////////////
 
 			// Set BLUR EFFECT
-			this.setBlur();
+			// this.setBlur();
 
 			this.start();
 
@@ -9865,77 +9875,6 @@ var ProjectView = function (_AbstractView) {
 				// add mesh to the scene
 				this.scene.add(envelop);
 			}
-		}
-	}, {
-		key: 'setSymbol',
-		value: function setSymbol() {
-
-			// const geometry = new TorusGeometry(6, 1, 16, 100);
-			// const img = PreloadManager.getResult('texture-asteroid');
-			// const tex = new Texture(img);
-			// tex.needsUpdate = true;
-			// const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: null });
-			// const pos = {
-			// 	x: 0,
-			// 	y: 0,
-			// 	z: 0,
-			// };
-
-			// const symbol = new Symbol({
-			// 	geometry: geometry,
-			// 	material: material,
-			// 	pos: pos
-			// });
-
-			// if (this.gravity === true) {
-			// 	// add physic body to world
-			// 	symbol.body = this.world.add(symbol.physics);
-			// }
-
-
-			// // create a glowMesh
-			// symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
-			// symbol.mesh.add(symbol.glowMesh.object3d);
-
-			// // example of customization of the default glowMesh
-			// // Inside
-			// symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white');
-			// symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
-			// symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
-
-			// // Outside
-			// symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white');
-			// symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
-			// symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
-
-			var geometry = new _three.BoxGeometry(12, 12, 12);
-			// const img = PreloadManager.getResult('texture-asteroid');
-			// const tex = new Texture(img);
-			// tex.needsUpdate = true;
-			// #4682b4
-			var material = new _three.MeshPhongMaterial({ color: 0x4682b4, transparent: false, opacity: 1, map: null });
-			var pos = {
-				x: 0,
-				y: -100, // 60 end point
-				z: 200
-			};
-			var timeRotate = 7000;
-
-			var symbol = new _Symbol3.default({
-				geometry: geometry,
-				material: material,
-				pos: pos,
-				timeRotate: timeRotate
-			});
-
-			symbol.initPointY = 0;
-			symbol.endPointY = 2000;
-			symbol.endPointZ = 5000;
-
-			this.symbol = symbol;
-
-			// add mesh to the scene
-			this.scene.add(symbol.mesh);
 		}
 	}, {
 		key: 'setAsteroids',
@@ -10076,41 +10015,42 @@ var ProjectView = function (_AbstractView) {
 				this.maxHeightUnits = wHeight * percent + globalMargeScrollBot;
 			}
 		}
-	}, {
-		key: 'setBlur',
-		value: function setBlur() {
 
-			// COMPOSER
-			// IMPORTANT CAREFUL HERE (when changing scene)
-			// SceneManager.renderer.autoClear = false;
+		// setBlur() {
 
-			var renderTargetParameters = { minFilter: _three.LinearFilter, magFilter: _three.LinearFilter, format: _three.RGBFormat, stencilBuffer: false };
-			this.renderTarget = new _three.WebGLRenderTarget(this.width, this.height, renderTargetParameters);
+		// 	// COMPOSER
+		// 	// IMPORTANT CAREFUL HERE (when changing scene)
+		// 	// SceneManager.renderer.autoClear = false;
 
-			this.effectFXAA = new _threeEffectcomposerEs.ShaderPass(_FXAAShader.FXAAShader);
-			this.hblur = new _threeEffectcomposerEs.ShaderPass(_HorizontalTiltShiftShader.HorizontalTiltShiftShader);
-			this.vblur = new _threeEffectcomposerEs.ShaderPass(_VerticalTiltShiftShader.VerticalTiltShiftShader);
+		// 	const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
+		// 	this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
 
-			this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
-			this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
+		// 	this.effectFXAA = new ShaderPass(FXAAShader);
+		// 	this.hblur = new ShaderPass(HorizontalTiltShiftShader);
+		// 	this.vblur = new ShaderPass(VerticalTiltShiftShader);
 
-			this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = this.effectController.horizontalBlur;
 
-			this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
+		// 	this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+		// 	this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
-			var renderModel = new _threeEffectcomposerEs.RenderPass(this.scene, this.camera);
+		// 	this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = this.effectController.horizontalBlur;
 
-			this.vblur.renderToScreen = true;
-			this.hblur.renderToScreen = true;
-			this.effectFXAA.renderToScreen = true;
+		// 	this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
-			this.composer = new _threeEffectcomposerEs2.default(_SceneManager2.default.renderer, this.renderTarget);
+		// 	const renderModel = new RenderPass(this.scene, this.camera);
 
-			this.composer.addPass(renderModel);
-			this.composer.addPass(this.effectFXAA);
-			this.composer.addPass(this.hblur);
-			this.composer.addPass(this.vblur);
-		}
+		// 	this.vblur.renderToScreen = true;
+		// 	this.hblur.renderToScreen = true;
+		// 	this.effectFXAA.renderToScreen = true;
+
+		// 	this.composer = new EffectComposer(SceneManager.renderer, this.renderTarget);
+
+		// 	this.composer.addPass(renderModel);
+		// 	this.composer.addPass(this.effectFXAA);
+		// 	this.composer.addPass(this.hblur);
+		// 	this.composer.addPass(this.vblur);
+
+		// }
 
 		////////////
 		// EVENTS
@@ -10307,51 +10247,9 @@ var ProjectView = function (_AbstractView) {
 				this.raf();
 			}
 
-			if (this.clickSymbol === true) {
-				this.onClickSymbol();
-			}
-
 			if (this.clickAsteroid === true) {
 				this.currentAstClicked.impulse();
 			}
-		}
-	}, {
-		key: 'onClickSymbol',
-		value: function onClickSymbol() {
-
-			// const tl = new TimelineMax();
-
-			// // this.reset();
-
-			// if (this.toggle !== true) {
-
-
-			// 	tl.to(this.symbols[0].mesh.scale, 0.7, {
-			// 		x: 1.5,
-			// 		y: 1.5,
-			// 		z: 1.5,
-			// 		ease: window.Power4.easeInOut
-			// 	});
-
-			// 	this.toggle = true;
-
-			// } else {
-
-			// 	tl.to(['.project__container', '.project__image'], 0.8, {
-			// 		opacity: 0,
-			// 		ease: window.Power4.easeInOut
-			// 	});
-
-
-			// 	tl.to(this.symbols[0].mesh.scale, 0.5, {
-			// 		x: 1,
-			// 		y: 1,
-			// 		z: 1,
-			// 		ease: window.Power4.easeInOut
-			// 	}, 0.1);
-
-			// 	this.toggle = false;
-			// }
 		}
 	}, {
 		key: 'onMouseMove',
@@ -10512,11 +10410,12 @@ var ProjectView = function (_AbstractView) {
 
 			// console.log(this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value);
 			// Glow arrows
-			if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-				this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
-				this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
-				// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
-			}
+			// if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
+			// 	this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
+			// 	this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
+			// 	// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
+			// }
+
 
 			// scroll gallery
 			if (this.initGalleryY !== undefined) {
@@ -10873,9 +10772,6 @@ var ProjectView = function (_AbstractView) {
 			});
 
 			// this.destroy();
-
-			// // Set symbol
-			// this.setSymbol();
 
 			// // Set asteroid
 			// this.setAsteroids();
