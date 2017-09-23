@@ -10,6 +10,7 @@ import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltShiftShader shader
+import { BlobLightShader } from '../shaders/BlobLightShader';
 
 
 // POSTPROCESSING
@@ -103,6 +104,7 @@ export default class Blob extends ProjectView {
 			// 	color: 0xFFFFFF,
 			// 	map: tex
 			// });
+			const blobLightShader = new BlobLightShader();
 			const material = new ShaderMaterial( {
 
 				uniforms: {
@@ -112,8 +114,8 @@ export default class Blob extends ProjectView {
 					brightness: { type: 'f', value: 0 },
 					contrast: { type: 'f', value: 0.5 },
 				},
-				vertexShader: document.getElementById( 'vertexShader' ).textContent,
-				fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+				vertexShader: blobLightShader.vertexShader,
+				fragmentShader: blobLightShader.fragmentShader
 
 			} );
 
