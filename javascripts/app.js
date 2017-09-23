@@ -8359,7 +8359,6 @@ var IntroView = function (_AbstractView) {
 		_this.onDocumentTouchMove = _this.onDocumentTouchMove.bind(_this);
 		_this.smoothWater = _this.smoothWater.bind(_this);
 		_this.setMouseCoords = _this.setMouseCoords.bind(_this);
-		_this.setSymbol = _this.setSymbol.bind(_this);
 		_this.setLight = _this.setLight.bind(_this);
 		_this.resetWater = _this.resetWater.bind(_this);
 		_this.onW = _this.onW.bind(_this);
@@ -8422,8 +8421,8 @@ var IntroView = function (_AbstractView) {
 			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 			this.scene = new _three.Scene();
+			this.scene.background = new _three.Color(0x000000);
 
-			_SceneManager2.default.renderer.setClearColor(0x000000);
 			_SceneManager2.default.renderer.setPixelRatio((0, _utils.clamp)(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 			// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
@@ -8463,11 +8462,10 @@ var IntroView = function (_AbstractView) {
 				this.controls.enableZoom = true;
 			}
 
-			this.initWater();
+			this.initWater(false, false);
 
 			this.setAsteroids();
 			this.setGround();
-			// this.setSymbol();
 
 			// reset Water bits to 64
 			// setInterval(() => {
@@ -8524,12 +8522,13 @@ var IntroView = function (_AbstractView) {
 			// this.scene.add( hemisphere );
 
 			// FOG
-			// this.scene.fog = new Fog( 0x00FFFF, 1, 5000 );
+			// this.scene.fog = new Fog( 0xFFFFFF, 1, 200 ); --> dosent affect water
 		}
 	}, {
 		key: 'initWater',
 		value: function initWater() {
 			var destroy = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+			var bigger = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 
 			this.WIDTH = 62; // Texture width for simulation bits
@@ -8537,7 +8536,6 @@ var IntroView = function (_AbstractView) {
 			// Magic calculs ;)
 			var vFOV = this.camera.fov * Math.PI / 180; // convert vertical fov to radians
 			var height = 2 * Math.tan(vFOV / 2) * 400; // dist between 0 and camerapos.y
-			var extra = 100; // for rotation camera left / right
 
 			var aspect = window.innerWidth / window.innerHeight;
 			var finalBounds = void 0;
@@ -8548,8 +8546,10 @@ var IntroView = function (_AbstractView) {
 				finalBounds = height;
 			}
 
+			var extra = bigger === true ? 800 : 100; // for rotation camera left / right
 			this.BOUNDS = finalBounds + extra; // Water size
-			console.log(this.BOUNDS);
+			this.BOUNDSSUP = bigger === true ? 700 : 0; // Bounds supp for TransitionOut, we see the horizon
+			this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 			var materialColor = 0xffffff;
 
@@ -8592,20 +8592,8 @@ var IntroView = function (_AbstractView) {
 
 			this.scene.add(this.waterMesh);
 
-			// Mesh just for mouse raycasting
-			// let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
-			// this.meshRay = this.waterMesh;
-			// this.meshRay.rotation.x = -Math.PI / 2;
-			// this.meshRay.position.x = 400;
-			// this.meshRay.matrixAutoUpdate = false;
-			// this.meshRay.updateMatrix();
-			// this.scene.add( this.meshRay );
-
-
-			// Creates the gpu computation class and sets it up
-			// console.log(GPUComputationRenderer);
-
 			if (destroy === false) {
+				// if not already set
 				this.gpuCompute = new _GPUComputationRenderer2.default(this.WIDTH, this.WIDTH, _SceneManager2.default.renderer);
 
 				var heightmap0 = this.gpuCompute.createTexture();
@@ -8637,6 +8625,8 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'generateTexture',
 		value: function generateTexture() {
+
+			// Use a classic image for better pef
 
 			var size = 512;
 
@@ -8781,39 +8771,6 @@ var IntroView = function (_AbstractView) {
 				// add mesh to the scene
 				this.scene.add(asteroid.mesh);
 			}
-		}
-	}, {
-		key: 'setSymbol',
-		value: function setSymbol() {
-
-			var geometry = new _three.BoxGeometry(20, 20, 20);
-			// const img = PreloadManager.getResult('texture-asteroid');
-			// const tex = new Texture(img);
-			// tex.needsUpdate = true;
-			// #4682b4
-			var material = new _three.MeshPhongMaterial({ color: 0x4682b4, transparent: true, opacity: 1, map: null });
-			var pos = {
-				x: 0,
-				y: 170, // 60 end point
-				z: 100
-			};
-			var timeRotate = 7000;
-
-			var symbol = new _Symbol3.default({
-				geometry: geometry,
-				material: material,
-				pos: pos,
-				timeRotate: timeRotate
-			});
-
-			symbol.initPointY = 70;
-			symbol.endPointY = 2000;
-			symbol.endPointZ = 5000;
-
-			this.symbol = symbol;
-
-			// add mesh to the scene
-			this.scene.add(symbol.mesh);
 		}
 	}, {
 		key: 'fillTexture',
@@ -8970,7 +8927,10 @@ var IntroView = function (_AbstractView) {
 		}
 	}, {
 		key: 'onClickStart',
-		value: function onClickStart() {
+		value: function onClickStart(e) {
+			var _this5 = this;
+
+			// e.preventDefault();
 
 			if (this.clicked === true) return false;
 			this.clicked = true;
@@ -8978,29 +8938,53 @@ var IntroView = function (_AbstractView) {
 			// const tl = new TimelineMax({delay: 2});
 			var tl = new TimelineMax();
 
-			// glitch
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 0});
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 3, x: 1}, 0.01);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 2}, 0.03);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -2}, 0.05);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 3}, 0.07);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 5, x: 2}, 0.09);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
-
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4});
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.2);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: 2}, 0.23);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -4}, 0.25);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 3}, 0.27);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 2, x: 2}, 0.29);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 4, x: -3}, 0.32);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 4, x: -2}, 0.37);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: 2}, 0.39);
-			// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.40);
-
 			tl.add(function () {
-				// this.transitionOut();
-			}, '+=0.5');
+				console.log('switch water');
+				// Clean water and replace it !
+				var obj = _this5.scene.getObjectByName('water');
+				if (obj.geometry) obj.geometry.dispose();
+
+				if (obj.material) {
+
+					if (obj.material.materials) {
+						var _iteratorNormalCompletion = true;
+						var _didIteratorError = false;
+						var _iteratorError = undefined;
+
+						try {
+
+							for (var _iterator = obj.material.materials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+								var mat = _step.value;
+
+
+								if (mat.map) mat.map.dispose();
+
+								mat.dispose();
+							}
+						} catch (err) {
+							_didIteratorError = true;
+							_iteratorError = err;
+						} finally {
+							try {
+								if (!_iteratorNormalCompletion && _iterator.return) {
+									_iterator.return();
+								}
+							} finally {
+								if (_didIteratorError) {
+									throw _iteratorError;
+								}
+							}
+						}
+					} else {
+
+						if (obj.material.map) obj.material.map.dispose();
+
+						obj.material.dispose();
+					}
+				}
+				_this5.scene.remove(obj);
+				_this5.initWater(true, true);
+			}, '+=1.8');
 
 			// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
 			// tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
@@ -9011,44 +8995,11 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			var _this5 = this;
-
-			// console.log(this.waterMesh.position);
-
-			// Set uniforms: mouse interaction
-			// let uniforms = this.heightmapVariable.material.uniforms;
-
-			// this.mouseMoved = true;
-
-			// if ( this.mouseMoved ) {
-
-			// 	this.raycaster.setFromCamera( this.mouse, this.camera );
-
-			// 	let intersects = this.raycaster.intersectObject( this.waterMesh );
-
-			// 	if ( intersects.length > 0 ) {
-			// 		// console.log('yes');
-			// 		let point = intersects[ 0 ].point;
-			// 		uniforms.mousePos.value.set( point.x, point.z );
-
-
-			// 	}
-			// 	else {
-			// 		// console.log('no');
-			// 		uniforms.mousePos.value.set( 10000, 10000 );
-			// 	}
-
-			// 	this.mouseMoved = false;
-			// }
-			// else {
-			// 	uniforms.mousePos.value.set( 10000, 10000 );
-
-			// }
-
+			var _this6 = this;
 
 			// Manual simulation of infinite waves
-			var pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 15) * this.BOUNDS / 4;
-			var pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -this.BOUNDS / 2;
+			var pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 15) * (this.BOUNDS - this.BOUNDSSUP) / 4;
+			var pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
 
 			// console.log(pointX, pointZ);
 
@@ -9071,12 +9022,6 @@ var IntroView = function (_AbstractView) {
 
 			if (this.gravity === true && this.startMove === true) this.world.step();
 
-			// Rotate Symbol
-
-			// this.symbol.mesh.rotation.y = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			// this.symbol.mesh.rotation.x = toRadian(this.symbol.initRotateY + Math.cos(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-			// this.symbol.mesh.rotation.z = toRadian(this.symbol.initRotateY + Math.sin(this.time * 2 * Math.PI / this.symbol.timeRotate) * (360 / 2) + 360 / 2);
-
 			// Moving Icebergs
 			this.asteroids.forEach(function (el) {
 
@@ -9085,21 +9030,13 @@ var IntroView = function (_AbstractView) {
 
 				// Move top and bottom --> Float effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.body.position.y = Math.min(el.mesh.position.y, el.height * el.scale); // constraint pos y
-				if (el.animated === false) {}
-				// el.mesh.position.y = el.body.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
-
-
-				// rotate Manually
-
-				// el.mesh.rotation.y = el.body.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				// el.mesh.rotation.x = el.body.rotation.x = toRadian(el.initRotateY + Math.cos(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				// el.mesh.rotation.z = el.body.rotation.z = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-
+				if (el.animated === false) {
+					el.mesh.position.y = el.body.position.y = 4; // constraint pos y
+				}
 
 				if (el.body !== undefined) {
 
-					if (_this5.asteroidsMove === true) {
+					if (_this6.asteroidsMove === true) {
 						// APPLY IMPULSE
 						el.body.linearVelocity.x = el.force.x;
 						el.body.linearVelocity.y = el.force.y;
@@ -9119,16 +9056,7 @@ var IntroView = function (_AbstractView) {
 						// el.body.position.x = el.mesh.position.x = getRandom(this.astXMin, this.astXMax);
 
 						var z = el.mesh.index % 2 === 0 ? (0, _utils.getRandom)(0, -300) : -300;
-						var x = (0, _utils.getRandom)(_this5.astXMin, _this5.astXMax);
-						// // check if ast already in other ast position
-						// for (let y = 0; y < this.asteroidsM.length; y++) {
-						// 	if (x < this.ipRadius + this.asteroidsM[y].position.x && x > -this.ipRadius + this.asteroidsM[y].position.x && z < this.ipRadius + this.asteroidsM[y].position.z && z > -this.ipRadius + this.asteroidsM[y].position.z) {
-						// 		// console.log(i, ' dans le périmetre !');
-						// 		x += this.ipRadius;
-						// 		z += this.ipRadius;
-
-						// 	}
-						// }
+						var x = (0, _utils.getRandom)(_this6.astXMin, _this6.astXMax);
 						el.mesh.position.z = el.body.position.z = z;
 						el.body.position.x = el.mesh.position.x = x;
 
@@ -9142,8 +9070,6 @@ var IntroView = function (_AbstractView) {
 					}
 				}
 			});
-
-			// console.log(this.asteroids[1].mesh.position.y);
 
 			// Raycaster
 			this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -9181,7 +9107,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'transitionIn',
 		value: function transitionIn() {
-			var _this6 = this;
+			var _this7 = this;
 
 			this.el.classList.add('intro');
 			this.el.classList.remove('project');
@@ -9222,7 +9148,7 @@ var IntroView = function (_AbstractView) {
 			}, 0.07);
 			tl.to(this.UI.overlay, 1.5, { opacity: 0 });
 			tl.add(function () {
-				_this6.moveCameraIn();
+				_this7.moveCameraIn();
 			}, 1);
 			tl.to([this.UI.title1, this.UI.title2], 2, { autoAlpha: 0 }, '+=3');
 			tl.set(this.UI.button, { opacity: 0, display: 'block' }, '+=1.5');
@@ -9230,7 +9156,7 @@ var IntroView = function (_AbstractView) {
 
 			tl.add(function () {
 				// start move Ast
-				_this6.startMove = true;
+				_this7.startMove = true;
 			}, 0);
 
 			tl.to('.overlay', 1, {
@@ -9241,7 +9167,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'moveCameraIn',
 		value: function moveCameraIn(dest) {
-			var _this7 = this;
+			var _this8 = this;
 
 			// this.camera.lookAt(new Vector3(0,0,0));
 			// const tl2 = new TimelineMax();
@@ -9256,14 +9182,14 @@ var IntroView = function (_AbstractView) {
 
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this7.cameraMove = false;
-					_this7.currentCameraRotX = _this7.camera.rotation.x;
+					_this8.cameraMove = false;
+					_this8.currentCameraRotX = _this8.camera.rotation.x;
 				}
 			});
 			tl.to(this.camera.position, 7, { y: 400, ease: window.Expo.easeInOut });
 			tl.add(function () {
 
-				_this7.asteroidsMove = true;
+				_this8.asteroidsMove = true;
 			}, 0);
 
 			// this.cameraMove = true;
@@ -9332,7 +9258,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'transitionOut',
 		value: function transitionOut(dest) {
-			var _this8 = this;
+			var _this9 = this;
 
 			this.animating = true;
 
@@ -9362,11 +9288,11 @@ var IntroView = function (_AbstractView) {
 				}, {
 					'x': 0,
 					'y': 100,
-					'z': 0
+					'z': -100
 				}, {
 					'x': 0,
-					'y': 2000,
-					'z': -5000
+					'y': 300,
+					'z': -3000
 				}],
 				'lookat': [{
 					'x': 0,
@@ -9375,11 +9301,11 @@ var IntroView = function (_AbstractView) {
 				}, {
 					'x': 0,
 					'y': 100, // symbol.endPointY = 2000;
-					'z': -300 // symbol.endPointZ = 5000;
+					'z': -200 // symbol.endPointZ = 5000;
 				}, {
 					'x': 0,
-					'y': 2000, // symbol.endPointY = 2000;
-					'z': -5000 // symbol.endPointZ = 5000;
+					'y': 300, // symbol.endPointY = 2000;
+					'z': -3000 // symbol.endPointZ = 5000;
 				}]
 			};
 
@@ -9393,7 +9319,7 @@ var IntroView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 
-					_this8.cameraMove = false;
+					_this9.cameraMove = false;
 					// this.currentCameraRotX = this.camera.rotation.x;
 
 					// EmitterManager.emit('router:switch', '/project-0', 0);
@@ -9406,7 +9332,7 @@ var IntroView = function (_AbstractView) {
 				lookatPosition: 1,
 				ease: window.Power4.easeIn,
 				onUpdate: function onUpdate() {
-					_this8.dolly.update();
+					_this9.dolly.update();
 				}
 			});
 
@@ -9424,14 +9350,14 @@ var IntroView = function (_AbstractView) {
 			if (obj.material) {
 
 				if (obj.material.materials) {
-					var _iteratorNormalCompletion = true;
-					var _didIteratorError = false;
-					var _iteratorError = undefined;
+					var _iteratorNormalCompletion2 = true;
+					var _didIteratorError2 = false;
+					var _iteratorError2 = undefined;
 
 					try {
 
-						for (var _iterator = obj.material.materials[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-							var mat = _step.value;
+						for (var _iterator2 = obj.material.materials[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+							var mat = _step2.value;
 
 
 							if (mat.map) mat.map.dispose();
@@ -9439,16 +9365,16 @@ var IntroView = function (_AbstractView) {
 							mat.dispose();
 						}
 					} catch (err) {
-						_didIteratorError = true;
-						_iteratorError = err;
+						_didIteratorError2 = true;
+						_iteratorError2 = err;
 					} finally {
 						try {
-							if (!_iteratorNormalCompletion && _iterator.return) {
-								_iterator.return();
+							if (!_iteratorNormalCompletion2 && _iterator2.return) {
+								_iterator2.return();
 							}
 						} finally {
-							if (_didIteratorError) {
-								throw _iteratorError;
+							if (_didIteratorError2) {
+								throw _iteratorError2;
 							}
 						}
 					}
