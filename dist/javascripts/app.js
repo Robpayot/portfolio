@@ -238,7 +238,6 @@ var Glitch = function () {
 
 			this.textSize = this.ui.canvas.offsetHeight / 3;
 			this.textHeight = this.textSize; // need a real calcul
-			this.time = 0;
 			this.last = 0;
 
 			this.init();
@@ -2384,42 +2383,6 @@ var Blob = function (_ProjectView) {
 				this.scene.add(pointLight);
 			}
 		}
-		// var toggle = 0;
-
-		// function render() {
-
-		//     camera.applyMatrix( rotateY );
-		//     camera.updateMatrixWorld();
-
-		//     raycaster.setFromCamera( mouse, camera );
-
-		//     var intersections = raycaster.intersectObjects( pointclouds );
-		//     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
-
-		//     if ( toggle > 0.02 && intersection !== null) {
-
-		//         spheres[ spheresIndex ].position.copy( intersection.point );
-		//         spheres[ spheresIndex ].scale.set( 1, 1, 1 );
-		//         spheresIndex = ( spheresIndex + 1 ) % spheres.length;
-
-		//         toggle = 0;
-
-		//     }
-
-		//     for ( var i = 0; i < spheres.length; i++ ) {
-
-		//         var sphere = spheres[ i ];
-		//         sphere.scale.multiplyScalar( 0.98 );
-		//         sphere.scale.clampScalar( 0.01, 1 );
-
-		//     }
-
-		//     toggle += clock.getDelta();
-
-		//     renderer.render( scene, camera );
-
-		// }
-
 	}, {
 		key: 'raf',
 		value: function raf() {
@@ -8550,7 +8513,6 @@ var IntroView = function (_AbstractView) {
 
 			this.nbAst = 16;
 			this.mouseSize = 32.0; // wave agitation
-			this.time = 0;
 			this.asteroids = [];
 			this.asteroidsM = [];
 			this.asteroidsMove = false;
@@ -9110,7 +9072,7 @@ var IntroView = function (_AbstractView) {
 			var _this6 = this;
 
 			// Manual simulation of infinite waves
-			var pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 15) * (this.BOUNDS - this.BOUNDSSUP) / 4;
+			var pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7) * (this.BOUNDS - this.BOUNDSSUP) / 4;
 			var pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
 
 			// console.log(pointX, pointZ);
@@ -9726,7 +9688,6 @@ var ProjectView = function (_AbstractView) {
 			this.isControls = false;
 
 			this.cssObjects = [];
-			this.time = 1;
 			this.finalFov = 45;
 			this.currentRotateY = { angle: 0 };
 			this.cameraRotX = true;

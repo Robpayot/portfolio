@@ -214,41 +214,7 @@ export default class Blob extends ProjectView {
 			this.scene.add(pointLight);
 		}
 	}
-            // var toggle = 0;
-
-            // function render() {
-
-            //     camera.applyMatrix( rotateY );
-            //     camera.updateMatrixWorld();
-
-            //     raycaster.setFromCamera( mouse, camera );
-
-            //     var intersections = raycaster.intersectObjects( pointclouds );
-            //     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
-
-            //     if ( toggle > 0.02 && intersection !== null) {
-
-            //         spheres[ spheresIndex ].position.copy( intersection.point );
-            //         spheres[ spheresIndex ].scale.set( 1, 1, 1 );
-            //         spheresIndex = ( spheresIndex + 1 ) % spheres.length;
-
-            //         toggle = 0;
-
-            //     }
-
-            //     for ( var i = 0; i < spheres.length; i++ ) {
-
-            //         var sphere = spheres[ i ];
-            //         sphere.scale.multiplyScalar( 0.98 );
-            //         sphere.scale.clampScalar( 0.01, 1 );
-
-            //     }
-
-            //     toggle += clock.getDelta();
-
-            //     renderer.render( scene, camera );
-
-            // }
+	
 	raf() {
 		// update world
 		// if (this.gravity === true) {

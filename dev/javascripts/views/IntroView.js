@@ -130,7 +130,6 @@ export default class IntroView extends AbstractView {
 
 		this.nbAst = 16;
 		this.mouseSize = 32.0; // wave agitation
-		this.time = 0;
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
@@ -674,7 +673,7 @@ export default class IntroView extends AbstractView {
 	raf() {
 
 		// Manual simulation of infinite waves
-		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.time / 15 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
+		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
 		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
 
 		// console.log(pointX, pointZ);

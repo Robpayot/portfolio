@@ -127,7 +127,6 @@ export default class ProjectView extends AbstractView {
 		this.isControls = false;
 
 		this.cssObjects = [];
-		this.time = 1;
 		this.finalFov = 45;
 		this.currentRotateY = { angle: 0};
 		this.cameraRotX = true;

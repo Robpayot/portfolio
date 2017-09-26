@@ -92,7 +92,6 @@ export default class Glitch {
 
 		this.textSize = this.ui.canvas.offsetHeight / 3;
 		this.textHeight = this.textSize; // need a real calcul
-		this.time = 0;
 		this.last = 0;
 
 		this.init();
