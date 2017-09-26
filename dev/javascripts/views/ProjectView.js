@@ -499,7 +499,8 @@ export default class ProjectView extends AbstractView {
 			this.glitch = new Glitch({
 				el: this.el.querySelector('.glitch'),
 				color: this.data.color,
-				txt: this.data.title
+				txt: this.data.title,
+				clock: this.clock
 			});
 
 			// Start transition In

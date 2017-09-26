@@ -256,11 +256,11 @@ export default class Blob extends ProjectView {
 			// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
 			if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
-				if (el.active === true) {
+				// if (el.active === true) {
 					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5 , 5);
-				} else {
-					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
-				}
+				// } else {
+				// 	el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
+				// }
 			}
 
 

@@ -382,61 +382,61 @@ export default class Stars extends ProjectView {
 
 		// update uniforms
 
-		this.uniforms.forEach( (el)=> {
-			el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
-		});
+		// this.uniforms.forEach( (el)=> {
+		// 	el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
+		// });
 
 		// Asteroids meshs
-		this.asteroidsM.forEach( (el)=> {
+		// this.asteroidsM.forEach( (el)=> {
 
-			if (el.position.y < this.bottomY) {
-				// reset
-				el.progress = 0;
-				el.initPosY = getRandom(this.topY - 5, this.topY);
-			}
-			el.progress +=  el.time;
-			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
+		// 	if (el.position.y < this.bottomY) {
+		// 		// reset
+		// 		el.progress = 0;
+		// 		el.initPosY = getRandom(this.topY - 5, this.topY);
+		// 	}
+		// 	el.progress +=  el.time;
+		// 	el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
-			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
+		// 	el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
 
-		});
+		// });
 
 		// console.log(-this.camRotSmooth.y * 70);
 
 		// Terrain
 
-		let delta = this.clock.getDelta();
+		// let delta = this.clock.getDelta();
 
-		if ( this.terrain.visible ) {
+		// if ( this.terrain.visible ) {
 
-			let fLow = 0.1, fHigh = 0.8;
+		// 	let fLow = 0.1, fHigh = 0.8;
 
-			// relative to light ???
+		// 	// relative to light ???
 
-			this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
+		// 	this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
 
-			let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
+		// 	let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
 
-			this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
+		// 	this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
 
-			if ( this.updateNoise ) {
+		// 	if ( this.updateNoise ) {
 
-				this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
-				this.uniformsNoise[ 'time' ].value += delta * this.animDelta;
+		// 		this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
+		// 		this.uniformsNoise[ 'time' ].value += delta * this.animDelta;
 
-				// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
+		// 		// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
 
-				this.uniformsTerrain[ 'uOffset' ].value.x = 4 * this.uniformsNoise[ 'offset' ].value.x;
+		// 		this.uniformsTerrain[ 'uOffset' ].value.x = 4 * this.uniformsNoise[ 'offset' ].value.x;
 
-				this.quadTarget.material = this.mlib[ 'heightmap' ];
-				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
+		// 		this.quadTarget.material = this.mlib[ 'heightmap' ];
+		// 		SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
-				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+		// 		this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
+		// 		// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
-			}
+		// 	}
 
-		}
+		// }
 		super.raf();
 	}
 
