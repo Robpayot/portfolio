@@ -2963,7 +2963,7 @@ var Stars = function (_ProjectView) {
 		_this.setTerrain = _this.setTerrain.bind(_this);
 		_this.onKeyDown = _this.onKeyDown.bind(_this);
 
-		_this.nbAst = 150;
+		_this.nbAst = 100;
 
 		_this.init();
 
@@ -2985,8 +2985,6 @@ var Stars = function (_ProjectView) {
 			this.animDeltaDir = -1;
 			this.lightVal = 0;
 			this.lightDir = 1;
-
-			this.clock = new _three.Clock();
 
 			this.updateNoise = true;
 
@@ -3177,31 +3175,31 @@ var Stars = function (_ProjectView) {
 				switch (i) {
 					case 0:
 						uniforms.offset = 300;
-						uniforms.time = 600;
+						uniforms.time = 1;
 						uniforms.range = (0, _utils.oscillate)(0.4, 1);
 						uniforms.diffuse.value = new _three.Color(0xEF1300);
 						break;
 					case 1:
 						uniforms.offset = 1000;
-						uniforms.time = 700;
+						uniforms.time = 2;
 						uniforms.range = (0, _utils.oscillate)(0.4, 1.3);
 						uniforms.diffuse.value = new _three.Color(0xEF1300);
 						break;
 					case 2:
 						uniforms.offset = 200;
-						uniforms.time = 200;
+						uniforms.time = 0.5;
 						uniforms.range = (0, _utils.oscillate)(0.7, 1.2);
 						uniforms.diffuse.value = new _three.Color(0xEF1300);
 						break;
 					case 3:
 						uniforms.offset = 400;
-						uniforms.time = 200;
+						uniforms.time = 0.5;
 						uniforms.range = (0, _utils.oscillate)(0.3, 1);
 						uniforms.diffuse.value = new _three.Color(0xEF4007);
 						break;
 					case 4:
 						uniforms.offset = 700;
-						uniforms.time = 1000;
+						uniforms.time = 1.5;
 						uniforms.range = (0, _utils.oscillate)(0.4, 1.1);
 						uniforms.diffuse.value = new _three.Color(0xEF4007);
 						break;
@@ -3216,7 +3214,7 @@ var Stars = function (_ProjectView) {
 				// const range = getRandom(3, 8);
 
 				var pos = {
-					x: (0, _utils.getRandom)(-100, 100),
+					x: (0, _utils.getRandom)(-80, 80),
 					y: (0, _utils.getRandom)(this.bottomY, this.topY),
 					z: (0, _utils.getRandom)(-100, 30)
 				};
@@ -3297,64 +3295,63 @@ var Stars = function (_ProjectView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
+			var _this2 = this;
+
+			var delta = this.clock.getDelta();
 
 			// update uniforms
 
-			// this.uniforms.forEach( (el)=> {
-			// 	el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
-			// });
+			this.uniforms.forEach(function (el) {
+				el.size.value = Math.sin(_this2.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
+			});
 
 			// Asteroids meshs
-			// this.asteroidsM.forEach( (el)=> {
+			this.asteroidsM.forEach(function (el) {
 
-			// 	if (el.position.y < this.bottomY) {
-			// 		// reset
-			// 		el.progress = 0;
-			// 		el.initPosY = getRandom(this.topY - 5, this.topY);
-			// 	}
-			// 	el.progress +=  el.time;
-			// 	el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
+				if (el.position.y < _this2.bottomY) {
+					// reset
+					el.progress = 0;
+					el.initPosY = (0, _utils.getRandom)(_this2.topY - 5, _this2.topY);
+				}
+				el.progress += delta * 4;
+				el.position.y = el.initPosY - el.progress + _this2.camRotSmooth.x * 100 * el.coefX;
 
-			// 	el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
-
-			// });
+				el.position.x = el.initPosX - _this2.camRotSmooth.y * 100 * el.coefX;
+			});
 
 			// console.log(-this.camRotSmooth.y * 70);
 
 			// Terrain
 
-			// let delta = this.clock.getDelta();
+			if (this.terrain.visible) {
 
-			// if ( this.terrain.visible ) {
+				var fLow = 0.1,
+				    fHigh = 0.8;
 
-			// 	let fLow = 0.1, fHigh = 0.8;
+				// relative to light ???
 
-			// 	// relative to light ???
+				this.lightVal = _three.Math.clamp(this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh);
 
-			// 	this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
+				var valNorm = (this.lightVal - fLow) / (fHigh - fLow);
 
-			// 	let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
+				this.uniformsTerrain['uNormalScale'].value = _three.Math.mapLinear(valNorm, 0, 1, 0.6, 3.5); // scale, displacement, weird thing here
 
-			// 	this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
+				if (this.updateNoise) {
 
-			// 	if ( this.updateNoise ) {
+					this.animDelta = _three.Math.clamp(this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05);
+					this.uniformsNoise['time'].value += delta * this.animDelta;
 
-			// 		this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
-			// 		this.uniformsNoise[ 'time' ].value += delta * this.animDelta;
+					// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
 
-			// 		// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
+					this.uniformsTerrain['uOffset'].value.x = 4 * this.uniformsNoise['offset'].value.x;
 
-			// 		this.uniformsTerrain[ 'uOffset' ].value.x = 4 * this.uniformsNoise[ 'offset' ].value.x;
+					this.quadTarget.material = this.mlib['heightmap'];
+					_SceneManager2.default.renderer.render(this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true);
 
-			// 		this.quadTarget.material = this.mlib[ 'heightmap' ];
-			// 		SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
-
-			// 		this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
-			// 		// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
-
-			// 	}
-
-			// }
+					this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 100;
+					// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+				}
+			}
 			_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'raf', this).call(this);
 		}
 	}]);
@@ -10516,11 +10513,13 @@ var ProjectView = function (_AbstractView) {
 			// glitch title
 			if (this.glitch) {
 
-				if (this.glitch.stop !== true) {
-					if (this.glitch.hover === true) {
-						this.glitch.render();
-					} else {
+				if (this.glitch.hover === true) {
+					this.glitch.render();
+					this.glitch.stop = false;
+				} else {
+					if (this.glitch.stop !== true) {
 						this.glitch.render(true);
+						this.glitch.stop = true;
 					}
 				}
 			}

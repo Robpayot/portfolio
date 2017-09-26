@@ -971,11 +971,13 @@ export default class ProjectView extends AbstractView {
 		// glitch title
 		if (this.glitch) {
 
-			if (this.glitch.stop !== true) {
-				if (this.glitch.hover === true ) {
-					this.glitch.render();
-				} else {
+			if (this.glitch.hover === true ) {
+				this.glitch.render();
+				this.glitch.stop = false;
+			} else {
+				if (this.glitch.stop !== true) {
 					this.glitch.render(true);
+					this.glitch.stop = true;
 				}
 			}
 		}
