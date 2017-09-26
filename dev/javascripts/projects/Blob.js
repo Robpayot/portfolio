@@ -24,6 +24,8 @@ export default class Blob extends ProjectView {
 		super(obj);
 
 		this.nbAst = 6;
+		this.toggle = 0;
+		this.intersection;
 		this.inc = Date.now();
 
 		this.init();
@@ -143,8 +145,8 @@ export default class Blob extends ProjectView {
 			};
 
 			const scale = posFixed[i].s || getRandom(2,4.5);
-			const speed = getRandom(300, 400); // more is slower
-			const range = oscillate(10,15);
+			const speed = getRandom(0.5,1.5); // more is slower
+			const range = oscillate(-5,5);
 			const timeRotate = getRandom(15000, 17000);
 
 			// let finalMat;
@@ -172,7 +174,7 @@ export default class Blob extends ProjectView {
 			asteroid.offset = getRandom(0,1000);
 			asteroid.initW = 0.0;
 			asteroid.rangeMat = oscillate(0.0,2.0);
-			asteroid.speedMat = getRandom(800,1000);
+			asteroid.speedMat = getRandom(1,5);
 			// asteroid.brightness = brightness;
 
 			this.asteroids.push(asteroid);
@@ -212,7 +214,41 @@ export default class Blob extends ProjectView {
 			this.scene.add(pointLight);
 		}
 	}
+            // var toggle = 0;
 
+            // function render() {
+
+            //     camera.applyMatrix( rotateY );
+            //     camera.updateMatrixWorld();
+
+            //     raycaster.setFromCamera( mouse, camera );
+
+            //     var intersections = raycaster.intersectObjects( pointclouds );
+            //     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
+
+            //     if ( toggle > 0.02 && intersection !== null) {
+
+            //         spheres[ spheresIndex ].position.copy( intersection.point );
+            //         spheres[ spheresIndex ].scale.set( 1, 1, 1 );
+            //         spheresIndex = ( spheresIndex + 1 ) % spheres.length;
+
+            //         toggle = 0;
+
+            //     }
+
+            //     for ( var i = 0; i < spheres.length; i++ ) {
+
+            //         var sphere = spheres[ i ];
+            //         sphere.scale.multiplyScalar( 0.98 );
+            //         sphere.scale.clampScalar( 0.01, 1 );
+
+            //     }
+
+            //     toggle += clock.getDelta();
+
+            //     renderer.render( scene, camera );
+
+            // }
 	raf() {
 		// update world
 		// if (this.gravity === true) {
@@ -225,42 +261,57 @@ export default class Blob extends ProjectView {
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
 		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+		this.intersection = ( intersectsAst.length ) > 0 ? intersectsAst[ 0 ] : null;
 
-		if (intersectsAst.length > 0) {
+		if ( this.toggle > 0.02 && this.intersection !== null) {
 			this.ui.body.style.cursor = 'pointer';
 			this.hoverAst = true;
 			this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
 			this.asteroids[intersectsAst[0].object.index].active = true;
 		} else {
-			// this.ui.body.style.cursor = 'auto';
 			this.hoverAst = false;
-			this.asteroids.forEach( (el) => {
-				el.active = false;
-			});
+			// this.asteroids.forEach( (el) => {
+			// 	el.active = false;
+			// });
 		}
+
+		this.toggle += this.clock.getDelta();
+
+		// if (intersectsAst.length > 0) {
+		// 	this.ui.body.style.cursor = 'pointer';
+		// 	this.hoverAst = true;
+		// 	this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
+		// 	this.asteroids[intersectsAst[0].object.index].active = true;
+		// } else {
+		// 	// this.ui.body.style.cursor = 'auto';
+		// 	this.hoverAst = false;
+		// 	this.asteroids.forEach( (el) => {
+		// 		el.active = false;
+		// 	});
+		// }
 
 		// Asteroids meshs
 		this.asteroids.forEach( (el) => {
 
 			// Move top and bottom --> Levit effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.initY + Math.sin((this.time + el.offset) * 2 * Math.PI / el.speed) * el.range.coef + el.range.add;
+			el.mesh.position.y = el.initY + Math.sin(this.clock.getElapsedTime() * el.speed + el.offset) * el.range.coef + el.range.add;
 			// el.mesh.position.y = el.initY;
 			// rotate
 			el.mesh.material.uniforms[ 'time' ].value = .00015 * ( Date.now() - this.inc );
-			el.mesh.material.uniforms[ 'weight' ].value = el.initW + Math.sin((this.time + el.offset) * 2 * Math.PI / el.speedMat) * el.rangeMat.coef + el.rangeMat.add;
-			// el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
-			// console.log(el.mesh.material.uniforms[ 'weight' ].value);
-			// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-			// // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-			// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
+			el.mesh.material.uniforms[ 'weight' ].value = el.initW +  Math.sin(this.clock.getElapsedTime() * el.speedMat + el.offset) * el.rangeMat.coef + el.rangeMat.add;
+			// // el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
+			// // console.log(el.mesh.material.uniforms[ 'weight' ].value);
+			// // el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+			// // // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
+			// // el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
 			if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
-				// if (el.active === true) {
+				if (el.active === true) {
 					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5 , 5);
-				// } else {
-				// 	el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
-				// }
+				} else {
+					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
+				}
 			}
 
 
