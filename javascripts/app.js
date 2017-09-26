@@ -167,6 +167,7 @@ var Glitch = function () {
 		this.color = obj.color;
 		this.txt = obj.txt;
 		this.debug = obj.debug;
+		this.clock = obj.clock;
 
 		this.el.style.display = 'block';
 
@@ -227,7 +228,7 @@ var Glitch = function () {
 				canvas: this.el.querySelector('.glitch__canvas'),
 				canvasTemp: this.el.querySelector('.glitch__canvas-temp')
 			};
-			console.log(this.el);
+			console.log(this.el, this.clock);
 			// Nathan Gordon <3
 			// //Create a canvas that is to become our reference image
 			// const baseCanvas = document.createElement('canvas');
@@ -308,6 +309,9 @@ var Glitch = function () {
 			var calm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
+			// console.log(this.clock.getElapsedTime());
+
+
 			this.phase += this.phaseStep;
 
 			var frequency = (0, _utils.getRandom)(0.2, 2);
@@ -356,13 +360,13 @@ var Glitch = function () {
 					break;
 			}
 
-			if (calm === true) {
-				this.renderScanline();
-				if (Math.floor(Math.random() * 2) > 1) {
-					this.renderScanline();
-					// renders a second scanline 50% of the time
-				}
-			}
+			// if (calm === true) {
+			// 	this.renderScanline();
+			// 	if (Math.floor(Math.random() * 2) > 1) {
+			// 		this.renderScanline();
+			// 		// renders a second scanline 50% of the time
+			// 	}
+			// }
 		}
 	}, {
 		key: 'renderChannels',
@@ -373,7 +377,7 @@ var Glitch = function () {
 
 			// MOST IMPORTANT HERE
 
-			var top = Math.sin(this.time / 60) * 30; // move image
+			var top = Math.sin(this.clock.getElapsedTime() * 0.1) * 30; // move image
 			var centerY = this.height / 2 + this.textHeight / 2;
 			// let margeStart = this.textWidth * 0.2;
 			var startClip = (this.width - this.textWidth) / 2;
@@ -446,7 +450,6 @@ var Glitch = function () {
 
 				this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
 
-				this.time++;
 				return false;
 			}
 
@@ -596,15 +599,13 @@ var Glitch = function () {
 
 			this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
 
-			if (this.time >= this.last + 1.5) {
-				// 60 = 1 second
-				this.last = this.time;
+			if (this.clock.getElapsedTime() >= this.last + 0.035) {
+				// 
+				this.last = this.clock.getElapsedTime();
 				this.breakTime = true;
 			} else {
 				this.breakTime = false;
 			}
-
-			this.time++;
 		}
 	}, {
 		key: 'randomTimed',
@@ -2428,11 +2429,11 @@ var Blob = function (_ProjectView) {
 				// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
 				if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
-					if (el.active === true) {
-						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5, 5);
-					} else {
-						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5, 5);
-					}
+					// if (el.active === true) {
+					el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5, 5);
+					// } else {
+					// 	el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
+					// }
 				}
 			});
 
@@ -2778,9 +2779,9 @@ var Levit = function (_ProjectView) {
 				// };
 
 				var scale = (0, _utils.getRandom)(1, 4);
-				var speed = (0, _utils.getRandom)(400, 700); // more is slower
+				var speed = (0, _utils.getRandom)(0.5, 0.72);
 				var range = (0, _utils.getRandom)(3, 8);
-				var timeRotate = (0, _utils.getRandom)(15000, 17000);
+				var timeRotate = (0, _utils.getRandom)(0.02, 0.04);
 
 				var model = Math.round((0, _utils.getRandom)(0, 2));
 
@@ -2800,8 +2801,10 @@ var Levit = function (_ProjectView) {
 				});
 
 				asteroid.mesh.index = i;
+				asteroid.dir = Math.round((0, _utils.getRandom)(0, 1)) === 0 ? -1 : 1;
 				asteroid.rotateRangeZ = (0, _utils.getRandom)(-15, 15);
 				asteroid.rotateRangeX = (0, _utils.getRandom)(-30, 30);
+				asteroid.offset = (0, _utils.getRandom)(0, 10);
 
 				this.asteroids.push(asteroid);
 				this.asteroidsM.push(asteroid.mesh);
@@ -2873,15 +2876,15 @@ var Levit = function (_ProjectView) {
 
 				// Move top and bottom --> Levit effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.endY + Math.sin(_this2.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+				el.mesh.position.y = el.endY + Math.sin(_this2.clock.getElapsedTime() * el.speed + el.offset) * (el.range / 2) + el.range / 2;
 				// rotate
 
-				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				// el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateZ + Math.sin(_this2.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ); // -30 to 30 deg rotation
+				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.clock.getElapsedTime() * el.timeRotate + el.offset) * (360 / 2) + 360 / 2) * el.dir;
+				// el.mesh.rotation.x = toRadian(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeX ); // -30 to 30 deg rotation
+				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateZ + Math.sin(_this2.clock.getElapsedTime() * el.timeRotate + el.offset) * el.rotateRangeZ) * el.dir; // -30 to 30 deg rotation
 
 				// if (el.mesh.index === 0) {
-				// 	console.log(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeZ, el.rotateRangeZ);
+				// 	console.log(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeZ, el.rotateRangeZ);
 				// }
 			});
 
@@ -3294,63 +3297,64 @@ var Stars = function (_ProjectView) {
 	}, {
 		key: 'raf',
 		value: function raf() {
-			var _this2 = this;
 
 			// update uniforms
 
-			this.uniforms.forEach(function (el) {
-				el.size.value = Math.sin((_this2.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
-			});
+			// this.uniforms.forEach( (el)=> {
+			// 	el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
+			// });
 
 			// Asteroids meshs
-			this.asteroidsM.forEach(function (el) {
+			// this.asteroidsM.forEach( (el)=> {
 
-				if (el.position.y < _this2.bottomY) {
-					// reset
-					el.progress = 0;
-					el.initPosY = (0, _utils.getRandom)(_this2.topY - 5, _this2.topY);
-				}
-				el.progress += el.time;
-				el.position.y = el.initPosY - el.progress + _this2.camRotSmooth.x * 100 * el.coefX;
+			// 	if (el.position.y < this.bottomY) {
+			// 		// reset
+			// 		el.progress = 0;
+			// 		el.initPosY = getRandom(this.topY - 5, this.topY);
+			// 	}
+			// 	el.progress +=  el.time;
+			// 	el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
-				el.position.x = el.initPosX - _this2.camRotSmooth.y * 100 * el.coefX;
-			});
+			// 	el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
+
+			// });
 
 			// console.log(-this.camRotSmooth.y * 70);
 
 			// Terrain
 
-			var delta = this.clock.getDelta();
+			// let delta = this.clock.getDelta();
 
-			if (this.terrain.visible) {
+			// if ( this.terrain.visible ) {
 
-				var fLow = 0.1,
-				    fHigh = 0.8;
+			// 	let fLow = 0.1, fHigh = 0.8;
 
-				// relative to light ???
+			// 	// relative to light ???
 
-				this.lightVal = _three.Math.clamp(this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh);
+			// 	this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
 
-				var valNorm = (this.lightVal - fLow) / (fHigh - fLow);
+			// 	let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
 
-				this.uniformsTerrain['uNormalScale'].value = _three.Math.mapLinear(valNorm, 0, 1, 0.6, 3.5); // scale, displacement, weird thing here
+			// 	this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
 
-				if (this.updateNoise) {
+			// 	if ( this.updateNoise ) {
 
-					this.animDelta = _three.Math.clamp(this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05);
-					this.uniformsNoise['time'].value += delta * this.animDelta;
+			// 		this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
+			// 		this.uniformsNoise[ 'time' ].value += delta * this.animDelta;
 
-					// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
+			// 		// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
 
-					this.uniformsTerrain['uOffset'].value.x = 4 * this.uniformsNoise['offset'].value.x;
+			// 		this.uniformsTerrain[ 'uOffset' ].value.x = 4 * this.uniformsNoise[ 'offset' ].value.x;
 
-					this.quadTarget.material = this.mlib['heightmap'];
-					_SceneManager2.default.renderer.render(this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true);
+			// 		this.quadTarget.material = this.mlib[ 'heightmap' ];
+			// 		SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-					this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
-					// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
-				}
-			}
+			// 		this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
+			// 		// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+
+			// 	}
+
+			// }
 			_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'raf', this).call(this);
 		}
 	}]);
@@ -3374,7 +3378,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var BlobLightShader = function BlobLightShader() {
 	_classCallCheck(this, BlobLightShader);
 
-	this.fragmentShader = ['varying vec2 vUv;', 'varying vec3 vNormal;', 'varying vec3 vReflect;', 'varying float ao;', 'uniform sampler2D tShine;', 'uniform float time;', 'uniform float brightness;', 'uniform float contrast;', 'float PI = 3.14159265358979323846264;', 'void main() {', 'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );', 'float pitch = .5 - asin( vReflect.y ) / PI;', 'vec2 pos = vec2( yaw, pitch );', 'vec3 color = texture2D( tShine, pos ).rgb;', 'vec3 colorContrasted = (color) * contrast;', 'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);', 'float diffuse_value1 = .0015 * max(dot(vNormal, vec3( -490.0, 29.8, -85.8 ) ), 0.0);', 'float diffuse_value2 = .0005 * max(dot(vNormal, vec3( -460.0, 40.27, 187.4 ) ), 0.0);', 'float diffuse_value3 = .0010 * max(dot(vNormal, vec3( 175.5, 30.04, 466.4 ) ), 0.0);', 'float diffuse_value4 = .0005 * max(dot(vNormal, vec3( 466.0, 45.3, 172.9 ) ), 0.0);',
+	this.fragmentShader = ['varying vec2 vUv;', 'varying vec3 vNormal;', 'varying vec3 vReflect;', 'varying float ao;', 'uniform sampler2D tShine;', 'uniform float time;', 'uniform float brightness;', 'uniform float contrast;', 'float PI = 3.14159265358979323846264;', 'void main() {', 'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );', 'float pitch = .5 - asin( vReflect.y ) / PI;', 'vec2 pos = vec2( yaw, pitch );', 'vec3 color = texture2D( tShine, pos ).rgb;', 'vec3 colorContrasted = (color) * contrast;', 'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);',
+
+	// 'float diffuse_value1 = .0015 * max(dot(vNormal, vec3( -490.0, 29.8, -85.8 ) ), 0.0);',
+	// 'float diffuse_value2 = .0005 * max(dot(vNormal, vec3( -460.0, 40.27, 187.4 ) ), 0.0);',
+	// 'float diffuse_value3 = .0010 * max(dot(vNormal, vec3( 175.5, 30.04, 466.4 ) ), 0.0);',
+	// 'float diffuse_value4 = .0005 * max(dot(vNormal, vec3( 466.0, 45.3, 172.9 ) ), 0.0);',
 
 	// gl_FragColor = vec4( color - .15 * ao + .5 * vec3( diffuse_value1 + diffuse_value2 + diffuse_value3 + diffuse_value4 ), 1.0 );',
 	'gl_FragColor = vec4( bright, 1.0 );', '}'].join('\n');
@@ -8112,6 +8121,9 @@ var AbstractView = function () {
 
 		this.ui = _AppManager2.default.ui;
 
+		this.clock = new _three.Clock(); // time
+
+
 		// console.log('abstract viewww');
 	}
 
@@ -8167,8 +8179,6 @@ var AbstractView = function () {
 			if (this.isControls === true) {
 				this.controls.update();
 			}
-
-			this.time++;
 		}
 	}, {
 		key: 'destroy',
@@ -10037,7 +10047,8 @@ var ProjectView = function (_AbstractView) {
 				this.glitch = new _Glitch2.default({
 					el: this.el.querySelector('.glitch'),
 					color: this.data.color,
-					txt: this.data.title
+					txt: this.data.title,
+					clock: this.clock
 				});
 
 				// Start transition In
