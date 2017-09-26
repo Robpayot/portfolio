@@ -87,9 +87,9 @@ export default class Levit extends ProjectView {
 			// };
 
 			const scale = getRandom(1, 4);
-			const speed = getRandom(400, 700); // more is slower
+			const speed = getRandom(0.5,0.72);
 			const range = getRandom(3, 8);
-			const timeRotate = getRandom(15000, 17000);
+			const timeRotate = getRandom(0.02, 0.04);
 
 			const model = Math.round(getRandom(0, 2));
 
@@ -109,8 +109,10 @@ export default class Levit extends ProjectView {
 			});
 
 			asteroid.mesh.index = i;
+			asteroid.dir = Math.round(getRandom(0,1)) === 0 ? -1 : 1;
 			asteroid.rotateRangeZ = getRandom(-15,15);
 			asteroid.rotateRangeX = getRandom(-30,30);
+			asteroid.offset = getRandom(0,10);
 
 			this.asteroids.push(asteroid);
 			this.asteroidsM.push(asteroid.mesh);
@@ -184,15 +186,15 @@ export default class Levit extends ProjectView {
 
 			// Move top and bottom --> Levit effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.endY + Math.sin(this.time * 2 * Math.PI / el.speed) * (el.range / 2) + el.range / 2;
+			el.mesh.position.y = el.endY + Math.sin( this.clock.getElapsedTime() * el.speed + el.offset) * (el.range / 2) + el.range / 2;
 			// rotate
 
-			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-			// el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-			el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
+			el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.clock.getElapsedTime() * el.timeRotate + el.offset) * (360 / 2) + 360 / 2 ) * el.dir;
+			// el.mesh.rotation.x = toRadian(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeX ); // -30 to 30 deg rotation
+			el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.clock.getElapsedTime() * el.timeRotate + el.offset) * el.rotateRangeZ ) * el.dir; // -30 to 30 deg rotation
 
 			// if (el.mesh.index === 0) {
-			// 	console.log(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeZ, el.rotateRangeZ);
+			// 	console.log(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeZ, el.rotateRangeZ);
 			// }
 		});
 

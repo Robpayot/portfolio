@@ -10,6 +10,7 @@ export default class Asteroid extends AbstractShape {
 
 		obj.type = obj.type || 'box';
 		obj.scale = obj.scale || 1;
+		obj.offsetScale = obj.offsetScale || 0;
 		obj.rot = obj.rot || { x: 0, y: 0, z: 0 };
 		obj.width = obj.geometry.parameters !== undefined ? obj.geometry.parameters.width : obj.width;
 		obj.height = obj.geometry.parameters !== undefined ? obj.geometry.parameters.height : obj.height;
@@ -25,7 +26,7 @@ export default class Asteroid extends AbstractShape {
 		this.physics = {
 			type: obj.type, // type of shape : sphere, box, cylinder
 			// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-			size: [obj.width * obj.scale, obj.height * obj.scale, obj.depth * obj.scale],
+			size: [obj.width * obj.scale + obj.offsetScale, obj.height * obj.scale + obj.offsetScale, obj.depth * obj.scale + obj.offsetScale],
 			pos: [obj.pos.x, obj.pos.y, obj.pos.z], // start position in degree
 			rot: [obj.rot.x, obj.rot.y, obj.rot.z], // start rotation in degree
 			move: true, // dynamic or statique

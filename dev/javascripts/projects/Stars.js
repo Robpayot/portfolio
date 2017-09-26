@@ -24,7 +24,7 @@ export default class Stars extends ProjectView {
 		this.setTerrain = this.setTerrain.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 
-		this.nbAst = 150;
+		this.nbAst = 100;
 
 		this.init();
 
@@ -43,8 +43,6 @@ export default class Stars extends ProjectView {
 		this.animDeltaDir = -1;
 		this.lightVal = 0;
 		this.lightDir = 1;
-
-		this.clock = new Clock();
 
 		this.updateNoise = true;
 
@@ -250,31 +248,31 @@ export default class Stars extends ProjectView {
 			switch (i) {
 				case 0:
 					uniforms.offset = 300;
-					uniforms.time = 600;
+					uniforms.time = 1;
 					uniforms.range = oscillate(0.4,1);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 1:
 					uniforms.offset = 1000;
-					uniforms.time = 700;
+					uniforms.time = 2;
 					uniforms.range = oscillate(0.4,1.3);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 2:
 					uniforms.offset = 200;
-					uniforms.time = 200;
+					uniforms.time = 0.5;
 					uniforms.range = oscillate(0.7,1.2);
 					uniforms.diffuse.value = new Color(0xEF1300);
 					break;
 				case 3:
 					uniforms.offset = 400;
-					uniforms.time = 200;
+					uniforms.time = 0.5;
 					uniforms.range = oscillate(0.3,1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
 				case 4:
 					uniforms.offset = 700;
-					uniforms.time = 1000;
+					uniforms.time = 1.5;
 					uniforms.range = oscillate(0.4,1.1);
 					uniforms.diffuse.value = new Color(0xEF4007);
 					break;
@@ -291,7 +289,7 @@ export default class Stars extends ProjectView {
 			// const range = getRandom(3, 8);
 
 			const pos = {
-				x: getRandom(-100, 100),
+				x: getRandom(-80, 80),
 				y: getRandom(this.bottomY, this.topY),
 				z: getRandom(-100, 30),
 			};
@@ -380,10 +378,12 @@ export default class Stars extends ProjectView {
 
 	raf() {
 
+		let delta = this.clock.getDelta();
+
 		// update uniforms
 
 		this.uniforms.forEach( (el)=> {
-			el.size.value = Math.sin((this.time + el.offset) * 2 * Math.PI / el.time) * el.range.coef + el.range.add;
+			el.size.value = Math.sin(this.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
 		});
 
 		// Asteroids meshs
@@ -394,7 +394,7 @@ export default class Stars extends ProjectView {
 				el.progress = 0;
 				el.initPosY = getRandom(this.topY - 5, this.topY);
 			}
-			el.progress +=  el.time;
+			el.progress += (delta * 4);
 			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
 			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
@@ -404,8 +404,6 @@ export default class Stars extends ProjectView {
 		// console.log(-this.camRotSmooth.y * 70);
 
 		// Terrain
-
-		let delta = this.clock.getDelta();
 
 		if ( this.terrain.visible ) {
 
@@ -431,7 +429,7 @@ export default class Stars extends ProjectView {
 				this.quadTarget.material = this.mlib[ 'heightmap' ];
 				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.test.position.x = this.lights[0].position.x = Math.sin(this.time * 2 * Math.PI / 400) * 100;
+				this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 100;
 				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 			}

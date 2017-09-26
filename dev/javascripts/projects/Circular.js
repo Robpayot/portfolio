@@ -5,12 +5,7 @@ import { loadJSON } from '../helpers/utils-three';
 import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
-import { ShaderMaterial, Group, Box3, Geometry, Points, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
-import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
-import OrbitControls from '../vendors/OrbitControls';
-import { CameraDolly } from '../vendors/three-camera-dolly-custom';
-import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltShiftShader shader
-
+import { Mesh, Group, PlaneGeometry, MeshLambertMaterial, PointLight, Object3D } from 'three';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -115,8 +110,8 @@ export default class Circular extends ProjectView {
 
 			}
 
-			asteroid.dir = getRandom(-1,1);
-			asteroid.speed = getRandom(0.2,1);
+			asteroid.dir = Math.round(getRandom(0,1)) === 0 ? -1 : 1;
+			asteroid.speed = getRandom(5,35);
 			asteroid.position.z = getRandom(-160,10);
 			asteroid.rotation.z = asteroid.initRot = initRot;
 
@@ -165,7 +160,7 @@ export default class Circular extends ProjectView {
 		// Asteroids meshs
 		this.asteroidsM.forEach( (el)=> {
 
-			el.rotation.z = el.initRot + toRadian(this.time * el.speed * el.dir);
+			el.rotation.z = el.initRot + toRadian(this.clock.getElapsedTime() * el.speed * el.dir);
 			// el.position.x = -this.camRotSmooth.y * 400;
 
 		});

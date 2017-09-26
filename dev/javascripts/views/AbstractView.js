@@ -1,6 +1,6 @@
 import AppManager from '../managers/AppManager';
 import SceneManager from '../managers/SceneManager';
-import { PerspectiveCamera } from 'three';
+import { PerspectiveCamera, Clock } from 'three';
 import { World } from 'oimo';
 
 
@@ -10,6 +10,8 @@ export default class AbstractView {
 	constructor() {
 
 		this.ui = AppManager.ui;
+
+		this.clock = new Clock(); // time
 
 
 		// console.log('abstract viewww');
@@ -67,8 +69,6 @@ export default class AbstractView {
 		if (this.isControls === true) {
 			this.controls.update();
 		}
-
-		this.time++;
 	}
 
 	destroy(all = false) {

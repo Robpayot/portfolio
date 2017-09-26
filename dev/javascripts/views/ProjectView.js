@@ -58,7 +58,6 @@ export default class ProjectView extends AbstractView {
 		this.raf = this.raf.bind(this);
 		this.events = this.events.bind(this);
 		this.start = this.start.bind(this);
-		this.setSymbol = this.setSymbol.bind(this);
 		this.resizeHandler = this.resizeHandler.bind(this);
 		this.reset = this.reset.bind(this);
 		this.destroy = this.destroy.bind(this);
@@ -128,7 +127,6 @@ export default class ProjectView extends AbstractView {
 		this.isControls = false;
 
 		this.cssObjects = [];
-		this.time = 1;
 		this.finalFov = 45;
 		this.currentRotateY = { angle: 0};
 		this.cameraRotX = true;
@@ -157,7 +155,6 @@ export default class ProjectView extends AbstractView {
 		if (this.gravity === true) this.initPhysics();
 
 		// Set symbol
-		// this.setSymbol();
 
 		// Set asteroid
 		this.setAsteroids();
@@ -270,7 +267,7 @@ export default class ProjectView extends AbstractView {
 		////////////////////
 
 		// Set BLUR EFFECT
-		this.setBlur();
+		// this.setBlur();
 
 		this.start();
 
@@ -393,78 +390,6 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	setSymbol() {
-
-		// const geometry = new TorusGeometry(6, 1, 16, 100);
-		// const img = PreloadManager.getResult('texture-asteroid');
-		// const tex = new Texture(img);
-		// tex.needsUpdate = true;
-		// const material = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1, map: null });
-		// const pos = {
-		// 	x: 0,
-		// 	y: 0,
-		// 	z: 0,
-		// };
-
-		// const symbol = new Symbol({
-		// 	geometry: geometry,
-		// 	material: material,
-		// 	pos: pos
-		// });
-
-		// if (this.gravity === true) {
-		// 	// add physic body to world
-		// 	symbol.body = this.world.add(symbol.physics);
-		// }
-
-
-
-		// // create a glowMesh
-		// symbol.glowMesh = new THREEx.GeometricGlowMesh(symbol.mesh);
-		// symbol.mesh.add(symbol.glowMesh.object3d);
-
-		// // example of customization of the default glowMesh
-		// // Inside
-		// symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set('white');
-		// symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = 1;
-		// symbol.glowMesh.insideMesh.material.uniforms['power'].value = 2;
-
-		// // Outside
-		// symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set('white');
-		// symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = 0;
-		// symbol.glowMesh.outsideMesh.material.uniforms['power'].value = 10;
-
-		const geometry = new BoxGeometry(12, 12, 12);
-		// const img = PreloadManager.getResult('texture-asteroid');
-		// const tex = new Texture(img);
-		// tex.needsUpdate = true;
-		// #4682b4
-		const material = new MeshPhongMaterial({ color: 0x4682b4, transparent: false, opacity: 1, map: null });
-		const pos = {
-			x: 0,
-			y: -100, // 60 end point
-			z: 200,
-		};
-		const timeRotate = 7000;
-
-		const symbol = new Symbol({
-			geometry,
-			material,
-			pos,
-			timeRotate
-		});
-
-		symbol.initPointY = 0;
-		symbol.endPointY = 2000;
-		symbol.endPointZ = 5000;
-
-		this.symbol = symbol;
-
-		// add mesh to the scene
-		this.scene.add(symbol.mesh);
-
-	}
-
 	setAsteroids() {
 
 	}
@@ -573,7 +498,8 @@ export default class ProjectView extends AbstractView {
 			this.glitch = new Glitch({
 				el: this.el.querySelector('.glitch'),
 				color: this.data.color,
-				txt: this.data.title
+				txt: this.data.title,
+				clock: this.clock
 			});
 
 			// Start transition In
@@ -609,41 +535,42 @@ export default class ProjectView extends AbstractView {
 		}
 
 	}
-	setBlur() {
 
-		// COMPOSER
-		// IMPORTANT CAREFUL HERE (when changing scene)
-		// SceneManager.renderer.autoClear = false;
+	// setBlur() {
 
-		const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
-		this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
+	// 	// COMPOSER
+	// 	// IMPORTANT CAREFUL HERE (when changing scene)
+	// 	// SceneManager.renderer.autoClear = false;
 
-		this.effectFXAA = new ShaderPass(FXAAShader);
-		this.hblur = new ShaderPass(HorizontalTiltShiftShader);
-		this.vblur = new ShaderPass(VerticalTiltShiftShader);
+	// 	const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: false };
+	// 	this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
+
+	// 	this.effectFXAA = new ShaderPass(FXAAShader);
+	// 	this.hblur = new ShaderPass(HorizontalTiltShiftShader);
+	// 	this.vblur = new ShaderPass(VerticalTiltShiftShader);
 
 
-		this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
-		this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
+	// 	this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+	// 	this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
-		this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = this.effectController.horizontalBlur;
+	// 	this.hblur.uniforms['r'].value = this.vblur.uniforms['r'].value = this.effectController.horizontalBlur;
 
-		this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
+	// 	this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
-		const renderModel = new RenderPass(this.scene, this.camera);
+	// 	const renderModel = new RenderPass(this.scene, this.camera);
 
-		this.vblur.renderToScreen = true;
-		this.hblur.renderToScreen = true;
-		this.effectFXAA.renderToScreen = true;
+	// 	this.vblur.renderToScreen = true;
+	// 	this.hblur.renderToScreen = true;
+	// 	this.effectFXAA.renderToScreen = true;
 
-		this.composer = new EffectComposer(SceneManager.renderer, this.renderTarget);
+	// 	this.composer = new EffectComposer(SceneManager.renderer, this.renderTarget);
 
-		this.composer.addPass(renderModel);
-		this.composer.addPass(this.effectFXAA);
-		this.composer.addPass(this.hblur);
-		this.composer.addPass(this.vblur);
+	// 	this.composer.addPass(renderModel);
+	// 	this.composer.addPass(this.effectFXAA);
+	// 	this.composer.addPass(this.hblur);
+	// 	this.composer.addPass(this.vblur);
 
-	}
+	// }
 
 	////////////
 	// EVENTS
@@ -838,52 +765,10 @@ export default class ProjectView extends AbstractView {
 			this.raf();
 		}
 
-		if (this.clickSymbol === true) {
-			this.onClickSymbol();
-		}
-
 		if (this.clickAsteroid === true) {
 			this.currentAstClicked.impulse();
 		}
 
-	}
-
-	onClickSymbol() {
-
-		// const tl = new TimelineMax();
-
-		// // this.reset();
-
-		// if (this.toggle !== true) {
-
-
-
-		// 	tl.to(this.symbols[0].mesh.scale, 0.7, {
-		// 		x: 1.5,
-		// 		y: 1.5,
-		// 		z: 1.5,
-		// 		ease: window.Power4.easeInOut
-		// 	});
-
-		// 	this.toggle = true;
-
-		// } else {
-
-		// 	tl.to(['.project__container', '.project__image'], 0.8, {
-		// 		opacity: 0,
-		// 		ease: window.Power4.easeInOut
-		// 	});
-
-
-		// 	tl.to(this.symbols[0].mesh.scale, 0.5, {
-		// 		x: 1,
-		// 		y: 1,
-		// 		z: 1,
-		// 		ease: window.Power4.easeInOut
-		// 	}, 0.1);
-
-		// 	this.toggle = false;
-		// }
 	}
 
 	onMouseMove(e) {
@@ -1044,11 +929,11 @@ export default class ProjectView extends AbstractView {
 
 		// console.log(this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value);
 		// Glow arrows
-		if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
-			this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
-			this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
-			// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
-		}
+		// if (this.cameraMove === false && this.ui.arrowL !== undefined && this.ui.arrowL !== null) {
+		// 	this.ui.arrowL.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
+		// 	this.ui.arrowR.style.opacity = 0.4 + (Math.sin(this.time / 30) + 1) / 5;
+		// 	// console.log(5 + (Math.sin(this.time / 30) + 1) / 5);
+		// }
 
 
 		// scroll gallery
@@ -1085,11 +970,13 @@ export default class ProjectView extends AbstractView {
 		// glitch title
 		if (this.glitch) {
 
-			if (this.glitch.stop !== true) {
-				if (this.glitch.hover === true ) {
-					this.glitch.render();
-				} else {
+			if (this.glitch.hover === true ) {
+				this.glitch.render();
+				this.glitch.stop = false;
+			} else {
+				if (this.glitch.stop !== true) {
 					this.glitch.render(true);
+					this.glitch.stop = true;
 				}
 			}
 		}
@@ -1403,9 +1290,6 @@ export default class ProjectView extends AbstractView {
 		});
 
 		// this.destroy();
-
-		// // Set symbol
-		// this.setSymbol();
 
 		// // Set asteroid
 		// this.setAsteroids();

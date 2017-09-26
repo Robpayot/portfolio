@@ -14,6 +14,7 @@ export default class Glitch {
 		this.color = obj.color;
 		this.txt = obj.txt;
 		this.debug = obj.debug;
+		this.clock = obj.clock;
 
 		this.el.style.display = 'block';
 
@@ -81,7 +82,7 @@ export default class Glitch {
 			canvas: this.el.querySelector('.glitch__canvas'),
 			canvasTemp: this.el.querySelector('.glitch__canvas-temp')
 		};
-		console.log(this.el);
+		console.log(this.el, this.clock);
 		// Nathan Gordon <3
 		// //Create a canvas that is to become our reference image
 		// const baseCanvas = document.createElement('canvas');
@@ -91,7 +92,6 @@ export default class Glitch {
 
 		this.textSize = this.ui.canvas.offsetHeight / 3;
 		this.textHeight = this.textSize; // need a real calcul
-		this.time = 0;
 		this.last = 0;
 
 		this.init();
@@ -160,6 +160,9 @@ export default class Glitch {
 
 	render(calm = false) {
 
+		// console.log(this.clock.getElapsedTime());
+
+
 		this.phase += this.phaseStep;
 
 		const frequency = getRandom(0.2, 2);
@@ -205,13 +208,13 @@ export default class Glitch {
 		}
 
 
-		if (calm === true) {
-			this.renderScanline();
-			if (Math.floor(Math.random() * 2) > 1) {
-				this.renderScanline();
-				// renders a second scanline 50% of the time
-			}
-		}
+		// if (calm === true) {
+		// 	this.renderScanline();
+		// 	if (Math.floor(Math.random() * 2) > 1) {
+		// 		this.renderScanline();
+		// 		// renders a second scanline 50% of the time
+		// 	}
+		// }
 	}
 
 
@@ -222,7 +225,7 @@ export default class Glitch {
 
 		// MOST IMPORTANT HERE
 
-		const top = Math.sin(this.time / 60 ) * 30; // move image
+		const top = Math.sin(this.clock.getElapsedTime() * 0.1 ) * 30; // move image
 		const centerY = this.height / 2 + this.textHeight / 2;
 		// let margeStart = this.textWidth * 0.2;
 		let startClip = (this.width - this.textWidth) / 2 ;
@@ -296,7 +299,6 @@ export default class Glitch {
 
 			this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
 
-			this.time++;
 			return false;
 		}
 
@@ -471,15 +473,13 @@ export default class Glitch {
 
 		this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
 
-		if (this.time >= this.last + 1.5) { // 60 = 1 second
-			this.last = this.time;
+		if (this.clock.getElapsedTime() >= this.last + 0.035) { // 
+			this.last = this.clock.getElapsedTime();
 			this.breakTime = true;
 
 		} else {
 			this.breakTime = false;
 		}
-
-		this.time++;
 
 
 	}
