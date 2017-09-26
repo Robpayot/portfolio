@@ -2208,6 +2208,8 @@ var Blob = function (_ProjectView) {
 		var _this = _possibleConstructorReturn(this, (Blob.__proto__ || Object.getPrototypeOf(Blob)).call(this, obj));
 
 		_this.nbAst = 6;
+		_this.toggle = 0;
+		_this.intersection;
 		_this.inc = Date.now();
 
 		_this.init();
@@ -2318,8 +2320,8 @@ var Blob = function (_ProjectView) {
 				};
 
 				var scale = posFixed[i].s || (0, _utils.getRandom)(2, 4.5);
-				var speed = (0, _utils.getRandom)(300, 400); // more is slower
-				var range = (0, _utils.oscillate)(10, 15);
+				var speed = (0, _utils.getRandom)(0.5, 1.5); // more is slower
+				var range = (0, _utils.oscillate)(-5, 5);
 				var timeRotate = (0, _utils.getRandom)(15000, 17000);
 
 				// let finalMat;
@@ -2347,7 +2349,7 @@ var Blob = function (_ProjectView) {
 				asteroid.offset = (0, _utils.getRandom)(0, 1000);
 				asteroid.initW = 0.0;
 				asteroid.rangeMat = (0, _utils.oscillate)(0.0, 2.0);
-				asteroid.speedMat = (0, _utils.getRandom)(800, 1000);
+				asteroid.speedMat = (0, _utils.getRandom)(1, 5);
 				// asteroid.brightness = brightness;
 
 				this.asteroids.push(asteroid);
@@ -2382,6 +2384,42 @@ var Blob = function (_ProjectView) {
 				this.scene.add(pointLight);
 			}
 		}
+		// var toggle = 0;
+
+		// function render() {
+
+		//     camera.applyMatrix( rotateY );
+		//     camera.updateMatrixWorld();
+
+		//     raycaster.setFromCamera( mouse, camera );
+
+		//     var intersections = raycaster.intersectObjects( pointclouds );
+		//     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
+
+		//     if ( toggle > 0.02 && intersection !== null) {
+
+		//         spheres[ spheresIndex ].position.copy( intersection.point );
+		//         spheres[ spheresIndex ].scale.set( 1, 1, 1 );
+		//         spheresIndex = ( spheresIndex + 1 ) % spheres.length;
+
+		//         toggle = 0;
+
+		//     }
+
+		//     for ( var i = 0; i < spheres.length; i++ ) {
+
+		//         var sphere = spheres[ i ];
+		//         sphere.scale.multiplyScalar( 0.98 );
+		//         sphere.scale.clampScalar( 0.01, 1 );
+
+		//     }
+
+		//     toggle += clock.getDelta();
+
+		//     renderer.render( scene, camera );
+
+		// }
+
 	}, {
 		key: 'raf',
 		value: function raf() {
@@ -2398,42 +2436,57 @@ var Blob = function (_ProjectView) {
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 
 			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+			this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
 
-			if (intersectsAst.length > 0) {
+			if (this.toggle > 0.02 && this.intersection !== null) {
 				this.ui.body.style.cursor = 'pointer';
 				this.hoverAst = true;
 				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
 				this.asteroids[intersectsAst[0].object.index].active = true;
 			} else {
-				// this.ui.body.style.cursor = 'auto';
 				this.hoverAst = false;
-				this.asteroids.forEach(function (el) {
-					el.active = false;
-				});
+				// this.asteroids.forEach( (el) => {
+				// 	el.active = false;
+				// });
 			}
+
+			this.toggle += this.clock.getDelta();
+
+			// if (intersectsAst.length > 0) {
+			// 	this.ui.body.style.cursor = 'pointer';
+			// 	this.hoverAst = true;
+			// 	this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
+			// 	this.asteroids[intersectsAst[0].object.index].active = true;
+			// } else {
+			// 	// this.ui.body.style.cursor = 'auto';
+			// 	this.hoverAst = false;
+			// 	this.asteroids.forEach( (el) => {
+			// 		el.active = false;
+			// 	});
+			// }
 
 			// Asteroids meshs
 			this.asteroids.forEach(function (el) {
 
 				// Move top and bottom --> Levit effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-				el.mesh.position.y = el.initY + Math.sin((_this2.time + el.offset) * 2 * Math.PI / el.speed) * el.range.coef + el.range.add;
+				el.mesh.position.y = el.initY + Math.sin(_this2.clock.getElapsedTime() * el.speed + el.offset) * el.range.coef + el.range.add;
 				// el.mesh.position.y = el.initY;
 				// rotate
 				el.mesh.material.uniforms['time'].value = .00015 * (Date.now() - _this2.inc);
-				el.mesh.material.uniforms['weight'].value = el.initW + Math.sin((_this2.time + el.offset) * 2 * Math.PI / el.speedMat) * el.rangeMat.coef + el.rangeMat.add;
-				// el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
-				// console.log(el.mesh.material.uniforms[ 'weight' ].value);
-				// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-				// // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-				// el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
+				el.mesh.material.uniforms['weight'].value = el.initW + Math.sin(_this2.clock.getElapsedTime() * el.speedMat + el.offset) * el.rangeMat.coef + el.rangeMat.add;
+				// // el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
+				// // console.log(el.mesh.material.uniforms[ 'weight' ].value);
+				// // el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
+				// // // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
+				// // el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
 				if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
-					// if (el.active === true) {
-					el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5, 5);
-					// } else {
-					// 	el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
-					// }
+					if (el.active === true) {
+						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5, 5);
+					} else {
+						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5, 5);
+					}
 				}
 			});
 
@@ -2480,18 +2533,6 @@ var _Asteroid2 = _interopRequireDefault(_Asteroid);
 
 var _three = require('three');
 
-var _threeEffectcomposerEs = require('three-effectcomposer-es6');
-
-var _threeEffectcomposerEs2 = _interopRequireDefault(_threeEffectcomposerEs);
-
-var _OrbitControls = require('../vendors/OrbitControls');
-
-var _OrbitControls2 = _interopRequireDefault(_OrbitControls);
-
-var _threeCameraDollyCustom = require('../vendors/three-camera-dolly-custom');
-
-var _BrightnessShader = require('../shaders/BrightnessShader');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2501,9 +2542,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // THREE JS
-
-
-// VerticalTiltShiftShader shader
 
 
 // POSTPROCESSING
@@ -2606,8 +2644,8 @@ var Circular = function (_ProjectView) {
 					// this.pivotPalm.push(pivotPalm);
 				}
 
-				asteroid.dir = (0, _utils.getRandom)(-1, 1);
-				asteroid.speed = (0, _utils.getRandom)(0.2, 1);
+				asteroid.dir = Math.round((0, _utils.getRandom)(0, 1)) === 0 ? -1 : 1;
+				asteroid.speed = (0, _utils.getRandom)(5, 35);
 				asteroid.position.z = (0, _utils.getRandom)(-160, 10);
 				asteroid.rotation.z = asteroid.initRot = initRot;
 
@@ -2654,7 +2692,7 @@ var Circular = function (_ProjectView) {
 			// Asteroids meshs
 			this.asteroidsM.forEach(function (el) {
 
-				el.rotation.z = el.initRot + (0, _utils.toRadian)(_this2.time * el.speed * el.dir);
+				el.rotation.z = el.initRot + (0, _utils.toRadian)(_this2.clock.getElapsedTime() * el.speed * el.dir);
 				// el.position.x = -this.camRotSmooth.y * 400;
 			});
 
@@ -2674,7 +2712,7 @@ var Circular = function (_ProjectView) {
 
 exports.default = Circular;
 
-},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/PreloadManager":14,"../shaders/BrightnessShader":24,"../shapes/Asteroid":34,"../vendors/OrbitControls":41,"../vendors/three-camera-dolly-custom":46,"../views/ProjectView":49,"three":109,"three-effectcomposer-es6":103}],21:[function(require,module,exports){
+},{"../helpers/utils":11,"../helpers/utils-three":10,"../managers/PreloadManager":14,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":109}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
