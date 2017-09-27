@@ -23,11 +23,12 @@
 @import "components/webGl";
 @import "components/graphicBars";
 @import "components/jauge";
+@import "components/glitch";
 
 // View 3D
 @import "views/intro";
 @import "views/project";
-@import "views/glitch";
+@import "views/about";
 
 // UI
 @import "ui/ui";

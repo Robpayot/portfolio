@@ -295,6 +295,7 @@ export default class ProjectView extends AbstractView {
 
 		this.lastPage = RouterManager.lastPage;
 		this.el.classList.remove('intro');
+		this.el.classList.remove('about');
 		this.el.classList.add('project');
 
 		// set ui

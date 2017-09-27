@@ -11,7 +11,6 @@ class BlobLightShader {
 			'varying vec3 vReflect;',
 			'varying float ao;',
 			'uniform sampler2D tShine;',
-			'uniform float time;',
 			'uniform float brightness;',
 			'uniform float contrast;',
 

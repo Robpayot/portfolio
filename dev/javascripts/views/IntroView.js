@@ -789,7 +789,7 @@ export default class IntroView extends AbstractView {
 
 		this.el.classList.add('intro');
 		this.el.classList.remove('project');
-
+		this.el.classList.remove('about');
 		// set ui
 		this.UI.intro.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
