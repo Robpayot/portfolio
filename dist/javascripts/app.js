@@ -2965,6 +2965,10 @@ var _NoiseShader = require('../shaders/NoiseShader');
 
 var _NoiseShader2 = _interopRequireDefault(_NoiseShader);
 
+var _BlobLightShader = require('../shaders/BlobLightShader');
+
+var _BrightnessShader = require('../shaders/BrightnessShader');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3197,9 +3201,12 @@ var Stars = function (_ProjectView) {
 			for (var i = 0; i < this.nbUnif; i++) {
 
 				var uniforms = _three.UniformsUtils.clone(shaderPoint.uniforms);
+				console.log(uniforms);
 				uniforms.map.value = new _three.Texture(img);
 				uniforms.map.value.needsUpdate = true;
 				uniforms.scale.value = window.innerHeight * 1;
+				uniforms.brightness = { type: 'f', value: 0 };
+				uniforms.contrast = { type: 'f', value: 0.5 };
 
 				switch (i) {
 					case 0:
@@ -3238,6 +3245,9 @@ var Stars = function (_ProjectView) {
 				this.uniforms.push(uniforms);
 			}
 
+			var blobLightShader = new _BrightnessShader.BrightnessShader();
+			console.log(shaderPoint);
+
 			for (var _i2 = 0; _i2 < this.nbAst; _i2++) {
 
 				// const range = getRandom(3, 8);
@@ -3264,7 +3274,14 @@ var Stars = function (_ProjectView) {
 					vertexShader: shaderPoint.vertexShader,
 					fragmentShader: shaderPoint.fragmentShader
 				}));
-
+				// uniforms: {
+				// 	tInput: { type: 't', value: new Texture(img) },
+				// 	brightness: { type: 'f', value: 3 },
+				// 	contrast: { type: 'f', value: 5 },
+				// },
+				// // blending: AdditiveBlending,
+				// vertexShader: blobLightShader.vertexShader,
+				// fragmentShader: blobLightShader.fragmentShader
 				asteroid.progress = 0;
 				asteroid.position.set(pos.x, pos.y, pos.z);
 				asteroid.initPosY = pos.y;
@@ -3390,7 +3407,7 @@ var Stars = function (_ProjectView) {
 
 exports.default = Stars;
 
-},{"../helpers/utils":11,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/NoiseShader":28,"../shaders/TerrainShader":30,"../vendors/BufferGeometryUtils":37,"../views/ProjectView":50,"three":110}],23:[function(require,module,exports){
+},{"../helpers/utils":11,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/BlobLightShader":23,"../shaders/BrightnessShader":24,"../shaders/NoiseShader":28,"../shaders/TerrainShader":30,"../vendors/BufferGeometryUtils":37,"../views/ProjectView":50,"three":110}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3404,7 +3421,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var BlobLightShader = function BlobLightShader() {
 	_classCallCheck(this, BlobLightShader);
 
-	this.fragmentShader = ['varying vec2 vUv;', 'varying vec3 vNormal;', 'varying vec3 vReflect;', 'varying float ao;', 'uniform sampler2D tShine;', 'uniform float time;', 'uniform float brightness;', 'uniform float contrast;', 'float PI = 3.14159265358979323846264;', 'void main() {', 'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );', 'float pitch = .5 - asin( vReflect.y ) / PI;', 'vec2 pos = vec2( yaw, pitch );', 'vec3 color = texture2D( tShine, pos ).rgb;', 'vec3 colorContrasted = (color) * contrast;', 'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);',
+	this.fragmentShader = ['varying vec2 vUv;', 'varying vec3 vNormal;', 'varying vec3 vReflect;', 'varying float ao;', 'uniform sampler2D tShine;', 'uniform float brightness;', 'uniform float contrast;', 'float PI = 3.14159265358979323846264;', 'void main() {', 'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );', 'float pitch = .5 - asin( vReflect.y ) / PI;', 'vec2 pos = vec2( yaw, pitch );', 'vec3 color = texture2D( tShine, pos ).rgb;', 'vec3 colorContrasted = (color) * contrast;', 'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);',
 
 	// 'float diffuse_value1 = .0015 * max(dot(vNormal, vec3( -490.0, 29.8, -85.8 ) ), 0.0);',
 	// 'float diffuse_value2 = .0005 * max(dot(vNormal, vec3( -460.0, 40.27, 187.4 ) ), 0.0);',
@@ -8205,7 +8222,7 @@ var AboutView = function (_AbstractView) {
 		_this.gravity = obj.gravity;
 		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.name = 'about';
-		_this.isControls = true;
+		_this.isControls = false;
 
 		// bind
 

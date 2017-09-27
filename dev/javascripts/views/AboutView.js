@@ -30,7 +30,7 @@ export default class AboutView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'about';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 

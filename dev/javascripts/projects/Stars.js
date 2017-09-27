@@ -9,6 +9,8 @@ import { SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mes
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
+import { BlobLightShader } from '../shaders/BlobLightShader';
+import { BrightnessShader } from '../shaders/BrightnessShader';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -241,9 +243,12 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < this.nbUnif; i++) {
 
 			let uniforms = UniformsUtils.clone(shaderPoint.uniforms);
+			console.log(uniforms);
 			uniforms.map.value = new Texture(img);
 			uniforms.map.value.needsUpdate = true;
 			uniforms.scale.value = window.innerHeight * 1;
+			uniforms.brightness = { type: 'f', value: 0 };
+			uniforms.contrast = { type: 'f', value: 0.5 };
 
 			switch (i) {
 				case 0:
@@ -283,6 +288,9 @@ export default class Stars extends ProjectView {
 
 		}
 
+		const blobLightShader = new BrightnessShader();
+		console.log(shaderPoint);
+
 
 		for (let i = 0; i < this.nbAst; i++) {
 
@@ -310,7 +318,14 @@ export default class Stars extends ProjectView {
 				vertexShader: shaderPoint.vertexShader,
 				fragmentShader: shaderPoint.fragmentShader
 			}));
-
+				// uniforms: {
+				// 	tInput: { type: 't', value: new Texture(img) },
+				// 	brightness: { type: 'f', value: 3 },
+				// 	contrast: { type: 'f', value: 5 },
+				// },
+				// // blending: AdditiveBlending,
+				// vertexShader: blobLightShader.vertexShader,
+				// fragmentShader: blobLightShader.fragmentShader
 			asteroid.progress = 0;
 			asteroid.position.set(pos.x, pos.y, pos.z);
 			asteroid.initPosY = pos.y;
