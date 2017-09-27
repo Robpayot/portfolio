@@ -57,6 +57,8 @@ export default class Menu {
 
 	update(view, index) {
 
+		console.log(view);
+
 		this.ui.links.forEach((el) => {
 			el.classList.remove('is-active');
 		});
@@ -65,6 +67,10 @@ export default class Menu {
 		});
 
 		switch (view) {
+			case 'about':
+				this.ui.links[2].classList.add('is-active');
+				this.ui.subLinks[4].classList.add('is-active');
+				break;
 			case 'intro':
 				this.ui.links[0].classList.add('is-active');
 				break;

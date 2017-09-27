@@ -1,6 +1,7 @@
 import EmitterManager from './EmitterManager';
 // import PreloadManager from './PreloadManager';
 // import ProjectView from '../views/ProjectView';
+import AboutView from '../views/AboutView';
 import IntroView from '../views/IntroView';
 import Glitch from '../components/Glitch';
 import Levit from '../projects/Levit';
@@ -29,7 +30,9 @@ class RouterManager {
 		console.log('change');
 		const url = window.location.href;
 
-		if (/\/#project-0/.test(url) === true) {
+		if (/\/#about/.test(url) === true) {
+			this.switchView('/about', 0, true);
+		} else if (/\/#project-0/.test(url) === true) {
 			this.switchView('/project-0', 0, true);
 		} else if (/\/#project-1/.test(url) === true) {
 			this.switchView('/project-1', 1, true);
@@ -57,7 +60,9 @@ class RouterManager {
 
 		const url = window.location.href;
 
-		if (/\/#project-0/.test(url) === true) {
+		if (/\/#about/.test(url) === true) {
+			this.switchView('/about', 0, true);
+		} else if (/\/#project-0/.test(url) === true) {
 			this.switchView('/project-0', 0, true);
 		} else if (/\/#project-1/.test(url) === true) {
 			this.switchView('/project-1', 1, true);
@@ -108,6 +113,20 @@ class RouterManager {
 		// let slug;
 
 		switch (goToPage) {
+			case '/about':
+
+				// if (this.about === null) {
+					this.currentPage = this.about = new AboutView({ // Attention, Garde en mémoire une cette variable très lourde !
+						gravity: false,
+					});
+				// } else {
+				// 	this.currentPage = this.about;
+				// 	this.currentPage.start();
+				// }
+
+				window.location = '#about';
+				break;
+
 			case '/project-0':
 
 				// if (this.project0 === null) {
