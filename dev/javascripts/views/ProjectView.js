@@ -19,7 +19,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, Scene, Color, MeshPhongMaterial, Vector3, BoxGeometry } from 'three';
+import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, Color, MeshPhongMaterial, MeshBasicMaterial, SphereGeometry, MeshLambertMaterial, Vector3, BoxGeometry } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -27,9 +27,9 @@ import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
-import { FXAAShader } from '../shaders/FXAAShader'; // FXAA shader
-import { HorizontalTiltShiftShader } from '../shaders/HorizontalTiltShiftShader'; // HorizontalTiltShiftShader shader
-import { VerticalTiltShiftShader } from '../shaders/VerticalTiltShiftShader'; // VerticalTiltShiftShader shader
+import { VignetteShader } from '../shaders/VignetteShader';
+import '../postprocessing/Pass'; // missing in EffectComposer
+import { FilmPass } from '../postprocessing/FilmPass';
 
 
 
@@ -77,6 +77,7 @@ export default class ProjectView extends AbstractView {
 		this.onChangeDolly = this.onChangeDolly.bind(this);
 		this.onChangeCameraRot = this.onChangeCameraRot.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
+		this.setEnvelop = this.setEnvelop.bind(this);
 
 
 
@@ -124,14 +125,15 @@ export default class ProjectView extends AbstractView {
 	init() {
 
 
-		this.isControls = false;
+		this.isControls = true;
+		this.postProc = true;
 
 		this.cssObjects = [];
 		this.finalFov = 45;
 		this.currentRotateY = { angle: 0};
 		this.cameraRotX = true;
 		this.composer = null;
-		this.bounceArea = 480;
+		this.bounceArea = 120;
 		this.pixelToUnits = 8.1;
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
@@ -142,7 +144,7 @@ export default class ProjectView extends AbstractView {
 
 		// Set scenes
 		this.scene = new Scene();
-		this.scene.background = new Color(this.bkg);
+		this.scene.background = new Color(0x000000);
 		this.cssScene = new Scene();
 		this.cameraTarget = new Vector3(0, 0, 0);
 
@@ -266,6 +268,32 @@ export default class ProjectView extends AbstractView {
 		// POST PROCESSING
 		////////////////////
 
+		// IMPORTANT CAREFUL HERE (when changing scene)
+		// SceneManager.renderer.autoClear = false;
+
+		// EFFECT COMPOSER
+		// Vignette
+		this.effectVignette = new ShaderPass( VignetteShader );
+		this.effectVignette.uniforms[ 'offset' ].value = 0.95;
+		this.effectVignette.uniforms[ 'darkness' ].value = 1.6;
+
+		// Film effect
+		// noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
+		this.effectFilm = new FilmPass( 0.45, 0, 648, false );
+
+		// this.effectVignette.renderToScreen = true;
+		this.effectFilm.renderToScreen = true;
+
+		const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: true };
+		this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
+
+		const renderModel = new RenderPass(this.scene, this.camera);
+
+		this.composer = new EffectComposer(SceneManager.renderer, this.renderTarget);
+
+		this.composer.addPass(renderModel);
+		// this.composer.addPass(this.effectVignette);
+		this.composer.addPass(this.effectFilm);
 		// Set BLUR EFFECT
 		// this.setBlur();
 
@@ -349,43 +377,53 @@ export default class ProjectView extends AbstractView {
 		const height = this.bounceArea;
 		const depth = 2;
 
-		const geometry = new BoxGeometry(width, height, depth);
-		// 0x0101010,
-		// const img = PreloadManager.getResult('damier');
-		// const tex = new Texture(img);
-		// tex.needsUpdate = true;
-		const material = new MeshPhongMaterial({ color: this.bkg, transparent: true, opacity: 1 });
-		this.envelops = [];
+		// const geometry = new BoxGeometry(width, height, depth);
+		// const geometry = new SphereGeometry(100, 100, 60);
 
-		const configs = [{
-			pos: { x: -width / 2, y: 0, z: 0 },
-			rot: { x: 0, y: toRadian(-90), z: 0 }
-		}, {
-			pos: { x: width / 2, y: 0, z: 0 },
-			rot: { x: 0, y: toRadian(-90), z: 0 }
-		}, {
-			pos: { x: 0, y: 0, z: -width / 2 },
-			rot: { x: 0, y: 0, z: 0 }
-		}, {
-			pos: { x: 0, y: 0, z: width / 2 },
-			rot: { x: 0, y: 0, z: 0 }
-		}, {
-			pos: { x: 0, y: -width / 2, z: 0 },
-			rot: { x: toRadian(-90), y: 0, z: 0 }
-		}, {
-			pos: { x: 0, y: width / 2, z: 0 },
-			rot: { x: toRadian(-90), y: 0, z: 0 }
-		}];
+		// // 0x0101010,
+		// // const img = PreloadManager.getResult('damier');
+		// // const tex = new Texture(img);
+		// // tex.needsUpdate = true;
+		// const material = new MeshBasicMaterial({ opacity: 1 });
+		// this.envelops = [];
 
-		for (let i = 0; i < configs.length; i++) {
+		// // const configs = [{
+		// // 	pos: { x: -width / 2, y: 0, z: 0 },
+		// // 	rot: { x: 0, y: toRadian(-90), z: 0 }
+		// // }, {
+		// // 	pos: { x: width / 2, y: 0, z: 0 },
+		// // 	rot: { x: 0, y: toRadian(-90), z: 0 }
+		// // }, {
+		// // 	pos: { x: 0, y: 0, z: -width / 2 },
+		// // 	rot: { x: 0, y: 0, z: 0 }
+		// // }, {
+		// // 	pos: { x: 0, y: 0, z: width / 2 },
+		// // 	rot: { x: 0, y: 0, z: 0 }
+		// // }, {
+		// // 	pos: { x: 0, y: -width / 2, z: 0 },
+		// // 	rot: { x: toRadian(-90), y: 0, z: 0 }
+		// // }, {
+		// // 	pos: { x: 0, y: width / 2, z: 0 },
+		// // 	rot: { x: toRadian(-90), y: 0, z: 0 }
+		// // }];
 
-			const envelop = new Envelop(geometry, material, configs[i].pos, configs[i].rot);
+		// // // for (let i = 0; i < configs.length; i++) {
 
-			this.envelops.push(envelop);
+		// // // 	const envelop = new Envelop(geometry, material, configs[i].pos, configs[i].rot);
 
-			// add mesh to the scene
-			this.scene.add(envelop);
-		}
+		// // // 	this.envelops.push(envelop);
+
+		// // // 	// add mesh to the scene
+		// // // 	this.scene.add(envelop);
+		// // // }
+		// const envelop = new Envelop(geometry, material, 0, 0);
+
+		const geo = new SphereGeometry(width, 10, 10);
+		const mat = new MeshPhongMaterial({color: this.bkg, side: BackSide});
+		this.envelop = new Mesh(geo,mat);
+
+		// this.envelops.push(mesh);
+		this.scene.add(this.envelop);
 
 
 
@@ -867,6 +905,8 @@ export default class ProjectView extends AbstractView {
 	// }
 
 	raf() {
+
+		// this.composer.render(0.1);
 		// // Update meth size
 
 		// ////////////

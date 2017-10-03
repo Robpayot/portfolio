@@ -192,10 +192,12 @@ export default class Blob extends ProjectView {
 
 		let paramsLight = [
 			// { x: 70, y: 70, z: 0 },
-			{ x: -100, y: 0, z: 0 },
-			{ x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 170 },
-			{ x: 0, y: -0, z: 0 }
+			{ x: 0, y: 0, z: -100, d: 70, it: 1 },
+			{ x: -100, y: 0, z: 0, d: 70, it: 1 },
+			{ x: 0, y: 30, z: 30 },
+			{ x: 0, y: 30, z: -30 },
+			{ x: -30, y: 30, z: 0 },
+			{ x: 0, y: -30, z: 0 }
 		];
 
 		// Check Ambient Light
@@ -203,8 +205,11 @@ export default class Blob extends ProjectView {
 
 		for (let i = 0; i < paramsLight.length; i++) {
 
+			const d = paramsLight[i].d || 100;
+			const it = paramsLight[i].it || 1;
+
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 800, 2);
+			let pointLight = new PointLight(0xFFFFFF, it, d, 1);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -214,7 +219,7 @@ export default class Blob extends ProjectView {
 			this.scene.add(pointLight);
 		}
 	}
-	
+
 	raf() {
 		// update world
 		// if (this.gravity === true) {

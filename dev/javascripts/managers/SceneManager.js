@@ -1,4 +1,4 @@
-import { WebGLRenderer } from 'three';
+import { WebGLRenderer, Clock } from 'three';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
 
 
@@ -45,18 +45,23 @@ class SceneManager {
 
 		this.el = this.renderer.domElement;
 
+		this.clock = new Clock(); // time
+
 	}
 
 	render(opts) {
 
 		// Render different scene throught opts. (ex: render scene Project 1 if opts.scene come from Project 1 etc...)
-		if (opts.composer !== undefined && opts.effectController.enabled === true) {
+		if (opts.composer !== undefined && opts.postProc === true) {
 			// Render scene composer
-			opts.composer.render(opts.scene, opts.camera);
+			// console.log('comp');
+			// opts.composer.render(opts.scene, opts.camera);
+			let delta = this.clock.getDelta();
+			opts.composer.render(delta);
 		} else {
 			// Render scene
 			// this.renderer.clear();
-			this.renderer.render(opts.scene, opts.camera);
+			this.renderer.render(opts.scene, opts.camera); // { antialias: true } ???
 		}
 
 		// Render cssScene

@@ -127,6 +127,8 @@ export default class Circular extends ProjectView {
 
 	setLight() {
 
+		this.envelop.visible = false;
+
 		let paramsLight = [
 			// { x: 70, y: 70, z: 0 },
 			// { x: -100, y: 0, z: 0 },
