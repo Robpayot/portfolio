@@ -1,4 +1,66 @@
 .xp {
     text-align: center;
+    display: none;
 
+}
+
+.test-svg {
+	margin: 0 auto;
+	display: block;
+	width: 50px;
+	height: 50px;
+	position: relative;
+	cursor: pointer;
+
+	&.is-close {
+		.open-down,
+		.open-up {
+			stroke-dasharray: 635;
+			stroke-dashoffset: 635;
+		}
+		.close-up {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 0;
+		}
+		.close-down {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 840;
+		}
+	}
+
+	&.is-open {
+
+		.open-up {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 0;
+		}
+
+		.open-down {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 430;
+		}
+
+		.close-up,
+		.close-down {
+			stroke-dasharray: 635;
+			stroke-dashoffset: 635;
+		}
+	}
+
+	// .close-up {
+	// 	stroke-dasharray: 635; // !
+	// 	stroke-dashoffset: 635;
+	// }
+
+	// .close-down {
+	// 	stroke-dasharray: 635; // !
+	// 	stroke-dashoffset: 635;
+	// }
+
+	polyline {
+
+		// stroke-dasharray: 400;
+		// stroke-dashoffset: 400;
+		// transition: all 0.5s ease-in-out;
+	}
 }

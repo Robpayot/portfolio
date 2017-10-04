@@ -162,6 +162,81 @@ var Glitch = function () {
 	function Glitch(obj) {
 		_classCallCheck(this, Glitch);
 
+		var svg = document.querySelector('.test-svg');
+		var maxDash = 635;
+		var anim = false;
+		var hover = false;
+		svg.addEventListener('mouseover', function () {
+
+			if (hover === true) return false;
+			if (anim === true) return false;
+			console.log('hover');
+			anim = true;
+			hover = true;
+			var tl = new TimelineMax();
+			if (svg.classList.contains('is-close')) {
+
+				tl.to('.close-up', 0.4, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
+				tl.to('.close-down', 0.65, { strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
+				tl.to('.close-up', 0.4, { strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
+				tl.to('.close-down', 0.25, { strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+				tl.add(function () {
+					anim = false;
+				});
+			} else {
+				tl.to('.open-up', 0.4, { strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+				tl.to('.open-down', 0.65, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
+				tl.to('.open-up', 0.4, { strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
+				tl.to('.open-down', 0.25, { strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+				tl.add(function () {
+					anim = false;
+				});
+			}
+		});
+
+		svg.addEventListener('mouseleave', function () {
+			console.log('leave');
+			hover = false;
+		});
+
+		svg.addEventListener('click', function () {
+
+			if (anim === true) return false;
+			console.log('click');
+			anim = true;
+			var tl = new TimelineMax();
+
+			if (svg.classList.contains('is-close')) {
+
+				tl.to('.close-up', 0.4, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
+				tl.to('.close-down', 0.65, { strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
+				tl.to('.open-down', 0.65, { strokeDashoffset: maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.1);
+				tl.to('.open-up', 0.4, { strokeDashoffset: 0, ease: window.Expo.easeInOut }, 0.45);
+				tl.add(function () {
+					svg.classList.add('is-open');
+					svg.classList.remove('is-close');
+					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+					anim = false;
+				});
+			} else {
+
+				tl.to('.open-up', 0.3, { strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+				tl.to('.open-down', 0.55, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
+				tl.to('.close-up', 0.55, { strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut }, 0.1);
+				tl.to('.close-down', 0.8, { strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut }, 0.1);
+				tl.add(function () {
+					svg.classList.remove('is-open');
+					svg.classList.add('is-close');
+					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+					anim = false;
+				});
+			}
+		});
+
+		return false;
+
 		// Load data
 		this.el = obj.el;
 		this.color = obj.color;
@@ -2876,6 +2951,7 @@ var Levit = function (_ProjectView) {
 		_this.setAsteroids = _this.setAsteroids.bind(_this);
 
 		_this.nbAst = 10;
+		_this.bounceArea = 100;
 
 		// preload Models
 		Promise.all([(0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
@@ -2970,29 +3046,41 @@ var Levit = function (_ProjectView) {
 		key: 'setLight',
 		value: function setLight() {
 
-			var paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			{ x: 0, y: 0, z: -100, d: 160, it: 2 }, { x: 0, y: 0, z: 0, d: 110, it: 4 }];
+			// let paramsLight = [
+			// 	// { x: 70, y: 70, z: 0 },
+			// 	{ x: 0, y: 0, z: -100, d: 160, it: 2 },
+			// 	{ x: 0, y: 0, z: -100, d: 160, it: 2 },
+			// 	{ x: 0, y: 0, z: 0, d: 110, it: 4 },
+			// 	// { x: 0, y: 30, z: 30 },
+			// 	// { x: 0, y: 30, z: -30 },
+			// 	// { x: -30, y: 30, z: 0 },
+			// 	// { x: 0, y: -30, z: 0 }
+			// ];
 
-			// Check Ambient Light
-			// scene.add( new THREE.AmbientLight( 0x00020 ) );
+			// // Check Ambient Light
+			// // scene.add( new THREE.AmbientLight( 0x00020 ) );
 
-			for (var i = 0; i < paramsLight.length; i++) {
+			// for (let i = 0; i < paramsLight.length; i++) {
 
-				var d = paramsLight[i].d || 100;
-				var it = paramsLight[i].it || 1;
+			// 	const d = paramsLight[i].d || 100;
+			// 	const it = paramsLight[i].it || 1;
 
-				// create a point light
-				var pointLight = new _three.PointLight(0x707070, it, d, 1);
-				// set its position
-				pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-				// pointLight.power = 20;
-				pointLight.visible = true;
+			// 	// create a point light
+			// 	let pointLight = new PointLight(0x707070, it, d, 1);
+			// 	// set its position
+			// 	pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+			// 	// pointLight.power = 20;
+			// 	pointLight.visible = true;
 
-				// add to the scene
-				this.scene.add(pointLight);
-			}
-
+			// 	// add to the scene
+			// 	this.scene.add(pointLight);
+			// }
+			var light = new _three.DirectionalLight(0xffffff, 1);
+			light.position.set(0, 0, 1);
+			this.scene.add(light);
+			var light2 = new _three.DirectionalLight(0xffffff, 1);
+			light2.position.set(1, 0, 0);
+			this.scene.add(light2);
 			// white spotlight shining from the side, casting a shadow
 
 			// const spotLight = new SpotLight(0xffffff);
@@ -9543,8 +9631,17 @@ var IntroView = function (_AbstractView) {
 			this.ipRadius = 50; // intra perimeter Radius
 
 			for (var i = 0; i < this.nbAst; i++) {
-				var finalMat = new _three.MeshLambertMaterial({ color: 0xFFFFFF, transparent: true });
-				finalMat.shininess = 1;
+
+				var model = Math.round((0, _utils.getRandom)(0, 2));
+
+				for (var y = 0; y < this.models[model].faces.length; y++) {
+
+					var face = this.models[model].faces[y];
+					face.color.setHex(Math.random() * 0xffffff);
+				}
+				// let finalMat = new MeshLambertMaterial( {color: 0xFFFFFF, transparent: true,vertexColors: THREE.FaceColors,} );
+				var finalMat = new _three.MeshLambertMaterial({ vertexColors: _three.FaceColors, morphTargets: true });
+				// finalMat.shininess = 1;
 
 				var rot = {
 					x: 0,
@@ -9559,8 +9656,8 @@ var IntroView = function (_AbstractView) {
 				};
 
 				// check if ast already in other ast position
-				for (var y = 0; y < this.asteroidsM.length; y++) {
-					if (pos.x < this.ipRadius + this.asteroidsM[y].position.x && pos.x > -this.ipRadius + this.asteroidsM[y].position.x && pos.z < this.ipRadius + this.asteroidsM[y].position.z && pos.z > -this.ipRadius + this.asteroidsM[y].position.z) {
+				for (var _y = 0; _y < this.asteroidsM.length; _y++) {
+					if (pos.x < this.ipRadius + this.asteroidsM[_y].position.x && pos.x > -this.ipRadius + this.asteroidsM[_y].position.x && pos.z < this.ipRadius + this.asteroidsM[_y].position.z && pos.z > -this.ipRadius + this.asteroidsM[_y].position.z) {
 						// console.log(i, ' dans le périmetre !');
 						pos.x += this.ipRadius;
 						pos.z += this.ipRadius;
@@ -9579,8 +9676,6 @@ var IntroView = function (_AbstractView) {
 				var range = (0, _utils.getRandom)(2, 5);
 				var timeRotate = (0, _utils.getRandom)(14000, 16000);
 				var offsetScale = 1.6;
-
-				var model = Math.round((0, _utils.getRandom)(0, 2));
 
 				var asteroid = new _Asteroid2.default({
 					type: 'sphere',
@@ -10405,6 +10500,8 @@ var ProjectView = function (_AbstractView) {
 		_this.checkCssContainer = _this.checkCssContainer.bind(_this);
 		_this.setEnvelop = _this.setEnvelop.bind(_this);
 
+		_this.bounceArea = 200; // default bounceArea
+
 		console.log('mon id', _this.id);
 
 		// ScrollManager.on();
@@ -10463,7 +10560,6 @@ var ProjectView = function (_AbstractView) {
 			this.currentRotateY = { angle: 0 };
 			this.cameraRotX = true;
 			this.composer = null;
-			this.bounceArea = 120;
 			this.pixelToUnits = 8.1;
 			this.coefText = 0.04;
 			this.coefImage = 0.04;
@@ -10577,9 +10673,8 @@ var ProjectView = function (_AbstractView) {
 				this.sound.gui.add(this.effectController, 'rotZ', -90, 90).listen().onChange(this.onChangeCameraRot);
 
 				this.sound.gui.init = true;
+				this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
 			}
-
-			this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
 
 			// Camera Dolly
 			// const dollyFolder = this.sound.gui.addFolder('Camera Dolly');

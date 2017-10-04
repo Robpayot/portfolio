@@ -80,6 +80,7 @@ export default class ProjectView extends AbstractView {
 		this.setEnvelop = this.setEnvelop.bind(this);
 
 
+		this.bounceArea = 200; // default bounceArea
 
 		console.log('mon id', this.id);
 
@@ -133,7 +134,6 @@ export default class ProjectView extends AbstractView {
 		this.currentRotateY = { angle: 0};
 		this.cameraRotX = true;
 		this.composer = null;
-		this.bounceArea = 120;
 		this.pixelToUnits = 8.1;
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
@@ -252,9 +252,8 @@ export default class ProjectView extends AbstractView {
 			this.sound.gui.add(this.effectController, 'rotZ', -90, 90).listen().onChange(this.onChangeCameraRot);
 
 			this.sound.gui.init = true;
+			this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
 		}
-
-		this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
 
 
 		// Camera Dolly
