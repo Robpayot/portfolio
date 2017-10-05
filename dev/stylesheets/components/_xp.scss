@@ -1,6 +1,5 @@
 .xp {
     text-align: center;
-    display: none;
 
 }
 
@@ -45,22 +44,5 @@
 			stroke-dasharray: 635;
 			stroke-dashoffset: 635;
 		}
-	}
-
-	// .close-up {
-	// 	stroke-dasharray: 635; // !
-	// 	stroke-dashoffset: 635;
-	// }
-
-	// .close-down {
-	// 	stroke-dasharray: 635; // !
-	// 	stroke-dashoffset: 635;
-	// }
-
-	polyline {
-
-		// stroke-dasharray: 400;
-		// stroke-dashoffset: 400;
-		// transition: all 0.5s ease-in-out;
 	}
 }

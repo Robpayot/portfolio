@@ -9,85 +9,87 @@ export default class Glitch {
 
 	constructor(obj) {
 
-		const svg = document.querySelector('.test-svg');
-		const maxDash = 635;
-		let anim = false;
-		let hover = false;
-		svg.addEventListener('mouseover', () => {
+		// test icon menu
+
+		// const svg = document.querySelector('.test-svg');
+		// const maxDash = 635;
+		// let anim = false;
+		// let hover = false;
+		// svg.addEventListener('mouseover', () => {
 
 
-			if (hover === true) return false;
-			if (anim === true) return false;
-			console.log('hover');
-			anim = true;
-			hover = true;
-			const tl = new TimelineMax();
-			if (svg.classList.contains('is-close')) {
+		// 	if (hover === true) return false;
+		// 	if (anim === true) return false;
+		// 	console.log('hover');
+		// 	anim = true;
+		// 	hover = true;
+		// 	const tl = new TimelineMax();
+		// 	if (svg.classList.contains('is-close')) {
 
-				tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
-				tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-				tl.to('.close-down', 0.25, {strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
-				tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-				tl.add(()=> {
-					anim = false;
-				});
-			} else {
-				tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-				tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.open-up', 0.4, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-				tl.to('.open-down', 0.25, {strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
-				tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-				tl.add(()=> {
-					anim = false;
-				});
-			}
+		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
+		// 		tl.to('.close-down', 0.25, {strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
+		// 		tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 		tl.add(()=> {
+		// 			anim = false;
+		// 		});
+		// 	} else {
+		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
+		// 		tl.to('.open-down', 0.25, {strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
+		// 		tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 		tl.add(()=> {
+		// 			anim = false;
+		// 		});
+		// 	}
 
-		});
+		// });
 
-		svg.addEventListener('mouseleave', () => {
-			console.log('leave');
-			hover = false;
-		});
+		// svg.addEventListener('mouseleave', () => {
+		// 	console.log('leave');
+		// 	hover = false;
+		// });
 
-		svg.addEventListener('click', () => {
+		// svg.addEventListener('click', () => {
 
-			if (anim === true) return false;
-			console.log('click');
-			anim = true;
-			const tl = new TimelineMax();
+		// 	if (anim === true) return false;
+		// 	console.log('click');
+		// 	anim = true;
+		// 	const tl = new TimelineMax();
 
-			if (svg.classList.contains('is-close')) {
+		// 	if (svg.classList.contains('is-close')) {
 
-				tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
-				tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.open-down', 0.65, {strokeDashoffset: maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
-				tl.to('.open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
-				tl.add(()=> {
-					svg.classList.add('is-open');
-					svg.classList.remove('is-close');
-					TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-					anim = false;
-				});
+		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.open-down', 0.65, {strokeDashoffset: maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
+		// 		tl.to('.open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
+		// 		tl.add(()=> {
+		// 			svg.classList.add('is-open');
+		// 			svg.classList.remove('is-close');
+		// 			TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 			anim = false;
+		// 		});
 
-			} else {
+		// 	} else {
 
-				tl.to('.open-up', 0.3, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-				tl.to('.open-down', 0.55, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.close-up', 0.55, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
-				tl.to('.close-down', 0.8, {strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
-				tl.add(()=> {
-					svg.classList.remove('is-open');
-					svg.classList.add('is-close');
-					TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-					anim = false;
-				});
-			}
+		// 		tl.to('.open-up', 0.3, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.open-down', 0.55, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.close-up', 0.55, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
+		// 		tl.to('.close-down', 0.8, {strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
+		// 		tl.add(()=> {
+		// 			svg.classList.remove('is-open');
+		// 			svg.classList.add('is-close');
+		// 			TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 			anim = false;
+		// 		});
+		// 	}
 
 
-		});
+		// });
 
-		return false;
+		// return false;
 
 		// Load data
 		this.el = obj.el;

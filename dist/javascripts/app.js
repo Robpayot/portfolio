@@ -162,80 +162,87 @@ var Glitch = function () {
 	function Glitch(obj) {
 		_classCallCheck(this, Glitch);
 
-		var svg = document.querySelector('.test-svg');
-		var maxDash = 635;
-		var anim = false;
-		var hover = false;
-		svg.addEventListener('mouseover', function () {
+		// test icon menu
 
-			if (hover === true) return false;
-			if (anim === true) return false;
-			console.log('hover');
-			anim = true;
-			hover = true;
-			var tl = new TimelineMax();
-			if (svg.classList.contains('is-close')) {
+		// const svg = document.querySelector('.test-svg');
+		// const maxDash = 635;
+		// let anim = false;
+		// let hover = false;
+		// svg.addEventListener('mouseover', () => {
 
-				tl.to('.close-up', 0.4, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
-				tl.to('.close-down', 0.65, { strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.close-up', 0.4, { strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
-				tl.to('.close-down', 0.25, { strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut }, 0.65);
-				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
-				tl.add(function () {
-					anim = false;
-				});
-			} else {
-				tl.to('.open-up', 0.4, { strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-				tl.to('.open-down', 0.65, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.open-up', 0.4, { strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
-				tl.to('.open-down', 0.25, { strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut }, 0.65);
-				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
-				tl.add(function () {
-					anim = false;
-				});
-			}
-		});
 
-		svg.addEventListener('mouseleave', function () {
-			console.log('leave');
-			hover = false;
-		});
+		// 	if (hover === true) return false;
+		// 	if (anim === true) return false;
+		// 	console.log('hover');
+		// 	anim = true;
+		// 	hover = true;
+		// 	const tl = new TimelineMax();
+		// 	if (svg.classList.contains('is-close')) {
 
-		svg.addEventListener('click', function () {
+		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
+		// 		tl.to('.close-down', 0.25, {strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
+		// 		tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 		tl.add(()=> {
+		// 			anim = false;
+		// 		});
+		// 	} else {
+		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
+		// 		tl.to('.open-down', 0.25, {strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
+		// 		tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 		tl.add(()=> {
+		// 			anim = false;
+		// 		});
+		// 	}
 
-			if (anim === true) return false;
-			console.log('click');
-			anim = true;
-			var tl = new TimelineMax();
+		// });
 
-			if (svg.classList.contains('is-close')) {
+		// svg.addEventListener('mouseleave', () => {
+		// 	console.log('leave');
+		// 	hover = false;
+		// });
 
-				tl.to('.close-up', 0.4, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
-				tl.to('.close-down', 0.65, { strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.open-down', 0.65, { strokeDashoffset: maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.1);
-				tl.to('.open-up', 0.4, { strokeDashoffset: 0, ease: window.Expo.easeInOut }, 0.45);
-				tl.add(function () {
-					svg.classList.add('is-open');
-					svg.classList.remove('is-close');
-					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
-					anim = false;
-				});
-			} else {
+		// svg.addEventListener('click', () => {
 
-				tl.to('.open-up', 0.3, { strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-				tl.to('.open-down', 0.55, { strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.close-up', 0.55, { strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut }, 0.1);
-				tl.to('.close-down', 0.8, { strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut }, 0.1);
-				tl.add(function () {
-					svg.classList.remove('is-open');
-					svg.classList.add('is-close');
-					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
-					anim = false;
-				});
-			}
-		});
+		// 	if (anim === true) return false;
+		// 	console.log('click');
+		// 	anim = true;
+		// 	const tl = new TimelineMax();
 
-		return false;
+		// 	if (svg.classList.contains('is-close')) {
+
+		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.open-down', 0.65, {strokeDashoffset: maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
+		// 		tl.to('.open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
+		// 		tl.add(()=> {
+		// 			svg.classList.add('is-open');
+		// 			svg.classList.remove('is-close');
+		// 			TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 			anim = false;
+		// 		});
+
+		// 	} else {
+
+		// 		tl.to('.open-up', 0.3, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+		// 		tl.to('.open-down', 0.55, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
+		// 		tl.to('.close-up', 0.55, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
+		// 		tl.to('.close-down', 0.8, {strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
+		// 		tl.add(()=> {
+		// 			svg.classList.remove('is-open');
+		// 			svg.classList.add('is-close');
+		// 			TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 			anim = false;
+		// 		});
+		// 	}
+
+
+		// });
+
+		// return false;
 
 		// Load data
 		this.el = obj.el;
@@ -938,13 +945,20 @@ var Menu = function () {
 
 		this.ui = {
 			button: this.el.querySelector('.menu__button'),
+			buttonSvg: this.el.querySelector('.menu__button svg'),
 			overlay: this.el.querySelector('.menu__overlay'),
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
 			links: this.el.querySelectorAll('.menu__link')
 		};
 
+		this.maxDash = 635;
+		this.animBtn = false;
+		this.hoverBtn = false;
+
 		// bind
 		this.toggleOpen = this.toggleOpen.bind(this);
+		this.onOverBtn = this.onOverBtn.bind(this);
+		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.update = this.update.bind(this);
 		this.goTo = this.goTo.bind(this);
 
@@ -964,11 +978,21 @@ var Menu = function () {
 
 				el[evListener]('click', _this.goTo);
 			});
+
 			this.ui.button[evListener]('click', this.toggleOpen);
+			this.ui.button[evListener]('mouseover', this.onOverBtn);
+			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
+
+			// svg.addEventListener('mouseleave', () => {
+			// 	console.log('leave');
+			// 	hover = false;
+			// });
 		}
 	}, {
 		key: 'toggleOpen',
 		value: function toggleOpen() {
+			var _this2 = this;
+
 			var close = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
@@ -977,7 +1001,78 @@ var Menu = function () {
 				return false;
 			}
 
-			if (this.el.classList.contains('is-open') === true) this.el.classList.remove('is-open');else this.el.classList.add('is-open');
+			if (this.animBtn === true) return false;
+
+			this.animBtn = true;
+
+			var tl = new TimelineMax();
+			TweenMax.killTweensOf(['.close-up', '.close-down', '.open-up', '.open-down']);
+
+			if (this.el.classList.contains('is-open') === true) {
+
+				this.el.classList.remove('is-open');
+
+				tl.to('.open-up', 0.3, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.open-down', 0.55, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
+				tl.to('.close-up', 0.55, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.1);
+				tl.to('.close-down', 0.8, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut }, 0.1);
+				tl.add(function () {
+					_this2.ui.buttonSvg.classList.remove('is-open');
+					_this2.ui.buttonSvg.classList.add('is-close');
+					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+					_this2.animBtn = false;
+				});
+			} else {
+
+				this.el.classList.add('is-open');
+				tl.to('.close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
+				tl.to('.open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.1);
+				tl.to('.open-up', 0.4, { strokeDashoffset: 0, ease: window.Expo.easeInOut }, 0.45);
+				tl.add(function () {
+					_this2.ui.buttonSvg.classList.add('is-open');
+					_this2.ui.buttonSvg.classList.remove('is-close');
+					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+					_this2.animBtn = false;
+				});
+			}
+		}
+	}, {
+		key: 'onOverBtn',
+		value: function onOverBtn() {
+			var _this3 = this;
+
+			if (this.hover === true) return false;
+			if (this.anim === true) return false;
+
+			this.anim = true;
+			this.hover = true;
+			var tl = new TimelineMax();
+			if (this.ui.buttonSvg.classList.contains('is-close')) {
+
+				tl.to('.close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
+				tl.to('.close-up', 0.4, { strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
+				tl.to('.close-down', 0.25, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+				tl.add(function () {
+					_this3.anim = false;
+				});
+			} else {
+				tl.to('.open-up', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.open-down', 0.65, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
+				tl.to('.open-up', 0.4, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
+				tl.to('.open-down', 0.25, { strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+				tl.add(function () {
+					_this3.anim = false;
+				});
+			}
+		}
+	}, {
+		key: 'onLeaveBtn',
+		value: function onLeaveBtn() {
+			this.hover = false;
 		}
 	}, {
 		key: 'update',

@@ -403,8 +403,7 @@ body {
     border: 2px solid white; }
 
 .xp {
-  text-align: center;
-  display: none; }
+  text-align: center; }
 
 .test-svg {
   margin: 0 auto;
@@ -1114,13 +1113,10 @@ body {
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex; }
-    .ui .menu.alt .menu__button {
-      color: black;
-      border-color: black; }
+    .ui .menu.alt .menu__button svg polyline,
+    .ui .menu.alt .menu__button svg circle {
+      stroke: black; }
     .ui .menu.is-open .menu__button {
-      -webkit-transform: translateY(-50%) rotate(-90deg);
-      -ms-transform: translateY(-50%) rotate(-90deg);
-      transform: translateY(-50%) rotate(-90deg);
       color: white;
       border-color: white; }
     .ui .menu.is-open .menu__overlay {
@@ -1134,13 +1130,40 @@ body {
       position: absolute;
       top: 50%;
       left: 7vw;
-      -webkit-transform: translateY(-50%) rotate(90deg);
-      -ms-transform: translateY(-50%) rotate(90deg);
-      transform: translateY(-50%) rotate(90deg);
-      transition: color 0.5s ease, border 0.5s ease, -webkit-transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-      transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.5s ease, border 0.5s ease;
-      transition: transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.5s ease, border 0.5s ease, -webkit-transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+      -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
       pointer-events: auto; }
+      .ui .menu__button svg polyline,
+      .ui .menu__button svg circle {
+        stroke: white; }
+      .ui .menu__button svg {
+        margin: 0 auto;
+        display: block;
+        width: 50px;
+        height: 50px;
+        position: relative;
+        cursor: pointer; }
+        .ui .menu__button svg.is-close .open-down,
+        .ui .menu__button svg.is-close .open-up {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 635; }
+        .ui .menu__button svg.is-close .close-up {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 0; }
+        .ui .menu__button svg.is-close .close-down {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 840; }
+        .ui .menu__button svg.is-open .open-up {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 0; }
+        .ui .menu__button svg.is-open .open-down {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 430; }
+        .ui .menu__button svg.is-open .close-up,
+        .ui .menu__button svg.is-open .close-down {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 635; }
     .ui .menu__links {
       position: absolute;
       display: -webkit-box;
