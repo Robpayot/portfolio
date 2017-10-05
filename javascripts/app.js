@@ -187,7 +187,7 @@ var Glitch = function () {
 		// 		tl.add(()=> {
 		// 			anim = false;
 		// 		});
-		// 	} else {
+		// 	} else if (svg.classList.contains('is-open')) {
 		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
 		// 		tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
 		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
@@ -196,6 +196,19 @@ var Glitch = function () {
 		// 		tl.add(()=> {
 		// 			anim = false;
 		// 		});
+		// 	} else {
+
+		// tl.to('.close-down', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+		// tl.to('.close-down-2', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut }, 0.1);
+		// tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
+		// tl.to('.close-down-2', 0.4, {strokeDashoffset: maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
+		// tl.to('.close-down', 0.4, {strokeDashoffset: maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
+		// tl.to('.close-up', 0.45, {strokeDashoffset: -maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
+		// tl.set(['.close-up','.close-down','.close-down-2','.open-up','.open-down'], {clearProps: 'all'});
+		// tl.add(()=> {
+		// 	anim = false;
+		// });
+
 		// 	}
 
 		// });
@@ -203,6 +216,7 @@ var Glitch = function () {
 		// svg.addEventListener('mouseleave', () => {
 		// 	console.log('leave');
 		// 	hover = false;
+		// 	TweenMax.set(['.close-up','.close-down','.close-down-2','.open-down'], {clearProps: 'all'});
 		// });
 
 		// svg.addEventListener('click', () => {
@@ -242,7 +256,7 @@ var Glitch = function () {
 
 		// });
 
-		// return false;
+		return false;
 
 		// Load data
 		this.el = obj.el;
@@ -1006,33 +1020,33 @@ var Menu = function () {
 			this.animBtn = true;
 
 			var tl = new TimelineMax();
-			TweenMax.killTweensOf(['.close-up', '.close-down', '.open-up', '.open-down']);
+			TweenMax.killTweensOf(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down']);
 
 			if (this.el.classList.contains('is-open') === true) {
 
 				this.el.classList.remove('is-open');
 
-				tl.to('.open-up', 0.3, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.open-down', 0.55, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.close-up', 0.55, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.1);
-				tl.to('.close-down', 0.8, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut }, 0.1);
+				tl.to('.menu__button .open-up', 0.3, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.menu__button .open-down', 0.55, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
+				tl.to('.menu__button .close-up', 0.55, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.1);
+				tl.to('.menu__button .close-down', 0.8, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut }, 0.1);
 				tl.add(function () {
 					_this2.ui.buttonSvg.classList.remove('is-open');
 					_this2.ui.buttonSvg.classList.add('is-close');
-					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 					_this2.animBtn = false;
 				});
 			} else {
 
 				this.el.classList.add('is-open');
-				tl.to('.close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.1);
-				tl.to('.open-up', 0.4, { strokeDashoffset: 0, ease: window.Expo.easeInOut }, 0.45);
+				tl.to('.menu__button .close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.menu__button .close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
+				tl.to('.menu__button .open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.1);
+				tl.to('.menu__button .open-up', 0.4, { strokeDashoffset: 0, ease: window.Expo.easeInOut }, 0.45);
 				tl.add(function () {
 					_this2.ui.buttonSvg.classList.add('is-open');
 					_this2.ui.buttonSvg.classList.remove('is-close');
-					TweenMax.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 					_this2.animBtn = false;
 				});
 			}
@@ -1050,20 +1064,20 @@ var Menu = function () {
 			var tl = new TimelineMax();
 			if (this.ui.buttonSvg.classList.contains('is-close')) {
 
-				tl.to('.close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.close-up', 0.4, { strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
-				tl.to('.close-down', 0.25, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut }, 0.65);
-				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+				tl.to('.menu__button .close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.menu__button .close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
+				tl.to('.menu__button .close-up', 0.4, { strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
+				tl.to('.menu__button .close-down', 0.25, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 				tl.add(function () {
 					_this3.anim = false;
 				});
 			} else {
-				tl.to('.open-up', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.open-down', 0.65, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.open-up', 0.4, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
-				tl.to('.open-down', 0.25, { strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut }, 0.65);
-				tl.set(['.close-up', '.close-down', '.open-up', '.open-down'], { clearProps: 'all' });
+				tl.to('.menu__button .open-up', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+				tl.to('.menu__button .open-down', 0.65, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
+				tl.to('.menu__button .open-up', 0.4, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
+				tl.to('.menu__button .open-down', 0.25, { strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 				tl.add(function () {
 					_this3.anim = false;
 				});
@@ -10594,9 +10608,13 @@ var ProjectView = function (_AbstractView) {
 		_this.onChangeCameraRot = _this.onChangeCameraRot.bind(_this);
 		_this.checkCssContainer = _this.checkCssContainer.bind(_this);
 		_this.setEnvelop = _this.setEnvelop.bind(_this);
+		_this.onOverLink = _this.onOverLink.bind(_this);
+		_this.onLeaveLink = _this.onLeaveLink.bind(_this);
 
 		_this.bounceArea = 200; // default bounceArea
-
+		_this.animLink = false;
+		_this.hoverLink = false;
+		_this.maxDash = 635;
 		console.log('mon id', _this.id);
 
 		// ScrollManager.on();
@@ -10639,6 +10657,8 @@ var ProjectView = function (_AbstractView) {
 				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
 				_bean2.default.on(document.body, 'click.project', '.project__back', this.backFromContent);
 				_bean2.default.on(document.body, 'click.project', '.project__next', this.goTo);
+				_bean2.default.on(document.body, 'mouseover.project', '.project__link', this.onOverLink);
+				_bean2.default.on(document.body, 'mouseleave.project', '.project__link', this.onLeaveLink);
 			} else {
 				_bean2.default.off(document.body, 'click.project');
 			}
@@ -11117,9 +11137,37 @@ var ProjectView = function (_AbstractView) {
 		////////////
 
 	}, {
+		key: 'onOverLink',
+		value: function onOverLink() {
+			var _this3 = this;
+
+			if (this.hoverLink === true) return false;
+			if (this.animLink === true) return false;
+
+			this.animLink = true;
+			this.hoverLink = true;
+			var tl = new TimelineMax();
+
+			tl.to('.project__link .close-down', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+			tl.to('.project__link .close-down-2', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut }, 0.1);
+			tl.to('.project__link .close-up', 0.4, { strokeDashoffset: -this.maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
+			tl.to('.project__link .close-down-2', 0.4, { strokeDashoffset: this.maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
+			tl.to('.project__link .close-down', 0.4, { strokeDashoffset: this.maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
+			tl.to('.project__link .close-up', 0.45, { strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
+			tl.set(['.project__link .close-up', '.project__link .close-down', '.project__link .close-down-2', '.project__link .open-up', '.project__link .open-down'], { clearProps: 'all' });
+			tl.add(function () {
+				_this3.animLink = false;
+			});
+		}
+	}, {
+		key: 'onLeaveLink',
+		value: function onLeaveLink() {
+			this.hoverLink = false;
+		}
+	}, {
 		key: 'showContent',
 		value: function showContent() {
-			var _this3 = this;
+			var _this4 = this;
 
 			if (this.animating === true) return false;
 			this.animating = true;
@@ -11133,9 +11181,9 @@ var ProjectView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					// this.cameraRotX = true;
-					_this3.animating = false;
+					_this4.animating = false;
 					_ScrollManager2.default.on(); // start scrollmanager
-					_this3.glitch.stop = true;
+					_this4.glitch.stop = true;
 				}
 			});
 
@@ -11168,8 +11216,8 @@ var ProjectView = function (_AbstractView) {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 				}
 			}, 0);
 
@@ -11181,7 +11229,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'backFromContent',
 		value: function backFromContent() {
-			var _this4 = this;
+			var _this5 = this;
 
 			this.cameraRotX = true;
 			this.glitch.stop = false;
@@ -11190,10 +11238,10 @@ var ProjectView = function (_AbstractView) {
 			var trigo = { angle: 0 };
 			this.currentRotateY = { angle: (0, _utils.toRadian)(90) };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
-					_this4.initTopContentY = _this4.topContentTargetY = _this4.topContentSmoothY = _this4.topContentY = 5;
-					_this4.cameraMove = false;
-					_this4.camera.rotation.order = 'XYZ';
-					_this4.contentOpen = false;
+					_this5.initTopContentY = _this5.topContentTargetY = _this5.topContentSmoothY = _this5.topContentY = 5;
+					_this5.cameraMove = false;
+					_this5.camera.rotation.order = 'XYZ';
+					_this5.contentOpen = false;
 				} });
 
 			tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], 1.2, {
@@ -11208,8 +11256,8 @@ var ProjectView = function (_AbstractView) {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this5.camera.position.x = _this5.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this5.camera.position.z = _this5.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 					// this.camera.lookAt(this.cameraTarget);
 				}
 			}, 0.5);
@@ -11230,7 +11278,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'slideUp',
 		value: function slideUp() {
-			var _this5 = this;
+			var _this6 = this;
 
 			if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
 
@@ -11243,15 +11291,15 @@ var ProjectView = function (_AbstractView) {
 				y: -this.galleryAngle * (this.currentSlide + 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this5.currentSlide++;
-					_this5.isSliding = false;
+					_this6.currentSlide++;
+					_this6.isSliding = false;
 				}
 			});
 		}
 	}, {
 		key: 'slideDown',
 		value: function slideDown() {
-			var _this6 = this;
+			var _this7 = this;
 
 			if (this.isSliding === true || this.currentSlide === 0) return false;
 
@@ -11264,8 +11312,8 @@ var ProjectView = function (_AbstractView) {
 				y: -this.galleryAngle * (this.currentSlide - 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this6.currentSlide--;
-					_this6.isSliding = false;
+					_this7.currentSlide--;
+					_this7.isSliding = false;
 				}
 			});
 		}
@@ -11359,7 +11407,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'goTo',
 		value: function goTo() {
-			var _this7 = this;
+			var _this8 = this;
 
 			console.log('go To');
 			var dest = this.id + 1;
@@ -11385,7 +11433,7 @@ var ProjectView = function (_AbstractView) {
 			tl.add(function () {
 				console.log('add called');
 
-				_this7.transitionOut(dest);
+				_this8.transitionOut(dest);
 			}, '+=0.5');
 
 			// tl.to(this.symbol.mesh.position, 10, {y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
@@ -11531,7 +11579,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'transitionIn',
 		value: function transitionIn() {
-			var _this8 = this;
+			var _this9 = this;
 
 			var fromUrl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
@@ -11674,9 +11722,9 @@ var ProjectView = function (_AbstractView) {
 
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this8.camera.position.set(0, 0, 160);
-					if (noDolly === false) _this8.cameraMove = false;
-					_this8.clicked = false;
+					_this9.camera.position.set(0, 0, 160);
+					if (noDolly === false) _this9.cameraMove = false;
+					_this9.clicked = false;
 				}
 			});
 
@@ -11686,7 +11734,7 @@ var ProjectView = function (_AbstractView) {
 					lookatPosition: 1,
 					ease: window.Power4.easeOut,
 					onUpdate: function onUpdate() {
-						_this8.dolly.update();
+						_this9.dolly.update();
 					}
 				});
 			} else {
@@ -11724,7 +11772,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'transitionOut',
 		value: function transitionOut(dest) {
-			var _this9 = this;
+			var _this10 = this;
 
 			if (this.animating === true) return false;
 			this.animating = true;
@@ -11770,7 +11818,7 @@ var ProjectView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					// this.cameraMove = false;
-					_this9.animating = false;
+					_this10.animating = false;
 
 					TweenMax.killAll();
 					// TweenMax.killTweensOf(this.symbol.mesh.position);
@@ -11803,7 +11851,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'reset',
 		value: function reset() {
-			var _this10 = this;
+			var _this11 = this;
 
 			console.log('reset');
 
@@ -11812,9 +11860,9 @@ var ProjectView = function (_AbstractView) {
 			_ScrollManager2.default.off(); // stop scrollmanager
 
 			var tl = new TimelineMax({ onComplete: function onComplete() {
-					_this10.initTopContentY = _this10.topContentTargetY = _this10.topContentSmoothY = _this10.topContentY = 5;
-					_this10.cameraMove = false;
-					_this10.camera.rotation.order = 'XYZ';
+					_this11.initTopContentY = _this11.topContentTargetY = _this11.topContentSmoothY = _this11.topContentY = 5;
+					_this11.cameraMove = false;
+					_this11.camera.rotation.order = 'XYZ';
 				} });
 
 			tl.set(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], {
