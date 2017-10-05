@@ -81,7 +81,34 @@ $project3D-w : 1075px;
     	}
 
     	a {
-    		transform: rotate(90deg);
+
+    		svg {
+			 	width: 70px;
+				height: 70px;
+				position: relative;
+				cursor: pointer;
+				polyline,
+				circle {
+					stroke: white;
+				}
+    			.open-down,
+				.open-up {
+					stroke-dasharray: 635;
+					stroke-dashoffset: 635;
+				}
+				.close-up {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: -840;
+				}
+				.close-down {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: -180;
+				}
+				.close-down-2 {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 535;
+				}
+    		}
 
     	}
     }

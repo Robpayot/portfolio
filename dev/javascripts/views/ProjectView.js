@@ -78,10 +78,14 @@ export default class ProjectView extends AbstractView {
 		this.onChangeCameraRot = this.onChangeCameraRot.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
 		this.setEnvelop = this.setEnvelop.bind(this);
+		this.onOverLink = this.onOverLink.bind(this);
+		this.onLeaveLink = this.onLeaveLink.bind(this);
 
 
 		this.bounceArea = 200; // default bounceArea
-
+		this.animLink = false;
+		this.hoverLink = false;
+		this.maxDash = 635;
 		console.log('mon id', this.id);
 
 		// ScrollManager.on();
@@ -116,6 +120,9 @@ export default class ProjectView extends AbstractView {
 			bean.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
 			bean.on(document.body, 'click.project', '.project__back', this.backFromContent);
 			bean.on(document.body, 'click.project', '.project__next', this.goTo);
+			bean.on(document.body, 'mouseover.project', '.project__link', this.onOverLink);
+			bean.on(document.body, 'mouseleave.project', '.project__link', this.onLeaveLink);
+
 		} else {
 			bean.off(document.body, 'click.project');
 		}
@@ -613,6 +620,31 @@ export default class ProjectView extends AbstractView {
 	////////////
 	// EVENTS
 	////////////
+
+	onOverLink() {
+
+		if (this.hoverLink === true) return false;
+		if (this.animLink === true) return false;
+
+		this.animLink = true;
+		this.hoverLink = true;
+		const tl = new TimelineMax();
+
+		tl.to('.project__link .close-down', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+		tl.to('.project__link .close-down-2', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut }, 0.1);
+		tl.to('.project__link .close-up', 0.4, {strokeDashoffset: -this.maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
+		tl.to('.project__link .close-down-2', 0.4, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
+		tl.to('.project__link .close-down', 0.4, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
+		tl.to('.project__link .close-up', 0.45, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
+		tl.set(['.project__link .close-up','.project__link .close-down','.project__link .close-down-2','.project__link .open-up','.project__link .open-down'], {clearProps: 'all'});
+		tl.add(()=> {
+			this.animLink = false;
+		});
+	}
+
+	onLeaveLink() {
+		this.hoverLink = false;
+	}
 
 	showContent() {
 

@@ -34,7 +34,7 @@ export default class Glitch {
 		// 		tl.add(()=> {
 		// 			anim = false;
 		// 		});
-		// 	} else {
+		// 	} else if (svg.classList.contains('is-open')) {
 		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
 		// 		tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
 		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
@@ -43,6 +43,19 @@ export default class Glitch {
 		// 		tl.add(()=> {
 		// 			anim = false;
 		// 		});
+		// 	} else {
+
+				// tl.to('.close-down', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
+				// tl.to('.close-down-2', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut }, 0.1);
+				// tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
+				// tl.to('.close-down-2', 0.4, {strokeDashoffset: maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
+				// tl.to('.close-down', 0.4, {strokeDashoffset: maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
+				// tl.to('.close-up', 0.45, {strokeDashoffset: -maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
+				// tl.set(['.close-up','.close-down','.close-down-2','.open-up','.open-down'], {clearProps: 'all'});
+				// tl.add(()=> {
+				// 	anim = false;
+				// });
+
 		// 	}
 
 		// });
@@ -50,6 +63,7 @@ export default class Glitch {
 		// svg.addEventListener('mouseleave', () => {
 		// 	console.log('leave');
 		// 	hover = false;
+		// 	TweenMax.set(['.close-up','.close-down','.close-down-2','.open-down'], {clearProps: 'all'});
 		// });
 
 		// svg.addEventListener('click', () => {
@@ -89,7 +103,7 @@ export default class Glitch {
 
 		// });
 
-		// return false;
+		return false;
 
 		// Load data
 		this.el = obj.el;

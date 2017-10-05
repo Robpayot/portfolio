@@ -70,34 +70,34 @@ export default class Menu {
 		this.animBtn = true;
 
 		const tl = new TimelineMax();
-		TweenMax.killTweensOf(['.close-up','.close-down','.open-up','.open-down']);
+		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 
 		if (this.el.classList.contains('is-open') === true) {
 
 			this.el.classList.remove('is-open');
 
-			tl.to('.open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.open-down', 0.55, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-			tl.to('.close-up', 0.55, {strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
-			tl.to('.close-down', 0.8, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+			tl.to('.menu__button .open-down', 0.55, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
+			tl.to('.menu__button .close-up', 0.55, {strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
+			tl.to('.menu__button .close-down', 0.8, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
 			tl.add(()=> {
 				this.ui.buttonSvg.classList.remove('is-open');
 				this.ui.buttonSvg.classList.add('is-close');
-				TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 				this.animBtn = false;
 			});
 
 		} else {
 
 			this.el.classList.add('is-open');
-			tl.to('.close-up', 0.4, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.close-down', 0.65, {strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-			tl.to('.open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
-			tl.to('.open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
+			tl.to('.menu__button .close-up', 0.4, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
+			tl.to('.menu__button .close-down', 0.65, {strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
+			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
+			tl.to('.menu__button .open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
 			tl.add(()=> {
 				this.ui.buttonSvg.classList.add('is-open');
 				this.ui.buttonSvg.classList.remove('is-close');
-				TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 				this.animBtn = false;
 			});
 		}
@@ -113,20 +113,20 @@ export default class Menu {
 		const tl = new TimelineMax();
 		if (this.ui.buttonSvg.classList.contains('is-close')) {
 
-			tl.to('.close-up', 0.4, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.close-down', 0.65, {strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-			tl.to('.close-up', 0.4, {strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-			tl.to('.close-down', 0.25, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
-			tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+			tl.to('.menu__button .close-up', 0.4, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
+			tl.to('.menu__button .close-down', 0.65, {strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
+			tl.to('.menu__button .close-up', 0.4, {strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
+			tl.to('.menu__button .close-down', 0.25, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
+			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
 				this.anim = false;
 			});
 		} else {
-			tl.to('.open-up', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.open-down', 0.65, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-			tl.to('.open-up', 0.4, {strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-			tl.to('.open-down', 0.25, {strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
-			tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+			tl.to('.menu__button .open-up', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
+			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
+			tl.to('.menu__button .open-up', 0.4, {strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
+			tl.to('.menu__button .open-down', 0.25, {strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
+			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
 				this.anim = false;
 			});

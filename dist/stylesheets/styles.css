@@ -403,7 +403,8 @@ body {
     border: 2px solid white; }
 
 .xp {
-  text-align: center; }
+  text-align: center;
+  display: none; }
 
 .test-svg {
   margin: 0 auto;
@@ -412,6 +413,19 @@ body {
   height: 50px;
   position: relative;
   cursor: pointer; }
+  .test-svg.is-live .open-down,
+  .test-svg.is-live .open-up {
+    stroke-dasharray: 635;
+    stroke-dashoffset: 635; }
+  .test-svg.is-live .close-up {
+    stroke-dasharray: 635;
+    stroke-dashoffset: -840; }
+  .test-svg.is-live .close-down {
+    stroke-dasharray: 635;
+    stroke-dashoffset: -180; }
+  .test-svg.is-live .close-down-2 {
+    stroke-dasharray: 635;
+    stroke-dashoffset: 535; }
   .test-svg.is-close .open-down,
   .test-svg.is-close .open-up {
     stroke-dasharray: 635;
@@ -634,10 +648,27 @@ body {
   align-items: center; }
   .project__link span {
     margin-right: 20px; }
-  .project__link a {
-    -webkit-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg); }
+  .project__link a svg {
+    width: 70px;
+    height: 70px;
+    position: relative;
+    cursor: pointer; }
+    .project__link a svg polyline,
+    .project__link a svg circle {
+      stroke: white; }
+    .project__link a svg .open-down,
+    .project__link a svg .open-up {
+      stroke-dasharray: 635;
+      stroke-dashoffset: 635; }
+    .project__link a svg .close-up {
+      stroke-dasharray: 635;
+      stroke-dashoffset: -840; }
+    .project__link a svg .close-down {
+      stroke-dasharray: 635;
+      stroke-dashoffset: -180; }
+    .project__link a svg .close-down-2 {
+      stroke-dasharray: 635;
+      stroke-dashoffset: 535; }
 
 .project__gallery {
   margin-top: 100px;
