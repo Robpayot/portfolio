@@ -403,8 +403,7 @@ body {
     border: 2px solid white; }
 
 .xp {
-  text-align: center;
-  display: none; }
+  text-align: center; }
 
 .test-svg {
   margin: 0 auto;
@@ -413,6 +412,18 @@ body {
   height: 50px;
   position: relative;
   cursor: pointer; }
+  .test-svg.is-up .up-1 {
+    stroke-dasharray: 100%;
+    stroke-dashoffset: 92%; }
+  .test-svg.is-up .up-2 {
+    stroke-dasharray: 100%;
+    stroke-dashoffset: -14%; }
+  .test-svg.is-down .down-1 {
+    stroke-dasharray: 100%;
+    stroke-dashoffset: 70%; }
+  .test-svg.is-down .down-2 {
+    stroke-dasharray: 100%;
+    stroke-dashoffset: -36%; }
   .test-svg.is-live .open-down,
   .test-svg.is-live .open-up {
     stroke-dasharray: 635;
