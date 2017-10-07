@@ -89,7 +89,7 @@ if (window.location.host === 'robpayot.github.io') {
 
 	_PreloadManager2.default.on('complete', _AppManager2.default.start, undefined, true);
 
-	_PreloadManager2.default.loadManifest([{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' }, { id: 'texture-star', src: 'images/textures/star-2.png' }, { id: 'damier', src: 'images/textures/damier.jpg' }, { id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }
+	_PreloadManager2.default.loadManifest([{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' }, { id: 'texture-star', src: 'images/textures/star-2.png' }, { id: 'damier', src: 'images/textures/damier.jpg' }, { id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-project-next', src: global.BASE + '/templates/projectNext.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }
 	// { id: 'template-menu', src: ''}
 	]);
 
@@ -164,99 +164,113 @@ var Glitch = function () {
 
 		// test icon menu
 
-		// const svg = document.querySelector('.test-svg');
+		// const svg = document.querySelectorAll('.test-svg');
 		// const maxDash = 635;
 		// let anim = false;
 		// let hover = false;
-		// svg.addEventListener('mouseover', () => {
+		// svg.forEach((el) => {
+
+		// 	el.addEventListener('mouseover', () => {
 
 
-		// 	if (hover === true) return false;
-		// 	if (anim === true) return false;
-		// 	console.log('hover');
-		// 	anim = true;
-		// 	hover = true;
-		// 	const tl = new TimelineMax();
-		// 	if (svg.classList.contains('is-close')) {
+		// 		if (hover === true) return false;
+		// 		if (anim === true) return false;
+		// 		console.log('hover');
+		// 		anim = true;
+		// 		hover = true;
+		// 		const tl = new TimelineMax();
+		// 		if (el.classList.contains('is-close')) {
 
-		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
-		// 		tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
-		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-		// 		tl.to('.close-down', 0.25, {strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
-		// 		tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 		tl.add(()=> {
-		// 			anim = false;
-		// 		});
-		// 	} else if (svg.classList.contains('is-open')) {
-		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-		// 		tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
-		// 		tl.to('.open-up', 0.4, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-		// 		tl.to('.open-down', 0.25, {strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
-		// 		tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 		tl.add(()=> {
-		// 			anim = false;
-		// 		});
-		// 	} else {
+		// 			tl.to('.close-up', 1, {strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut}, 0 );
+		// 			tl.to('.close-down', 1.2, {strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.1);
+		// 			tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 			tl.add(()=> {
+		// 				anim = false;
+		// 			});
+		// 		} else if (el.classList.contains('is-open')) {
+		// 			tl.to('.open-up', 1, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0 );
+		// 			tl.to('.open-down', 1.2, {strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut}, 0.1);
+		// 			tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 			tl.add(()=> {
+		// 				anim = false;
+		// 			});
+		// 		} else if (el.classList.contains('is-live')) {
 
-		// tl.to('.close-down', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-		// tl.to('.close-down-2', 0.4, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut }, 0.1);
-		// tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
-		// tl.to('.close-down-2', 0.4, {strokeDashoffset: maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
-		// tl.to('.close-down', 0.4, {strokeDashoffset: maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
-		// tl.to('.close-up', 0.45, {strokeDashoffset: -maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
-		// tl.set(['.close-up','.close-down','.close-down-2','.open-up','.open-down'], {clearProps: 'all'});
-		// tl.add(()=> {
-		// 	anim = false;
+		// 			tl.to('.close-down-2', 0.8, {strokeDashoffset: maxDash * 3 - 100, ease: window.Expo.easeInOut }, 0);
+		// 			tl.to('.close-down', 0.9, {strokeDashoffset: maxDash * 2 - 180, ease: window.Expo.easeInOut }, 0.1);
+		// 			tl.to('.close-up', 1, {strokeDashoffset: -maxDash * 3 - 205, ease: window.Expo.easeInOut }, 0.2);
+		// 			tl.set(['.close-up','.close-down','.close-down-2','.open-up','.open-down'], {clearProps: 'all'});
+		// 			tl.add(()=> {
+		// 				anim = false;
+		// 			});
+
+		// 		} else if (el.classList.contains('is-down')) {
+
+		// 			tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeInOut }, 0);
+		// 			tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeInOut }, 0.1);
+		// 			tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
+		// 			tl.add(()=> {
+		// 				anim = false;
+		// 			});
+		// 		} else if (el.classList.contains('is-up')) {
+
+		// 			tl.to('.up-1', 1.2, {strokeDashoffset: '292%', ease: window.Expo.easeInOut }, 0);
+		// 			tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeInOut }, 0.1);
+		// 			tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
+		// 			tl.add(()=> {
+		// 				anim = false;
+		// 			});
+		// 		}
+
+		// 	});
+
+		// 	el.addEventListener('mouseleave', () => {
+		// 		console.log('leave');
+		// 		hover = false;
+		// 		TweenMax.set(['.close-up','.close-down','.close-down-2','.open-down', '.down-1', '.down-2', '.up-1', '.up-2'], {clearProps: 'all'});
+		// 	});
+
+		// 	el.addEventListener('click', () => {
+
+		// 		if (anim === true) return false;
+		// 		console.log('click');
+		// 		anim = true;
+		// 		const tl = new TimelineMax();
+
+		// 		if (el.classList.contains('is-close')) {
+
+		// 			tl.to('.close-up', 0.5, {strokeDashoffset: -maxDash, ease: window.Expo.easeInOut });
+		// 			tl.to('.close-down', 0.75, {strokeDashoffset: maxDash * 3, ease: window.Expo.easeInOut }, 0);
+		// 			tl.to('.open-down', 0.75, {strokeDashoffset: maxDash * 3 - 205, ease: window.Expo.easeInOut}, 0.1 );
+		// 			tl.to('.open-up', 0.5, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
+		// 			tl.add(()=> {
+		// 				el.classList.add('is-open');
+		// 				el.classList.remove('is-close');
+		// 				TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 				anim = false;
+		// 			});
+
+		// 		} else {
+
+		// 			tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Expo.easeInOut });
+		// 			tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Expo.easeInOut }, 0);
+		// 			tl.to('.close-up', 0.65, {strokeDashoffset: maxDash * 2, ease: window.Expo.easeInOut}, 0.1 );
+		// 			tl.to('.close-down', 0.9, {strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
+		// 			tl.add(()=> {
+		// 				el.classList.remove('is-open');
+		// 				el.classList.add('is-close');
+		// 				TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
+		// 				anim = false;
+		// 			});
+		// 		}
+
+
+		// 	});
+
 		// });
 
-		// 	}
 
-		// });
-
-		// svg.addEventListener('mouseleave', () => {
-		// 	console.log('leave');
-		// 	hover = false;
-		// 	TweenMax.set(['.close-up','.close-down','.close-down-2','.open-down'], {clearProps: 'all'});
-		// });
-
-		// svg.addEventListener('click', () => {
-
-		// 	if (anim === true) return false;
-		// 	console.log('click');
-		// 	anim = true;
-		// 	const tl = new TimelineMax();
-
-		// 	if (svg.classList.contains('is-close')) {
-
-		// 		tl.to('.close-up', 0.4, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut });
-		// 		tl.to('.close-down', 0.65, {strokeDashoffset: maxDash * 3, ease: window.Power4.easeInOut }, 0);
-		// 		tl.to('.open-down', 0.65, {strokeDashoffset: maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
-		// 		tl.to('.open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
-		// 		tl.add(()=> {
-		// 			svg.classList.add('is-open');
-		// 			svg.classList.remove('is-close');
-		// 			TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 			anim = false;
-		// 		});
-
-		// 	} else {
-
-		// 		tl.to('.open-up', 0.3, {strokeDashoffset: maxDash, ease: window.Power4.easeInOut });
-		// 		tl.to('.open-down', 0.55, {strokeDashoffset: -maxDash, ease: window.Power4.easeInOut }, 0);
-		// 		tl.to('.close-up', 0.55, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
-		// 		tl.to('.close-down', 0.8, {strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
-		// 		tl.add(()=> {
-		// 			svg.classList.remove('is-open');
-		// 			svg.classList.add('is-close');
-		// 			TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 			anim = false;
-		// 		});
-		// 	}
-
-
-		// });
-
-		return false;
+		// return false;
 
 		// Load data
 		this.el = obj.el;
@@ -1016,8 +1030,9 @@ var Menu = function () {
 			}
 
 			if (this.animBtn === true) return false;
-
+			if (this.animClicked === true) return false;
 			this.animBtn = true;
+			this.animClicked = true;
 
 			var tl = new TimelineMax();
 			TweenMax.killTweensOf(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down']);
@@ -1026,28 +1041,30 @@ var Menu = function () {
 
 				this.el.classList.remove('is-open');
 
-				tl.to('.menu__button .open-up', 0.3, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.menu__button .open-down', 0.55, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.menu__button .close-up', 0.55, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.1);
-				tl.to('.menu__button .close-down', 0.8, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut }, 0.1);
+				tl.to('.menu__button .open-up', 0.3, { strokeDashoffset: this.maxDash, ease: window.Expo.easeOut });
+				tl.to('.menu__button .open-down', 0.3, { strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
+				tl.to('.menu__button .close-up', 0.65, { strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut }, 0.1);
+				tl.to('.menu__button .close-down', 0.9, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut }, 0.3);
 				tl.add(function () {
 					_this2.ui.buttonSvg.classList.remove('is-open');
 					_this2.ui.buttonSvg.classList.add('is-close');
 					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 					_this2.animBtn = false;
+					_this2.animClicked = false;
 				});
 			} else {
 
 				this.el.classList.add('is-open');
-				tl.to('.menu__button .close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.menu__button .close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.menu__button .open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.1);
-				tl.to('.menu__button .open-up', 0.4, { strokeDashoffset: 0, ease: window.Expo.easeInOut }, 0.45);
+				tl.to('.menu__button .close-up', 0.3, { strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut });
+				tl.to('.menu__button .close-down', 0.3, { strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
+				tl.to('.menu__button .open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.1);
+				tl.to('.menu__button .open-up', 0.9, { strokeDashoffset: 0, ease: window.Expo.easeOut }, 0.3);
 				tl.add(function () {
 					_this2.ui.buttonSvg.classList.add('is-open');
 					_this2.ui.buttonSvg.classList.remove('is-close');
 					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 					_this2.animBtn = false;
+					_this2.animClicked = false;
 				});
 			}
 		}
@@ -1056,37 +1073,38 @@ var Menu = function () {
 		value: function onOverBtn() {
 			var _this3 = this;
 
-			if (this.hover === true) return false;
-			if (this.anim === true) return false;
+			if (this.hoverBtn === true) return false;
+			if (this.animBtn === true) return false;
+			if (this.animClicked === true) return false;
 
-			this.anim = true;
-			this.hover = true;
+			// this.animBtn = true;
+			this.hoverBtn = true;
 			var tl = new TimelineMax();
+			// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+			TweenMax.killTweensOf(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down']);
 			if (this.ui.buttonSvg.classList.contains('is-close')) {
 
-				tl.to('.menu__button .close-up', 0.4, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.menu__button .close-down', 0.65, { strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-				tl.to('.menu__button .close-up', 0.4, { strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
-				tl.to('.menu__button .close-down', 0.25, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.to('.menu__button .close-up', 1, { strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut }, 0);
+				tl.to('.menu__button .close-down', 1.2, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut }, 0);
 				tl.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 				tl.add(function () {
-					_this3.anim = false;
+					_this3.hoverBtn = false;
+					_this3.animBtn = false;
 				});
 			} else {
-				tl.to('.menu__button .open-up', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-				tl.to('.menu__button .open-down', 0.65, { strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-				tl.to('.menu__button .open-up', 0.4, { strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut }, 0.4);
-				tl.to('.menu__button .open-down', 0.25, { strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut }, 0.65);
+				tl.to('.menu__button .open-up', 1, { strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut }, 0);
+				tl.to('.menu__button .open-down', 1.2, { strokeDashoffset: -this.maxDash - 205, ease: window.Expo.easeOut }, 0);
 				tl.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 				tl.add(function () {
-					_this3.anim = false;
+					_this3.hoverBtn = false;
+					_this3.animBtn = false;
 				});
 			}
 		}
 	}, {
 		key: 'onLeaveBtn',
 		value: function onLeaveBtn() {
-			this.hover = false;
+			this.hoverBtn = false;
 		}
 	}, {
 		key: 'update',
@@ -10985,8 +11003,9 @@ var ProjectView = function (_AbstractView) {
 			prevProject.scale.multiplyScalar(this.coefText);
 
 			// Next project
-
-			var nextProject = new _CssContainer2.default('<a href="#project-' + nextId + '" class="project__next transi">Next</a>', this.cssScene, this.cssObjects);
+			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-next'));
+			html = template({ id: nextId });
+			var nextProject = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			nextProject.position.set(0, 50, 10);
 			nextProject.scale.multiplyScalar(this.coefText);
 
@@ -11148,12 +11167,9 @@ var ProjectView = function (_AbstractView) {
 			this.hoverLink = true;
 			var tl = new TimelineMax();
 
-			tl.to('.project__link .close-down', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.project__link .close-down-2', 0.4, { strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut }, 0.1);
-			tl.to('.project__link .close-up', 0.4, { strokeDashoffset: -this.maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
-			tl.to('.project__link .close-down-2', 0.4, { strokeDashoffset: this.maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
-			tl.to('.project__link .close-down', 0.4, { strokeDashoffset: this.maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
-			tl.to('.project__link .close-up', 0.45, { strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
+			tl.to('.project__link .close-down-2', 0.8, { strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
+			tl.to('.project__link .close-down', 0.9, { strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
+			tl.to('.project__link .close-up', 1, { strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
 			tl.set(['.project__link .close-up', '.project__link .close-down', '.project__link .close-down-2', '.project__link .open-up', '.project__link .open-down'], { clearProps: 'all' });
 			tl.add(function () {
 				_this3.animLink = false;

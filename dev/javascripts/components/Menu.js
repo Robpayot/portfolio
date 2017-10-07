@@ -66,8 +66,9 @@ export default class Menu {
 		}
 
 		if (this.animBtn === true) return false;
-
+		if (this.animClicked === true) return false;
 		this.animBtn = true;
+		this.animClicked = true;
 
 		const tl = new TimelineMax();
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
@@ -76,65 +77,68 @@ export default class Menu {
 
 			this.el.classList.remove('is-open');
 
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.menu__button .open-down', 0.55, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-			tl.to('.menu__button .close-up', 0.55, {strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut}, 0.1 );
-			tl.to('.menu__button .close-down', 0.8, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut });
+			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.1 );
+			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
 			tl.add(()=> {
 				this.ui.buttonSvg.classList.remove('is-open');
 				this.ui.buttonSvg.classList.add('is-close');
 				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 				this.animBtn = false;
+				this.animClicked = false;
 			});
 
 		} else {
 
 			this.el.classList.add('is-open');
-			tl.to('.menu__button .close-up', 0.4, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.menu__button .close-down', 0.65, {strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Power4.easeInOut}, 0.1 );
-			tl.to('.menu__button .open-up', 0.4, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
+			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut });
+			tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut}, 0.1 );
+			tl.to('.menu__button .open-up', 0.9, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0.3);
 			tl.add(()=> {
 				this.ui.buttonSvg.classList.add('is-open');
 				this.ui.buttonSvg.classList.remove('is-close');
 				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 				this.animBtn = false;
+				this.animClicked = false;
 			});
 		}
 	}
 
 	onOverBtn() {
 
-		if (this.hover === true) return false;
-		if (this.anim === true) return false;
+		if (this.hoverBtn === true) return false;
+		if (this.animBtn === true) return false;
+		if (this.animClicked === true) return false;
 
-		this.anim = true;
-		this.hover = true;
+		// this.animBtn = true;
+		this.hoverBtn = true;
 		const tl = new TimelineMax();
+		// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 		if (this.ui.buttonSvg.classList.contains('is-close')) {
 
-			tl.to('.menu__button .close-up', 0.4, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.menu__button .close-down', 0.65, {strokeDashoffset: this.maxDash * 3, ease: window.Power4.easeInOut }, 0);
-			tl.to('.menu__button .close-up', 0.4, {strokeDashoffset: -this.maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-			tl.to('.menu__button .close-down', 0.25, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.65);
+			tl.to('.menu__button .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
+			tl.to('.menu__button .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
-				this.anim = false;
+				this.hoverBtn = false;
+				this.animBtn = false;
 			});
 		} else {
-			tl.to('.menu__button .open-up', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: -this.maxDash, ease: window.Power4.easeInOut }, 0);
-			tl.to('.menu__button .open-up', 0.4, {strokeDashoffset: this.maxDash * 2, ease: window.Power4.easeInOut}, 0.4 );
-			tl.to('.menu__button .open-down', 0.25, {strokeDashoffset: -this.maxDash - 205, ease: window.Power4.easeInOut}, 0.65);
+			tl.to('.menu__button .open-up', 1, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0 );
+			tl.to('.menu__button .open-down', 1.2, {strokeDashoffset: -this.maxDash - 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
-				this.anim = false;
+				this.hoverBtn = false;
+				this.animBtn = false;
 			});
 		}
 	}
 
 	onLeaveBtn() {
-		this.hover = false;
+		this.hoverBtn = false;
 	}
 
 	update(view, index) {

@@ -1,6 +1,5 @@
 .xp {
     text-align: center;
-    display: none;
 
 }
 
@@ -11,6 +10,29 @@
 	height: 50px;
 	position: relative;
 	cursor: pointer;
+
+	&.is-up {
+		.up-1 { // can do it in percent.....
+			stroke-dasharray: 100%; // 848;
+			stroke-dashoffset: 92%; // 713;
+		}
+		.up-2 {
+			// display: none;
+			stroke-dasharray: 100%; // 848;
+			stroke-dashoffset: -14%; //  -224
+		}
+	}
+
+	&.is-down {
+		.down-1 {
+			stroke-dasharray: 100%;
+			stroke-dashoffset: 70%;
+		}
+		.down-2 {
+			stroke-dasharray: 100%;
+			stroke-dashoffset: -36%;
+		}
+	}
 
 	&.is-live {
 		.open-down,

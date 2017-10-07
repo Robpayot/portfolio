@@ -468,10 +468,12 @@ export default class ProjectView extends AbstractView {
 
 
 		// Next project
-
-		const nextProject = new CssContainer(`<a href="#project-${nextId}" class="project__next transi">Next</a>`, this.cssScene, this.cssObjects);
+		template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
+		html  = template({id: nextId});
+		const nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
 		nextProject.position.set(0, 50, 10);
 		nextProject.scale.multiplyScalar(this.coefText);
+		
 
 		// // Gallery
 		const radius = 100; // radius circonference of gallery circle
@@ -630,16 +632,14 @@ export default class ProjectView extends AbstractView {
 		this.hoverLink = true;
 		const tl = new TimelineMax();
 
-		tl.to('.project__link .close-down', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut });
-		tl.to('.project__link .close-down-2', 0.4, {strokeDashoffset: this.maxDash, ease: window.Power4.easeInOut }, 0.1);
-		tl.to('.project__link .close-up', 0.4, {strokeDashoffset: -this.maxDash * 3, ease: window.Power4.easeInOut }, 0.2);
-		tl.to('.project__link .close-down-2', 0.4, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Power4.easeInOut }, 0.4);
-		tl.to('.project__link .close-down', 0.4, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Power4.easeInOut }, 0.5);
-		tl.to('.project__link .close-up', 0.45, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Power4.easeInOut }, 0.6);
+		tl.to('.project__link .close-down-2', 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
+		tl.to('.project__link .close-down', 0.9, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
+		tl.to('.project__link .close-up', 1, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
 		tl.set(['.project__link .close-up','.project__link .close-down','.project__link .close-down-2','.project__link .open-up','.project__link .open-down'], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animLink = false;
 		});
+
 	}
 
 	onLeaveLink() {
