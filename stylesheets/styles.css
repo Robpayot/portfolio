@@ -276,7 +276,10 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 
 body {
   font-family: 'Theinhardt';
-  overflow: hidden; }
+  overflow: hidden;
+  cursor: none !important; }
+  body a {
+    cursor: none !important; }
 
 .dg.ac {
   z-index: 9000 !important; }
@@ -404,6 +407,56 @@ body {
 
 .xp {
   text-align: center; }
+
+.cursor {
+  margin: 0 auto;
+  display: block;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  z-index: 9000;
+  pointer-events: none; }
+  .cursor .c-2 {
+    stroke-dasharray: 308%;
+    stroke-dashoffset: 308%;
+    -webkit-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    -webkit-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    transform-origin: 50% 50%; }
+  .cursor.is-hover circle {
+    stroke-width: 3; }
+  .cursor circle {
+    stroke: white;
+    stroke-width: 2; }
+  .cursor.alt circle {
+    stroke: black; }
+
+.circle {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid black; }
+  .circle.circle1 {
+    top: 50%;
+    left: 40px; }
+  .circle.circle2 {
+    top: 60%;
+    right: 80px; }
 
 .test-svg {
   margin: 0 auto;
@@ -662,8 +715,7 @@ body {
   .project__link a svg {
     width: 70px;
     height: 70px;
-    position: relative;
-    cursor: pointer; }
+    position: relative; }
     .project__link a svg polyline,
     .project__link a svg circle {
       stroke: white; }
@@ -701,9 +753,6 @@ body {
     width: 100%;
     border: 1px solid rgba(128, 128, 128, 0.15); }
 
-.project__btn {
-  cursor: pointer; }
-
 .project__footer {
   opacity: 0;
   display: -webkit-box;
@@ -731,43 +780,15 @@ body {
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
   text-align: center;
-  text-transform: uppercase;
-  cursor: pointer; }
+  text-transform: uppercase; }
   .project__back .button {
     text-transform: none;
     margin-top: 20px; }
-
-.project__arrow {
-  transition: -webkit-transform 0.3s ease-out;
-  transition: transform 0.3s ease-out;
-  transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
-  cursor: pointer;
-  opacity: 0; }
-  .project__arrow img {
-    width: 40px; }
-  .project__arrow:hover {
-    -webkit-transform: scale(1.05) translateX(10px) !important;
-    -ms-transform: scale(1.05) translateX(10px) !important;
-    transform: scale(1.05) translateX(10px) !important; }
-  .project__arrow-l {
-    -webkit-transform: rotate(180deg);
-    -ms-transform: rotate(180deg);
-    transform: rotate(180deg); }
-    .project__arrow-l:hover {
-      -webkit-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
-      -ms-transform: scale(1.05) rotate(180deg) translateX(10px) !important;
-      transform: scale(1.05) rotate(180deg) translateX(10px) !important; }
-  .project__arrow-r {
-    width: 30px;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 25px; }
 
 .project__title {
   font-size: 4.6em;
   display: inline-block;
   vertical-align: middle;
-  cursor: pointer;
   white-space: nowrap;
   -webkit-transform: translateX(50%);
   -ms-transform: translateX(50%);
@@ -826,24 +847,63 @@ body {
     transition: width 0.8s cubic-bezier(0.16, 0.29, 0, 1); }
 
 .project__next, .project__prev {
-  font-size: 40px;
+  position: relative;
   display: inline-block;
   vertical-align: middle;
-  cursor: pointer;
   white-space: nowrap;
   opacity: 0;
-  text-transform: uppercase; }
-  .project__next.transi, .project__prev.transi {
-    transition: -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
-    transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
-    transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1); }
-  .project__next:hover, .project__prev:hover {
-    -webkit-transform: scale(1.15) !important;
-    -ms-transform: scale(1.15) !important;
-    transform: scale(1.15) !important; }
+  text-transform: uppercase;
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  font-family: 'Theinhardt-regular'; }
+  .project__next hr, .project__prev hr {
+    position: absolute;
+    width: 3px;
+    height: 120px;
+    background-color: white;
+    left: 50%;
+    top: calc(100% + 40px);
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%); }
+  .project__next span, .project__prev span {
+    opacity: 0;
+    display: block; }
+  .project__next svg, .project__prev svg {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    height: 200px;
+    position: relative; }
+    .project__next svg circle, .project__prev svg circle {
+      -webkit-transform-origin: 75% 75%;
+      -ms-transform-origin: 75% 75%;
+      transform-origin: 75% 75%; }
+    .project__next svg polyline,
+    .project__next svg circle, .project__prev svg polyline,
+    .project__prev svg circle {
+      stroke: white; }
+    .project__next svg.is-up .up-1, .project__prev svg.is-up .up-1 {
+      stroke-dasharray: 100%;
+      stroke-dashoffset: 92%; }
+    .project__next svg.is-up .up-2, .project__prev svg.is-up .up-2 {
+      stroke-dasharray: 100%;
+      stroke-dashoffset: -14%; }
+    .project__next svg.is-down .down-1, .project__prev svg.is-down .down-1 {
+      stroke-dasharray: 100%;
+      stroke-dashoffset: 70%; }
+    .project__next svg.is-down .down-2, .project__prev svg.is-down .down-2 {
+      stroke-dasharray: 100%;
+      stroke-dashoffset: -36%; }
 
-.project__prev {
-  display: none; }
+.project__prev hr {
+  top: calc(0% - 40px); }
+
+.project__prev svg {
+  margin-top: 60px; }
+
+.project__next svg {
+  margin-bottom: 60px; }
 
 .project .link img {
   width: 40px;
@@ -854,7 +914,6 @@ body {
   width: 25px;
   height: 35px;
   display: inline-block;
-  cursor: pointer;
   visibility: hidden;
   opacity: 0;
   transition: -webkit-transform 0.5s cubic-bezier(0.16, 0.29, 0, 1);
@@ -1184,8 +1243,11 @@ body {
         display: block;
         width: 50px;
         height: 50px;
-        position: relative;
-        cursor: pointer; }
+        position: relative; }
+        .ui .menu__button svg circle {
+          -webkit-transform-origin: 75% 75%;
+          -ms-transform-origin: 75% 75%;
+          transform-origin: 75% 75%; }
         .ui .menu__button svg.is-close .open-down,
         .ui .menu__button svg.is-close .open-up {
           stroke-dasharray: 635;
@@ -1213,7 +1275,6 @@ body {
       display: flex;
       left: 27.5vw;
       opacity: 0;
-      cursor: pointer;
       transition: opacity 0.5s ease; }
     .ui .menu__link {
       margin-right: 10vw;
