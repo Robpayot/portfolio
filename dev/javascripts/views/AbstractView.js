@@ -51,7 +51,8 @@ export default class AbstractView {
 		this.height = window.innerHeight * window.devicePixelRatio;
 
 		SceneManager.resizeHandler({
-			camera: this.camera
+			camera: this.camera,
+			cssScene: this.cssScene
 		});
 
 	}

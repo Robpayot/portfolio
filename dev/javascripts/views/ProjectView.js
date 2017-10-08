@@ -80,12 +80,15 @@ export default class ProjectView extends AbstractView {
 		this.setEnvelop = this.setEnvelop.bind(this);
 		this.onOverLink = this.onOverLink.bind(this);
 		this.onLeaveLink = this.onLeaveLink.bind(this);
-
+		this.onOverBtn = this.onOverBtn.bind(this);
+		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 
 		this.bounceArea = 200; // default bounceArea
 		this.animLink = false;
 		this.hoverLink = false;
 		this.maxDash = 635;
+		this.animBtn = false;
+		this.hoverBtn = false;
 		console.log('mon id', this.id);
 
 		// ScrollManager.on();
@@ -100,7 +103,7 @@ export default class ProjectView extends AbstractView {
 
 		if (Device.touch === false) {
 			// move camera
-			document[evListener]('mousemove', this.onMouseMove);
+			EmitterManager[onListener]('mousemove', this.onMouseMove);
 			document.body[evListener]('click', this.onClick);
 			// document[evListener]('mousewheel', this.onMouseWheel);
 			// document[evListener]('MozMousePixelScroll', this.onMouseWheel);
@@ -113,16 +116,24 @@ export default class ProjectView extends AbstractView {
 		EmitterManager[onListener]('raf', this.raf);
 
 		if (method === true) {
-			bean.on(document.body, 'mouseenter.project', '.glitch', () => { this.glitch.hover = true; });
-			bean.on(document.body, 'mouseleave.project', '.glitch', () => { this.glitch.hover = false; });
+			bean.on(document.body, 'mouseenter.project', '.glitch', () => {
+				this.glitch.hover = true;
+				global.CURSOR.interractHover();
+			});
+			bean.on(document.body, 'mouseleave.project', '.glitch', () => {
+				this.glitch.hover = false;
+				global.CURSOR.interractLeave();
+			});
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			bean.on(document.body, 'click.project', '.gallery__arrow-r', this.slideUp);
 			bean.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
 			bean.on(document.body, 'click.project', '.project__back', this.backFromContent);
 			bean.on(document.body, 'click.project', '.project__next', this.goTo);
+			bean.on(document.body, 'click.project', '.project__prev', this.goTo);
 			bean.on(document.body, 'mouseover.project', '.project__link', this.onOverLink);
 			bean.on(document.body, 'mouseleave.project', '.project__link', this.onLeaveLink);
-
+			bean.on(document.body, 'mouseover.project', '.project__arrow', this.onOverBtn);
+			bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 		} else {
 			bean.off(document.body, 'click.project');
 		}
@@ -133,7 +144,7 @@ export default class ProjectView extends AbstractView {
 	init() {
 
 
-		this.isControls = true;
+		this.isControls = false;
 		this.postProc = true;
 
 		this.cssObjects = [];
@@ -336,6 +347,8 @@ export default class ProjectView extends AbstractView {
 		this.UI.intro.style.display = 'none';
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.remove('is-open');
+		global.CURSOR.interractLeave();
+		global.CURSOR.el.classList.remove('alt');
 
 		if (this.alt === true) {
 			this.el.classList.add('alt');
@@ -460,20 +473,32 @@ export default class ProjectView extends AbstractView {
 		const prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
 		const nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
 
+		// Pixel to Units magic FORMULE
+		const distZ = -10;
+		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+		const wHeight = 2 * Math.tan( vFOV / 2 ) * (160 - distZ); // visible height dist = 60 (160 - 100)
+		const margePosY = 7;
+		const finalPosY = wHeight / 2 - margePosY;
+		console.log(finalPosY);
+		// wHeight === window.innerHeight in Units equivalent
+		// let aspect = window.width / window.height;
+
 
 		// Prev project
-		const prevProject = new CssContainer(`<a href="#project-${prevId}" class="project__prev transi">Prev</a>`, this.cssScene, this.cssObjects);
-		prevProject.position.set(0, -50, 10);
-		prevProject.scale.multiplyScalar(this.coefText);
+		template = Handlebars.compile(PreloadManager.getResult('tpl-project-prev'));
+		html  = template({id: prevId, color: DATA.projects[prevId].color });
+		this.prevProject = new CssContainer(html, this.cssScene, this.cssObjects);
+		this.prevProject.position.set(0, -finalPosY, -distZ);
+		this.prevProject.scale.multiplyScalar(this.coefText);
 
 
 		// Next project
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
-		html  = template({id: nextId});
-		const nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
-		nextProject.position.set(0, 50, 10);
-		nextProject.scale.multiplyScalar(this.coefText);
-		
+		html  = template({id: nextId, color: DATA.projects[nextId].color});
+		this.nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
+		this.nextProject.position.set(0, finalPosY, -distZ);
+		this.nextProject.scale.multiplyScalar(this.coefText);
+
 
 		// // Gallery
 		const radius = 100; // radius circonference of gallery circle
@@ -579,6 +604,8 @@ export default class ProjectView extends AbstractView {
 			let percent = this.ui.projectContainer.offsetHeight / 2 / window.innerHeight;
 			this.maxHeightUnits = wHeight * percent + globalMargeScrollBot;
 
+			TweenMax.set('.project__next hr', {y: -100});
+			TweenMax.set('.project__prev hr', {y: -120});
 		}
 
 	}
@@ -623,13 +650,16 @@ export default class ProjectView extends AbstractView {
 	// EVENTS
 	////////////
 
-	onOverLink() {
+	onOverLink(e) {
 
 		if (this.hoverLink === true) return false;
+		global.CURSOR.interractHover();
 		if (this.animLink === true) return false;
 
 		this.animLink = true;
 		this.hoverLink = true;
+
+		TweenMax.to('.project__link circle', 0, {opacity: 0});
 		const tl = new TimelineMax();
 
 		tl.to('.project__link .close-down-2', 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
@@ -644,6 +674,9 @@ export default class ProjectView extends AbstractView {
 
 	onLeaveLink() {
 		this.hoverLink = false;
+		global.CURSOR.interractLeave();
+		TweenMax.fromTo('.project__link circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.fromTo('.project__link circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 	}
 
 	showContent() {
@@ -684,7 +717,7 @@ export default class ProjectView extends AbstractView {
 			ease: window.Power4.easeOut
 		}, 0.2, 2.4);
 
-		tl.staggerTo(['.project__next','.project__title'], 0.6, { // 0.6
+		tl.staggerTo(['.project__prev','.project__next','.project__title'], 0.6, { // 0.6
 			opacity: 0,
 			ease: window.Power4.easeOut
 		},0.2,1.6);
@@ -748,7 +781,7 @@ export default class ProjectView extends AbstractView {
 			ease: window.Power3.easeInOut
 		}, 0.5);
 
-		tl.staggerTo(['.project__next','.project__title'], 0.6, {
+		tl.staggerTo(['.project__prev','.project__next','.project__title'], 0.6, {
 			opacity: 1,
 			ease: window.Power4.easeOut
 		},0.2,1.5);
@@ -841,15 +874,72 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	onMouseMove(e) {
+	onOverBtn(e) {
 
-		const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
-		const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+		if (this.hoverBtn === true) return false;
+		const el = e.currentTarget;
+		global.CURSOR.interractHover({color: el.getAttribute('data-color'), href: el.href});
+		if (this.animLink === true) return false;
+
+		// this.animLink = true;
+		this.hoverBtn = true;
+		const tl = new TimelineMax();
+		// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+		// TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
+
+		if (el.classList.contains('project__prev')) {
+
+			tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeOut }, 0);
+			tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeOut }, 0.1);
+			tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
+			tl.fromTo('.project__prev span', 1, {opacity: 0, y: '100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
+			tl.fromTo('.project__prev hr', 1, {y: -120}, {y: -220, ease: window.Expo.easeOut}, 0);
+			tl.add(()=> {
+				this.animLink = false;
+			});
+
+			TweenMax.to('.project__prev circle', 0, {opacity: 0});
+
+		} else if (el.classList.contains('project__next')) {
+
+			tl.to('.up-1', 0.9, {strokeDashoffset: '292%', ease: window.Expo.easeOut }, 0.1);
+			tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeOut }, 0.1);
+			tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
+			tl.fromTo('.project__next span', 1, {opacity: 0, y: '-100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
+			tl.fromTo('.project__next hr', 1, {y: -100}, {y: 0, ease: window.Expo.easeOut}, 0);
+			tl.add(()=> {
+				this.animLink = false;
+			});
+
+			TweenMax.to('.project__next circle', 0, {opacity: 0});
+		}
+	}
+
+	onLeaveBtn(e) {
+		const el = e.currentTarget;
+
+		global.CURSOR.interractLeave({color: el.getAttribute('data-color'), href: el.href});
+		this.hoverBtn = false;
+		if (el.classList.contains('project__prev')) {
+			TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
+			TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+			TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
+			TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
+
+		} else {
+			TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
+			TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+			TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
+			TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
+		}
+	}
+
+	onMouseMove(x, y) {
 
 		// calculate mouse position in normalized device coordinates
 		// (-1 to +1) for both components
-		this.mouse.x = eventX / window.innerWidth * 2 - 1;
-		this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
+		this.mouse.x = x / window.innerWidth * 2 - 1;
+		this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 		// console.log(this.mouse);
 
 		// Update camera
@@ -890,50 +980,31 @@ export default class ProjectView extends AbstractView {
 
 	goTo() {
 
-		console.log('go To');
-		let dest = this.id + 1;
-
-		if (dest < 0) dest = DATA.projects.length - 1;
-		if (dest > DATA.projects.length - 1) dest = 0;
-
-		if (this.clicked === true) return false;
-		this.clicked = true;
-
-		// const tl = new TimelineMax({delay: 2});
-		const tl = new TimelineMax();
-
-		// glitch
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 0});
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 1}, 0.01);
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 1, x: 1}, 0.03);
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 2, x: -1}, 0.05);
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY - 1, x: 2}, 0.07);
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY + 3, x: 1}, 0.09);
-		// tl.set(this.symbol.mesh.position, {y: this.symbol.initPointY, x: 0}, 0.12);
-
-		tl.add(() => {
-			console.log('add called');
-
-			this.transitionOut(dest);
-
-		}, '+=0.5');
-
-		// tl.to(this.symbol.mesh.position, 10, {y: 0, z: -300, ease: window.Expo.easeOut }, '+=0.2');
-
-		tl.staggerTo(['.project__next', '.project__title'], 0.5, {opacity: 0}, 0.2, 0);
-
-		// issue if come back to this timeline and 10 times end
 
 	}
 
-	// resizeHandler() {
+	resizeHandler() {
+		super.resizeHandler();
+		// update project title pos
+		// Pixel to Units magic FORMULE
+		// const distZ = -10;
+		// const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+		// const wHeight = 2 * Math.tan( vFOV / 2 ) * (160 - distZ); // visible height dist = 60 (160 - 100)
+		// const margePosY = 0;
+		// const finalPosY = wHeight / 2 - margePosY;
+		// console.log(finalPosY);
+		// // wHeight === window.innerHeight in Units equivalent
+		// // let aspect = window.width / window.height;
+		// // Prev project
+		// this.prevProject.position.set(0, -finalPosY, -distZ);
+		// // Next project
+		// this.nextProject.position.set(0, finalPosY, -distZ);
+		// this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
+		// this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
 
-	// 	// this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
-	// 	// this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
+		// this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
 
-	// 	// this.effectFXAA.uniforms['resolution'].value.set(1 / this.width, 1 / this.height);
-
-	// }
+	}
 
 	raf() {
 
@@ -1018,7 +1089,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if (this.cameraMove === false && this.isControls === false) {
+		if (this.cameraMove === false && this.isControls === false) { // /!\ A faire dans le Onmouseevent ????
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
@@ -1235,7 +1306,7 @@ export default class ProjectView extends AbstractView {
 
 		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-		tl.staggerFromTo(['.glitch', '.project__more', '.project__number', '.project__next'], 1.2, { // 1.2
+		tl.staggerFromTo(['.glitch', '.project__more', '.project__number', '.project__prev', '.project__next'], 1.2, { // 1.2
 			opacity: 0,
 			y: 20
 		}, {
@@ -1357,38 +1428,9 @@ export default class ProjectView extends AbstractView {
 			angle: toRadian(0)
 		});
 
-		tl.set(['.project__next','.project__title'], {
+		tl.set(['.project__next','.project__prev','.project__title'], {
 			opacity: 1
 		});
-
-		// this.destroy();
-
-		// // Set asteroid
-		// this.setAsteroids();
-
-		// // Set envelop
-		// this.setEnvelop();
-
-		// // Set Context
-		// this.setCssContainers();
-
-		// // set Light
-		// this.setLight();
-
-		// // Raycaster
-		// this.raycaster = new Raycaster();
-
-		// // Mouse
-		// this.mouse = { x: 0, y: 0 };
-		// this.initPhysics();
-
-		// if (this.guiParams.gravity === true) {
-		//     this.world.gravity.y = -90;
-
-		//     console.log('gravity down');
-		// } else {
-		//     this.world.gravity.y = 0;
-		// }
 
 	}
 

@@ -150,6 +150,8 @@ export default class AboutView extends AbstractView {
 		// Wait for cssContainer to be add in DOM
 		this.refreshIntervalId = setInterval(this.checkCssContainer, 500);
 
+		global.CURSOR.el.classList.add('alt');
+
 
 		// reset Water bits to 64
 		// setInterval(() => {

@@ -65,7 +65,10 @@
 			width: 50px;
 			height: 50px;
 			position: relative;
-			cursor: pointer;
+			// cursor: pointer;
+			circle {
+				transform-origin: 75% 75%;
+			}
 
 			&.is-close {
 				.open-down,
@@ -110,7 +113,7 @@
 		left: 27.5vw;
 
 		opacity: 0;
-		cursor: pointer;
+		// cursor: pointer;
 
 		transition: opacity 0.5s ease;
 

@@ -9,6 +9,98 @@ export default class Glitch {
 
 	constructor(obj) {
 
+		// test cursor
+
+		// const circle1 = document.querySelector('.circle1');
+		// const circle2 = document.querySelector('.circle2');
+
+		// let viewportOffset = circle1.getBoundingClientRect();
+		// // these are relative to the viewport, i.e. the window
+		// let top = viewportOffset.top;
+		// let left = viewportOffset.left;
+		// console.log(viewportOffset);
+		// let marge = 20;
+
+		// let minPointX = viewportOffset.left - viewportOffset.width / 2;
+		// let maxPointX = viewportOffset.left + viewportOffset.width;
+		// let minPointY = viewportOffset.top - viewportOffset.height / 2;
+		// let maxPointY = viewportOffset.top + viewportOffset.height;
+
+		// const svg = document.querySelector('.cursor');
+		// const svgCircle = svg.querySelectorAll('circle');
+		// const c1 = svgCircle[0];
+		// const c2 = svgCircle[1];
+		// this.circleObj = {val : 15.9};
+		// this.cursorTarget = { x: 0, y: 0};
+		// this.cursorSmooth = { x: 0, y: 0};
+
+		// document.addEventListener('mousemove', (e) => {
+		// 	const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+		// 	const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+
+		// 	if (this.hasDelay === true) {
+		// 		// Specify target we want
+		// 		// à faire dans un raf
+		// 		this.cursorTarget.x = eventX;
+		// 		this.cursorTarget.y = eventY;
+
+		// 		if (this.cursorTarget.x === this.cursorSmooth.x && this.cursorTarget.y === this.cursorSmooth.y) {
+		// 			this.hasDelay = false;
+		// 			console.log('delay false !!!')
+		// 		}
+
+		// 		// Smooth it with deceleration
+		// 		this.cursorSmooth.x += (this.cursorTarget.x - this.cursorSmooth.x) * 0.08;
+		// 		this.cursorSmooth.y += (this.cursorTarget.y - this.cursorSmooth.y) * 0.08;
+
+		// 		svg.style.left = this.cursorSmooth.x;
+		// 		svg.style.top = this.cursorSmooth.y;
+
+				
+				
+		// 	} else {
+
+		// 		if (this.stopFollow !== true) {
+		// 			svg.style.left = this.cursorSmooth.x = eventX;
+		// 			svg.style.top = this.cursorSmooth.y = eventY;
+		// 		}
+
+				
+		// 	}
+
+
+		// 	if (eventX + marge > minPointX && eventX < maxPointX + marge && eventY + marge > minPointY && eventY < maxPointY + marge) {
+		// 		if (svg.classList.contains('is-hover') === false) {
+		// 			svg.classList.add('is-hover');
+		// 			// this.hasDelay = true;
+		// 			this.stopFollow = true;
+		// 			TweenMax.to(svg, 0.5, {left: viewportOffset.left + viewportOffset.width / 2, top: viewportOffset.top + viewportOffset.height / 2});
+		// 			TweenMax.to(this.cursorSmooth, 0.5, {x: viewportOffset.left + viewportOffset.width / 2, y: viewportOffset.top + viewportOffset.height / 2});
+		// 			TweenMax.to(this.circleObj, 0.8, { val: 50, onUpdate:() => {
+		// 				console.log(this.circleObj.val);
+		// 				c1.setAttribute('r', this.circleObj.val);
+		// 				c2.setAttribute('r', this.circleObj.val);
+		// 			}});
+		// 			TweenMax.to(circle1, 0.5, {borderWidth: 0});
+		// 		}
+		// 	} else {
+		// 		if (svg.classList.contains('is-hover') === true) {
+		// 			svg.classList.remove('is-hover');
+		// 			this.stopFollow = false;
+		// 			this.hasDelay = true;
+		// 			// TweenMax.to(svg, 0.5, {left: eventX, top: eventY});
+		// 			TweenMax.to(this.circleObj, 0.8, { val: 15.9, onUpdate:() => {
+		// 				c1.setAttribute('r', this.circleObj.val);
+		// 				c2.setAttribute('r', this.circleObj.val);
+
+		// 				// this.hasDelay = false;
+		// 			}});
+		// 			TweenMax.to(circle1, 0.5, {borderWidth: 1});
+		// 		}
+		// 	}
+
+		// });
+
 		// test icon menu
 
 		// const svg = document.querySelectorAll('.test-svg');

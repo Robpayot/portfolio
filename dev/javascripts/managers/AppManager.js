@@ -7,6 +7,7 @@ import { Device } from '../helpers/Device';
 import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
 import Menu from '../components/Menu';
+import Cursor from '../components/Cursor';
 import bean from 'bean';
 import Handlebars from 'handlebars';
 
@@ -18,6 +19,7 @@ class AppManager {
 		this.start = this.start.bind(this);
 		this.resizeHandler = this.resizeHandler.bind(this);
 		this.raf = this.raf.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
 
 	}
 
@@ -43,6 +45,7 @@ class AppManager {
 
 		this.graphicBars = new GraphicBars();
 		this.menu = global.MENU = new Menu();
+		this.cursor = global.CURSOR = new Cursor();
 
 		// Set up scene
 		SceneManager.start();
@@ -60,15 +63,19 @@ class AppManager {
 
 	events(method) {
 
+		this.resizeHandler();
+
 		let listen = method === false ? 'removeEventListener' : 'addEventListener';
 
 		// raf
 		TweenMax.ticker[listen]('tick', this.raf);
-
+		if (Device.touch === false) {
+			// move camera
+			document[listen]( 'mousemove', this.onMouseMove, false );
+		}
 
 		listen = method === false ? 'off' : 'on';
 
-		this.resizeHandler();
 		bean[listen](window, 'resize', this.resizeHandler);
 
 	}
@@ -78,18 +85,12 @@ class AppManager {
 		EmitterManager.emit('raf');
 	}
 
-	// completeLoading() {
+	onMouseMove(e) {
+		const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+		const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
 
-
-
-	//     // Preload Font for pixi.js
-	//     // WebFont.load({
-	//     //     custom: {
-	//     //         families: ['Avenir-black']
-	//     //     }
-	//     // });
-
-	// }
+		EmitterManager.emit('mousemove', eventX, eventY);
+	}
 
 	resizeHandler() {
 

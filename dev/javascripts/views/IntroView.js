@@ -105,6 +105,14 @@ export default class IntroView extends AbstractView {
 		document[evListener]( 'click', this.onClick , false );
 
 		this.UI.button[evListener]('click', this.onClickStart);
+		this.UI.button[evListener]('mouseenter', () => {
+			this.startIsHover = true;
+			global.CURSOR.interractHover();
+		});
+		this.UI.button[evListener]('mouseleave', () => {
+			this.startIsHover = false;
+			global.CURSOR.interractLeave();
+		});
 
 	}
 
@@ -180,6 +188,8 @@ export default class IntroView extends AbstractView {
 		};
 		gui.add( buttonSmooth, 'smoothWater' );
 		gui.close();
+
+		global.CURSOR.el.classList.add('alt');
 
 	}
 
@@ -613,6 +623,8 @@ export default class IntroView extends AbstractView {
 	onClick() {
 		if (this.clickAsteroid === true) {
 
+			global.CURSOR.interractLeave();
+
 			this.currentAstClicked = this.currentAstHover;
 			this.currentAstClicked.animated = true;
 			this.onAsteroidAnim = true;
@@ -788,6 +800,13 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
 		}
+
+		if (this.startIsHover !== true) {
+			if (this.clickAsteroid === true) global.CURSOR.interractHover();
+			else global.CURSOR.interractLeave();
+		}
+
+
 
 		this.render();
 

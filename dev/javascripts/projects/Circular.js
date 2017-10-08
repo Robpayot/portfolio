@@ -5,7 +5,7 @@ import { loadJSON } from '../helpers/utils-three';
 import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
-import { Mesh, Group, PlaneGeometry, MeshLambertMaterial, PointLight, Object3D } from 'three';
+import { Mesh, Group, PlaneGeometry, DirectionalLight, MeshLambertMaterial, PointLight, Object3D } from 'three';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
@@ -127,15 +127,15 @@ export default class Circular extends ProjectView {
 
 	setLight() {
 
-		this.envelop.visible = false;
+		// this.envelop.visible = false;
 
 		let paramsLight = [
 			// { x: 70, y: 70, z: 0 },
 			// { x: -100, y: 0, z: 0 },
 			// { x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 170 },
-			{ x: 0, y: -0, z: 0 },
-			{ x: 0, y: 20, z: -100, l: 480 },
+			// { x: 0, y: 0, z: 170 },
+			// { x: 0, y: -0, z: 0 },
+			// { x: 0, y: 20, z: -100, l: 480 },
 		];
 
 		// Check Ambient Light
@@ -155,6 +155,12 @@ export default class Circular extends ProjectView {
 			// add to the scene
 			this.scene.add(pointLight);
 		}
+		let light = new DirectionalLight( 0xffffff, 1 );
+		light.position.set( 0, 0, 1 );
+		this.scene.add( light );
+		let light2 = new DirectionalLight( 0xffffff, 1 );
+		light2.position.set( 1, 0, 0 );
+		this.scene.add( light2 );
 	}
 
 	raf() {

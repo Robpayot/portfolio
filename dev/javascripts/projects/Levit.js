@@ -21,7 +21,7 @@ export default class Levit extends ProjectView {
 		this.setAsteroids = this.setAsteroids.bind(this);
 
 		this.nbAst = 10;
-		this.bounceArea = 100;
+		this.bounceArea = 200;
 
 		// preload Models
 		Promise.all([

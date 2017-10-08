@@ -5,7 +5,7 @@ import SceneManager from '../managers/SceneManager';
 
 
 // THREE JS
-import { SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import { SphereGeometry, Clock, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -315,8 +315,8 @@ export default class Stars extends ProjectView {
 
 		let paramsLight = [
 			{ x: -10, y: 0, z: 0, d: 120, it: 3, moving: true },
-			{ x: 0, y: 0, z: -100, d: 150, it: 2 },
-			{ x: 0, y: 0, z: 0, d: 30, it: 2 },
+			// { x: 0, y: 0, z: -100, d: 150, it: 2 },
+			// { x: 0, y: 0, z: 0, d: 30, it: 2 },
 			// { x: 0, y: 30, z: 30 },
 			// { x: 0, y: 30, z: -30 },
 			// { x: -30, y: 30, z: 0 },
@@ -344,6 +344,12 @@ export default class Stars extends ProjectView {
 				this.lights.push(pointLight);
 			}
 		}
+		let light = new DirectionalLight( 0xffffff, 1 );
+		light.position.set( 0, 0, 1 );
+		this.scene.add( light );
+		let light2 = new DirectionalLight( 0xffffff, 1 );
+		light2.position.set( 1, 0, 0 );
+		this.scene.add( light2 );
 
 
 	}

@@ -49,7 +49,7 @@ export default class Menu {
 		});
 
 		this.ui.button[evListener]('click', this.toggleOpen);
-		this.ui.button[evListener]('mouseover', this.onOverBtn);
+		this.ui.button[evListener]('mouseenter', this.onOverBtn);
 		this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
 
 		// svg.addEventListener('mouseleave', () => {
@@ -106,9 +106,11 @@ export default class Menu {
 		}
 	}
 
-	onOverBtn() {
+	onOverBtn(e) {
 
 		if (this.hoverBtn === true) return false;
+		global.CURSOR.interractHover({el: e.currentTarget, magnet: true});
+
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
 
@@ -117,13 +119,13 @@ export default class Menu {
 		const tl = new TimelineMax();
 		// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
+		TweenMax.to('.menu__button circle', 0, {opacity: 0});
 		if (this.ui.buttonSvg.classList.contains('is-close')) {
 
 			tl.to('.menu__button .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
 			tl.to('.menu__button .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
-				this.hoverBtn = false;
 				this.animBtn = false;
 			});
 		} else {
@@ -131,14 +133,16 @@ export default class Menu {
 			tl.to('.menu__button .open-down', 1.2, {strokeDashoffset: -this.maxDash - 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
-				this.hoverBtn = false;
 				this.animBtn = false;
 			});
 		}
 	}
 
 	onLeaveBtn() {
+		global.CURSOR.interractLeave({magnet: true});
 		this.hoverBtn = false;
+		TweenMax.fromTo('.menu__button circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.fromTo('.menu__button circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 	}
 
 	update(view, index) {
