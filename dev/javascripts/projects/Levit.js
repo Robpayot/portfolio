@@ -3,7 +3,7 @@ import { getRandom, toRadian } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
 
 // THREE JS
-import { MeshLambertMaterial, PointLight } from 'three';
+import { MeshLambertMaterial, PointLight, SpotLight, DirectionalLight } from 'three';
 import Asteroid from '../shapes/Asteroid';
 
 
@@ -21,6 +21,7 @@ export default class Levit extends ProjectView {
 		this.setAsteroids = this.setAsteroids.bind(this);
 
 		this.nbAst = 10;
+		this.bounceArea = 200;
 
 		// preload Models
 		Promise.all([
@@ -129,33 +130,44 @@ export default class Levit extends ProjectView {
 
 	setLight() {
 
-		let paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			{ x: -100, y: 0, z: 0 },
-			{ x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 170 },
-			{ x: 0, y: -0, z: 0 }
-		];
+		// let paramsLight = [
+		// 	// { x: 70, y: 70, z: 0 },
+		// 	{ x: 0, y: 0, z: -100, d: 160, it: 2 },
+		// 	{ x: 0, y: 0, z: -100, d: 160, it: 2 },
+		// 	{ x: 0, y: 0, z: 0, d: 110, it: 4 },
+		// 	// { x: 0, y: 30, z: 30 },
+		// 	// { x: 0, y: 30, z: -30 },
+		// 	// { x: -30, y: 30, z: 0 },
+		// 	// { x: 0, y: -30, z: 0 }
+		// ];
 
-		// Check Ambient Light
-		// scene.add( new THREE.AmbientLight( 0x00020 ) );
+		// // Check Ambient Light
+		// // scene.add( new THREE.AmbientLight( 0x00020 ) );
 
-		for (let i = 0; i < paramsLight.length; i++) {
+		// for (let i = 0; i < paramsLight.length; i++) {
 
-			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 600, 2);
-			// set its position
-			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			// pointLight.power = 20;
-			pointLight.visible = true;
+		// 	const d = paramsLight[i].d || 100;
+		// 	const it = paramsLight[i].it || 1;
 
-			// add to the scene
-			this.scene.add(pointLight);
-		}
+		// 	// create a point light
+		// 	let pointLight = new PointLight(0x707070, it, d, 1);
+		// 	// set its position
+		// 	pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+		// 	// pointLight.power = 20;
+		// 	pointLight.visible = true;
 
+		// 	// add to the scene
+		// 	this.scene.add(pointLight);
+		// }
+		let light = new DirectionalLight( 0xffffff, 1 );
+		light.position.set( 0, 0, 1 );
+		this.scene.add( light );
+		let light2 = new DirectionalLight( 0xffffff, 1 );
+		light2.position.set( 1, 0, 0 );
+		this.scene.add( light2 );
 		// white spotlight shining from the side, casting a shadow
 
-		// var spotLight = new SpotLight(0xffffff);
+		// const spotLight = new SpotLight(0xffffff);
 		// spotLight.position.set(0, 0, -100);
 		// spotLight.angle = toRadian(180);
 
@@ -170,7 +182,14 @@ export default class Levit extends ProjectView {
 
 		// this.scene.add(spotLight);
 
-		// var directionalLight = new DirectionalLight(0xffffff, 0.5);
+		// let directionalLight = new DirectionalLight(0xffffff, 0.7);
+		// directionalLight.position.set(-1, 0, 0);
+		// // directionalLight.rotation.set(toRadian(90), toRadian(90), toRadian(90));
+		// // this.scene.add(directionalLight);
+
+		// directionalLight = new DirectionalLight(0xffffff, 0.7);
+		// directionalLight.position.set(0, 1, 1);
+		// // directionalLight.rotation.set(toRadian(90), toRadian(90), toRadian(90));
 		// this.scene.add(directionalLight);
 	}
 

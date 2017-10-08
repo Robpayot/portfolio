@@ -1,6 +1,11 @@
 body {
 	font-family: 'Theinhardt';
 	overflow: hidden;
+    cursor:none !important;
+    a {
+    	cursor: none !important;
+    }
+
 }
 
 .dg.ac {

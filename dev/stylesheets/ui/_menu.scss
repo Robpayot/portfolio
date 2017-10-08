@@ -15,8 +15,12 @@
 	&.alt {
 		.menu {
 			&__button {
-				color: black;
-				border-color: black;
+
+				svg polyline,
+				svg circle {
+					stroke: black;
+				}
+
 			}
 		}
 	}
@@ -24,7 +28,6 @@
 	&.is-open {
 		.menu {
 			&__button {
-				transform: translateY(-50%) rotate(-90deg);
 				color: white;
 				border-color: white;
 			}
@@ -49,10 +52,59 @@
 		position: absolute;
 		top: 50%;
 		left: 7vw;
-		transform: translateY(-50%) rotate(90deg);
-		transition: transform 0.8s $Power3EaseOut, color 0.5s ease, border 0.5s ease;
+		transform: translateY(-50%);
 
 		pointer-events: auto;
+		svg polyline,
+		svg circle {
+			stroke: white;
+		}
+		svg {
+			margin: 0 auto;
+			display: block;
+			width: 50px;
+			height: 50px;
+			position: relative;
+			// cursor: pointer;
+			circle {
+				transform-origin: 75% 75%;
+			}
+
+			&.is-close {
+				.open-down,
+				.open-up {
+					stroke-dasharray: 635;
+					stroke-dashoffset: 635;
+				}
+				.close-up {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 0;
+				}
+				.close-down {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 840;
+				}
+			}
+
+			&.is-open {
+
+				.open-up {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 0;
+				}
+
+				.open-down {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 430;
+				}
+
+				.close-up,
+				.close-down {
+					stroke-dasharray: 635;
+					stroke-dashoffset: 635;
+				}
+			}
+		}
 	}
 
 	&__links {
@@ -61,7 +113,7 @@
 		left: 27.5vw;
 
 		opacity: 0;
-		cursor: pointer;
+		// cursor: pointer;
 
 		transition: opacity 0.5s ease;
 

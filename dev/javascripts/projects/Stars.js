@@ -5,7 +5,7 @@ import SceneManager from '../managers/SceneManager';
 
 
 // THREE JS
-import { SphereGeometry, Clock, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import { SphereGeometry, Clock, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -27,6 +27,7 @@ export default class Stars extends ProjectView {
 		this.onKeyDown = this.onKeyDown.bind(this);
 
 		this.nbAst = 100;
+		this.lights = [];
 
 		this.init();
 
@@ -49,8 +50,6 @@ export default class Stars extends ProjectView {
 		this.updateNoise = true;
 
 		this.mlib = {};
-
-		this.lights = [];
 
 		// init part
 
@@ -176,37 +175,6 @@ export default class Stars extends ProjectView {
 		// EVENTS
 
 		document.addEventListener( 'keydown', this.onKeyDown, false );
-
-		// Add light
-		let paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			{ x: -10, y: 30, z: 0 },
-			// { x: 10, y: 50, z: 30 },
-			// { x: 0, y: 0, z: 10 },
-			// { x: 200, y: 30, z: 0 },
-			// { x: -200, y: 30, z: 0 },
-			// { x: 200, y: 60, z: 600 },
-			// { x: -200, y: 30, z: -200 },
-			// { x: 800, y: 60, z: 800 }
-		];
-
-		// Check Ambient Light
-		// scene.add( new AmbientLight( 0x00020 ) );
-
-
-		for (let i = 0; i < paramsLight.length; i++) {
-
-			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 400, 2);
-			// set its position
-			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			// pointLight.power = 20;
-			pointLight.visible = true;
-
-			// add to the scene
-			this.scene.add(pointLight);
-			this.lights.push(pointLight);
-		}
 
 		const geometry = new SphereGeometry(6,6,50);
 
@@ -346,24 +314,25 @@ export default class Stars extends ProjectView {
 	setLight() {
 
 		let paramsLight = [
-			{ x: -60, y: 30, z: 20 },
-			{ x: -20, y: 30, z: 20 },
-			{ x: 0, y: 30, z: 20 },
-			{ x: 100, y: 40, z: -70 },
-			{ x: -100, y: 40, z: -70 },
-			{ x: 0, y: 20, z: -100, l: 480 },
-			// { x: 0, y: -0, z: 0 }
+			{ x: -10, y: 0, z: 0, d: 120, it: 3, moving: true },
+			// { x: 0, y: 0, z: -100, d: 150, it: 2 },
+			// { x: 0, y: 0, z: 0, d: 30, it: 2 },
+			// { x: 0, y: 30, z: 30 },
+			// { x: 0, y: 30, z: -30 },
+			// { x: -30, y: 30, z: 0 },
+			// { x: 0, y: -30, z: 0 }
 		];
 
 		// Check Ambient Light
-		// scene.add( new AmbientLight( 0x00020 ) );
+		// scene.add( new THREE.AmbientLight( 0x00020 ) );
 
 		for (let i = 0; i < paramsLight.length; i++) {
 
-			const l = paramsLight[i].l || 200;
+			const d = paramsLight[i].d || 100;
+			const it = paramsLight[i].it || 1;
 
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, l, 2);
+			let pointLight = new PointLight(0x707070, it, d, 1);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -371,7 +340,17 @@ export default class Stars extends ProjectView {
 
 			// add to the scene
 			this.scene.add(pointLight);
+			if (paramsLight[i].moving === true) {
+				this.lights.push(pointLight);
+			}
 		}
+		let light = new DirectionalLight( 0xffffff, 1 );
+		light.position.set( 0, 0, 1 );
+		this.scene.add( light );
+		let light2 = new DirectionalLight( 0xffffff, 1 );
+		light2.position.set( 1, 0, 0 );
+		this.scene.add( light2 );
+
 
 	}
 
@@ -444,7 +423,7 @@ export default class Stars extends ProjectView {
 				this.quadTarget.material = this.mlib[ 'heightmap' ];
 				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 100;
+				this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 50;
 				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 			}

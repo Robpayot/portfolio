@@ -10,7 +10,7 @@ import Ui from '../components/Ui';
 import { loadJSON } from '../helpers/utils-three';
 
 
-import { Vector2, Raycaster, Vector3, Fog, Scene, DirectionalLight, Texture, BoxGeometry, HemisphereLight, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Fog, FaceColors, Scene, DirectionalLight, Texture, BoxGeometry, HemisphereLight, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -105,6 +105,14 @@ export default class IntroView extends AbstractView {
 		document[evListener]( 'click', this.onClick , false );
 
 		this.UI.button[evListener]('click', this.onClickStart);
+		this.UI.button[evListener]('mouseenter', () => {
+			this.startIsHover = true;
+			global.CURSOR.interractHover();
+		});
+		this.UI.button[evListener]('mouseleave', () => {
+			this.startIsHover = false;
+			global.CURSOR.interractLeave();
+		});
 
 	}
 
@@ -180,6 +188,8 @@ export default class IntroView extends AbstractView {
 		};
 		gui.add( buttonSmooth, 'smoothWater' );
 		gui.close();
+
+		global.CURSOR.el.classList.add('alt');
 
 	}
 
@@ -388,8 +398,19 @@ export default class IntroView extends AbstractView {
 		this.ipRadius = 50; // intra perimeter Radius
 
 		for (let i = 0; i < this.nbAst; i++) {
-			let finalMat = new MeshLambertMaterial( {color: 0xFFFFFF, transparent: true} );
-			finalMat.shininess = 1;
+
+			const model = Math.round(getRandom(0, 2));
+
+
+			for ( let y = 0; y < this.models[model].faces.length; y++ ) {
+
+			    let face = this.models[model].faces[ y ];
+			    face.color.setHex( Math.random() * 0xffffff );
+
+			}
+			// let finalMat = new MeshLambertMaterial( {color: 0xFFFFFF, transparent: true,vertexColors: THREE.FaceColors,} );
+			let finalMat = new MeshLambertMaterial( { vertexColors: FaceColors, morphTargets: true} );
+			// finalMat.shininess = 1;
 
 			const rot = {
 				x: 0,
@@ -427,8 +448,6 @@ export default class IntroView extends AbstractView {
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
 			const offsetScale = 1.6;
-
-			const model = Math.round(getRandom(0, 2));
 
 			const asteroid = new Asteroid({
 				type: 'sphere',
@@ -603,6 +622,8 @@ export default class IntroView extends AbstractView {
 
 	onClick() {
 		if (this.clickAsteroid === true) {
+
+			global.CURSOR.interractLeave();
 
 			this.currentAstClicked = this.currentAstHover;
 			this.currentAstClicked.animated = true;
@@ -779,6 +800,13 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
 		}
+
+		if (this.startIsHover !== true) {
+			if (this.clickAsteroid === true) global.CURSOR.interractHover();
+			else global.CURSOR.interractLeave();
+		}
+
+
 
 		this.render();
 

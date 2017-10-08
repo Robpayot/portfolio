@@ -1,6 +1,6 @@
 import AppManager from '../managers/AppManager';
 import SceneManager from '../managers/SceneManager';
-import { PerspectiveCamera, Clock } from 'three';
+import { PerspectiveCamera } from 'three';
 import { World } from 'oimo';
 
 
@@ -11,7 +11,8 @@ export default class AbstractView {
 
 		this.ui = AppManager.ui;
 
-		this.clock = new Clock(); // time
+		this.clock = SceneManager.clock; // time
+		this.postProc = false;
 
 
 		// console.log('abstract viewww');
@@ -50,7 +51,8 @@ export default class AbstractView {
 		this.height = window.innerHeight * window.devicePixelRatio;
 
 		SceneManager.resizeHandler({
-			camera: this.camera
+			camera: this.camera,
+			cssScene: this.cssScene
 		});
 
 	}
@@ -62,7 +64,7 @@ export default class AbstractView {
 			camera: this.camera,
 			scene: this.scene,
 			cssScene: this.cssScene,
-			effectController: this.effectController,
+			postProc: this.postProc,
 			composer: this.composer
 		});
 

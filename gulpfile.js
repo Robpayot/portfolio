@@ -299,8 +299,8 @@ gulp.task('watch', function() {
 		'./dist/datas/**',
 		'./dist/stylesheets/**',
 		'./dist/javascripts/**',
-		'./dev/images/**',
-		'./dev/templates/**',
+		'./dist/images/**',
+		'./dist/templates/**',
 		'./dist/fonts/**',
 		copyRoot
 	], {

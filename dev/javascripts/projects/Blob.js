@@ -5,7 +5,7 @@ import { loadJSON } from '../helpers/utils-three';
 import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
-import { ShaderMaterial, VideoTexture, RGBFormat, LinearFilter, IcosahedronGeometry, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
+import { ShaderMaterial, VideoTexture, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -192,10 +192,12 @@ export default class Blob extends ProjectView {
 
 		let paramsLight = [
 			// { x: 70, y: 70, z: 0 },
-			{ x: -100, y: 0, z: 0 },
-			{ x: 100, y: 0, z: 0 },
-			{ x: 0, y: 0, z: 170 },
-			{ x: 0, y: -0, z: 0 }
+			// { x: 0, y: 0, z: -100, d: 70, it: 1 },
+			// { x: -100, y: 0, z: 0, d: 70, it: 1 },
+			// { x: 0, y: 30, z: 30 },
+			// { x: 0, y: 30, z: -30 },
+			// { x: -30, y: 30, z: 0 },
+			// { x: 0, y: -30, z: 0 }
 		];
 
 		// Check Ambient Light
@@ -203,8 +205,11 @@ export default class Blob extends ProjectView {
 
 		for (let i = 0; i < paramsLight.length; i++) {
 
+			const d = paramsLight[i].d || 100;
+			const it = paramsLight[i].it || 1;
+
 			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, 800, 2);
+			let pointLight = new PointLight(0xFFFFFF, it, d, 1);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			// pointLight.power = 20;
@@ -213,8 +218,15 @@ export default class Blob extends ProjectView {
 			// add to the scene
 			this.scene.add(pointLight);
 		}
+
+		let light = new DirectionalLight( 0xffffff, 1 );
+		light.position.set( 0, 0, 1 );
+		this.scene.add( light );
+		let light2 = new DirectionalLight( 0xffffff, 1 );
+		light2.position.set( 1, 0, 0 );
+		this.scene.add( light2 );
 	}
-	
+
 	raf() {
 		// update world
 		// if (this.gravity === true) {

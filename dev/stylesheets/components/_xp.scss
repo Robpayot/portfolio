@@ -1,4 +1,147 @@
 .xp {
     text-align: center;
+    // display: none;
 
+}
+
+.cursor {
+	margin: 0 auto;
+	display: block;
+	width: 50px;
+	height: 50px;
+	position: absolute;
+	transform: translate(-50%,-50%);
+	z-index: 9000;
+	pointer-events: none;
+	// cursor: pointer;
+	.c-2 {
+		stroke-dasharray: 308%; // 848;
+		stroke-dashoffset: 308%; // 713;
+		transform: rotate(-90deg);
+		transform-origin: 50% 50%;
+	}
+
+	&.is-hover {
+		circle {
+			stroke-width: 3;
+		}
+	}
+
+	circle {
+		stroke: white;
+		stroke-width: 2;
+	}
+
+	&.alt circle {
+		stroke: black;
+	}
+
+}
+
+.circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	border: 1px solid black;
+
+	&.circle1 {
+		top: 50%;
+		left: 40px;
+	}
+
+	&.circle2 {
+		top: 60%;
+		right: 80px;
+	}
+}
+
+.test-svg {
+	margin: 0 auto;
+	display: block;
+	width: 50px;
+	height: 50px;
+	position: relative;
+	cursor: pointer;
+
+	&.is-up {
+		.up-1 { // can do it in percent.....
+			stroke-dasharray: 100%; // 848;
+			stroke-dashoffset: 92%; // 713;
+		}
+		.up-2 {
+			// display: none;
+			stroke-dasharray: 100%; // 848;
+			stroke-dashoffset: -14%; //  -224
+		}
+	}
+
+	&.is-down {
+		.down-1 {
+			stroke-dasharray: 100%;
+			stroke-dashoffset: 70%;
+		}
+		.down-2 {
+			stroke-dasharray: 100%;
+			stroke-dashoffset: -36%;
+		}
+	}
+
+	&.is-live {
+		.open-down,
+		.open-up {
+			stroke-dasharray: 635;
+			stroke-dashoffset: 635;
+		}
+		.close-up {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: -840;
+		}
+		.close-down {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: -180;
+		}
+		.close-down-2 {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 535;
+		}
+	}
+
+	&.is-close {
+		.open-down,
+		.open-up {
+			stroke-dasharray: 635;
+			stroke-dashoffset: 635;
+		}
+		.close-up {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 0;
+		}
+		.close-down {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 840;
+		}
+	}
+
+	&.is-open {
+
+		.open-up {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 0;
+		}
+
+		.open-down {
+			stroke-dasharray: 635; // !
+			stroke-dashoffset: 430;
+		}
+
+		.close-up,
+		.close-down {
+			stroke-dasharray: 635;
+			stroke-dashoffset: 635;
+		}
+	}
 }
