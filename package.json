@@ -45,7 +45,7 @@
     "preload-js": "^0.6.3",
     "shimify": "0.0.0",
     "sono": "^0.1.85",
-    "three": "^0.84.0",
+    "three": "^0.87.1",
     "three-effectcomposer": "0.0.1",
     "three-effectcomposer-es6": "0.0.4",
     "vinyl-buffer": "~1.0.0",

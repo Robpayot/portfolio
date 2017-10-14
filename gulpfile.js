@@ -203,20 +203,6 @@ var datasNotify = function(error) {
 	this.emit('end');
 };
 
-gulp.task('datas', function() {
-	if (isDirectoryEmpty('./dev/datas')) { return gulp; }
-
-	return gulp.src('./dev/datas/**/*.json')
-		// Concat all errors
-		.pipe(plumber({ errorHandler: datasNotify }))
-		// Check if we need to convert yaml to json
-		.pipe(yaml())
-		// Minify JSON for production
-		.pipe(gulpif( minify, jsonminify() ))
-		// Copy stream
-		.pipe(gulp.dest('./dist/datas'))
-});
-
 
 //---------------------------------------------------------------------------------------------
 //    COPY
@@ -231,6 +217,13 @@ var copyNotify = function(error) {
 
 	this.emit('end');
 };
+
+// DATA FILE
+gulp.task('datas', function() {
+	return gulp.src('./dev/datas/**')
+		// Concat all errors
+		.pipe(gulp.dest('./dist/datas'))
+});
 
 // HTML FILE
 gulp.task('copy:root', function() {

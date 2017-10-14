@@ -3,7 +3,7 @@ import { getRandom, toRadian } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
 
 // THREE JS
-import { MeshLambertMaterial, PointLight, SpotLight, DirectionalLight } from 'three';
+import { MeshPhongMaterial, PointLight, SpotLight, DirectionalLight } from 'three';
 import Asteroid from '../shapes/Asteroid';
 
 
@@ -47,8 +47,9 @@ export default class Levit extends ProjectView {
 		this.asteroids = [];
 		this.asteroidsM = [];
 
-		const material = new MeshLambertMaterial({
+		const material = new MeshPhongMaterial({
 			color: 0x343434,
+			flatShading: true
 		});
 
 		// this.materialAst1.shininess = 100;
@@ -87,7 +88,7 @@ export default class Levit extends ProjectView {
 			// 	z: getRandom(-10, 10)
 			// };
 
-			const scale = getRandom(1, 4);
+			const scale = getRandom(0.025, 0.035);
 			const speed = getRandom(0.5,0.72);
 			const range = getRandom(3, 8);
 			const timeRotate = getRandom(0.02, 0.04);
@@ -162,9 +163,9 @@ export default class Levit extends ProjectView {
 		let light = new DirectionalLight( 0xffffff, 1 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
-		let light2 = new DirectionalLight( 0xffffff, 1 );
-		light2.position.set( 1, 0, 0 );
-		this.scene.add( light2 );
+		// let light2 = new DirectionalLight( 0xffffff, 1 );
+		// light2.position.set( 1, 0, 0 );
+		// this.scene.add( light2 );
 		// white spotlight shining from the side, casting a shadow
 
 		// const spotLight = new SpotLight(0xffffff);

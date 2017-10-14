@@ -35,7 +35,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = false;
+		this.isControls = true;
 
 		// bind
 
@@ -66,6 +66,7 @@ export default class IntroView extends AbstractView {
 			loadJSON('datas/models/iceberg-3.json')
 		]).then((results) => {
 			// when all is loaded
+			console.log(results);
 			this.models = results;
 			this.init();
 
@@ -397,19 +398,18 @@ export default class IntroView extends AbstractView {
 		this.astXMax = 180;
 		this.ipRadius = 50; // intra perimeter Radius
 
+		console.log(this.models[0]);
+
 		for (let i = 0; i < this.nbAst; i++) {
 
 			const model = Math.round(getRandom(0, 2));
 
+			let finalMat = new MeshPhongMaterial( {
+				color: 0xffffff,
+				flatShading: true
+			} );
+			// console.log(finalMat);
 
-			for ( let y = 0; y < this.models[model].faces.length; y++ ) {
-
-			    let face = this.models[model].faces[ y ];
-			    face.color.setHex( Math.random() * 0xffffff );
-
-			}
-			// let finalMat = new MeshLambertMaterial( {color: 0xFFFFFF, transparent: true,vertexColors: THREE.FaceColors,} );
-			let finalMat = new MeshLambertMaterial( { vertexColors: FaceColors, morphTargets: true} );
 			// finalMat.shininess = 1;
 
 			const rot = {
@@ -443,7 +443,7 @@ export default class IntroView extends AbstractView {
 				z: getRandom(40, 50)
 			};
 
-			const scale = getRandom(3, 8);
+			const scale = getRandom(0.05, 0.06);
 			const speed = getRandom(500, 600); // more is slower
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
