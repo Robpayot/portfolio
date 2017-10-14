@@ -222,9 +222,9 @@ export default class Blob extends ProjectView {
 		let light = new DirectionalLight( 0xffffff, 1 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
-		let light2 = new DirectionalLight( 0xffffff, 1 );
-		light2.position.set( 1, 0, 0 );
-		this.scene.add( light2 );
+		// let light2 = new DirectionalLight( 0xffffff, 1 );
+		// light2.position.set( 1, 0, 0 );
+		// this.scene.add( light2 );
 	}
 
 	raf() {

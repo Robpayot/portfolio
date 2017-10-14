@@ -109,7 +109,7 @@ export default class Menu {
 	onOverBtn(e) {
 
 		if (this.hoverBtn === true) return false;
-		global.CURSOR.interractHover({el: e.currentTarget, magnet: true});
+		global.CURSOR.interractHover();
 
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
@@ -139,7 +139,7 @@ export default class Menu {
 	}
 
 	onLeaveBtn() {
-		global.CURSOR.interractLeave({magnet: true});
+		global.CURSOR.interractLeave();
 		this.hoverBtn = false;
 		TweenMax.fromTo('.menu__button circle', 0.2, {opacity: 0}, {opacity: 1});
 		TweenMax.fromTo('.menu__button circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
