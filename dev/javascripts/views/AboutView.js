@@ -2,11 +2,13 @@ import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
-import Asteroid from '../shapes/Asteroid';
+import CssContainer from '../components/CssContainer';
+import PreloadManager from '../managers/PreloadManager';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
-import { loadJSON } from '../helpers/utils-three';
+import Handlebars from 'handlebars';
+import DATA from '../../datas/data.json';
 
 
 import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, PlaneBufferGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
@@ -57,26 +59,20 @@ export default class AboutView extends AbstractView {
 		this.transitionOut = this.transitionOut.bind(this);
 		this.onClickStart = this.onClickStart.bind(this);
 		this.onClick = this.onClick.bind(this);
+		this.onHoverLink = this.onHoverLink.bind(this);
 
 		// preload Models
-		Promise.all([
-			loadJSON('datas/models/iceberg-1.json'),
-			loadJSON('datas/models/iceberg-2.json'),
-			loadJSON('datas/models/iceberg-3.json')
-		]).then((results) => {
-			// when all is loaded
-			this.models = results;
-			this.init();
+		// when all is loaded
+		this.init();
 
-			this.events(true);
-			this.ui.overlay.classList.add('black');
 
-			this.transitionIn();
+		this.ui.links = document.querySelectorAll('.about__container a');
+		console.log(this.ui.links);
 
-		}, (err) => {
-			console.log(err);
-			// error here
-		});
+		this.events(true);
+		this.ui.overlay.classList.add('black');
+
+		this.transitionIn();
 
 		// init
 
@@ -95,6 +91,12 @@ export default class AboutView extends AbstractView {
 		if (Device.touch === false) {
 			// move camera
 			document[evListener]( 'mousemove', this.onMouseMove, false );
+
+			for (let i = 0; i < this.ui.links.length; i++) {
+				this.ui.links[i][evListener]( 'mouseenter', this.onHoverLink, false );
+				this.ui.links[i][evListener]( 'mouseleave', this.onLeaveLink, false );
+			}
+			document[evListener]( 'mouseover', this.onMouseMove, false );
 		} else {
 			document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
 			document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
@@ -118,10 +120,14 @@ export default class AboutView extends AbstractView {
 	init() {
 
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+		// this.UI.intro.style.display = 'none';
+		global.MENU.el.classList.add('is-active');
+		global.MENU.el.classList.add('alt');
+		global.MENU.el.classList.remove('is-open');
 
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
-
+		this.cssScene = new Scene();
 		SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
@@ -137,9 +143,7 @@ export default class AboutView extends AbstractView {
 
 		this.nbAst = 16;
 		this.mouseSize = 16.0; // wave agitation
-		this.asteroids = [];
-		this.asteroidsM = [];
-		this.asteroidsMove = false;
+		this.cssObjects = [];
 
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
@@ -166,10 +170,16 @@ export default class AboutView extends AbstractView {
 		// this.setAsteroids();
 		this.setGround();
 
+		// Set CssContainers
+		this.setUiContainer();
+
+		global.CURSOR.el.classList.add('alt');
 		// reset Water bits to 64
 		// setInterval(() => {
 		// 	this.resetWater();
 		// }, 10000);
+
+		this.tlLink = new TimelineMax();
 
 		let gui = new dat.GUI();
 
@@ -436,6 +446,19 @@ export default class AboutView extends AbstractView {
 
 	}
 
+
+	setUiContainer() {
+
+		const data = DATA;
+		console.log(data, PreloadManager.getResult('tpl-about-content'));
+
+		// Context + gallery arrows
+		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
+		let html  = template(data);
+		this.UI.content.innerHTML = html;
+
+	}
+
 	valuesChanger() {
 
 		// this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
@@ -517,6 +540,32 @@ export default class AboutView extends AbstractView {
 
 
 		}
+
+	}
+
+	onHoverLink(e) {
+
+		global.CURSOR.interractHover();
+
+		const el = e.currentTarget;
+		const span = el.querySelector('span');
+
+		this.tlLink.clear();
+
+		this.tlLink.set(span, { left: 'auto', right: '0', width: '100%' }, 0);
+
+		this.tlLink.to(span, 0.3, { width: '0%', ease: window.Power2.easeOut }, 0);
+
+		this.tlLink.set(span, { left: '0', right: 'auto' }, 0.3);
+
+		this.tlLink.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3 );
+
+		this.tlLink.play();
+	}
+
+	onLeaveLink(e) {
+
+		global.CURSOR.interractLeave();
 
 	}
 
@@ -638,7 +687,7 @@ export default class AboutView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.0015;
+		this.waterMesh.position.y -= 0.0014;
 
 		// console.log(this.waterMesh.position);
 
@@ -673,7 +722,6 @@ export default class AboutView extends AbstractView {
 		this.el.classList.remove('intro');
 		// set ui
 		// this.UI.intro.style.display = 'block';
-		global.MENU.el.classList.remove('is-active');
 
 		// Ui.el.style.display = 'block';
 

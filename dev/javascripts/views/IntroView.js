@@ -707,7 +707,7 @@ export default class IntroView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.0015;
+		this.waterMesh.position.y -= 0.0014;
 
 		// console.log(this.waterMesh.position);
 

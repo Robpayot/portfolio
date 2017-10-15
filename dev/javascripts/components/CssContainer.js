@@ -2,7 +2,7 @@ import { CSS3DObject } from '../vendors/CSS3DRenderer';
 
 export default class CssContainer {
 
-	constructor(template, scene, tab) {
+	constructor(template, scene, arr) {
 
 		const div = document.createElement('div');
 		div.classList.add('css-container');
@@ -11,7 +11,7 @@ export default class CssContainer {
 		const object = new CSS3DObject(div);
 
 		scene.add(object);
-		tab.push(object);
+		arr.push(object);
 
 		return object;
 
