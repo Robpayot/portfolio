@@ -9,7 +9,7 @@ import Ui from '../components/Ui';
 import { loadJSON } from '../helpers/utils-three';
 
 
-import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, PlaneBufferGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
@@ -136,7 +136,7 @@ export default class AboutView extends AbstractView {
 		if (this.gravity === true) this.initPhysics();
 
 		this.nbAst = 16;
-		this.mouseSize = 32.0; // wave agitation
+		this.mouseSize = 16.0; // wave agitation
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
@@ -149,6 +149,7 @@ export default class AboutView extends AbstractView {
 
 		// Mouse
 		this.mouse = { x: 0, y: 0 };
+		this.mouseMoved = false;
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
@@ -173,12 +174,12 @@ export default class AboutView extends AbstractView {
 		let gui = new dat.GUI();
 
 		this.effectController = {
-			mouseSize: 20.0,
-			viscosity: 0.03
+			mouseSize: 30.0,
+			viscosity: 0.15
 		};
 
 		gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
-		gui.add( this.effectController, 'viscosity', 0.0, 0.1, 0.001 ).onChange( this.valuesChanger );
+		gui.add( this.effectController, 'viscosity', 0.0, 0.5, 0.001 ).onChange( this.valuesChanger );
 		this.valuesChanger();
 		let buttonSmooth = {
 			smoothWater: () => {
@@ -215,7 +216,7 @@ export default class AboutView extends AbstractView {
 		this.scene.add( sun );
 
 		let sun2 = new DirectionalLight( 0xe8f0ff, 0.2 );
-		sun2.position.set( -100, 350, -20 );
+		sun2.position.set( -300, 400, -205 );
 		this.scene.add( sun2 );
 
 		// let hemisphere = new HemisphereLight( 0x00FFFF, 0xFF0000, 1 );
@@ -228,11 +229,11 @@ export default class AboutView extends AbstractView {
 
 	initWater(destroy = false, bigger = false) {
 
-		this.WIDTH = 62; // Texture width for simulation bits
+		this.WIDTH = 128; // Texture width for simulation bits
 
 		// Magic calculs ;)
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const height = 2 * Math.tan( vFOV / 2 ) * 400; // dist between 0 and camerapos.y
+		const height = 2 * Math.tan( vFOV / 2 ) * 1000; // dist between 0 and camerapos.y
 
 		const aspect = window.innerWidth / window.innerHeight;
 		let finalBounds;
@@ -243,10 +244,19 @@ export default class AboutView extends AbstractView {
 			finalBounds = height;
 		}
 
-		const extra = bigger === true ? 800 : 100; // for rotation camera left / right
+		const extra = bigger === true ? 400 : 100; // for rotation camera left / right
 		this.BOUNDS = finalBounds + extra; // Water size
 		this.BOUNDSSUP = bigger === true ? 700 : 0; // Bounds supp for TransitionOut, we see the horizon
-		this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
+		this.mouseSize = bigger === true ? 100.0 : 16.0; // wave agitation
+
+		// Mesh just for mouse raycasting
+		let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
+		this.meshRay = new Mesh( geometryRay, new MeshBasicMaterial( { color: 0xFFFFFF, visible: false } ) );
+		this.meshRay.rotation.x = - Math.PI / 2;
+		this.meshRay.matrixAutoUpdate = false;
+		this.meshRay.updateMatrix();
+		this.meshRay.name = 'meshRay';
+		this.scene.add( this.meshRay );
 
 		let materialColor = 0xffffff;
 
@@ -307,7 +317,7 @@ export default class AboutView extends AbstractView {
 
 			this.heightmapVariable.material.uniforms.debug = { value: new Vector2( 0, 0 ) };
 			this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
-			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
+			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.2 };
 			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
 
 			let error = this.gpuCompute.init();
@@ -594,15 +604,30 @@ export default class AboutView extends AbstractView {
 
 	raf() {
 
-		// Manual simulation of infinite waves
-		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
-		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
+		// Raycaster
+		if ( this.mouseMoved ) {
 
-		// console.log(this.mouseCoords);
-		// console.log(this.mouse.x, this.mouse.y);
+			this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		this.heightmapVariable.material.uniforms.mousePos.value.set( this.mouseCoords.x, this.mouseCoords.y );
-		this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
+			let intersects = this.raycaster.intersectObject( this.meshRay );
+
+			if ( intersects.length > 0 ) {
+				let point = intersects[ 0 ].point;
+				this.heightmapVariable.material.uniforms.mousePos.value.set( point.x, point.z );
+
+			}
+			else {
+				if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
+			}
+
+			this.mouseMoved = false;
+		}
+		else {
+			if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
+		}
+
+		this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+		// this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
@@ -616,9 +641,6 @@ export default class AboutView extends AbstractView {
 		this.waterMesh.position.y -= 0.0015;
 
 		// console.log(this.waterMesh.position);
-
-		// Raycaster
-		this.raycaster.setFromCamera(this.mouse, this.camera);
 
 		// on Click asteroids
 
@@ -646,14 +668,14 @@ export default class AboutView extends AbstractView {
 
 	transitionIn() {
 
-		this.el.classList.add('intro');
+		this.el.classList.add('about');
 		this.el.classList.remove('project');
-		this.el.classList.remove('about');
+		this.el.classList.remove('intro');
 		// set ui
-		this.UI.intro.style.display = 'block';
+		// this.UI.intro.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
 
-		Ui.el.style.display = 'block';
+		// Ui.el.style.display = 'block';
 
 		const tl = new TimelineMax();
 
@@ -661,43 +683,14 @@ export default class AboutView extends AbstractView {
 		const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
 
 		tl.set(this.UI.overlay, {opacity: 1});
-		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
-		// tl.set(this.asteroidsM.material, {opacity: 0});
 
-		tl.staggerFromTo(title1Arr.chars, 0.7, {
-			opacity: 0,
-			y: 10,
-			// force3D: true,
-			ease: Expo.easeOut
-		}, {
-			opacity: 1,
-			y: 0
-		}, 0.07, 1);
-
-		tl.staggerFromTo(title2Arr.words, 0.7, {
-			opacity: 0,
-			y: 10,
-			// force3D: true,
-			ease: Expo.easeOut
-		}, {
-			opacity: 1,
-			y: 0
-		}, 0.07);
 		tl.to(this.UI.overlay, 1.5, {opacity: 0});
 		tl.add(() => {
 			this.moveCameraIn();
-		}, 1);
-		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=3');
-		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
-		tl.to(this.UI.button, 3, {opacity: 1});
-
-		tl.add(() => {
-			// start move Ast
-			this.startMove = true;
-		},0);
+		}, 0);
 
 
-		tl.to('.overlay', 1, {
+		tl.to('.overlay', 0, {
 			opacity: 0
 		}, 0);
 		// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
@@ -709,7 +702,7 @@ export default class AboutView extends AbstractView {
 		// this.camera.lookAt(new Vector3(0,0,0));
 		// const tl2 = new TimelineMax();
 
-		// tl2.to(this.camera.position, 5, {y: 800});
+		// tl2.to(this.camera.position, 5, {y: 400});
 		// tl2.to(this.camera.rotation, 5, {x: toRadian(180)});
 		// const tl2 = new TimelineMax();
 		// tl2.to(this.camera.position, 10, {y: -400});
@@ -724,7 +717,7 @@ export default class AboutView extends AbstractView {
 
 			}
 		});
-		tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
+		tl.to(this.camera.position, 0, {y: 1000, ease: window.Expo.easeInOut});
 		tl.add(() => {
 
 			this.asteroidsMove = true;
@@ -882,7 +875,31 @@ export default class AboutView extends AbstractView {
 
 	resizeHandler() {
 		super.resizeHandler();
-		const obj = this.scene.getObjectByName('water');
+		// remove Mesh water
+		let obj = this.scene.getObjectByName('water');
+		if (obj.geometry) obj.geometry.dispose();
+
+		if (obj.material) {
+
+			if (obj.material.materials) {
+
+				for (const mat of obj.material.materials) {
+
+					if (mat.map) mat.map.dispose();
+
+					mat.dispose();
+				}
+			} else {
+
+				if (obj.material.map) obj.material.map.dispose();
+
+				obj.material.dispose();
+			}
+		}
+		this.scene.remove( obj );
+
+		// remove meshRay
+		obj = this.scene.getObjectByName('meshRay');
 		if (obj.geometry) obj.geometry.dispose();
 
 		if (obj.material) {
