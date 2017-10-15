@@ -3,20 +3,19 @@ import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
-import Symbol from '../shapes/Symbol';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
 import { loadJSON } from '../helpers/utils-three';
 
 
-import { Vector2, Raycaster, Vector3, Fog, FaceColors, Scene, DirectionalLight, Texture, BoxGeometry, HemisphereLight, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
-import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
+// import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
 
 
@@ -66,7 +65,6 @@ export default class IntroView extends AbstractView {
 			loadJSON('datas/models/iceberg-3.json')
 		]).then((results) => {
 			// when all is loaded
-			console.log(results);
 			this.models = results;
 			this.init();
 
@@ -325,7 +323,7 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	generateTexture() {
+	generateGradient() {
 
 		// Use a classic image for better pef
 
@@ -342,10 +340,10 @@ export default class IntroView extends AbstractView {
 		// draw gradient
 		context.rect( 0, 0, size, size );
 		const gradient = context.createRadialGradient(size / 2,size / 2,size,size / 2,size / 2,100);
-		gradient.addColorStop(1, '#e9ebee');
+		gradient.addColorStop(1, '#e9ebee'); // white-grey
 		gradient.addColorStop(0.98, '#e9ebee');
-		gradient.addColorStop(0.8, '#000000');
-		gradient.addColorStop(0, '#000000'); // dark blue
+		gradient.addColorStop(0.9, '#000000');
+		gradient.addColorStop(0, '#000000'); // dark
 		context.fillStyle = gradient;
 		context.fill();
 
@@ -362,7 +360,7 @@ export default class IntroView extends AbstractView {
 	setGround() {
 
 		// Generate gradient
-		this.generateTexture();
+		this.generateGradient();
 		const img = document.querySelector('#pic');
 		const texture = new Texture( img );
 		texture.needsUpdate = true;
@@ -386,7 +384,7 @@ export default class IntroView extends AbstractView {
 		// const mat2 = new MeshBasicMaterial({color: 0x00FFFF});
 		const blackGround = new Mesh(geometry2, mat2);
 		blackGround.rotation.z = toRadian(90);
-		blackGround.position.y = -300;
+		blackGround.position.y = -500;
 		blackGround.position.z = -2000;
 
 		this.scene.add(blackGround);
@@ -397,8 +395,6 @@ export default class IntroView extends AbstractView {
 		this.astXMin = -180;
 		this.astXMax = 180;
 		this.ipRadius = 50; // intra perimeter Radius
-
-		console.log(this.models[0]);
 
 		for (let i = 0; i < this.nbAst; i++) {
 
@@ -443,7 +439,7 @@ export default class IntroView extends AbstractView {
 				z: getRandom(40, 50)
 			};
 
-			const scale = getRandom(0.05, 0.06);
+			const scale = getRandom(0.045, 0.075);
 			const speed = getRandom(500, 600); // more is slower
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
@@ -805,8 +801,6 @@ export default class IntroView extends AbstractView {
 			if (this.clickAsteroid === true) global.CURSOR.interractHover();
 			else global.CURSOR.interractLeave();
 		}
-
-
 
 		this.render();
 

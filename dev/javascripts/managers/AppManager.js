@@ -4,7 +4,7 @@ import RouterManager from './RouterManager';
 import { Device } from '../helpers/Device';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';
-import GraphicBars from '../components/GraphicBars';
+// import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
 import Menu from '../components/Menu';
 import Cursor from '../components/Cursor';
@@ -43,7 +43,7 @@ class AppManager {
 
 		// SoundManager
 
-		this.graphicBars = new GraphicBars();
+		// this.graphicBars = new GraphicBars();
 		this.menu = global.MENU = new Menu();
 		this.cursor = global.CURSOR = new Cursor();
 

@@ -86,7 +86,7 @@ export default class Cursor {
 		if (this.hoverGlobal === true) return false;
 		this.hoverGlobal = true;
 
-		console.log('hover');
+		// console.log('hover');
 
 		if (obj.color !== undefined) {
 			this.c2.style.stroke = obj.color;
@@ -124,7 +124,7 @@ export default class Cursor {
 	interractLeave(obj = {}) {
 		if (this.hoverGlobal === false) return false;
 		this.hoverGlobal = false;
-		console.log('leave');
+		// console.log('leave');
 		// remplie
 		TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 

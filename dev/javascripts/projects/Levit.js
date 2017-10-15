@@ -3,7 +3,7 @@ import { getRandom, toRadian } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
 
 // THREE JS
-import { MeshPhongMaterial, PointLight, SpotLight, DirectionalLight } from 'three';
+import { MeshPhongMaterial, DirectionalLight } from 'three';
 import Asteroid from '../shapes/Asteroid';
 
 

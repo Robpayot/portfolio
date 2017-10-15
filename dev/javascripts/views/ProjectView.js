@@ -2,8 +2,6 @@ import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
 import SoundManager from '../managers/SoundManager';
 import { getRandom, toRadian, clamp, round } from '../helpers/utils';
-import Envelop from '../shapes/Envelop';
-import Symbol from '../shapes/Symbol';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
@@ -19,7 +17,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, Color, MeshPhongMaterial, MeshBasicMaterial, SphereGeometry, MeshLambertMaterial, Vector3, BoxGeometry } from 'three';
+import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, Color, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -179,7 +177,6 @@ export default class ProjectView extends AbstractView {
 		// Set asteroid
 		this.setAsteroids();
 
-		console.log(this.pointsLight);
 		if (this.pointsLight === true) {
 			console.log('trueeee');
 			// Set envelop
@@ -393,8 +390,8 @@ export default class ProjectView extends AbstractView {
 	setEnvelop() {
 		// Set up the sphere vars
 		const width = this.bounceArea;
-		const height = this.bounceArea;
-		const depth = 2;
+		// const height = this.bounceArea;
+		// const depth = 2;
 
 		// const geometry = new BoxGeometry(width, height, depth);
 		// const geometry = new SphereGeometry(100, 100, 60);
@@ -479,7 +476,7 @@ export default class ProjectView extends AbstractView {
 		const wHeight = 2 * Math.tan( vFOV / 2 ) * (160 - distZ); // visible height dist = 60 (160 - 100)
 		const margePosY = 7;
 		const finalPosY = wHeight / 2 - margePosY;
-		console.log(finalPosY);
+		// console.log(finalPosY);
 		// wHeight === window.innerHeight in Units equivalent
 		// let aspect = window.width / window.height;
 
@@ -959,22 +956,20 @@ export default class ProjectView extends AbstractView {
 
 	onMouseWheel(event) {
 
-		event.preventDefault();
+		// event.preventDefault();
 
+		// if (event.wheelDeltaY) {
 
+		// 	this.finalFov -= event.wheelDeltaY * 0.05;
+		// } else if (event.wheelDelta) {
 
-		if (event.wheelDeltaY) {
+		// 	this.finalFov -= event.wheelDelta * 0.05;
+		// } else if (event.detail) {
 
-			this.finalFov -= event.wheelDeltaY * 0.05;
-		} else if (event.wheelDelta) {
+		// 	this.finalFov += event.detail * 1;
+		// }
 
-			this.finalFov -= event.wheelDelta * 0.05;
-		} else if (event.detail) {
-
-			this.finalFov += event.detail * 1;
-		}
-
-		this.finalFov = clamp(this.finalFov, 35, 70);
+		// this.finalFov = clamp(this.finalFov, 35, 70);
 
 	}
 
@@ -1089,7 +1084,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if (this.cameraMove === false && this.isControls === false) { // /!\ A faire dans le Onmouseevent ????
+		if (this.cameraMove === false && this.isControls === false) { //
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
