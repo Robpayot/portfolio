@@ -102,7 +102,7 @@ var _CSS3DRenderer = require('../vendors/CSS3DRenderer');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var CssContainer = function CssContainer(template, scene, tab) {
+var CssContainer = function CssContainer(template, scene, arr) {
 	_classCallCheck(this, CssContainer);
 
 	var div = document.createElement('div');
@@ -112,7 +112,7 @@ var CssContainer = function CssContainer(template, scene, tab) {
 	var object = new _CSS3DRenderer.CSS3DObject(div);
 
 	scene.add(object);
-	tab.push(object);
+	arr.push(object);
 
 	return object;
 };
@@ -1322,7 +1322,8 @@ var Ui = function Ui() {
 		title2: this.el.querySelector('.title--2'),
 		button: this.el.querySelector('.start'),
 		overlay: this.el.querySelector('.ui-intro__overlay'),
-		intro: this.el.querySelector('.ui-intro')
+		intro: this.el.querySelector('.ui-intro'),
+		content: this.el.querySelector('.ui-content')
 	};
 };
 
@@ -8518,9 +8519,13 @@ var _SceneManager = require('../managers/SceneManager');
 
 var _SceneManager2 = _interopRequireDefault(_SceneManager);
 
-var _Asteroid = require('../shapes/Asteroid');
+var _CssContainer = require('../components/CssContainer');
 
-var _Asteroid2 = _interopRequireDefault(_Asteroid);
+var _CssContainer2 = _interopRequireDefault(_CssContainer);
+
+var _PreloadManager = require('../managers/PreloadManager');
+
+var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
 
 var _SplitText = require('../vendors/SplitText.js');
 
@@ -8532,7 +8537,13 @@ var _Ui = require('../components/Ui');
 
 var _Ui2 = _interopRequireDefault(_Ui);
 
-var _utilsThree = require('../helpers/utils-three');
+var _handlebars = require('handlebars');
+
+var _handlebars2 = _interopRequireDefault(_handlebars);
+
+var _data = require('../../datas/data.json');
+
+var _data2 = _interopRequireDefault(_data);
 
 var _three = require('three');
 
@@ -8610,21 +8621,19 @@ var AboutView = function (_AbstractView) {
 		_this.transitionOut = _this.transitionOut.bind(_this);
 		_this.onClickStart = _this.onClickStart.bind(_this);
 		_this.onClick = _this.onClick.bind(_this);
+		_this.onHoverLink = _this.onHoverLink.bind(_this);
 
 		// preload Models
-		Promise.all([(0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
-			// when all is loaded
-			_this.models = results;
-			_this.init();
+		// when all is loaded
+		_this.init();
 
-			_this.events(true);
-			_this.ui.overlay.classList.add('black');
+		_this.ui.links = document.querySelectorAll('.about__container a');
+		console.log(_this.ui.links);
 
-			_this.transitionIn();
-		}, function (err) {
-			console.log(err);
-			// error here
-		});
+		_this.events(true);
+		_this.ui.overlay.classList.add('black');
+
+		_this.transitionIn();
 
 		// init
 
@@ -8647,6 +8656,12 @@ var AboutView = function (_AbstractView) {
 			if (_Device.Device.touch === false) {
 				// move camera
 				document[evListener]('mousemove', this.onMouseMove, false);
+
+				for (var i = 0; i < this.ui.links.length; i++) {
+					this.ui.links[i][evListener]('mouseenter', this.onHoverLink, false);
+					this.ui.links[i][evListener]('mouseleave', this.onLeaveLink, false);
+				}
+				document[evListener]('mouseover', this.onMouseMove, false);
 			} else {
 				document[evListener]('touchstart', this.onDocumentTouchStart, false);
 				document[evListener]('touchmove', this.onDocumentTouchMove, false);
@@ -8671,10 +8686,14 @@ var AboutView = function (_AbstractView) {
 			var _this3 = this;
 
 			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			// this.UI.intro.style.display = 'none';
+			global.MENU.el.classList.add('is-active');
+			global.MENU.el.classList.add('alt');
+			global.MENU.el.classList.remove('is-open');
 
 			this.scene = new _three.Scene();
 			this.scene.background = new _three.Color(0x000000);
-
+			this.cssScene = new _three.Scene();
 			_SceneManager2.default.renderer.setPixelRatio((0, _utils.clamp)(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 			// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
@@ -8690,9 +8709,7 @@ var AboutView = function (_AbstractView) {
 
 			this.nbAst = 16;
 			this.mouseSize = 16.0; // wave agitation
-			this.asteroids = [];
-			this.asteroidsM = [];
-			this.asteroidsMove = false;
+			this.cssObjects = [];
 
 			this.mouseMoved = false;
 			this.mouseCoords = new _three.Vector2();
@@ -8719,10 +8736,16 @@ var AboutView = function (_AbstractView) {
 			// this.setAsteroids();
 			this.setGround();
 
+			// Set CssContainers
+			this.setUiContainer();
+
+			global.CURSOR.el.classList.add('alt');
 			// reset Water bits to 64
 			// setInterval(() => {
 			// 	this.resetWater();
 			// }, 10000);
+
+			this.tlLink = new TimelineMax();
 
 			var gui = new _datGui2.default.GUI();
 
@@ -8988,6 +9011,18 @@ var AboutView = function (_AbstractView) {
 			}
 		}
 	}, {
+		key: 'setUiContainer',
+		value: function setUiContainer() {
+
+			var data = _data2.default;
+			console.log(data, _PreloadManager2.default.getResult('tpl-about-content'));
+
+			// Context + gallery arrows
+			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-about-content'));
+			var html = template(data);
+			this.UI.content.innerHTML = html;
+		}
+	}, {
 		key: 'valuesChanger',
 		value: function valuesChanger() {
 
@@ -9068,6 +9103,33 @@ var AboutView = function (_AbstractView) {
 
 				this.setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
 			}
+		}
+	}, {
+		key: 'onHoverLink',
+		value: function onHoverLink(e) {
+
+			global.CURSOR.interractHover();
+
+			var el = e.currentTarget;
+			var span = el.querySelector('span');
+
+			this.tlLink.clear();
+
+			this.tlLink.set(span, { left: 'auto', right: '0', width: '100%' }, 0);
+
+			this.tlLink.to(span, 0.3, { width: '0%', ease: window.Power2.easeOut }, 0);
+
+			this.tlLink.set(span, { left: '0', right: 'auto' }, 0.3);
+
+			this.tlLink.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3);
+
+			this.tlLink.play();
+		}
+	}, {
+		key: 'onLeaveLink',
+		value: function onLeaveLink(e) {
+
+			global.CURSOR.interractLeave();
 		}
 	}, {
 		key: 'onW',
@@ -9207,7 +9269,7 @@ var AboutView = function (_AbstractView) {
 			// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 			// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-			this.waterMesh.position.y -= 0.0015;
+			this.waterMesh.position.y -= 0.0014;
 
 			// console.log(this.waterMesh.position);
 
@@ -9241,7 +9303,6 @@ var AboutView = function (_AbstractView) {
 			this.el.classList.remove('intro');
 			// set ui
 			// this.UI.intro.style.display = 'block';
-			global.MENU.el.classList.remove('is-active');
 
 			// Ui.el.style.display = 'block';
 
@@ -9541,7 +9602,7 @@ exports.default = AboutView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":28,"../shaders/WaterVertexShader":32,"../shapes/Asteroid":34,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":46,"dat-gui":54,"three":108}],46:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":28,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":46,"dat-gui":54,"handlebars":87,"three":108}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10556,7 +10617,7 @@ var IntroView = function (_AbstractView) {
 			// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 			// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-			this.waterMesh.position.y -= 0.0015;
+			this.waterMesh.position.y -= 0.0014;
 
 			// console.log(this.waterMesh.position);
 
