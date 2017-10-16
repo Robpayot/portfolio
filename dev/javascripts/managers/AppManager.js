@@ -11,6 +11,8 @@ import Cursor from '../components/Cursor';
 import bean from 'bean';
 import Handlebars from 'handlebars';
 
+global.OVERLAY;
+
 
 class AppManager {
 
@@ -57,6 +59,8 @@ class AppManager {
 			overlay: document.querySelector('.overlay'),
 			body: document.getElementsByTagName('body')[0] // not sure needed
 		};
+
+		global.OVERLAY = this.ui.overlay;
 
 		RouterManager.start();
 	}

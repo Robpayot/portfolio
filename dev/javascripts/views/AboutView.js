@@ -1,8 +1,7 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian, getRandom, clamp, round } from '../helpers/utils';
+import {toRadian, getIndex, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
-import CssContainer from '../components/CssContainer';
 import PreloadManager from '../managers/PreloadManager';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
@@ -47,8 +46,6 @@ export default class AboutView extends AbstractView {
 		this.initWater = this.initWater.bind(this);
 		this.fillTexture = this.fillTexture.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
-		this.onDocumentTouchStart = this.onDocumentTouchStart.bind(this);
-		this.onDocumentTouchMove = this.onDocumentTouchMove.bind(this);
 		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
 		this.setLight = this.setLight.bind(this);
@@ -60,19 +57,51 @@ export default class AboutView extends AbstractView {
 		this.onClickStart = this.onClickStart.bind(this);
 		this.onClick = this.onClick.bind(this);
 		this.onHoverLink = this.onHoverLink.bind(this);
+		this.onHoverMore = this.onHoverMore.bind(this);
+		this.onLeaveMore = this.onLeaveMore.bind(this);
+		this.onClickMore = this.onClickMore.bind(this);
+		this.onClickBack = this.onClickBack.bind(this);
+		this.onHoverWork = this.onHoverWork.bind(this);
+		this.onLeaveWork = this.onLeaveWork.bind(this);
 
 		// preload Models
 		// when all is loaded
 		this.init();
 
+		// ui
+		this.ui = {
+			title: document.querySelector('.about__title'),
+			links: document.querySelectorAll('.about__intro a'),
+			more: document.querySelector('.about__more'),
+			back: document.querySelector('.about__back'),
+			socials: document.querySelector('.about__container .socials'),
+			p: document.querySelectorAll('.about__container p'),
+			introWrap: document.querySelector('.about__intro'),
+			worksWrap: document.querySelector('.about__works'),
+			works: document.querySelectorAll('.about__work'),
+			worksCircle: document.querySelectorAll('.about__works svg circle'),
+			worksDown: document.querySelectorAll('.about__works svg .close-down'),
+			worksDown2: document.querySelectorAll('.about__works svg .close-down-2'),
+			worksUp: document.querySelectorAll('.about__works svg .close-up'),
+		};
 
-		this.ui.links = document.querySelectorAll('.about__container a');
-		console.log(this.ui.links);
+		this.targetsIntro = [this.ui.title];
+		let p = [].slice.call(this.ui.p);
+		this.targetsIntro = this.targetsIntro.concat(p);
+		this.targetsIntro.push(this.ui.socials);
+		this.targetsIntro.push(this.ui.more);
+
+		this.targetsWorks = [this.ui.back];
+		let works = [].slice.call(this.ui.works);
+		this.targetsWorks = this.targetsWorks.concat(works);
+
 
 		this.events(true);
-		this.ui.overlay.classList.add('black');
+		global.OVERLAY.classList.add('black');
 
 		this.transitionIn();
+
+		// this.events(false);
 
 		// init
 
@@ -97,6 +126,17 @@ export default class AboutView extends AbstractView {
 				this.ui.links[i][evListener]( 'mouseleave', this.onLeaveLink, false );
 			}
 			document[evListener]( 'mouseover', this.onMouseMove, false );
+
+			this.ui.more[evListener]( 'mouseenter', this.onHoverMore, false );
+			this.ui.more[evListener]( 'mouseleave', this.onLeaveMore, false );
+
+			this.ui.back[evListener]( 'mouseenter', this.onHoverMore, false );
+			this.ui.back[evListener]( 'mouseleave', this.onLeaveMore, false );
+
+			for (let i = 0; i < this.ui.works.length; i++) {
+				this.ui.works[i][evListener]( 'mouseenter', this.onHoverWork, false );
+				this.ui.works[i][evListener]( 'mouseleave', this.onLeaveWork, false );
+			}
 		} else {
 			document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
 			document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
@@ -105,15 +145,9 @@ export default class AboutView extends AbstractView {
 		document[evListener]( 'keydown', this.onW , false );
 		document[evListener]( 'click', this.onClick , false );
 
-		this.UI.button[evListener]('click', this.onClickStart);
-		this.UI.button[evListener]('mouseenter', () => {
-			this.startIsHover = true;
-			global.CURSOR.interractHover();
-		});
-		this.UI.button[evListener]('mouseleave', () => {
-			this.startIsHover = false;
-			global.CURSOR.interractLeave();
-		});
+		this.ui.more[evListener]('click', this.onClickMore);
+		this.ui.back[evListener]('click', this.onClickBack);
+
 
 	}
 
@@ -127,8 +161,7 @@ export default class AboutView extends AbstractView {
 
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
-		this.cssScene = new Scene();
-		SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
+		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 		// set Camera
@@ -143,7 +176,7 @@ export default class AboutView extends AbstractView {
 
 		this.nbAst = 16;
 		this.mouseSize = 16.0; // wave agitation
-		this.cssObjects = [];
+		this.maxDash = 635;
 
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
@@ -153,6 +186,7 @@ export default class AboutView extends AbstractView {
 
 		// Mouse
 		this.mouse = { x: 0, y: 0 };
+		this.currentPos = { };
 		this.mouseMoved = false;
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
@@ -164,6 +198,11 @@ export default class AboutView extends AbstractView {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
 			this.controls.enableZoom = true;
 		}
+
+		this.effectController = {
+			mouseSize: 30.0,
+			viscosity: 0.15
+		};
 
 		this.initWater(false, false);
 
@@ -179,14 +218,7 @@ export default class AboutView extends AbstractView {
 		// 	this.resetWater();
 		// }, 10000);
 
-		this.tlLink = new TimelineMax();
-
 		let gui = new dat.GUI();
-
-		this.effectController = {
-			mouseSize: 30.0,
-			viscosity: 0.15
-		};
 
 		gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
 		gui.add( this.effectController, 'viscosity', 0.0, 0.5, 0.001 ).onChange( this.valuesChanger );
@@ -262,7 +294,7 @@ export default class AboutView extends AbstractView {
 		// Mesh just for mouse raycasting
 		let geometryRay = new PlaneBufferGeometry( this.BOUNDS, this.BOUNDS, 1, 1 );
 		this.meshRay = new Mesh( geometryRay, new MeshBasicMaterial( { color: 0xFFFFFF, visible: false } ) );
-		this.meshRay.rotation.x = - Math.PI / 2;
+		this.meshRay.rotation.x = -Math.PI / 2;
 		this.meshRay.matrixAutoUpdate = false;
 		this.meshRay.updateMatrix();
 		this.meshRay.name = 'meshRay';
@@ -321,14 +353,14 @@ export default class AboutView extends AbstractView {
 
 			this.heightmapVariable = this.gpuCompute.addVariable( 'heightmap', HeightmapFragmentShader.fragmentShader, heightmap0 );
 
-			// console.log(this.heightmapVariable);
-
 			this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
 
 			this.heightmapVariable.material.uniforms.debug = { value: new Vector2( 0, 0 ) };
 			this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
 			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.2 };
 			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
+			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 			let error = this.gpuCompute.init();
 			if ( error !== null ) {
@@ -450,7 +482,7 @@ export default class AboutView extends AbstractView {
 	setUiContainer() {
 
 		const data = DATA;
-		console.log(data, PreloadManager.getResult('tpl-about-content'));
+		// console.log(data, PreloadManager.getResult('tpl-about-content'));
 
 		// Context + gallery arrows
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
@@ -517,32 +549,6 @@ export default class AboutView extends AbstractView {
 
 	}
 
-	onDocumentTouchStart( event ) {
-
-		if ( event.touches.length === 1 ) {
-
-			event.preventDefault();
-
-			this.setMouseCoords( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-
-
-		}
-
-	}
-
-	onDocumentTouchMove( event ) {
-
-		if ( event.touches.length === 1 ) {
-
-			event.preventDefault();
-
-			this.setMouseCoords( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-
-
-		}
-
-	}
-
 	onHoverLink(e) {
 
 		global.CURSOR.interractHover();
@@ -550,23 +556,118 @@ export default class AboutView extends AbstractView {
 		const el = e.currentTarget;
 		const span = el.querySelector('span');
 
-		this.tlLink.clear();
+		const tl = new TimelineMax();
+		TweenMax.killTweensOf(span);
 
-		this.tlLink.set(span, { left: 'auto', right: '0', width: '100%' }, 0);
+		tl.set(span, { left: 'auto', right: '0', width: '100%' }, 0);
 
-		this.tlLink.to(span, 0.3, { width: '0%', ease: window.Power2.easeOut }, 0);
+		tl.to(span, 0.6, { width: '0%', ease: window.Power2.easeOut }, 0);
 
-		this.tlLink.set(span, { left: '0', right: 'auto' }, 0.3);
+		tl.set(span, { left: '0', right: 'auto' }, 0.3);
 
-		this.tlLink.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3 );
+		tl.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3 );
 
-		this.tlLink.play();
+		// this.tlLink.play();
 	}
 
 	onLeaveLink(e) {
 
 		global.CURSOR.interractLeave();
 
+	}
+
+	onHoverMore(e) {
+
+
+		const el = e.currentTarget;
+		const line = el.querySelector('.line');
+
+		global.CURSOR.interractHover();
+
+		const tl = new TimelineMax();
+		tl.set(el, {clearProps: 'paddingLeft'});
+		TweenMax.killTweensOf(line);
+
+		tl.to(line, 0.7, { width: 15, ease: window.Expo.easeOut }, 0);
+		tl.to(el, 0.7, { paddingLeft: 25, ease: window.Expo.easeOut }, 0);
+
+	}
+
+	onLeaveMore(e) {
+
+		const el = e.currentTarget;
+		const line = el.querySelector('.line');
+
+		global.CURSOR.interractLeave();
+
+		const tl = new TimelineMax();
+		tl.set(el, {clearProps: 'paddingLeft'});
+		TweenMax.killTweensOf(line);
+
+		tl.to(line, 0.7, { width: 0, ease: window.Expo.easeOut }, 0);
+		tl.to(el, 0.7, { paddingLeft: 0, ease: window.Expo.easeOut }, 0);
+	}
+
+	onClickMore(e) {
+
+		const tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
+
+		tl.staggerTo(this.targetsIntro, 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
+		tl.staggerTo(this.targetsIntro, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
+		tl.set(this.ui.introWrap, {display : 'none'});
+
+		tl.set(this.ui.worksWrap, {display : 'block'} , 1);
+		tl.staggerFromTo(this.targetsWorks, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 1);
+		tl.staggerFromTo(this.targetsWorks, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
+
+	}
+
+	onClickBack(e) {
+
+		const tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
+
+		tl.staggerTo(this.targetsWorks, 1.7, {y: -120, ease: window.Power4.easeOut}, 0.04);
+		tl.staggerTo(this.targetsWorks, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
+		tl.set(this.ui.worksWrap, {display : 'none'});
+
+		tl.set(this.ui.introWrap, {display : 'block'} , 1);
+		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 1);
+		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
+
+	}
+
+	onHoverWork(e) {
+
+		const el = e.currentTarget;
+		const index = getIndex(el);
+		global.CURSOR.interractHover();
+
+
+		this.animLink = true;
+		this.hoverLink = true;
+
+		TweenMax.to(this.ui.worksCircle[index], 0, {opacity: 0});
+		const tl = new TimelineMax();
+
+		tl.to(this.ui.worksDown2[index], 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
+		tl.to(this.ui.worksDown[index], 0.9, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
+		tl.to(this.ui.worksUp[index], 1, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
+		tl.set([this.ui.worksUp[index], this.ui.worksDown[index], this.ui.worksDown2[index]], {clearProps: 'all'});
+		tl.add(()=> {
+			this.animLink = false;
+		});
+
+	}
+
+	onLeaveWork(e) {
+		const el = e.currentTarget;
+		const index = getIndex(el);
+		console.log(index);
+
+		this.hoverLink = false;
+		global.CURSOR.interractLeave();
+		TweenMax.fromTo(this.ui.worksCircle[index], 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.fromTo(this.ui.worksCircle[index], 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 	}
 
 	onW(event) {
@@ -581,26 +682,15 @@ export default class AboutView extends AbstractView {
 	}
 
 	onClick() {
-		if (this.clickAsteroid === true) {
 
-			global.CURSOR.interractLeave();
+		this.heightmapVariable.material.uniforms.mouseSize = { value: 50.0 };
+		this.clickAnim = true;
+		this.currentPosLastX = this.currentPos.x;
 
-			this.currentAstClicked = this.currentAstHover;
-			this.currentAstClicked.animated = true;
-			this.onAsteroidAnim = true;
-			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
-
-			const tl = new TimelineMax();
-
-			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, {y: -dest, ease: window.Expo.easeOut});
-
-			tl.add(()=> {
-				this.onAsteroidAnim = false;
-			});
-
-		} else {
-			// console.log('false');
-		}
+		setTimeout(() => {
+			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			this.clickAnim = false;
+		}, 100); // time circle propagation
 	}
 
 	onClickStart(e) {
@@ -653,29 +743,43 @@ export default class AboutView extends AbstractView {
 
 	raf() {
 
-		// Raycaster
-		if ( this.mouseMoved ) {
+		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
+		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
 
-			this.raycaster.setFromCamera(this.mouse, this.camera);
+		if ( this.clickAnim === true) {
+			this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+			// this.clickAnim = false;
+		} else {
+			// Raycaster
+			if ( this.mouseMoved ) {
 
-			let intersects = this.raycaster.intersectObject( this.meshRay );
+				this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			if ( intersects.length > 0 ) {
-				let point = intersects[ 0 ].point;
-				this.heightmapVariable.material.uniforms.mousePos.value.set( point.x, point.z );
+				let intersects = this.raycaster.intersectObject( this.meshRay );
 
+				if ( intersects.length > 0 ) {
+					this.currentPos = intersects[ 0 ].point;
+					this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+					// if ( this.clickAnim === true) {
+					// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPosLastX, this.currentPos.z );
+					// } else {
+					// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+					// }
+
+				}
+				else {
+					// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
+				}
+
+				this.mouseMoved = false;
+			} else {
+				// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
 			}
-			else {
-				if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
-			}
-
-			this.mouseMoved = false;
-		}
-		else {
-			if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
 		}
 
-		this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+
+
+		// this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation --> only one
 		// this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 		// Do the gpu computation
@@ -727,9 +831,6 @@ export default class AboutView extends AbstractView {
 
 		const tl = new TimelineMax();
 
-		const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
-		const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
-
 		tl.set(this.UI.overlay, {opacity: 1});
 
 		tl.to(this.UI.overlay, 1.5, {opacity: 0});
@@ -770,69 +871,6 @@ export default class AboutView extends AbstractView {
 
 			this.asteroidsMove = true;
 		}, 0);
-
-		// this.cameraMove = true;
-		// // Set camera Dolly
-		// const points = {
-		// 	'camera': [{
-		// 		'x': 0,
-		// 		'y': 70,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 150,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 400,
-		// 		'z': 0
-		// 	}],
-		// 	'lookat': [{
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}]
-		// };
-
-		// this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		// this.dolly.cameraPosition = 0;
-		// this.dolly.lookatPosition = 0;
-		// this.dolly.range = [0, 1];
-		// this.dolly.both = 0;
-
-		// const tl = new TimelineMax({
-		// 	onComplete: () => {
-		// 		this.cameraMove = false;
-		// 		this.currentCameraRotX = this.camera.rotation.x;
-
-		// 	}
-		// });
-
-		// tl.to(this.dolly, 7, {
-		// 	cameraPosition: 1,
-		// 	lookatPosition: 1,
-		// 	ease: window.Power3.easeInOut,
-		// 	onUpdate: () => {
-		// 		this.dolly.update();
-		// 	}
-		// });
-		// tl.add(() => {
-
-		// 	this.asteroidsMove = true;
-		// }, 0);
-
-		// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
-		// tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
-		// tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
 
 	}
 

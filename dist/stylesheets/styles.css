@@ -1112,6 +1112,8 @@ body {
         margin-right: 2em; }
       .ui .about__container .socials a span {
         bottom: 0px; }
+      .ui .about__container .strong {
+        font-family: 'Theinhardt-medium'; }
       .ui .about__container a {
         opacity: 1;
         position: relative;
@@ -1130,6 +1132,79 @@ body {
       font-size: 3.4em;
       line-height: 1.8em;
       display: inline-block; }
+    .ui .about__more, .ui .about__back {
+      display: inline-block;
+      font-size: 0.7em;
+      left: 0px;
+      padding-left: 0px;
+      margin: 20px 0;
+      letter-spacing: 2px;
+      font-family: 'Theinhardt-regular';
+      opacity: 1;
+      pointer-events: auto;
+      position: relative; }
+      .ui .about__more .line, .ui .about__back .line {
+        position: absolute;
+        width: 0px;
+        height: 1px;
+        background-color: black;
+        left: 0px;
+        top: 42%; }
+    .ui .about__back {
+      margin-bottom: 36px; }
+    .ui .about__works {
+      position: absolute;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+      width: 60vw;
+      display: none; }
+    .ui .about__work {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      align-items: center;
+      -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      line-height: 2em;
+      font-size: 2em; }
+      .ui .about__work span {
+        margin-right: 20px; }
+      .ui .about__work a {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center; }
+        .ui .about__work a svg {
+          width: 45px;
+          height: 45px;
+          position: relative; }
+          .ui .about__work a svg polyline,
+          .ui .about__work a svg circle {
+            stroke: black;
+            -webkit-transform-origin: 75% 75%;
+            -ms-transform-origin: 75% 75%;
+            transform-origin: 75% 75%; }
+          .ui .about__work a svg .open-down,
+          .ui .about__work a svg .open-up {
+            stroke-dasharray: 635;
+            stroke-dashoffset: 635; }
+          .ui .about__work a svg .close-up {
+            stroke-dasharray: 635;
+            stroke-dashoffset: -840; }
+          .ui .about__work a svg .close-down {
+            stroke-dasharray: 635;
+            stroke-dashoffset: -180; }
+          .ui .about__work a svg .close-down-2 {
+            stroke-dasharray: 635;
+            stroke-dashoffset: 535; }
 
 a {
   text-decoration: none;

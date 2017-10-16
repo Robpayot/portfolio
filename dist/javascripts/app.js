@@ -249,7 +249,7 @@ var Cursor = function () {
 						} });
 				}
 			} else {
-				TweenMax.to(this.circleObj, 1.5, { val: 49, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
+				TweenMax.to(this.circleObj, 0.7, { val: 49, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
 						_this.c1.setAttribute('r', _this.circleObj.val);
 						_this.c2.setAttribute('r', _this.circleObj.val);
 					} });
@@ -284,7 +284,7 @@ var Cursor = function () {
 						} });
 				}
 			} else {
-				TweenMax.to(this.circleObj, 1.5, { val: 15.9, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
+				TweenMax.to(this.circleObj, 0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
 						_this2.c1.setAttribute('r', _this2.circleObj.val);
 						_this2.c2.setAttribute('r', _this2.circleObj.val);
 					} });
@@ -1751,6 +1751,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+global.OVERLAY;
+
 var AppManager = function () {
 	function AppManager() {
 		_classCallCheck(this, AppManager);
@@ -1797,6 +1799,8 @@ var AppManager = function () {
 				overlay: document.querySelector('.overlay'),
 				body: document.getElementsByTagName('body')[0] // not sure needed
 			};
+
+			global.OVERLAY = this.ui.overlay;
 
 			_RouterManager2.default.start();
 		}
@@ -8519,10 +8523,6 @@ var _SceneManager = require('../managers/SceneManager');
 
 var _SceneManager2 = _interopRequireDefault(_SceneManager);
 
-var _CssContainer = require('../components/CssContainer');
-
-var _CssContainer2 = _interopRequireDefault(_CssContainer);
-
 var _PreloadManager = require('../managers/PreloadManager');
 
 var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
@@ -8609,8 +8609,6 @@ var AboutView = function (_AbstractView) {
 		_this.initWater = _this.initWater.bind(_this);
 		_this.fillTexture = _this.fillTexture.bind(_this);
 		_this.onMouseMove = _this.onMouseMove.bind(_this);
-		_this.onDocumentTouchStart = _this.onDocumentTouchStart.bind(_this);
-		_this.onDocumentTouchMove = _this.onDocumentTouchMove.bind(_this);
 		_this.smoothWater = _this.smoothWater.bind(_this);
 		_this.setMouseCoords = _this.setMouseCoords.bind(_this);
 		_this.setLight = _this.setLight.bind(_this);
@@ -8622,18 +8620,50 @@ var AboutView = function (_AbstractView) {
 		_this.onClickStart = _this.onClickStart.bind(_this);
 		_this.onClick = _this.onClick.bind(_this);
 		_this.onHoverLink = _this.onHoverLink.bind(_this);
+		_this.onHoverMore = _this.onHoverMore.bind(_this);
+		_this.onLeaveMore = _this.onLeaveMore.bind(_this);
+		_this.onClickMore = _this.onClickMore.bind(_this);
+		_this.onClickBack = _this.onClickBack.bind(_this);
+		_this.onHoverWork = _this.onHoverWork.bind(_this);
+		_this.onLeaveWork = _this.onLeaveWork.bind(_this);
 
 		// preload Models
 		// when all is loaded
 		_this.init();
 
-		_this.ui.links = document.querySelectorAll('.about__container a');
-		console.log(_this.ui.links);
+		// ui
+		_this.ui = {
+			title: document.querySelector('.about__title'),
+			links: document.querySelectorAll('.about__intro a'),
+			more: document.querySelector('.about__more'),
+			back: document.querySelector('.about__back'),
+			socials: document.querySelector('.about__container .socials'),
+			p: document.querySelectorAll('.about__container p'),
+			introWrap: document.querySelector('.about__intro'),
+			worksWrap: document.querySelector('.about__works'),
+			works: document.querySelectorAll('.about__work'),
+			worksCircle: document.querySelectorAll('.about__works svg circle'),
+			worksDown: document.querySelectorAll('.about__works svg .close-down'),
+			worksDown2: document.querySelectorAll('.about__works svg .close-down-2'),
+			worksUp: document.querySelectorAll('.about__works svg .close-up')
+		};
+
+		_this.targetsIntro = [_this.ui.title];
+		var p = [].slice.call(_this.ui.p);
+		_this.targetsIntro = _this.targetsIntro.concat(p);
+		_this.targetsIntro.push(_this.ui.socials);
+		_this.targetsIntro.push(_this.ui.more);
+
+		_this.targetsWorks = [_this.ui.back];
+		var works = [].slice.call(_this.ui.works);
+		_this.targetsWorks = _this.targetsWorks.concat(works);
 
 		_this.events(true);
-		_this.ui.overlay.classList.add('black');
+		global.OVERLAY.classList.add('black');
 
 		_this.transitionIn();
+
+		// this.events(false);
 
 		// init
 
@@ -8645,7 +8675,6 @@ var AboutView = function (_AbstractView) {
 	_createClass(AboutView, [{
 		key: 'events',
 		value: function events(method) {
-			var _this2 = this;
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			var onListener = method === false ? 'off' : 'on';
@@ -8662,6 +8691,17 @@ var AboutView = function (_AbstractView) {
 					this.ui.links[i][evListener]('mouseleave', this.onLeaveLink, false);
 				}
 				document[evListener]('mouseover', this.onMouseMove, false);
+
+				this.ui.more[evListener]('mouseenter', this.onHoverMore, false);
+				this.ui.more[evListener]('mouseleave', this.onLeaveMore, false);
+
+				this.ui.back[evListener]('mouseenter', this.onHoverMore, false);
+				this.ui.back[evListener]('mouseleave', this.onLeaveMore, false);
+
+				for (var _i = 0; _i < this.ui.works.length; _i++) {
+					this.ui.works[_i][evListener]('mouseenter', this.onHoverWork, false);
+					this.ui.works[_i][evListener]('mouseleave', this.onLeaveWork, false);
+				}
 			} else {
 				document[evListener]('touchstart', this.onDocumentTouchStart, false);
 				document[evListener]('touchmove', this.onDocumentTouchMove, false);
@@ -8670,20 +8710,13 @@ var AboutView = function (_AbstractView) {
 			document[evListener]('keydown', this.onW, false);
 			document[evListener]('click', this.onClick, false);
 
-			this.UI.button[evListener]('click', this.onClickStart);
-			this.UI.button[evListener]('mouseenter', function () {
-				_this2.startIsHover = true;
-				global.CURSOR.interractHover();
-			});
-			this.UI.button[evListener]('mouseleave', function () {
-				_this2.startIsHover = false;
-				global.CURSOR.interractLeave();
-			});
+			this.ui.more[evListener]('click', this.onClickMore);
+			this.ui.back[evListener]('click', this.onClickBack);
 		}
 	}, {
 		key: 'init',
 		value: function init() {
-			var _this3 = this;
+			var _this2 = this;
 
 			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 			// this.UI.intro.style.display = 'none';
@@ -8693,8 +8726,7 @@ var AboutView = function (_AbstractView) {
 
 			this.scene = new _three.Scene();
 			this.scene.background = new _three.Color(0x000000);
-			this.cssScene = new _three.Scene();
-			_SceneManager2.default.renderer.setPixelRatio((0, _utils.clamp)(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
+			// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 			// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 			// set Camera
@@ -8709,7 +8741,7 @@ var AboutView = function (_AbstractView) {
 
 			this.nbAst = 16;
 			this.mouseSize = 16.0; // wave agitation
-			this.cssObjects = [];
+			this.maxDash = 635;
 
 			this.mouseMoved = false;
 			this.mouseCoords = new _three.Vector2();
@@ -8719,6 +8751,7 @@ var AboutView = function (_AbstractView) {
 
 			// Mouse
 			this.mouse = { x: 0, y: 0 };
+			this.currentPos = {};
 			this.mouseMoved = false;
 			this.camRotTarget = new _three.Vector3(0, 0, 0);
 			this.camRotSmooth = new _three.Vector3(0, 0, 0);
@@ -8730,6 +8763,11 @@ var AboutView = function (_AbstractView) {
 				this.controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
 				this.controls.enableZoom = true;
 			}
+
+			this.effectController = {
+				mouseSize: 30.0,
+				viscosity: 0.15
+			};
 
 			this.initWater(false, false);
 
@@ -8745,21 +8783,14 @@ var AboutView = function (_AbstractView) {
 			// 	this.resetWater();
 			// }, 10000);
 
-			this.tlLink = new TimelineMax();
-
 			var gui = new _datGui2.default.GUI();
-
-			this.effectController = {
-				mouseSize: 30.0,
-				viscosity: 0.15
-			};
 
 			gui.add(this.effectController, 'mouseSize', 1.0, 100.0, 1.0).onChange(this.valuesChanger);
 			gui.add(this.effectController, 'viscosity', 0.0, 0.5, 0.001).onChange(this.valuesChanger);
 			this.valuesChanger();
 			var buttonSmooth = {
 				smoothWater: function smoothWater() {
-					_this3.smoothWater();
+					_this2.smoothWater();
 				}
 			};
 			gui.add(buttonSmooth, 'smoothWater');
@@ -8888,14 +8919,14 @@ var AboutView = function (_AbstractView) {
 
 				this.heightmapVariable = this.gpuCompute.addVariable('heightmap', _HeightmapFragmentShader2.default.fragmentShader, heightmap0);
 
-				// console.log(this.heightmapVariable);
-
 				this.gpuCompute.setVariableDependencies(this.heightmapVariable, [this.heightmapVariable]);
 
 				this.heightmapVariable.material.uniforms.debug = { value: new _three.Vector2(0, 0) };
 				this.heightmapVariable.material.uniforms.mousePos = { value: new _three.Vector2(10000, 10000) };
 				this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.2 };
 				this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(1);
+				this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+				this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 				var error = this.gpuCompute.init();
 				if (error !== null) {
@@ -8976,7 +9007,7 @@ var AboutView = function (_AbstractView) {
 	}, {
 		key: 'fillTexture',
 		value: function fillTexture(texture) {
-			var _this4 = this;
+			var _this3 = this;
 
 			var waterMaxHeight = 10;
 
@@ -8985,7 +9016,7 @@ var AboutView = function (_AbstractView) {
 				var mult = 0.025;
 				var r = 0;
 				for (var i = 0; i < 15; i++) {
-					r += multR * _this4.simplex.noise(x * mult, y * mult);
+					r += multR * _this3.simplex.noise(x * mult, y * mult);
 					multR *= 0.53 + 0.025 * i;
 					mult *= 1.25;
 				}
@@ -9015,7 +9046,7 @@ var AboutView = function (_AbstractView) {
 		value: function setUiContainer() {
 
 			var data = _data2.default;
-			console.log(data, _PreloadManager2.default.getResult('tpl-about-content'));
+			// console.log(data, PreloadManager.getResult('tpl-about-content'));
 
 			// Context + gallery arrows
 			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-about-content'));
@@ -9083,28 +9114,6 @@ var AboutView = function (_AbstractView) {
 			this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
 		}
 	}, {
-		key: 'onDocumentTouchStart',
-		value: function onDocumentTouchStart(event) {
-
-			if (event.touches.length === 1) {
-
-				event.preventDefault();
-
-				this.setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
-			}
-		}
-	}, {
-		key: 'onDocumentTouchMove',
-		value: function onDocumentTouchMove(event) {
-
-			if (event.touches.length === 1) {
-
-				event.preventDefault();
-
-				this.setMouseCoords(event.touches[0].pageX, event.touches[0].pageY);
-			}
-		}
-	}, {
 		key: 'onHoverLink',
 		value: function onHoverLink(e) {
 
@@ -9113,23 +9122,119 @@ var AboutView = function (_AbstractView) {
 			var el = e.currentTarget;
 			var span = el.querySelector('span');
 
-			this.tlLink.clear();
+			var tl = new TimelineMax();
+			TweenMax.killTweensOf(span);
 
-			this.tlLink.set(span, { left: 'auto', right: '0', width: '100%' }, 0);
+			tl.set(span, { left: 'auto', right: '0', width: '100%' }, 0);
 
-			this.tlLink.to(span, 0.3, { width: '0%', ease: window.Power2.easeOut }, 0);
+			tl.to(span, 0.6, { width: '0%', ease: window.Power2.easeOut }, 0);
 
-			this.tlLink.set(span, { left: '0', right: 'auto' }, 0.3);
+			tl.set(span, { left: '0', right: 'auto' }, 0.3);
 
-			this.tlLink.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3);
+			tl.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3);
 
-			this.tlLink.play();
+			// this.tlLink.play();
 		}
 	}, {
 		key: 'onLeaveLink',
 		value: function onLeaveLink(e) {
 
 			global.CURSOR.interractLeave();
+		}
+	}, {
+		key: 'onHoverMore',
+		value: function onHoverMore(e) {
+
+			var el = e.currentTarget;
+			var line = el.querySelector('.line');
+
+			global.CURSOR.interractHover();
+
+			var tl = new TimelineMax();
+			tl.set(el, { clearProps: 'paddingLeft' });
+			TweenMax.killTweensOf(line);
+
+			tl.to(line, 0.7, { width: 15, ease: window.Expo.easeOut }, 0);
+			tl.to(el, 0.7, { paddingLeft: 25, ease: window.Expo.easeOut }, 0);
+		}
+	}, {
+		key: 'onLeaveMore',
+		value: function onLeaveMore(e) {
+
+			var el = e.currentTarget;
+			var line = el.querySelector('.line');
+
+			global.CURSOR.interractLeave();
+
+			var tl = new TimelineMax();
+			tl.set(el, { clearProps: 'paddingLeft' });
+			TweenMax.killTweensOf(line);
+
+			tl.to(line, 0.7, { width: 0, ease: window.Expo.easeOut }, 0);
+			tl.to(el, 0.7, { paddingLeft: 0, ease: window.Expo.easeOut }, 0);
+		}
+	}, {
+		key: 'onClickMore',
+		value: function onClickMore(e) {
+
+			var tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
+
+			tl.staggerTo(this.targetsIntro, 2, { y: -120, ease: window.Power4.easeOut }, 0.04);
+			tl.staggerTo(this.targetsIntro, 0.5, { opacity: 0, ease: window.Linear.easeNone }, 0.04, 0);
+			tl.set(this.ui.introWrap, { display: 'none' });
+
+			tl.set(this.ui.worksWrap, { display: 'block' }, 1);
+			tl.staggerFromTo(this.targetsWorks, 2, { y: 120 }, { y: 0, ease: window.Expo.easeOut }, 0.04, 1);
+			tl.staggerFromTo(this.targetsWorks, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, 1);
+		}
+	}, {
+		key: 'onClickBack',
+		value: function onClickBack(e) {
+
+			var tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
+
+			tl.staggerTo(this.targetsWorks, 1.7, { y: -120, ease: window.Power4.easeOut }, 0.04);
+			tl.staggerTo(this.targetsWorks, 0.5, { opacity: 0, ease: window.Linear.easeNone }, 0.04, 0);
+			tl.set(this.ui.worksWrap, { display: 'none' });
+
+			tl.set(this.ui.introWrap, { display: 'block' }, 1);
+			tl.staggerFromTo(this.targetsIntro, 2, { y: 120 }, { y: 0, ease: window.Expo.easeOut }, 0.04, 1);
+			tl.staggerFromTo(this.targetsIntro, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, 1);
+		}
+	}, {
+		key: 'onHoverWork',
+		value: function onHoverWork(e) {
+			var _this4 = this;
+
+			var el = e.currentTarget;
+			var index = (0, _utils.getIndex)(el);
+			global.CURSOR.interractHover();
+
+			this.animLink = true;
+			this.hoverLink = true;
+
+			TweenMax.to(this.ui.worksCircle[index], 0, { opacity: 0 });
+			var tl = new TimelineMax();
+
+			tl.to(this.ui.worksDown2[index], 0.8, { strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
+			tl.to(this.ui.worksDown[index], 0.9, { strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
+			tl.to(this.ui.worksUp[index], 1, { strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
+			tl.set([this.ui.worksUp[index], this.ui.worksDown[index], this.ui.worksDown2[index]], { clearProps: 'all' });
+			tl.add(function () {
+				_this4.animLink = false;
+			});
+		}
+	}, {
+		key: 'onLeaveWork',
+		value: function onLeaveWork(e) {
+			var el = e.currentTarget;
+			var index = (0, _utils.getIndex)(el);
+			console.log(index);
+
+			this.hoverLink = false;
+			global.CURSOR.interractLeave();
+			TweenMax.fromTo(this.ui.worksCircle[index], 0.2, { opacity: 0 }, { opacity: 1 });
+			TweenMax.fromTo(this.ui.worksCircle[index], 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 		}
 	}, {
 		key: 'onW',
@@ -9147,25 +9252,14 @@ var AboutView = function (_AbstractView) {
 		value: function onClick() {
 			var _this5 = this;
 
-			if (this.clickAsteroid === true) {
+			this.heightmapVariable.material.uniforms.mouseSize = { value: 50.0 };
+			this.clickAnim = true;
+			this.currentPosLastX = this.currentPos.x;
 
-				global.CURSOR.interractLeave();
-
-				this.currentAstClicked = this.currentAstHover;
-				this.currentAstClicked.animated = true;
-				this.onAsteroidAnim = true;
-				var dest = this.currentAstClicked.height * this.currentAstClicked.scale;
-
-				var tl = new TimelineMax();
-
-				tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, { y: -dest, ease: window.Expo.easeOut });
-
-				tl.add(function () {
-					_this5.onAsteroidAnim = false;
-				});
-			} else {
-				// console.log('false');
-			}
+			setTimeout(function () {
+				_this5.heightmapVariable.material.uniforms.mouseSize = { value: _this5.effectController.mouseSize }; // water agitation
+				_this5.clickAnim = false;
+			}, 100); // time circle propagation
 		}
 	}, {
 		key: 'onClickStart',
@@ -9238,26 +9332,39 @@ var AboutView = function (_AbstractView) {
 		key: 'raf',
 		value: function raf() {
 
-			// Raycaster
-			if (this.mouseMoved) {
+			// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
+			// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
 
-				this.raycaster.setFromCamera(this.mouse, this.camera);
-
-				var intersects = this.raycaster.intersectObject(this.meshRay);
-
-				if (intersects.length > 0) {
-					var point = intersects[0].point;
-					this.heightmapVariable.material.uniforms.mousePos.value.set(point.x, point.z);
-				} else {
-					if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set(10000, 10000);
-				}
-
-				this.mouseMoved = false;
+			if (this.clickAnim === true) {
+				this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
+				// this.clickAnim = false;
 			} else {
-				if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set(10000, 10000);
+				// Raycaster
+				if (this.mouseMoved) {
+
+					this.raycaster.setFromCamera(this.mouse, this.camera);
+
+					var intersects = this.raycaster.intersectObject(this.meshRay);
+
+					if (intersects.length > 0) {
+						this.currentPos = intersects[0].point;
+						this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
+						// if ( this.clickAnim === true) {
+						// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPosLastX, this.currentPos.z );
+						// } else {
+						// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+						// }
+					} else {
+							// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
+						}
+
+					this.mouseMoved = false;
+				} else {
+					// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
+				}
 			}
 
-			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			// this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation --> only one
 			// this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 			// Do the gpu computation
@@ -9308,9 +9415,6 @@ var AboutView = function (_AbstractView) {
 
 			var tl = new TimelineMax();
 
-			var title1Arr = new _SplitText2.default(this.UI.title1, { type: 'chars' });
-			var title2Arr = new _SplitText2.default(this.UI.title2, { type: 'words' });
-
 			tl.set(this.UI.overlay, { opacity: 1 });
 
 			tl.to(this.UI.overlay, 1.5, { opacity: 0 });
@@ -9350,69 +9454,6 @@ var AboutView = function (_AbstractView) {
 
 				_this8.asteroidsMove = true;
 			}, 0);
-
-			// this.cameraMove = true;
-			// // Set camera Dolly
-			// const points = {
-			// 	'camera': [{
-			// 		'x': 0,
-			// 		'y': 70,
-			// 		'z': 0
-			// 	}, {
-			// 		'x': 0,
-			// 		'y': 150,
-			// 		'z': 0
-			// 	}, {
-			// 		'x': 0,
-			// 		'y': 400,
-			// 		'z': 0
-			// 	}],
-			// 	'lookat': [{
-			// 		'x': 0,
-			// 		'y': 0,
-			// 		'z': 0
-			// 	}, {
-			// 		'x': 0,
-			// 		'y': 0,
-			// 		'z': 0
-			// 	}, {
-			// 		'x': 0,
-			// 		'y': 0,
-			// 		'z': 0
-			// 	}]
-			// };
-
-			// this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-			// this.dolly.cameraPosition = 0;
-			// this.dolly.lookatPosition = 0;
-			// this.dolly.range = [0, 1];
-			// this.dolly.both = 0;
-
-			// const tl = new TimelineMax({
-			// 	onComplete: () => {
-			// 		this.cameraMove = false;
-			// 		this.currentCameraRotX = this.camera.rotation.x;
-
-			// 	}
-			// });
-
-			// tl.to(this.dolly, 7, {
-			// 	cameraPosition: 1,
-			// 	lookatPosition: 1,
-			// 	ease: window.Power3.easeInOut,
-			// 	onUpdate: () => {
-			// 		this.dolly.update();
-			// 	}
-			// });
-			// tl.add(() => {
-
-			// 	this.asteroidsMove = true;
-			// }, 0);
-
-			// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
-			// tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
-			// tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
 		}
 	}, {
 		key: 'transitionOut',
@@ -9602,7 +9643,7 @@ exports.default = AboutView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":28,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":46,"dat-gui":54,"handlebars":87,"three":108}],46:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":28,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":46,"dat-gui":54,"handlebars":87,"three":108}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10016,7 +10057,7 @@ var IntroView = function (_AbstractView) {
 			this.scene = new _three.Scene();
 			this.scene.background = new _three.Color(0x000000);
 
-			_SceneManager2.default.renderer.setPixelRatio((0, _utils.clamp)(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
+			// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 			// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 			// set Camera
@@ -10326,11 +10367,11 @@ var IntroView = function (_AbstractView) {
 				var force = {
 					x: 0,
 					y: 0,
-					z: (0, _utils.getRandom)(40, 50)
+					z: (0, _utils.getRandom)(30, 40)
 				};
 
 				var scale = (0, _utils.getRandom)(0.045, 0.075);
-				var speed = (0, _utils.getRandom)(500, 600); // more is slower
+				// const speed = getRandom(500, 600); // more is slower
 				var range = (0, _utils.getRandom)(2, 5);
 				var timeRotate = (0, _utils.getRandom)(14000, 16000);
 				var offsetScale = 1.6;
@@ -10348,7 +10389,7 @@ var IntroView = function (_AbstractView) {
 					scale: scale,
 					offsetScale: offsetScale,
 					range: range,
-					speed: speed,
+					// speed,
 					timeRotate: timeRotate
 				});
 
@@ -11157,9 +11198,9 @@ var ProjectView = function (_AbstractView) {
 		_this.onChangeCameraRot = _this.onChangeCameraRot.bind(_this);
 		_this.checkCssContainer = _this.checkCssContainer.bind(_this);
 		_this.setEnvelop = _this.setEnvelop.bind(_this);
-		_this.onOverLink = _this.onOverLink.bind(_this);
+		_this.onHoverLink = _this.onHoverLink.bind(_this);
 		_this.onLeaveLink = _this.onLeaveLink.bind(_this);
-		_this.onOverBtn = _this.onOverBtn.bind(_this);
+		_this.onHoverBtn = _this.onHoverBtn.bind(_this);
 		_this.onLeaveBtn = _this.onLeaveBtn.bind(_this);
 
 		_this.bounceArea = 200; // default bounceArea
@@ -11213,9 +11254,9 @@ var ProjectView = function (_AbstractView) {
 				_bean2.default.on(document.body, 'click.project', '.project__back', this.backFromContent);
 				_bean2.default.on(document.body, 'click.project', '.project__next', this.goTo);
 				_bean2.default.on(document.body, 'click.project', '.project__prev', this.goTo);
-				_bean2.default.on(document.body, 'mouseover.project', '.project__link', this.onOverLink);
+				_bean2.default.on(document.body, 'mouseover.project', '.project__link', this.onHoverLink);
 				_bean2.default.on(document.body, 'mouseleave.project', '.project__link', this.onLeaveLink);
-				_bean2.default.on(document.body, 'mouseover.project', '.project__arrow', this.onOverBtn);
+				_bean2.default.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 				_bean2.default.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 			} else {
 				_bean2.default.off(document.body, 'click.project');
@@ -11713,8 +11754,8 @@ var ProjectView = function (_AbstractView) {
 		////////////
 
 	}, {
-		key: 'onOverLink',
-		value: function onOverLink(e) {
+		key: 'onHoverLink',
+		value: function onHoverLink(e) {
 			var _this3 = this;
 
 			if (this.hoverLink === true) return false;
@@ -11939,8 +11980,8 @@ var ProjectView = function (_AbstractView) {
 			}
 		}
 	}, {
-		key: 'onOverBtn',
-		value: function onOverBtn(e) {
+		key: 'onHoverBtn',
+		value: function onHoverBtn(e) {
 			var _this8 = this;
 
 			if (this.hoverBtn === true) return false;

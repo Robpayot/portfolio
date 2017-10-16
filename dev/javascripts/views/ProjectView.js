@@ -76,9 +76,9 @@ export default class ProjectView extends AbstractView {
 		this.onChangeCameraRot = this.onChangeCameraRot.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
 		this.setEnvelop = this.setEnvelop.bind(this);
-		this.onOverLink = this.onOverLink.bind(this);
+		this.onHoverLink = this.onHoverLink.bind(this);
 		this.onLeaveLink = this.onLeaveLink.bind(this);
-		this.onOverBtn = this.onOverBtn.bind(this);
+		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 
 		this.bounceArea = 200; // default bounceArea
@@ -128,9 +128,9 @@ export default class ProjectView extends AbstractView {
 			bean.on(document.body, 'click.project', '.project__back', this.backFromContent);
 			bean.on(document.body, 'click.project', '.project__next', this.goTo);
 			bean.on(document.body, 'click.project', '.project__prev', this.goTo);
-			bean.on(document.body, 'mouseover.project', '.project__link', this.onOverLink);
+			bean.on(document.body, 'mouseover.project', '.project__link', this.onHoverLink);
 			bean.on(document.body, 'mouseleave.project', '.project__link', this.onLeaveLink);
-			bean.on(document.body, 'mouseover.project', '.project__arrow', this.onOverBtn);
+			bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 		} else {
 			bean.off(document.body, 'click.project');
@@ -647,7 +647,7 @@ export default class ProjectView extends AbstractView {
 	// EVENTS
 	////////////
 
-	onOverLink(e) {
+	onHoverLink(e) {
 
 		if (this.hoverLink === true) return false;
 		global.CURSOR.interractHover();
@@ -871,7 +871,7 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	onOverBtn(e) {
+	onHoverBtn(e) {
 
 		if (this.hoverBtn === true) return false;
 		const el = e.currentTarget;

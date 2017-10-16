@@ -122,7 +122,7 @@ export default class IntroView extends AbstractView {
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
 
-		SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
+		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 		// set Camera
@@ -436,11 +436,11 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(40, 50)
+				z: getRandom(30, 40)
 			};
 
 			const scale = getRandom(0.045, 0.075);
-			const speed = getRandom(500, 600); // more is slower
+			// const speed = getRandom(500, 600); // more is slower
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
 			const offsetScale = 1.6;
@@ -458,7 +458,7 @@ export default class IntroView extends AbstractView {
 				scale,
 				offsetScale,
 				range,
-				speed,
+				// speed,
 				timeRotate
 			});
 

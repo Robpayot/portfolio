@@ -113,7 +113,7 @@ export default class Cursor {
 				}});
 			}
 		} else {
-			TweenMax.to(this.circleObj,1.5, { val: 49, ease: window.Expo.easeOut, onUpdate:() => {
+			TweenMax.to(this.circleObj,0.7, { val: 49, ease: window.Expo.easeOut, onUpdate:() => {
 				this.c1.setAttribute('r', this.circleObj.val);
 				this.c2.setAttribute('r', this.circleObj.val);
 			}});
@@ -144,7 +144,7 @@ export default class Cursor {
 				}});
 			}
 		} else {
-			TweenMax.to(this.circleObj,1.5, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
+			TweenMax.to(this.circleObj,0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
 				this.c1.setAttribute('r', this.circleObj.val);
 				this.c2.setAttribute('r', this.circleObj.val);
 			}});
