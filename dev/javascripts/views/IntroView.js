@@ -71,7 +71,7 @@ export default class IntroView extends AbstractView {
 			this.events(true);
 			this.ui.overlay.classList.add('black');
 
-			this.transitionIn();
+			this.transitionIn(!obj.fromUrl);
 
 		}, (err) => {
 			console.log(err);
@@ -136,7 +136,6 @@ export default class IntroView extends AbstractView {
 		if (this.gravity === true) this.initPhysics();
 
 		this.nbAst = 16;
-		this.mouseSize = 32.0; // wave agitation
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
@@ -160,6 +159,11 @@ export default class IntroView extends AbstractView {
 			this.controls.enableZoom = true;
 		}
 
+		this.effectController = {
+			mouseSize: 46.0,
+			viscosity: 0.03
+		};
+
 		this.initWater(false, false);
 
 		this.setAsteroids();
@@ -171,12 +175,6 @@ export default class IntroView extends AbstractView {
 		// }, 10000);
 
 		let gui = new dat.GUI();
-
-		this.effectController = {
-			mouseSize: 20.0,
-			viscosity: 0.03
-		};
-
 		gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
 		gui.add( this.effectController, 'viscosity', 0.0, 0.1, 0.001 ).onChange( this.valuesChanger );
 		this.valuesChanger();
@@ -228,11 +226,11 @@ export default class IntroView extends AbstractView {
 
 	initWater(destroy = false, bigger = false) {
 
-		this.WIDTH = 62; // Texture width for simulation bits
+		this.WIDTH = 96; // Texture width for simulation bits
 
 		// Magic calculs ;)
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const height = 2 * Math.tan( vFOV / 2 ) * 400; // dist between 0 and camerapos.y
+		const height = 2 * Math.tan( vFOV / 2 ) * 700; // dist between 0 and camerapos.y
 
 		const aspect = window.innerWidth / window.innerHeight;
 		let finalBounds;
@@ -245,7 +243,7 @@ export default class IntroView extends AbstractView {
 
 		const extra = bigger === true ? 800 : 100; // for rotation camera left / right
 		this.BOUNDS = finalBounds + extra; // Water size
-		this.BOUNDSSUP = bigger === true ? 700 : 0; // Bounds supp for TransitionOut, we see the horizon
+		this.BOUNDSSUP = bigger === true ? 700 : 100; // Bounds supp for TransitionOut, we see the horizon
 		this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 		let materialColor = 0xffffff;
@@ -309,6 +307,8 @@ export default class IntroView extends AbstractView {
 			this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
 			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
 			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
+			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 			let error = this.gpuCompute.init();
 			if ( error !== null ) {
@@ -548,14 +548,29 @@ export default class IntroView extends AbstractView {
 
 	resetWater() {
 
-		let currentRenderTarget = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable );
-		let alternateRenderTarget = this.gpuCompute.getAlternateRenderTarget( this.heightmapVariable );
+		let obj = this.scene.getObjectByName('water');
+		if (obj.geometry) obj.geometry.dispose();
 
-		this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
-		this.gpuCompute.doRenderTarget( this.smoothShader, alternateRenderTarget );
+		if (obj.material) {
 
-		this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
-		this.gpuCompute.doRenderTarget( this.smoothShader, currentRenderTarget );
+			if (obj.material.materials) {
+
+				for (const mat of obj.material.materials) {
+
+					if (mat.map) mat.map.dispose();
+
+					mat.dispose();
+				}
+			} else {
+
+				if (obj.material.map) obj.material.map.dispose();
+
+				obj.material.dispose();
+			}
+		}
+		this.scene.remove( obj );
+
+		this.initWater();
 	}
 
 	setMouseCoords( x, y ) {
@@ -626,13 +641,27 @@ export default class IntroView extends AbstractView {
 			this.onAsteroidAnim = true;
 			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
 
+			this.heightmapVariable.material.uniforms.mouseSize = { value: 30.0 }; // change mouse size
+			this.heightmapVariable.material.uniforms.viscosity = { value: 0.015 };
+
 			const tl = new TimelineMax();
 
 			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, {y: -dest, ease: window.Expo.easeOut});
 
 			tl.add(()=> {
+				this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize };
+				this.heightmapVariable.material.uniforms.viscosity = { value: this.effectController.viscosity };
 				this.onAsteroidAnim = false;
-			});
+			}, 0.5);
+
+			// this.heightmapVariable.material.uniforms.mouseSize = { value: 50.0 };
+			// this.clickAnim = true;
+			// this.currentPosLastX = this.currentPos.x;
+
+			// setTimeout(() => {
+			// 	this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			// 	this.clickAnim = false;
+			// }, 100);
 
 		} else {
 			// console.log('false');
@@ -643,46 +672,45 @@ export default class IntroView extends AbstractView {
 
 		// e.preventDefault();
 
-		if (this.clicked === true) return false;
-		this.clicked = true;
+		// if (this.clicked === true) return false;
+		// this.clicked = true;
 
 
 
-		// const tl = new TimelineMax({delay: 2});
-		const tl = new TimelineMax();
+		// // const tl = new TimelineMax({delay: 2});
+		// const tl = new TimelineMax();
 
-		tl.add(() => {
-			console.log('switch water');
-			// Clean water and replace it !
-			const obj = this.scene.getObjectByName('water');
-			if (obj.geometry) obj.geometry.dispose();
+		// tl.add(() => {
+		// 	console.log('switch water');
+		// 	// Clean water and replace it !
+		// 	const obj = this.scene.getObjectByName('water');
+		// 	if (obj.geometry) obj.geometry.dispose();
 
-			if (obj.material) {
+		// 	if (obj.material) {
 
-				if (obj.material.materials) {
+		// 		if (obj.material.materials) {
 
-					for (const mat of obj.material.materials) {
+		// 			for (const mat of obj.material.materials) {
 
-						if (mat.map) mat.map.dispose();
+		// 				if (mat.map) mat.map.dispose();
 
-						mat.dispose();
-					}
-				} else {
+		// 				mat.dispose();
+		// 			}
+		// 		} else {
 
-					if (obj.material.map) obj.material.map.dispose();
+		// 			if (obj.material.map) obj.material.map.dispose();
 
-					obj.material.dispose();
-				}
-			}
-			this.scene.remove( obj );
-			this.initWater(true, true);
-		}, '+=1.8');
+		// 			obj.material.dispose();
+		// 		}
+		// 	}
+		// 	this.scene.remove( obj );
+		// 	this.initWater(true, true);
+		// }, '+=1.8');
 
 		// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
 		// tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
 
-		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
-		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
+
 
 
 	}
@@ -696,7 +724,6 @@ export default class IntroView extends AbstractView {
 		// console.log(pointX, pointZ);
 
 		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
-		this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
@@ -707,7 +734,7 @@ export default class IntroView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.0014;
+		this.waterMesh.position.y -= 0.00152;
 
 		// console.log(this.waterMesh.position);
 
@@ -807,7 +834,7 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	transitionIn() {
+	transitionIn(fromProject = false) {
 
 		this.el.classList.add('intro');
 		this.el.classList.remove('project');
@@ -817,42 +844,56 @@ export default class IntroView extends AbstractView {
 		global.MENU.el.classList.remove('is-active');
 
 		Ui.el.style.display = 'block';
-
-		const tl = new TimelineMax();
-
 		const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
 		const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
+		const tl = new TimelineMax();
 
-		tl.set(this.UI.overlay, {opacity: 1});
-		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
-		// tl.set(this.asteroidsM.material, {opacity: 0});
+		if (fromProject === false) {
 
-		tl.staggerFromTo(title1Arr.chars, 0.7, {
-			opacity: 0,
-			y: 10,
-			// force3D: true,
-			ease: Expo.easeOut
-		}, {
-			opacity: 1,
-			y: 0
-		}, 0.07, 1);
+			tl.set(this.UI.overlay, {opacity: 1});
+			tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
+			// tl.set(this.asteroidsM.material, {opacity: 0});
 
-		tl.staggerFromTo(title2Arr.words, 0.7, {
-			opacity: 0,
-			y: 10,
-			// force3D: true,
-			ease: Expo.easeOut
-		}, {
-			opacity: 1,
-			y: 0
-		}, 0.07);
-		tl.to(this.UI.overlay, 1.5, {opacity: 0});
-		tl.add(() => {
-			this.moveCameraIn();
-		}, 1);
-		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=3');
-		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
-		tl.to(this.UI.button, 3, {opacity: 1});
+			tl.staggerFromTo(title1Arr.chars, 0.7, {
+				opacity: 0,
+				y: 10,
+				// force3D: true,
+				ease: Expo.easeOut
+			}, {
+				opacity: 1,
+				y: 0
+			}, 0.07, 1);
+
+			tl.staggerFromTo(title2Arr.words, 0.7, {
+				opacity: 0,
+				y: 10,
+				// force3D: true,
+				ease: Expo.easeOut
+			}, {
+				opacity: 1,
+				y: 0
+			}, 0.07);
+			tl.to(this.UI.overlay, 1.5, {opacity: 0});
+			tl.add(() => {
+				this.moveCameraIn(fromProject);
+			}, 1);
+			tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=3');
+			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.to(this.UI.button, 3, {opacity: 1});
+			tl.to('.overlay', 1, {
+				opacity: 0
+			}, 0);
+
+		} else {
+			tl.add(() => {
+				this.moveCameraIn(fromProject);
+			}, 1.5);
+			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.to(this.UI.button, 3, {opacity: 1});
+			tl.to('.overlay', 1, {
+				opacity: 0
+			}, 0.5);
+		}
 
 		tl.add(() => {
 			// start move Ast
@@ -860,22 +901,13 @@ export default class IntroView extends AbstractView {
 		},0);
 
 
-		tl.to('.overlay', 1, {
-			opacity: 0
-		}, 0);
+
 		// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
 
 	}
 
-	moveCameraIn(dest) {
+	moveCameraIn(fromProject = false) {
 
-		// this.camera.lookAt(new Vector3(0,0,0));
-		// const tl2 = new TimelineMax();
-
-		// tl2.to(this.camera.position, 5, {y: 800});
-		// tl2.to(this.camera.rotation, 5, {x: toRadian(180)});
-		// const tl2 = new TimelineMax();
-		// tl2.to(this.camera.position, 10, {y: -400});
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -887,159 +919,45 @@ export default class IntroView extends AbstractView {
 
 			}
 		});
-		tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
+
+		if (fromProject === true) {
+			tl.fromTo(this.camera.position, 5, {y: 700 }, {y: 400, ease: window.Expo.easeOut}, 0);
+		} else {
+			tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
+		}
+
+
 		tl.add(() => {
 
 			this.asteroidsMove = true;
 		}, 0);
 
-		// this.cameraMove = true;
-		// // Set camera Dolly
-		// const points = {
-		// 	'camera': [{
-		// 		'x': 0,
-		// 		'y': 70,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 150,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 400,
-		// 		'z': 0
-		// 	}],
-		// 	'lookat': [{
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}]
-		// };
-
-		// this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		// this.dolly.cameraPosition = 0;
-		// this.dolly.lookatPosition = 0;
-		// this.dolly.range = [0, 1];
-		// this.dolly.both = 0;
-
-		// const tl = new TimelineMax({
-		// 	onComplete: () => {
-		// 		this.cameraMove = false;
-		// 		this.currentCameraRotX = this.camera.rotation.x;
-
-		// 	}
-		// });
-
-		// tl.to(this.dolly, 7, {
-		// 	cameraPosition: 1,
-		// 	lookatPosition: 1,
-		// 	ease: window.Power3.easeInOut,
-		// 	onUpdate: () => {
-		// 		this.dolly.update();
-		// 	}
-		// });
-		// tl.add(() => {
-
-		// 	this.asteroidsMove = true;
-		// }, 0);
-
-		// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
-		// tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
-		// tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
-
 	}
 
 	transitionOut(dest) {
+
+		// this.resetWater();
+
+		const tl = new TimelineMax({delay: 0});
+
+		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
+		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
+
+		tl.fromTo(this.camera.position, 4, {y: 400 }, {y: 900, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.overlay', 1, {
+			opacity: 0
+		}, {
+			opacity: 1,
+			ease: window.Linear.easeNone
+		}, 0);
+		tl.add(() => {
+			EmitterManager.emit('view:transition:out');
+		},2);
 
 
 		this.animating = true;
 
 		this.cameraMove = true;
-
-		// const tl2 = new TimelineMax();
-
-		// tl2.to(this.camera.position, 2, {y: 100, ease: window.Expo.easeOut});
-		// tl2.to(this.camera.rotation, 3, {x: toRadian(0), ease: window.Expo.easeOut}, 0);
-		// // tl2.to(this.camera.position, 2, {z: 0}, 2);
-		// tl2.to(this.camera.rotation, 2, {x: toRadian(45), ease: window.Expo.easeOut}, '-=1');
-		// tl2.to(this.camera.position, 4, {z: -5000, y: 2000}, '-=2');
-		// // tl2.to(this.camera.rotation, 2, {x: toRadian(90)})
-
-		// return false;
-
-		// if (this.animating === true) return false;
-
-
-		// console.log(this.symbols[0].mesh.getPosition());
-		// Set camera Dolly
-		const points = {
-			'camera': [{
-				'x': this.camera.position.x,
-				'y': this.camera.position.y,
-				'z': this.camera.position.z
-			}, {
-				'x': 0,
-				'y': 100,
-				'z': -100
-			}, {
-				'x': 0,
-				'y': 300,
-				'z': -3000
-			}],
-			'lookat': [{
-				'x': 0,
-				'y': 0,
-				'z': -1
-			}, {
-				'x': 0,
-				'y': 100, // symbol.endPointY = 2000;
-				'z': -200 // symbol.endPointZ = 5000;
-			}, {
-				'x': 0,
-				'y': 300, // symbol.endPointY = 2000;
-				'z': -3000 // symbol.endPointZ = 5000;
-			}]
-		};
-
-		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		this.dolly.cameraPosition = 0;
-		this.dolly.lookatPosition = 0;
-		this.dolly.range = [0, 1];
-		this.dolly.both = 0;
-
-		const tl = new TimelineMax({
-			onComplete: () => {
-
-				this.cameraMove = false;
-				// this.currentCameraRotX = this.camera.rotation.x;
-
-				// EmitterManager.emit('router:switch', '/project-0', 0);
-				EmitterManager.emit('view:transition:out');
-			}
-		});
-
-		tl.to(this.dolly, 4, {
-			cameraPosition: 1,
-			lookatPosition: 1,
-			ease: window.Power4.easeIn,
-			onUpdate: () => {
-				this.dolly.update();
-			}
-		});
-
-		tl.to('.overlay', 0.5, {
-			opacity: 1
-		}, 2.9);
 
 	}
 

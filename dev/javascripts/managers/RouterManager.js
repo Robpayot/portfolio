@@ -213,6 +213,7 @@ class RouterManager {
 
 				this.currentPage = new IntroView({
 					gravity: true,
+					fromUrl
 				});
 				window.location = '#intro';
 				break;

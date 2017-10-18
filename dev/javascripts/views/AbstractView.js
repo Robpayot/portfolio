@@ -16,6 +16,7 @@ export default class AbstractView {
 
 
 		// console.log('abstract viewww');
+		// clean menu
 
 	}
 

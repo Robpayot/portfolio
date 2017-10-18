@@ -4,40 +4,6 @@
 
 }
 
-.cursor {
-	margin: 0 auto;
-	display: block;
-	width: 50px;
-	height: 50px;
-	position: absolute;
-	transform: translate(-50%,-50%);
-	z-index: 9000;
-	pointer-events: none;
-	// cursor: pointer;
-	.c-2 {
-		stroke-dasharray: 308%; // 848;
-		stroke-dashoffset: 308%; // 713;
-		transform: rotate(-90deg);
-		transform-origin: 50% 50%;
-	}
-
-	&.is-hover {
-		circle {
-			stroke-width: 3;
-		}
-	}
-
-	circle {
-		stroke: white;
-		stroke-width: 2;
-	}
-
-	&.alt circle {
-		stroke: black;
-	}
-
-}
-
 .circle {
 	display: flex;
 	align-items: center;
