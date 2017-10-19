@@ -404,6 +404,9 @@ export default class AboutView extends AbstractView {
 		// Context + gallery arrows
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
 		let html  = template(data);
+
+		this.UI.content.className = '';
+		this.UI.content.classList.add('ui-content', 'is-about');
 		this.UI.content.innerHTML = html;
 
 	}
@@ -776,7 +779,7 @@ export default class AboutView extends AbstractView {
 		}, 0);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');
-		});
+		}, 1);
 
 	}
 

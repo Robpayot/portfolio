@@ -9,7 +9,6 @@
 	z-index: 100;
 
 	@import "ui/intro";
-	@import "ui/project";
 	@import "ui/menu";
 
 	&-content {
@@ -21,6 +20,7 @@
 		left: 0;
 
 		@import "ui/about";
+		@import "ui/project";
 
 	}
 

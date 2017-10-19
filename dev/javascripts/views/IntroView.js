@@ -55,7 +55,6 @@ export default class IntroView extends AbstractView {
 		this.moveCameraIn = this.moveCameraIn.bind(this);
 		this.transitionIn = this.transitionIn.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
-		this.onClickStart = this.onClickStart.bind(this);
 		this.onClick = this.onClick.bind(this);
 
 		// preload Models
@@ -103,7 +102,6 @@ export default class IntroView extends AbstractView {
 		document[evListener]( 'keydown', this.onW , false );
 		document[evListener]( 'click', this.onClick , false );
 
-		this.UI.button[evListener]('click', this.onClickStart);
 		this.UI.button[evListener]('mouseenter', () => {
 			this.startIsHover = true;
 			global.CURSOR.interractHover();
@@ -135,7 +133,8 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.nbAst = 16;
+		this.nbAst = 25;
+		this.maxZoom = 700;
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
@@ -186,6 +185,8 @@ export default class IntroView extends AbstractView {
 		gui.add( buttonSmooth, 'smoothWater' );
 		gui.close();
 
+		console.log('what');
+
 		global.CURSOR.el.classList.add('alt');
 
 	}
@@ -230,7 +231,7 @@ export default class IntroView extends AbstractView {
 
 		// Magic calculs ;)
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const height = 2 * Math.tan( vFOV / 2 ) * 700; // dist between 0 and camerapos.y
+		const height = 2 * Math.tan( vFOV / 2 ) * this.maxZoom; // dist between 0 and camerapos.y
 
 		const aspect = window.innerWidth / window.innerHeight;
 		let finalBounds;
@@ -243,7 +244,7 @@ export default class IntroView extends AbstractView {
 
 		const extra = bigger === true ? 800 : 100; // for rotation camera left / right
 		this.BOUNDS = finalBounds + extra; // Water size
-		this.BOUNDSSUP = bigger === true ? 700 : 100; // Bounds supp for TransitionOut, we see the horizon
+		this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut, we see the horizon
 		this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 		let materialColor = 0xffffff;
@@ -392,9 +393,12 @@ export default class IntroView extends AbstractView {
 
 	setAsteroids() {
 		// ADD Iceberg
-		this.astXMin = -180;
-		this.astXMax = 180;
+		this.astXMin = -380;
+		this.astXMax = 380;
 		this.ipRadius = 50; // intra perimeter Radius
+		this.startZ = -600;
+		this.reappearZ = -300;
+		this.endZ = 200;
 
 		for (let i = 0; i < this.nbAst; i++) {
 
@@ -418,7 +422,7 @@ export default class IntroView extends AbstractView {
 			let pos = {
 				x: getRandom(this.astXMin, this.astXMax),
 				y: 4,
-				z: getRandom(-550, 50),
+				z: getRandom(this.startZ, this.endZ),
 			};
 
 			// check if ast already in other ast position
@@ -436,7 +440,7 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(30, 40)
+				z: getRandom(30, 50)
 			};
 
 			const scale = getRandom(0.045, 0.075);
@@ -463,7 +467,6 @@ export default class IntroView extends AbstractView {
 			});
 
 			asteroid.mesh.index = i;
-			asteroid.speedZ = getRandom(0.3, 0.8);
 			asteroid.pos = pos;
 
 			if (this.gravity === true) {
@@ -668,53 +671,6 @@ export default class IntroView extends AbstractView {
 		}
 	}
 
-	onClickStart(e) {
-
-		// e.preventDefault();
-
-		// if (this.clicked === true) return false;
-		// this.clicked = true;
-
-
-
-		// // const tl = new TimelineMax({delay: 2});
-		// const tl = new TimelineMax();
-
-		// tl.add(() => {
-		// 	console.log('switch water');
-		// 	// Clean water and replace it !
-		// 	const obj = this.scene.getObjectByName('water');
-		// 	if (obj.geometry) obj.geometry.dispose();
-
-		// 	if (obj.material) {
-
-		// 		if (obj.material.materials) {
-
-		// 			for (const mat of obj.material.materials) {
-
-		// 				if (mat.map) mat.map.dispose();
-
-		// 				mat.dispose();
-		// 			}
-		// 		} else {
-
-		// 			if (obj.material.map) obj.material.map.dispose();
-
-		// 			obj.material.dispose();
-		// 		}
-		// 	}
-		// 	this.scene.remove( obj );
-		// 	this.initWater(true, true);
-		// }, '+=1.8');
-
-		// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
-		// tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
-
-
-
-
-	}
-
 	raf() {
 
 		// Manual simulation of infinite waves
@@ -744,11 +700,6 @@ export default class IntroView extends AbstractView {
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
 
-			// el.mesh.position.z -= 1 * el.speedZ;
-			// if (el.mesh.position.z >= 200) el.mesh.position.z = -300;
-
-			// Move top and bottom --> Float effect
-			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
 			if (el.animated === false) {
 				el.mesh.position.y = el.body.position.y = 4; // constraint pos y
 			}
@@ -775,7 +726,7 @@ export default class IntroView extends AbstractView {
 					// el.mesh.position.z = el.body.position.z =
 					// el.body.position.x = el.mesh.position.x = getRandom(this.astXMin, this.astXMax);
 
-					let z = el.mesh.index % 2 === 0 ? getRandom(0, -300) : -300;
+					let z = el.mesh.index % 2 === 0 ? getRandom(0, this.reappearZ) : this.reappearZ;
 					let x = getRandom(this.astXMin, this.astXMax);
 					el.mesh.position.z = el.body.position.z = z;
 					el.body.position.x = el.mesh.position.x = x;
@@ -885,6 +836,11 @@ export default class IntroView extends AbstractView {
 			}, 0);
 
 		} else {
+			this.UI.title1.style.display = 'none';
+			this.UI.title2.style.display = 'none';
+
+			this.camera.position.set(0, this.maxZoom, 0);
+			this.camera.rotation.x = toRadian(-90);
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
 			}, 1.5);
@@ -892,7 +848,7 @@ export default class IntroView extends AbstractView {
 			tl.to(this.UI.button, 3, {opacity: 1});
 			tl.to('.overlay', 1, {
 				opacity: 0
-			}, 0.5);
+			}, 1.6);
 		}
 
 		tl.add(() => {
@@ -921,7 +877,7 @@ export default class IntroView extends AbstractView {
 		});
 
 		if (fromProject === true) {
-			tl.fromTo(this.camera.position, 5, {y: 700 }, {y: 400, ease: window.Expo.easeOut}, 0);
+			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: 400, ease: window.Expo.easeOut}, 0);
 		} else {
 			tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
 		}

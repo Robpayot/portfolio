@@ -88,6 +88,11 @@ export default class Cursor {
 
 		// console.log('hover');
 
+		if (obj.back === true) {
+			TweenMax.set('text', {display: 'block'});
+			TweenMax.to('text', 0.5, {opacity: 1});
+		}
+
 		if (obj.color !== undefined) {
 			this.c2.style.stroke = obj.color;
 			this.hoverGoTo = true;
@@ -127,6 +132,11 @@ export default class Cursor {
 		// console.log('leave');
 		// remplie
 		TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
+
+		if (obj.back === true) {
+			TweenMax.to('text', 0.5, {opacity: 0});
+			TweenMax.set('text', {display: 'block', delay: 0.5});
+		}
 
 		if (obj.color !== undefined) {
 			this.hoverGoTo = false;
