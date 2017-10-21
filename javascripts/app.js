@@ -541,7 +541,6 @@ var Glitch = function () {
 
 		// });
 
-
 		// return false;
 
 		// Load data
@@ -608,7 +607,8 @@ var Glitch = function () {
 				img2: document.querySelector('.glitch__img-2'),
 				imgAlpha: document.querySelector('.glitch__img-3'),
 				canvas: this.el.querySelector('.glitch__canvas'),
-				canvasTemp: this.el.querySelector('.glitch__canvas-temp')
+				canvasBuffer: this.el.querySelector('.glitch__canvas-buffer'),
+				canvasAlphaBuffer: this.el.querySelector('.glitch__canvas-alpha-buffer')
 			};
 			console.log(this.el, this.clock);
 			// Nathan Gordon <3
@@ -625,14 +625,30 @@ var Glitch = function () {
 			this.init();
 		}
 	}, {
+		key: 'setAlphaVideo',
+		value: function setAlphaVideo() {
+
+			this.video = document.createElement('video');
+			this.video.id = 'video2';
+			this.video.src = 'videos/glitch-text.mp4';
+			this.video.autoplay = true;
+			this.video.loop = true;
+			this.video.muted = true;
+			this.el.appendChild(this.video);
+		}
+	}, {
 		key: 'init',
 		value: function init() {
 
 			this.ctx = this.ui.canvas.getContext('2d');
-			this.ctxTemp = this.ui.canvasTemp.getContext('2d');
+			this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
+			this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
 
 			this.initOptions();
 			this.resizeHandler();
+			// set up alpha video
+			this.setAlphaVideo();
+
 			if (this.debug === true) {
 				this.events(true);
 			} else {
@@ -687,10 +703,7 @@ var Glitch = function () {
 	}, {
 		key: 'render',
 		value: function render() {
-			var calm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-
-			// console.log(this.clock.getElapsedTime());
+			var calm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
 			this.phase += this.phaseStep;
@@ -755,10 +768,39 @@ var Glitch = function () {
 
 			// It's important to note that a canvas context can only support one composite operation throughout its life cycle.
 			// if we want to use multiple composite operations, as this tutorial does, we need to apply the operations on a hidden canvas and then copy the results onto a visible canvas.
+			// alpha video
+			if (this.ctxAlphaBuffer) {
+				// console.log(this.textWidth, this.height);
+				// this.ui.canvasAlphaBuffer.width = 980;
 
+				// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
+				// r.p : We select only the first half
+				var videoWidth = this.width;
+				var videoHeight = this.width * 2;
+				if (this.ui.canvasAlphaBuffer.width !== videoWidth) {
+					this.ui.canvasAlphaBuffer.width = videoWidth;
+					this.video.width = videoWidth;
+				}
+				if (this.ui.canvasAlphaBuffer.height !== videoHeight) {
+					this.ui.canvasAlphaBuffer.height = videoHeight;
+					// this.video.height = videoHeight;
+				}
+
+				this.ctxAlphaBuffer.drawImage(this.video, 0, 0, videoWidth, videoHeight);
+				// console.log(this.ui.canvasAlphaBuffer.width);
+				this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, videoWidth, videoHeight / 2); // --> top part of video
+				var imageData = this.imageAlpha.data,
+				    alphaData = this.ctxAlphaBuffer.getImageData(0, videoHeight / 2, videoWidth, videoHeight / 2).data; // --> bottom part 50/50
+				// r.p : We select the second half
+				// we apply alpha
+				for (var i = 3; i < imageData.length; i += 4) {
+					// why 3 and 4 ?
+					imageData[i] = alphaData[i - 1];
+				}
+			}
 			// MOST IMPORTANT HERE
 
-			var top = Math.sin(this.clock.getElapsedTime() * 0.1) * 30; // move image
+			var top = 0; // move image
 			var centerY = this.height / 2 + this.textHeight / 2;
 			// let margeStart = this.textWidth * 0.2;
 			var startClip = (this.width - this.textWidth) / 2;
@@ -821,164 +863,166 @@ var Glitch = function () {
 			if (calm === true) {
 				// DEFAULT
 				// Normal Text, center white, with image
-				// this.ctxTemp.save();
-				this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+				// this.ctxBuffer.save();
+				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
-				this.ctxTemp.fillStyle = 'rgb(255,255,255)';
-				this.ctxTemp.drawImage(this.ui.imgAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+				this.ctxBuffer.fillStyle = 'rgba(255, 255, 255, 1)';
+				// this.ctxBuffer.drawImage(this.ui.imgAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+				this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.textWidth) / 2, top);
+				// this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+				// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
 
-				this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
+				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
 
 				return false;
 			}
 
 			// Draw First Comp
 			// Start of Text, Offset Left, white, with image
-			this.ctxTemp.save();
-			this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctxTemp.beginPath(); // avoid Drop fps
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctxBuffer.beginPath(); // avoid Drop fps
 
 			// // // // Ici on veut que une fois sur 3 (tt les 3 seconds ? ou moins, on mais le Y en décallé haut gauche.)
 			// // // // et 2 fois sur 3 gauche
 			// // // // et par défaut normal
-			this.ctxTemp.fillStyle = this.color; // Third Text
+			this.ctxBuffer.fillStyle = this.color; // Third Text
 
 			if (this.channel === 1) {} else if (this.channel === 2) {
 
-				this.ctxTemp.rect(startClip + this.margeX12.val, 0, this.textWidth, this.height); // create clip rectangle
-				this.ctxTemp.clip();
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
+				this.ctxBuffer.rect(startClip + this.margeX12.val, 0, this.textWidth, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 			} else {
 
-				this.ctxTemp.rect(startClip + this.margeX1.val, 0, this.textWidth, this.height); // create clip rectangle
-				this.ctxTemp.clip();
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX1.val + 2, top, this.textWidth - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
+				this.ctxBuffer.rect(startClip + this.margeX1.val, 0, this.textWidth, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX1.val + 2, top, this.textWidth - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 			}
 
-			this.ctxTemp.restore();
+			this.ctxBuffer.restore();
 
-			this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 			// Draw Second Comp
 			// DEFAULT
 			// Normal Text, center white, with image
-			this.ctxTemp.save();
-			this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
-			this.ctxTemp.beginPath();
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+			this.ctxBuffer.beginPath();
 
-			this.ctxTemp.fillStyle = 'rgb(255,255,255)';
+			this.ctxBuffer.fillStyle = 'rgb(255,255,255)';
 
 			if (this.channel === 0) {
-				this.ctxTemp.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
-				this.ctxTemp.clip();
+				this.ctxBuffer.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
 				// Draw image that gonna be use as mask.
-				this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				// this.ctxTemp.fillText(this.text, x3 + posX2, centerY + posY2);
-				// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, x3 + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				// this.ctxBuffer.fillText(this.text, x3 + posX2, centerY + posY2);
+				// this.ctxBuffer.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 			} else if (this.channel === 2) {
-				this.ctxTemp.rect(x3, 0, this.width22.val, this.height); // create clip rectangle
-				this.ctxTemp.clip();
-				this.ctxTemp.drawImage(this.ui.imgAlpha, x3 + 2, top, this.width22.val - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				// this.ctxTemp.fillText(this.text, x3 + posX22, centerY + posY22);
-				// this.ctxTemp.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
+				this.ctxBuffer.rect(x3, 0, this.width22.val, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, x3 + 2, top, this.width22.val - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				// this.ctxBuffer.fillText(this.text, x3 + posX22, centerY + posY22);
+				// this.ctxBuffer.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 			} else {
-				this.ctxTemp.drawImage(this.ui.imgAlpha, x3, top, this.textWidth + 30, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, x3, top, this.textWidth + 30, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
 			}
 
-			this.ctxTemp.fillText(this.text, x3, centerY); // First Text
+			this.ctxBuffer.fillText(this.text, x3, centerY); // First Text
 
 
-			// this.ctxTemp.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
-			// this.ctxTemp.fillText(this.text, x2, centerY); // Second Text
+			// this.ctxBuffer.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
+			// this.ctxBuffer.fillText(this.text, x2, centerY); // Second Text
 
-			this.ctxTemp.restore();
+			this.ctxBuffer.restore();
 
-			this.ctx.drawImage(this.ui.canvasTemp, 0, 0); // add First comp
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
 
 
 			// Draw Third Comp
 			// Start of Text, Offset Left, white, with image
-			this.ctxTemp.save();
-			this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctxTemp.beginPath(); // avoid Drop fps
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			this.ctxTemp.fillStyle = this.color; // Third Text
+			this.ctxBuffer.fillStyle = this.color; // Third Text
 
 			if (this.channel === 0) {} else if (this.channel === 1) {
 
-				this.ctxTemp.rect(startClip + this.margeX3.val, 0, this.width3.val, this.height); // create clip rectangle
-				this.ctxTemp.clip();
+				this.ctxBuffer.rect(startClip + this.margeX3.val, 0, this.width3.val, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
 
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 			} else {
 
-				this.ctxTemp.rect(startClip + this.margeX32.val, 0, this.width32.val - 10, this.height); // create clip rectangle
-				this.ctxTemp.clip();
+				this.ctxBuffer.rect(startClip + this.margeX32.val, 0, this.width32.val - 10, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
 
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 			}
 
-			this.ctxTemp.restore();
+			this.ctxBuffer.restore();
 
-			this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 			// Draw Fourth Comp
 			// Start of Text, Offset Left, white, with image
-			this.ctxTemp.save();
-			this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctxTemp.beginPath(); // avoid Drop fps
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			this.ctxTemp.fillStyle = 'rgb(255,255,255)'; // Third Text
+			this.ctxBuffer.fillStyle = 'rgb(255,255,255)'; // Third Text
 
 			if (this.channel === 1) {
 
-				this.ctxTemp.rect(startClip + this.margeX4.val, 0, this.width4.val, this.height); // create clip rectangle
-				this.ctxTemp.clip();
+				this.ctxBuffer.rect(startClip + this.margeX4.val, 0, this.width4.val, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
 
-				this.ctxTemp.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
-				this.ctxTemp.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 			} else {}
 
-			this.ctxTemp.restore();
+			this.ctxBuffer.restore();
 
-			this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 			// Draw Fifth Comp
 			// Start of Text, Offset Left, white, with image
-			this.ctxTemp.save();
-			this.ctxTemp.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctxTemp.beginPath(); // avoid Drop fps
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			this.ctxTemp.fillStyle = 'rgb(255,255,255)'; // Third Text
+			this.ctxBuffer.fillStyle = 'rgb(255,255,255)'; // Third Text
 
 			if (this.channel === 1) {
 
-				this.ctxTemp.rect(startClip + this.margeX5.val, 0, this.width5.val, this.height); // create clip rectangle
-				this.ctxTemp.clip();
+				this.ctxBuffer.rect(startClip + this.margeX5.val, 0, this.width5.val, this.height); // create clip rectangle
+				this.ctxBuffer.clip();
 
-				this.ctxTemp.drawImage(this.ui.imgAlpha, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
-				this.ctxTemp.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 
-				this.ctxTemp.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
+				this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 			} else {}
 
-			this.ctxTemp.restore();
+			this.ctxBuffer.restore();
 
-			this.ctx.drawImage(this.ui.canvasTemp, 0, 0);
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 			if (this.clock.getElapsedTime() >= this.last + 0.035) {
 				// 
@@ -1044,18 +1088,24 @@ var Glitch = function () {
 			this.textHeight = this.textSize; // need a real calcul
 			this.height = this.ui.canvas.offsetHeight;
 			this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
-			this.ctxTemp.font = this.font;
+			this.ctxBuffer.font = this.font;
 			this.text = this.txt;
-			this.textWidth = Math.round(this.ctxTemp.measureText(this.text).width);
+			this.textWidth = Math.round(this.ctxBuffer.measureText(this.text).width);
 			this.width = this.textWidth + this.biggestRange;
 
 			if (this.ui.canvas) {
 				this.ui.canvas.height = this.height;
-				this.ui.canvasTemp.height = this.height;
+				this.ui.canvasBuffer.height = this.height;
+				// this.ui.canvasAlphaBuffer.height = this.width;
+				// this.ui.canvasAlphaBuffer.style.height = this.height;
+
 				this.ui.canvas.width = this.width;
-				this.ui.canvasTemp.width = this.width;
+				this.ui.canvasBuffer.width = this.width;
+				// this.ui.canvasAlphaBuffer.width = this.width;
+				// this.ui.canvasAlphaBuffer.style.width = this.width;
+
 				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
-				this.ctx.font = this.ctxTemp.font = this.font;
+				this.ctx.font = this.ctxBuffer.font = this.font;
 			}
 		}
 	}, {
@@ -1954,6 +2004,10 @@ var _EmitterManager = require('./EmitterManager');
 
 var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 
+var _SceneManager = require('./SceneManager');
+
+var _SceneManager2 = _interopRequireDefault(_SceneManager);
+
 var _AboutView = require('../views/AboutView');
 
 var _AboutView2 = _interopRequireDefault(_AboutView);
@@ -2212,7 +2266,8 @@ var RouterManager = function () {
 						el: document.querySelector('.glitch'),
 						txt: 'AKTR',
 						color: 'rgb(41,64,16)',
-						debug: true
+						debug: true,
+						clock: _SceneManager2.default.clock
 					});
 					window.location = '#glitch';
 					break;
@@ -2231,7 +2286,7 @@ exports.default = new RouterManager();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Glitch":5,"../projects/Blob":21,"../projects/Circular":22,"../projects/Levit":23,"../projects/Stars":24,"../views/AboutView":45,"../views/IntroView":47,"./EmitterManager":13}],16:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Glitch":5,"../projects/Blob":21,"../projects/Circular":22,"../projects/Levit":23,"../projects/Stars":24,"../views/AboutView":45,"../views/IntroView":47,"./EmitterManager":13,"./SceneManager":16}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11323,7 +11378,7 @@ var ProjectView = function (_AbstractView) {
 			var html = template(data);
 			var title = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			title.position.set(20, 0, 10);
-			title.scale.multiplyScalar(this.coefText);
+			title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 			var prevId = this.id - 1 < 0 ? _data2.default.projects.length - 1 : this.id - 1;
 			var nextId = this.id + 1 > _data2.default.projects.length - 1 ? 0 : this.id + 1;
