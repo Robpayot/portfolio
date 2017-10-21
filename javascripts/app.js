@@ -274,8 +274,8 @@ var Cursor = function () {
 			TweenMax.to(this.c2, 0.5, { strokeDashoffset: '308%', ease: window.Expo.easeOut });
 
 			if (obj.back === true) {
-				TweenMax.to('text', 0.5, { opacity: 0 });
-				TweenMax.set('text', { display: 'block', delay: 0.5 });
+				TweenMax.to('text', 0.2, { opacity: 0 });
+				TweenMax.set('text', { display: 'block', delay: 0.2 });
 			}
 
 			if (obj.color !== undefined) {
@@ -10940,7 +10940,6 @@ var ProjectView = function (_AbstractView) {
 		_this.slideDown = _this.slideDown.bind(_this);
 		_this.backFromContent = _this.backFromContent.bind(_this);
 		_this.transitionOut = _this.transitionOut.bind(_this);
-		_this.goTo = _this.goTo.bind(_this);
 		_this.scroll = _this.scroll.bind(_this);
 		_this.onMouseWheel = _this.onMouseWheel.bind(_this);
 		_this.onChangeGlow = _this.onChangeGlow.bind(_this);
@@ -10995,6 +10994,7 @@ var ProjectView = function (_AbstractView) {
 
 			if (method === true) {
 				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', function () {
+					console.log('hover glitch');
 					_this2.glitch.hover = true;
 					global.CURSOR.interractHover();
 				});
@@ -11003,22 +11003,12 @@ var ProjectView = function (_AbstractView) {
 					global.CURSOR.interractLeave();
 				});
 				_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
-				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-r', this.slideUp);
-				_bean2.default.on(document.body, 'click.project', '.gallery__arrow-l', this.slideDown);
-				_bean2.default.on(document.body, 'click.project', '.project__back', this.backFromContent);
-				_bean2.default.on(document.body, 'click.project', '.project__next', this.goTo);
-				_bean2.default.on(document.body, 'click.project', '.project__prev', this.goTo);
 				_bean2.default.on(document.body, 'click.project', '.project__container', this.onClickContainer);
-				_bean2.default.on(document.body, 'mouseover.project', '.project__link svg', this.onHoverLink);
-				_bean2.default.on(document.body, 'mouseleave.project', '.project__link svg', this.onLeaveLink);
 				_bean2.default.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 				_bean2.default.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 			} else {
-				_bean2.default.off(document.body, 'click.project');
-				_bean2.default.off(document.body, 'mouseover.project');
-				_bean2.default.off(document.body, 'mouseleave.project');
-				_bean2.default.off(document.body, 'mouseover.projectContainer');
-				_bean2.default.off(document.body, 'mouseleave.projectContainer');
+				_bean2.default.off(document.body, '.project');
+				_bean2.default.off(document.body, '.projectContent');
 			}
 		}
 	}, {
@@ -11562,9 +11552,14 @@ var ProjectView = function (_AbstractView) {
 			e.stopPropagation();
 
 			if (this.animating === true) return false;
-			// event hover / leave
-			_bean2.default.on(document.body, 'mouseover.projectContainer', '.project__container', this.onHoverContainer);
-			_bean2.default.on(document.body, 'mouseleave.projectContainer', '.project__container', this.onLeaveContainer);
+
+			_bean2.default.off(document.body, '.project'); // off events related to init state
+
+			// on events related to projectContent state
+			_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
+			_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
+			_bean2.default.on(document.body, 'mouseover.projectContent', '.project__link svg', this.onHoverLink);
+			_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
 
 			this.animating = true;
 			this.contentOpen = true;
@@ -11581,7 +11576,6 @@ var ProjectView = function (_AbstractView) {
 				onComplete: function onComplete() {
 					// this.cameraRotX = true;
 					_this4.animating = false;
-					_ScrollManager2.default.on(); // start scrollmanager
 					_this4.glitch.stop = true;
 				}
 			});
@@ -11592,7 +11586,7 @@ var ProjectView = function (_AbstractView) {
 			});
 
 			tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 2.4); // ,2.4
-			tl.set(['.project__container'], { visibility: 'visible', opacity: 1 }, 2.4);
+			tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 2.4);
 
 			tl.staggerFromTo(['.project__top', this.ui.imgs[0]], 1.2, { // 1.2
 				opacity: 0,
@@ -11633,14 +11627,34 @@ var ProjectView = function (_AbstractView) {
 				angle: (0, _utils.toRadian)(90),
 				ease: window.Power3.easeInOut
 			}, 0);
+
+			tl.add(function () {
+				global.CURSOR.interractLeave();
+				_this4.glitch.hover = false;
+
+				_ScrollManager2.default.on(); // start scrollmanager
+			}, 0.5);
 		}
 	}, {
 		key: 'backFromContent',
 		value: function backFromContent() {
 			var _this5 = this;
 
-			_bean2.default.off(document.body, 'mouseover.projectContainer');
-			_bean2.default.off(document.body, 'mouseleave.projectContainer');
+			_bean2.default.off(document.body, '.projectContent'); // off events related state projectContent
+
+			// on events related to init state
+			_bean2.default.on(document.body, 'mouseenter.project', '.glitch', function () {
+				_this5.glitch.hover = true;
+				global.CURSOR.interractHover();
+			});
+			_bean2.default.on(document.body, 'mouseleave.project', '.glitch', function () {
+				_this5.glitch.hover = false;
+				global.CURSOR.interractLeave();
+			});
+			_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
+			_bean2.default.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+			_bean2.default.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
+			_bean2.default.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 			this.cameraRotX = true;
 			this.glitch.stop = false;
@@ -11649,6 +11663,11 @@ var ProjectView = function (_AbstractView) {
 
 			TweenMax.set(global.MENU.ui.button, { display: 'block' });
 			TweenMax.to(global.MENU.ui.button, 1, { opacity: 1 });
+
+			for (var i = 0; i < this.ui.imgs.length; i++) {
+				this.ui.imgs[i].classList.remove('is-visible');
+			}
+			this.ui.footer.classList.remove('is-visible');
 
 			var trigo = { angle: 0 };
 			this.currentRotateY = { angle: (0, _utils.toRadian)(90) };
@@ -11661,12 +11680,12 @@ var ProjectView = function (_AbstractView) {
 					_this5.contentOpen = false;
 				} });
 
-			tl.staggerTo(['.project__container', '.project__image', '.gallery__arrow', '.project__footer'], 1.2, {
+			tl.staggerTo(['.project__top', '.project__image', '.project__footer'], 1.2, {
 				opacity: 0,
 				ease: window.Power4.easeOut
 			}, 0.1);
 
-			tl.set(['.project__image', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
+			tl.set('.project__container', { display: 'none' });
 
 			tl.to(trigo, 3, { // 3.5
 				angle: 1,
@@ -11742,30 +11761,20 @@ var ProjectView = function (_AbstractView) {
 			// need profil for each browser
 			this.scrollY -= e.deltaY * 0.2;
 
-			// smooth scroll
-			// this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * 0.12; // We need a RAF for a smooth like that
+			// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
+			// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
+			// }
 
-			if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
-				this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
-			}
-
-			if (this.scrollY < 0) {
-				this.scrollY = this.scrollYSmooth = 0;
-			}
-
-			// console.log(this.scrollY);
-
-			// Smooth it with deceleration
-			// this.topContentSmoothY += (this.topContentTargetY - this.topContentSmoothY) * 0.15;
-
-			// this.topContentY = this.topContentTargetY;
+			// if (this.scrollY < 0) {
+			// 	this.scrollY = this.scrollYSmooth = 0;
+			// }
 
 
 			for (var i = 1; i < this.ui.imgs.length; i++) {
 
 				if (this.ui.imgs[i].classList.contains('is-visible') === false) {
 
-					if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.8) {
+					if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
 
 						var tl = new TimelineMax();
 						tl.set(this.ui.imgs[i], { visibility: 'visible' });
@@ -11791,7 +11800,7 @@ var ProjectView = function (_AbstractView) {
 
 			if (this.ui.footer.classList.contains('is-visible') === false) {
 
-				if ((0, _utils.getOffsetTop)(this.ui.footer) - this.scrollY <= window.innerHeight * 0.8) {
+				if ((0, _utils.getOffsetTop)(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
 
 					var _tl = new TimelineMax();
 					_tl.set(this.ui.footer, { visibility: 'visible' });
@@ -11807,16 +11816,7 @@ var ProjectView = function (_AbstractView) {
 				}
 			}
 
-			TweenMax.set(this.ui.container, { y: -this.scrollY });
-			// console.log(this.topContentY, this.topContent);
-			// this.ui.context.offsetHeight --> Get Threejs Unit !!!
-
-			// if (this.topContentY <= this.initTopContentY) this.topContentY = this.topContentTargetY = this.topContentSmoothY = this.initTopContentY;
-			// if (this.topContentY >= this.maxHeightUnits) this.topContentY = this.topContentTargetY = this.topContentSmoothY = this.maxHeightUnits;
-
-			// this.topContent.position.y = this.topContentY;
-			// this.gallery.position.y = this.topContentY - this.initTopContentY;
-			// console.log(this.topContent.position.y);
+			// TweenMax.set(this.ui.container, { y: -this.scrollY});
 		}
 	}, {
 		key: 'onClick',
@@ -11958,9 +11958,6 @@ var ProjectView = function (_AbstractView) {
 
 		}
 	}, {
-		key: 'goTo',
-		value: function goTo() {}
-	}, {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
 			_get(ProjectView.prototype.__proto__ || Object.getPrototypeOf(ProjectView.prototype), 'resizeHandler', this).call(this);
@@ -12007,22 +12004,24 @@ var ProjectView = function (_AbstractView) {
 			// }
 
 			// on scroll
-			// if (this.scrollY !== this.scrollYSmooth)  {
+			if ((0, _utils.round)(this.scrollY, 10) !== (0, _utils.round)(this.scrollYSmooth, 10)) {
+				// console.log(round(this.scrollY, 10), this.scrollYSmooth);
 
-			// 	// smooth scroll
-			// 	this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * 0.12; // We need a RAF for a smooth like that
+				// smooth scroll
+				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * 0.1; // We need a RAF for a smooth like that
 
-			// 	if (this.scrollYSmooth >= this.content.offsetHeight - window.innerHeight / 3) {
-			// 		this.scrollY = this.scrollYSmooth = this.content.offsetHeight - window.innerHeight / 3;
-			// 	}
-
-			// 	if (this.scrollYSmooth < 0) {
-			// 		this.scrollY = this.scrollYSmooth = 0;
-			// 	}
-
-			// 	TweenMax.set(this.content, { y: -this.scrollYSmooth});
-
-			// }
+				if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) {
+					// end
+					this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;
+					TweenMax.to(this.ui.container, 0.7, { y: -this.scrollYSmooth }); // smooth it
+				} else if (this.scrollYSmooth < 0) {
+					// top
+					this.scrollY = this.scrollYSmooth = 0;
+					TweenMax.to(this.ui.container, 0.7, { y: -this.scrollYSmooth }); // smooth it
+				} else {
+					TweenMax.set(this.ui.container, { y: -this.scrollYSmooth });
+				}
+			}
 
 			// On mouse Move Camera movement
 
