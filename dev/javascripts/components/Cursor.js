@@ -134,8 +134,8 @@ export default class Cursor {
 		TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 
 		if (obj.back === true) {
-			TweenMax.to('text', 0.5, {opacity: 0});
-			TweenMax.set('text', {display: 'block', delay: 0.5});
+			TweenMax.to('text', 0.2, {opacity: 0});
+			TweenMax.set('text', {display: 'block', delay: 0.2});
 		}
 
 		if (obj.color !== undefined) {
