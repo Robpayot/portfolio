@@ -210,7 +210,6 @@ class RouterManager {
 				break;
 
 			case '/intro':
-				console.log('introooooooo');
 
 				this.currentPage = new IntroView({
 					gravity: true,
