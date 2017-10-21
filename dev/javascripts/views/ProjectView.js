@@ -463,7 +463,7 @@ export default class ProjectView extends AbstractView {
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
 		title.position.set(20, 0, 10);
-		title.scale.multiplyScalar(this.coefText);
+		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 		const prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
 		const nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;

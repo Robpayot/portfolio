@@ -277,7 +277,8 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 body {
   font-family: 'Theinhardt';
   overflow: hidden;
-  cursor: none !important; }
+  cursor: none !important;
+  background-color: red; }
   body a {
     cursor: none !important; }
 
@@ -407,6 +408,9 @@ body {
 
 .xp {
   text-align: center; }
+
+#video2 {
+  display: none; }
 
 .circle {
   display: -webkit-box;
@@ -572,7 +576,6 @@ body {
 .glitch {
   display: none;
   position: absolute;
-  background-color: #343434;
   top: 0;
   left: 0;
   width: 100%;
@@ -580,7 +583,11 @@ body {
   z-index: 900;
   text-align: center;
   font-family: 'Theinhardt';
-  color: black; }
+  background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+  background-size: 1800% 1800%;
+  -webkit-animation: rainbow 18s ease infinite;
+  -z-animation: rainbow 18s ease infinite;
+  animation: rainbow 18s ease infinite; }
   .glitch__canvas {
     box-sizing: border-box;
     text-align: center;
@@ -588,11 +595,13 @@ body {
     z-index: 9000;
     position: absolute;
     top: 50%;
-    left: -108px;
-    -webkit-transform: translate(0%, -50%);
-    -ms-transform: translate(0%, -50%);
-    transform: translate(0%, -50%); }
-    .glitch__canvas-temp {
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); }
+    .glitch__canvas-buffer {
+      display: none; }
+    .glitch__canvas-alpha-buffer {
       display: none; }
   .glitch__img {
     height: 100px;
@@ -605,6 +614,22 @@ body {
     .project__title .glitch__canvas {
       height: 350px;
       top: 3%; }
+
+@-webkit-keyframes rainbow {
+  0% {
+    background-position: 0% 82%; }
+  50% {
+    background-position: 100% 19%; }
+  100% {
+    background-position: 0% 82%; } }
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 82%; }
+  50% {
+    background-position: 100% 19%; }
+  100% {
+    background-position: 0% 82%; } }
 
 .cursor {
   margin: 0 auto;

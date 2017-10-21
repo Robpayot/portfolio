@@ -5,7 +5,7 @@ body {
 .glitch {
 	display: none;
 	position: absolute;
-	background-color: #343434;
+	// background-color: #343434;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -16,9 +16,14 @@ body {
 	font-family: 'Theinhardt';
 
 	// background-image: url('../images/textures/glitch-1.png');
+	background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+	background-size: 1800% 1800%;
 
+	-webkit-animation: rainbow 18s ease infinite;
+	-z-animation: rainbow 18s ease infinite;
+	-o-animation: rainbow 18s ease infinite;
+	  animation: rainbow 18s ease infinite;
 
-	color: black;
 
 	&__canvas {
 		box-sizing: border-box;
@@ -28,11 +33,17 @@ body {
 		z-index: 9000;
 		position: absolute;
 		top: 50%;
-		left: -108px;
-		transform: translate(0%,-50%);
+		left: 50%;
+		transform: translate(-50%,-50%);
+		// left: -108px;
+		// transform: translate(0%,-50%);
 		// height: 800px;
 
-		&-temp {
+		&-buffer {
+			display: none;
+		}
+
+		&-alpha-buffer {
 			display: none;
 		}
 
@@ -61,5 +72,24 @@ body {
 // img {
 //   display: none;
 // }
-
+@-webkit-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@-moz-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@-o-keyframes rainbow {
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
+@keyframes rainbow { 
+    0%{background-position:0% 82%}
+    50%{background-position:100% 19%}
+    100%{background-position:0% 82%}
+}
 

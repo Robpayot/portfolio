@@ -1,4 +1,5 @@
 import EmitterManager from './EmitterManager';
+import SceneManager from './SceneManager';
 // import PreloadManager from './PreloadManager';
 // import ProjectView from '../views/ProjectView';
 import AboutView from '../views/AboutView';
@@ -224,7 +225,8 @@ class RouterManager {
 					el: document.querySelector('.glitch'),
 					txt: 'AKTR',
 					color: 'rgb(41,64,16)',
-					debug: true
+					debug: true,
+					clock: SceneManager.clock
 				});
 				window.location = '#glitch';
 				break;
