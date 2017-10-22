@@ -211,9 +211,12 @@ export default class Glitch {
 		// return false;
 
 		// Load data
+		this.obj = obj;
 		this.el = obj.el;
 		this.color = obj.color;
+		this.sndColor = obj.sndColor;
 		this.txt = obj.txt;
+		this.sndTxt = obj.sndTxt;
 		this.debug = obj.debug;
 		this.clock = obj.clock;
 
@@ -272,7 +275,6 @@ export default class Glitch {
 			// console.log(html);
 
 			this.el.innerHTML = html;
-			console.log(this.el.querySelector('.glitch__canvas'));
 		}
 
 		this.ui = {
@@ -284,15 +286,12 @@ export default class Glitch {
 			canvasBuffer: this.el.querySelector('.glitch__canvas-buffer'),
 			canvasAlphaBuffer: this.el.querySelector('.glitch__canvas-alpha-buffer'),
 		};
-		console.log(this.el, this.clock);
 		// Nathan Gordon <3
 		// //Create a canvas that is to become our reference image
 		// const baseCanvas = document.createElement('canvas');
 		// baseCanvas.width = 600;
 		// baseCanvas.height = 200;
 		// const basectx = baseCanvas.getctx('2d');
-
-		this.textSize = this.ui.canvas.offsetHeight / 3;
 		this.textHeight = this.textSize; // need a real calcul
 		this.last = 0;
 
@@ -333,9 +332,9 @@ export default class Glitch {
 
 	initOptions() {
 
-		const gui = new dat.GUI(),
-			current = gui.addFolder('Current'),
-			controls = gui.addFolder('Controls');
+		// const gui = new dat.GUI(),
+		// 	current = gui.addFolder('Current'),
+		// 	controls = gui.addFolder('Controls');
 
 
 		this.fps = 60;
@@ -348,7 +347,6 @@ export default class Glitch {
 		this.amplitudeBase = 2; //2.0;
 		this.amplitudeRange = 3; // 2.0;
 		this.alphaMin = 0.8;
-		this.biggestRange = 200; // - 100 max X , +100 max X
 
 		this.glitchAmplitude = 20.0;
 		this.glitchThreshold = 0.9;
@@ -356,27 +354,29 @@ export default class Glitch {
 		this.scanlineRange = 40;
 		this.scanlineShift = 15;
 
-		current.add(this, 'channel', 0, 2).listen();
-		current.add(this, 'phase', 0, 1).listen();
-		current.add(this, 'amplitude', 0, 5).listen();
-		// comment out below to hide ability to change text string
-		// var text = controls.add(this, 'text');
-		// text.onChange((function (){
-		// 	this.textWidth = (this.ctx.measureText(this.text)).width;
-		// }).bind(this));
-		// comment out above to hide ability to change text string
-		controls.add(this, 'fps', 1, 60);
-		controls.add(this, 'phaseStep', 0, 1);
-		controls.add(this, 'alphaMin', 0, 1);
-		controls.add(this, 'amplitudeBase', 0, 5);
-		controls.add(this, 'amplitudeRange', 0, 5);
-		controls.add(this, 'glitchAmplitude', 0, 100);
-		controls.add(this, 'glitchThreshold', 0, 1);
-		controls.open();
-		gui.close(); // start the control panel cloased
+		// current.add(this, 'channel', 0, 2).listen();
+		// current.add(this, 'phase', 0, 1).listen();
+		// current.add(this, 'amplitude', 0, 5).listen();
+		// // comment out below to hide ability to change text string
+		// // var text = controls.add(this, 'text');
+		// // text.onChange((function (){
+		// // 	this.textWidth = (this.ctx.measureText(this.text)).width;
+		// // }).bind(this));
+		// // comment out above to hide ability to change text string
+		// controls.add(this, 'fps', 1, 60);
+		// controls.add(this, 'phaseStep', 0, 1);
+		// controls.add(this, 'alphaMin', 0, 1);
+		// controls.add(this, 'amplitudeBase', 0, 5);
+		// controls.add(this, 'amplitudeRange', 0, 5);
+		// controls.add(this, 'glitchAmplitude', 0, 100);
+		// controls.add(this, 'glitchThreshold', 0, 1);
+		// controls.open();
+		// gui.close(); // start the control panel cloased
 	}
 
-	render(calm = true) {
+	render(obj = {}) {
+
+		// console.log('render');
 
 
 		this.phase += this.phaseStep;
@@ -389,37 +389,18 @@ export default class Glitch {
 			this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
 		}
 
-		let x0 = this.amplitude * Math.sin(Math.PI * 2 * this.phase) >> 0, x1, x2, x3;
-
-		if (Math.random() >= this.glitchThreshold) {
-			x0 *= this.glitchAmplitude;
-		}
-
-		x1 = this.width - this.textWidth >> 1;
-		x2 = x1 + x0;
-		x3 = x1 - x0;
-
-		// console.log(x3);
-		// change de channel chaque seconde.
-		// x1 = placement classique
-		// x2 = variant Math.random range + amplitude
-		// x3 = variant 2 Math.random range + amplitude
-
-
-		// console.log(x1, x2, x3, this.channel);
-
 		// clear temp context
 		this.ctx.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 		switch (this.channel) {
 			case 0:
-				this.renderChannels(x1, x2, x3, calm);
+				this.renderChannels(obj);
 				break;
 			case 1:
-				this.renderChannels(x2, x3, x1, calm);
+				this.renderChannels(obj);
 				break;
 			case 2:
-				this.renderChannels(x3, x1, x2, calm);
+				this.renderChannels(obj);
 				break;
 		}
 
@@ -434,19 +415,15 @@ export default class Glitch {
 	}
 
 
-	renderChannels(x1, x2, x3, calm) {
+	renderChannels(obj) {
 
-		// It's important to note that a canvas context can only support one composite operation throughout its life cycle.
-		// if we want to use multiple composite operations, as this tutorial does, we need to apply the operations on a hidden canvas and then copy the results onto a visible canvas.
 		// alpha video
 		if (this.ctxAlphaBuffer) {
-			// console.log(this.textWidth, this.height);
-			// this.ui.canvasAlphaBuffer.width = 980;
 
 			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 			// r.p : We select only the first half
 			let videoWidth = this.width;
-			let videoHeight = this.width * 2;
+			let videoHeight = this.width * 2; // square in that case
 			if (this.ui.canvasAlphaBuffer.width !== videoWidth) {
 				this.ui.canvasAlphaBuffer.width = videoWidth;
 				this.video.width = videoWidth;
@@ -455,9 +432,10 @@ export default class Glitch {
 				this.ui.canvasAlphaBuffer.height = videoHeight;
 				// this.video.height = videoHeight;
 			}
+			// this.ctxAlphaBuffer.clearRect(0, 0, videoWidth, videoHeight);
+			this.ctxAlphaBuffer.beginPath();
 
 			this.ctxAlphaBuffer.drawImage(this.video, 0, 0, videoWidth, videoHeight);
-			// console.log(this.ui.canvasAlphaBuffer.width);
 			this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, videoWidth, videoHeight / 2); // --> top part of video
 			let imageData = this.imageAlpha.data,
 				alphaData = this.ctxAlphaBuffer.getImageData(0, videoHeight / 2, videoWidth, videoHeight / 2).data; // --> bottom part 50/50
@@ -467,9 +445,9 @@ export default class Glitch {
 				imageData[i] = alphaData[i - 1];
 			}
 		}
-		// MOST IMPORTANT HERE
 
-		const top = 0; // move image
+
+		const top = 0; // top of image
 		const centerY = this.height / 2 + this.textHeight / 2;
 		// let margeStart = this.textWidth * 0.2;
 		let startClip = (this.width - this.textWidth) / 2 ;
@@ -492,6 +470,64 @@ export default class Glitch {
 		// 		width: 0
 		// 	}]
 		// }];
+
+		if (obj.stop === true) {
+			// DEFAULT
+			// Just text and image alpha mask, no glitch
+			// this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+
+			this.ctxBuffer.fillStyle = this.color;
+			// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+			// this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.textWidth) / 2, top, 0, 0, this.textWidth + 30, this.height);
+			// this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+			// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
+
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
+
+			return false;
+		}
+
+		if (obj.type === 'intro') {
+
+			// DEFAULT
+			// Just text and image alpha mask, no glitch
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctxBuffer.beginPath(); // avoid Drop fps
+
+			this.ctxBuffer.fillStyle = this.color;
+			// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+			this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.sndTextWidth) / 2, top, 0, 0, this.sndTextWidth + 30, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
+			this.ctxBuffer.font = this.ctxBuffer.font = this.font;
+
+			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY - 30); // First Text
+
+			this.ctxBuffer.restore();
+
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
+
+
+			this.ctxBuffer.save();
+			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctxBuffer.beginPath(); // avoid Drop fps
+
+			this.ctxBuffer.fillStyle = this.color;
+			this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.sndTextWidth) / 2, top, 0, 0, this.sndTextWidth + 30, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
+			this.ctxBuffer.font = this.ctxBuffer.font = `${this.textSize - 20}px "Theinhardt"`;
+			this.ctxBuffer.fillText(this.sndText, (this.width - this.sndTextWidth) / 2, centerY + 30); // Second Text
+
+			this.ctxBuffer.restore();
+
+			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
+
+			// this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
+
+			return false;
+		}
 
 		// offset gesture
 		this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
@@ -530,61 +566,33 @@ export default class Glitch {
 		this.width5 =  this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.2, this.width5);
 
 
-		if (calm === true) {
-			// DEFAULT
-			// Normal Text, center white, with image
-			// this.ctxBuffer.save();
-			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
-
-			this.ctxBuffer.fillStyle = 'rgba(255, 255, 255, 1)';
-			// this.ctxBuffer.drawImage(this.ui.imgAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
-			this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.textWidth) / 2, top);
-			// this.ctxBuffer.globalCompositeOperation = 'source-in';
-			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
-			// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
-
-			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
-
-			return false;
-		}
-
 		// Draw First Comp
 		// Start of Text, Offset Left, white, with image
 		this.ctxBuffer.save();
 		this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 		this.ctxBuffer.beginPath(); // avoid Drop fps
 
-		// // // // Ici on veut que une fois sur 3 (tt les 3 seconds ? ou moins, on mais le Y en décallé haut gauche.)
-		// // // // et 2 fois sur 3 gauche
-		// // // // et par défaut normal
-		this.ctxBuffer.fillStyle = this.color; // Third Text
+		this.ctxBuffer.fillStyle = this.sndColor;
 
-		if (this.channel === 1) {
-
-
-		} else if (this.channel === 2) {
+		if (this.channel === 2) {
 
 			this.ctxBuffer.rect(startClip + this.margeX12.val,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxBuffer.clip();
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 		} else {
 
 			this.ctxBuffer.rect(startClip + this.margeX1.val,0, this.textWidth, this.height); // create clip rectangle
 			this.ctxBuffer.clip();
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX1.val + 2, top, this.textWidth - 2 , this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2 , this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 		}
 
 		this.ctxBuffer.restore();
 
 		this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
-
-
-
-
 
 		// Draw Second Comp
 		// DEFAULT
@@ -593,41 +601,29 @@ export default class Glitch {
 		this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 		this.ctxBuffer.beginPath();
 
-		this.ctxBuffer.fillStyle = 'rgb(255,255,255)';
+		this.ctxBuffer.fillStyle = this.color;
 
 		if (this.channel === 0) {
 			this.ctxBuffer.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
 			this.ctxBuffer.clip();
 			// Draw image that gonna be use as mask.
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, x3 + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
-			// this.ctxBuffer.fillText(this.text, x3 + posX2, centerY + posY2);
-			// this.ctxBuffer.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 		} else if (this.channel === 2) {
-			this.ctxBuffer.rect(x3, 0, this.width22.val, this.height); // create clip rectangle
+			this.ctxBuffer.rect(startClip, 0, this.width22.val, this.height); // create clip rectangle
 			this.ctxBuffer.clip();
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, x3 + 2, top, this.width22.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
-			// this.ctxBuffer.fillText(this.text, x3 + posX22, centerY + posY22);
-			// this.ctxBuffer.drawImage(this.ui.imgAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 		} else {
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, x3, top, this.textWidth + 30, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
-
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in'; // put the reste on top and mask
 		}
 
-		this.ctxBuffer.fillText(this.text, x3, centerY); // First Text
-
-
-		// this.ctxBuffer.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
-		// this.ctxBuffer.fillText(this.text, x2, centerY); // Second Text
+		this.ctxBuffer.fillText(this.text, startClip, centerY); // First Text
 
 		this.ctxBuffer.restore();
 
 		this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
-
-
-
 
 		// Draw Third Comp
 		// Start of Text, Offset Left, white, with image
@@ -635,26 +631,23 @@ export default class Glitch {
 		this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 		this.ctxBuffer.beginPath(); // avoid Drop fps
 
-		this.ctxBuffer.fillStyle = this.color; // Third Text
+		this.ctxBuffer.fillStyle = this.sndColor; // Third Text
 
-		if (this.channel === 0) {
-
-
-		} else if (this.channel === 1) {
+		if (this.channel === 1) {
 
 			this.ctxBuffer.rect(startClip + this.margeX3.val,0, this.width3.val,this.height); // create clip rectangle
 			this.ctxBuffer.clip();
 
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , this.width3.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , 0, 0, this.width3.val - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 		} else {
 
 			this.ctxBuffer.rect(startClip + this.margeX32.val,0, this.width32.val - 10,this.height); // create clip rectangle
 			this.ctxBuffer.clip();
 
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , this.width32.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , 0, 0, this.width32.val - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 		}
 
@@ -662,35 +655,28 @@ export default class Glitch {
 
 		this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
-
-
 		// Draw Fourth Comp
 		// Start of Text, Offset Left, white, with image
 		this.ctxBuffer.save();
 		this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 		this.ctxBuffer.beginPath(); // avoid Drop fps
 
-		this.ctxBuffer.fillStyle = 'rgb(255,255,255)'; // Third Text
+		this.ctxBuffer.fillStyle = this.color; // Third Text
 
 		if (this.channel === 1) {
 
 			this.ctxBuffer.rect(startClip + this.margeX4.val, 0, this.width4.val,this.height); // create clip rectangle
 			this.ctxBuffer.clip();
 
-			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 
-		} else {
-
 		}
-
 
 		this.ctxBuffer.restore();
 
 		this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
-
-
 
 		// Draw Fifth Comp
 		// Start of Text, Offset Left, white, with image
@@ -698,28 +684,24 @@ export default class Glitch {
 		this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 		this.ctxBuffer.beginPath(); // avoid Drop fps
 
-		this.ctxBuffer.fillStyle = 'rgb(255,255,255)'; // Third Text
+		this.ctxBuffer.fillStyle = this.color; // Third Text
 
 		if (this.channel === 1) {
 
 			this.ctxBuffer.rect(startClip + this.margeX5.val,0, this.width5.val, this.height); // create clip rectangle
 			this.ctxBuffer.clip();
 
-			this.ctxBuffer.drawImage(this.ui.imgAlpha, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
-
+			this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 
-		} else {
-
 		}
-
 
 		this.ctxBuffer.restore();
 
 		this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
-		if (this.clock.getElapsedTime() >= this.last + 0.035) { // 
+		if (this.clock.getElapsedTime() >= this.last + 0.035) {
 			this.last = this.clock.getElapsedTime();
 			this.breakTime = true;
 
@@ -778,7 +760,8 @@ export default class Glitch {
 
 		// return false;
 		//this.height = window.innerHeight;
-		this.textSize = this.ui.canvas.offsetHeight / 3;
+		this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
+		this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
 		this.textHeight = this.textSize; // need a real calcul
 		this.height = this.ui.canvas.offsetHeight;
 		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
@@ -786,6 +769,12 @@ export default class Glitch {
 		this.text = this.txt;
 		this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
 		this.width = this.textWidth + this.biggestRange;
+		if (this.sndTxt) {
+			this.sndText = this.sndTxt;
+			this.ctx.font = this.ctxBuffer.font =  `${this.textSize - 20}px "Theinhardt"`;
+			this.sndTextWidth = Math.round((this.ctxBuffer.measureText(this.sndText)).width);
+			this.width = this.sndTextWidth + this.biggestRange;
+		}
 
 		if (this.ui.canvas) {
 			this.ui.canvas.height = this.height;

@@ -13,6 +13,68 @@
 		display: none;
 		cursor: pointer;
 		letter-spacing: 0.4em;
+
+		p {
+			font-size: 0.8rem;
+	    	letter-spacing: 4px;
+	    	margin-right: -4px;
+	    	margin-top: 15px;
+	    	font-family: 'Theinhardt-regular';
+		    font-weight: normal;
+		    font-style: normal;
+		    opacity: 0;
+		}
+		svg polyline,
+		svg circle {
+			stroke: black;
+		}
+		svg {
+			margin: 0 auto;
+			display: block;
+			width: 50px;
+			height: 50px;
+			position: relative;
+			transform: rotate(-90deg);
+			// cursor: pointer;
+			circle {
+				transform-origin: 75% 75%;
+			}
+
+			&.is-close {
+				.open-down,
+				.open-up {
+					stroke-dasharray: 635;
+					stroke-dashoffset: 635;
+				}
+				.close-up {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 0;
+				}
+				.close-down {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 840;
+				}
+			}
+
+			&.is-open {
+
+				.open-up {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 0;
+				}
+
+				.open-down {
+					stroke-dasharray: 635; // !
+					stroke-dashoffset: 430;
+				}
+
+				.close-up,
+				.close-down {
+					stroke-dasharray: 635;
+					stroke-dashoffset: 635;
+				}
+			}
+		}
 	}
 
 	&__overlay {

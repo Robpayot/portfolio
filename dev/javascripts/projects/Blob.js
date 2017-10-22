@@ -53,8 +53,14 @@ export default class Blob extends ProjectView {
 		const geometry = new IcosahedronGeometry( 5, 5 );
 		// const material = new MeshLambertMaterial({ color: 0x4682b4 });
 
-		const video = document.getElementById( 'video' );
-		const tex = new VideoTexture( video );
+		this.video = document.createElement('video');
+		this.video.id = 'video';
+		this.video.src = 'videos/blob2.mp4';
+		this.video.autoplay = true;
+		this.video.loop = true;
+		this.video.muted = true;
+		this.el.appendChild(this.video);
+		const tex = new VideoTexture( this.video );
 		tex.minFilter = LinearFilter;
 		tex.magFilter = LinearFilter;
 		tex.format = RGBFormat;
@@ -114,7 +120,7 @@ export default class Blob extends ProjectView {
 					time: { type: 'f', value: 0 },
 					weight: { type: 'f', value: 0 },
 					brightness: { type: 'f', value: 0 },
-					contrast: { type: 'f', value: 0.5 },
+					contrast: { type: 'f', value: 0.0 },
 				},
 				vertexShader: blobLightShader.vertexShader,
 				fragmentShader: blobLightShader.fragmentShader
@@ -284,11 +290,11 @@ export default class Blob extends ProjectView {
 			// // // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 			// // el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
-			if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
+			if (el.mesh.material.uniforms['contrast'].value >= 0.0) {
 				if (el.active === true) {
-					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5 , 5);
+					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.0 , 1);
 				} else {
-					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5 , 5);
+					el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.0 , 1);
 				}
 			}
 
