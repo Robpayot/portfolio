@@ -8,7 +8,6 @@
 	pointer-events: none;
 	z-index: 100;
 
-	@import "ui/intro";
 	@import "ui/menu";
 
 	&-content {
@@ -19,6 +18,7 @@
 		top: 0;
 		left: 0;
 
+		@import "ui/intro";
 		@import "ui/about";
 		@import "ui/project";
 

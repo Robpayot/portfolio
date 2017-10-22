@@ -34,7 +34,8 @@ if (window.location.host === 'robpayot.github.io') {
 		{ id: 'tpl-project-prev', src: `${global.BASE}/templates/projectPrev.hbs` },
 		{ id: 'tpl-project-next', src: `${global.BASE}/templates/projectNext.hbs` },
 		{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` },
-		{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` }
+		{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
+		{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` }
 		// { id: 'template-menu', src: ''}
 	]);
 

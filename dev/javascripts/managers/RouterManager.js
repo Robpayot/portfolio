@@ -129,12 +129,19 @@ class RouterManager {
 				break;
 
 			case '/project-0':
-
+						// id: 0,
+						// bkg: 0x0101010,
+						// astd: 'cubes',
+						// gravity: false,
+						// pointsLight: true,
+						// alt: false,
+						// data: data.projects[0],
+						// fromUrl
 				// if (this.project0 === null) {
-					this.currentPage = this.project0 = new Levit({ // Attention, Garde en mémoire une cette variable très lourde !
+					this.currentPage = this.project0 = new Stars({ // Attention, Garde en mémoire une cette variable très lourde !
 						id: 0,
 						bkg: 0x0101010,
-						astd: 'cubes',
+						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
@@ -152,7 +159,7 @@ class RouterManager {
 			case '/project-1':
 
 				// if (this.project1 === null) {
-					this.currentPage = this.project1 = new Stars({
+					this.currentPage = this.project1 = new Blob({
 						id: 1,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -192,10 +199,10 @@ class RouterManager {
 			case '/project-3':
 
 				// if (this.project3 === null) {
-					this.currentPage = this.project3 = new Blob({
+					this.currentPage = this.project3 = new Levit({
 						id: 3,
 						bkg: 0x0101010,
-						astd: 'spheres',
+						astd: 'cubes',
 						gravity: false,
 						pointsLight: true,
 						alt: false,

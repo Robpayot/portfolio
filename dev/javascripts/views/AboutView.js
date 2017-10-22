@@ -10,7 +10,6 @@ import DATA from '../../datas/data.json';
 
 
 import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, PlaneGeometry, PlaneBufferGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
-import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
@@ -164,6 +163,8 @@ export default class AboutView extends AbstractView {
 		// set Light
 		this.setLight();
 
+		this.minZoom = 1000;
+		this.maxZoom = 1700;
 		this.maxDash = 635;
 		this.mouseCoords = new Vector2();
 		this.raycaster = new Raycaster();
@@ -248,7 +249,7 @@ export default class AboutView extends AbstractView {
 
 		// Magic calculs ;)
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const height = 2 * Math.tan( vFOV / 2 ) * 1000; // dist between 0 and camerapos.y
+		const height = 2 * Math.tan( vFOV / 2 ) * this.minZoom; // dist between 0 and camerapos.y
 
 		const aspect = window.innerWidth / window.innerHeight;
 		let finalBounds;
@@ -259,7 +260,7 @@ export default class AboutView extends AbstractView {
 			finalBounds = height;
 		}
 
-		const extra = bigger === true ? 400 : 600; // for rotation camera left / right
+		const extra = bigger === true ? 400 : finalBounds / 2.05; // for rotation camera left / right
 		this.BOUNDS = finalBounds + extra; // Water size
 		this.BOUNDSSUP = bigger === true ? 700 : 0; // Bounds supp for TransitionOut, we see the horizon
 
@@ -751,7 +752,7 @@ export default class AboutView extends AbstractView {
 			},
 			delay: 0
 		});
-		tl.fromTo(this.camera.position, 5, {y: 1600 }, {y: 1000, ease: window.Expo.easeOut});
+		tl.fromTo(this.camera.position, 5, {y: this.maxZoom - 100 }, {y: this.minZoom, ease: window.Expo.easeOut});
 		tl.set(this.ui.introWrap, {display : 'block'} , 0.5);
 		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 0.5);
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 0.5);
@@ -770,7 +771,7 @@ export default class AboutView extends AbstractView {
 		tl.staggerTo(this.targetsWorks, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
 		tl.set(this.ui.worksWrap, {display : 'none'});
 
-		tl.fromTo(this.camera.position, 4, {y: 1000 }, {y: 1700, ease: window.Expo.easeOut}, 0);
+		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom, ease: window.Expo.easeOut}, 0);
 		tl.fromTo('.overlay', 1, {
 			opacity: 0
 		}, {

@@ -33,7 +33,7 @@
 
     &__number, &__more {
     	position: absolute;
-    	color: $color-grey;
+    	color: white;
     	// display: none;
     	opacity: 0;
     }
@@ -61,7 +61,7 @@
 			position: absolute;
 			width: 0px;
 			height: 3px;
-			background-color: $color-grey;
+			background-color: white;
 			left: 0px;
 			top: 50%;
 			transform: translateY(-50%);

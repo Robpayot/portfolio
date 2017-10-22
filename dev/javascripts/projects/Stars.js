@@ -344,7 +344,7 @@ export default class Stars extends ProjectView {
 				this.lights.push(pointLight);
 			}
 		}
-		let light = new DirectionalLight( 0xffffff, 1 );
+		let light = new DirectionalLight( 0xBF1812, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
 		// let light2 = new DirectionalLight( 0xffffff, 1 );

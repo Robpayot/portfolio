@@ -19,8 +19,8 @@ export default class Circular extends ProjectView {
 
 		this.nbAst = 25;
 		this.color1 = 0xEF2178;
-		this.color2 = 0x8F28EF;
-		this.color3 = 0x4e4e4e;
+		this.color2 = 0x5A1996;
+		this.color3 = 0x424242;
 
 		this.init();
 
@@ -155,7 +155,7 @@ export default class Circular extends ProjectView {
 			// add to the scene
 			this.scene.add(pointLight);
 		}
-		let light = new DirectionalLight( 0xffffff, 1 );
+		let light = new DirectionalLight( 0xB72ABF, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
 		// let light2 = new DirectionalLight( 0xffffff, 1 );

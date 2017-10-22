@@ -160,7 +160,7 @@ export default class Levit extends ProjectView {
 		// 	// add to the scene
 		// 	this.scene.add(pointLight);
 		// }
-		let light = new DirectionalLight( 0xffffff, 1 );
+		let light = new DirectionalLight( 0x125714, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
 		// let light2 = new DirectionalLight( 0xffffff, 1 );
