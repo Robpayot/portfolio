@@ -1,4 +1,4 @@
-&-intro {
+&.is-intro {
 	display: none;
 	text-transform: uppercase;
 	
@@ -77,7 +77,7 @@
 		}
 	}
 
-	&__overlay {
+	.intro__overlay {
 		position: absolute;
 		left: 0px;
 		top: 0px;

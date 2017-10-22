@@ -3,15 +3,17 @@ import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
-import SplitText from '../vendors/SplitText.js';
+// import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
 import { loadJSON } from '../helpers/utils-three';
 import Glitch from '../components/Glitch';
+import Handlebars from 'handlebars';
+import DATA from '../../datas/data.json';
+import PreloadManager from '../managers/PreloadManager';
 
 
 import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
-import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
@@ -35,7 +37,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 
@@ -71,7 +73,7 @@ export default class IntroView extends AbstractView {
 			this.init();
 
 			this.events(true);
-			this.ui.overlay.classList.add('black');
+			// this.ui.overlay.classList.add('black');
 
 			this.transitionIn(!obj.fromUrl);
 
@@ -105,13 +107,14 @@ export default class IntroView extends AbstractView {
 		document[evListener]( 'keydown', this.onW , false );
 		document[evListener]( 'click', this.onClick , false );
 
-		this.UI.button[evListener]('mouseenter', this.onHoverStart);
-		this.UI.button[evListener]('mouseleave', this.onLeaveStart);
+		this.ui.button[evListener]('mouseenter', this.onHoverStart);
+		this.ui.button[evListener]('mouseleave', this.onLeaveStart);
 
 	}
 
 	init() {
 
+		this.setUiContainer();
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 		this.scene = new Scene();
@@ -184,6 +187,24 @@ export default class IntroView extends AbstractView {
 		gui.close();
 
 		global.CURSOR.el.classList.add('alt');
+
+	}
+
+	setUiContainer() {
+
+		const data = DATA;
+		// console.log(data, PreloadManager.getResult('tpl-about-content'));
+
+		// Context + gallery arrows
+		let template = Handlebars.compile(PreloadManager.getResult('tpl-intro-content'));
+		let html  = template(data);
+
+		this.UI.content.className = '';
+		this.UI.content.classList.add('ui-content', 'is-intro');
+		this.UI.content.innerHTML = html;
+
+		this.ui.button = document.querySelector('.start');
+		this.ui.overlay = document.querySelector('.intro__overlay');
 
 	}
 
@@ -831,7 +852,7 @@ export default class IntroView extends AbstractView {
 		this.el.classList.remove('project');
 		this.el.classList.remove('about');
 		// set ui
-		this.UI.intro.style.display = 'block';
+		this.UI.content.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
 
 		Ui.el.style.display = 'block';
@@ -855,7 +876,7 @@ export default class IntroView extends AbstractView {
 
 			const tl = new TimelineMax();
 
-			tl.set(this.UI.overlay, {opacity: 1});
+			tl.set(this.ui.overlay, {opacity: 1});
 			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
 
 			tl.fromTo(canvas, 3, {
@@ -873,7 +894,7 @@ export default class IntroView extends AbstractView {
 				// start move Ast
 				this.startMove = true;
 			});
-			tl.to(this.UI.overlay, 1.5, {opacity: 0}, 4);
+			tl.to(this.ui.overlay, 1.5, {opacity: 0}, 4);
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
 			}, 2);
@@ -882,8 +903,8 @@ export default class IntroView extends AbstractView {
 				console.log('stop');
 			}}, '+=1');
 
-			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
-			tl.to(this.UI.button, 3, {opacity: 1});
+			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.to(this.ui.button, 3, {opacity: 1});
 			// tl.to('.overlay', 1, {
 			// 	opacity: 0
 			// }, 0);
@@ -899,8 +920,8 @@ export default class IntroView extends AbstractView {
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
 			}, 1.5);
-			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
-			tl.to(this.UI.button, 3, {opacity: 1});
+			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.to(this.ui.button, 3, {opacity: 1});
 			tl.to('.overlay', 1, {
 				opacity: 0
 			}, 1.6);
@@ -953,8 +974,8 @@ export default class IntroView extends AbstractView {
 
 		const tl = new TimelineMax({delay: 0});
 
-		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
-		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
+		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
+		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
 
 		tl.fromTo(this.camera.position, 4, {y: 400 }, {y: 900, ease: window.Expo.easeOut}, 0);
 		tl.fromTo('.overlay', 1, {

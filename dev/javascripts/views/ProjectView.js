@@ -339,7 +339,7 @@ export default class ProjectView extends AbstractView {
 		this.el.classList.add('project');
 
 		// set ui
-		this.UI.intro.style.display = 'none';
+		// this.UI.intro.style.display = 'none';
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.remove('is-open');
 		global.CURSOR.interractLeave();
@@ -571,7 +571,7 @@ export default class ProjectView extends AbstractView {
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
 				sndColor: this.data.color,
-				color: '#4e4e4e',
+				color: 'white',
 				txt: this.data.title,
 				clock: this.clock
 			});
