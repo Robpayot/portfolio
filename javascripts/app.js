@@ -233,7 +233,7 @@ var Cursor = function () {
 				this.c2.style.stroke = obj.color;
 				this.hoverGoTo = true;
 				// remplie
-				TweenMax.to(this.c2, 5, { strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete: function onComplete() {
+				TweenMax.to(this.c2, 3, { strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete: function onComplete() {
 						if (_this.hoverGoTo = true) window.location.href = obj.href;
 					} });
 			}
@@ -544,9 +544,12 @@ var Glitch = function () {
 		// return false;
 
 		// Load data
+		this.obj = obj;
 		this.el = obj.el;
 		this.color = obj.color;
+		this.sndColor = obj.sndColor;
 		this.txt = obj.txt;
+		this.sndTxt = obj.sndTxt;
 		this.debug = obj.debug;
 		this.clock = obj.clock;
 
@@ -598,7 +601,6 @@ var Glitch = function () {
 				// console.log(html);
 
 				this.el.innerHTML = html;
-				console.log(this.el.querySelector('.glitch__canvas'));
 			}
 
 			this.ui = {
@@ -610,15 +612,12 @@ var Glitch = function () {
 				canvasBuffer: this.el.querySelector('.glitch__canvas-buffer'),
 				canvasAlphaBuffer: this.el.querySelector('.glitch__canvas-alpha-buffer')
 			};
-			console.log(this.el, this.clock);
 			// Nathan Gordon <3
 			// //Create a canvas that is to become our reference image
 			// const baseCanvas = document.createElement('canvas');
 			// baseCanvas.width = 600;
 			// baseCanvas.height = 200;
 			// const basectx = baseCanvas.getctx('2d');
-
-			this.textSize = this.ui.canvas.offsetHeight / 3;
 			this.textHeight = this.textSize; // need a real calcul
 			this.last = 0;
 
@@ -659,9 +658,10 @@ var Glitch = function () {
 		key: 'initOptions',
 		value: function initOptions() {
 
-			var gui = new _datGui2.default.GUI(),
-			    current = gui.addFolder('Current'),
-			    controls = gui.addFolder('Controls');
+			// const gui = new dat.GUI(),
+			// 	current = gui.addFolder('Current'),
+			// 	controls = gui.addFolder('Controls');
+
 
 			this.fps = 60;
 
@@ -673,7 +673,6 @@ var Glitch = function () {
 			this.amplitudeBase = 2; //2.0;
 			this.amplitudeRange = 3; // 2.0;
 			this.alphaMin = 0.8;
-			this.biggestRange = 200; // - 100 max X , +100 max X
 
 			this.glitchAmplitude = 20.0;
 			this.glitchThreshold = 0.9;
@@ -681,29 +680,32 @@ var Glitch = function () {
 			this.scanlineRange = 40;
 			this.scanlineShift = 15;
 
-			current.add(this, 'channel', 0, 2).listen();
-			current.add(this, 'phase', 0, 1).listen();
-			current.add(this, 'amplitude', 0, 5).listen();
-			// comment out below to hide ability to change text string
-			// var text = controls.add(this, 'text');
-			// text.onChange((function (){
-			// 	this.textWidth = (this.ctx.measureText(this.text)).width;
-			// }).bind(this));
-			// comment out above to hide ability to change text string
-			controls.add(this, 'fps', 1, 60);
-			controls.add(this, 'phaseStep', 0, 1);
-			controls.add(this, 'alphaMin', 0, 1);
-			controls.add(this, 'amplitudeBase', 0, 5);
-			controls.add(this, 'amplitudeRange', 0, 5);
-			controls.add(this, 'glitchAmplitude', 0, 100);
-			controls.add(this, 'glitchThreshold', 0, 1);
-			controls.open();
-			gui.close(); // start the control panel cloased
+			// current.add(this, 'channel', 0, 2).listen();
+			// current.add(this, 'phase', 0, 1).listen();
+			// current.add(this, 'amplitude', 0, 5).listen();
+			// // comment out below to hide ability to change text string
+			// // var text = controls.add(this, 'text');
+			// // text.onChange((function (){
+			// // 	this.textWidth = (this.ctx.measureText(this.text)).width;
+			// // }).bind(this));
+			// // comment out above to hide ability to change text string
+			// controls.add(this, 'fps', 1, 60);
+			// controls.add(this, 'phaseStep', 0, 1);
+			// controls.add(this, 'alphaMin', 0, 1);
+			// controls.add(this, 'amplitudeBase', 0, 5);
+			// controls.add(this, 'amplitudeRange', 0, 5);
+			// controls.add(this, 'glitchAmplitude', 0, 100);
+			// controls.add(this, 'glitchThreshold', 0, 1);
+			// controls.open();
+			// gui.close(); // start the control panel cloased
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var calm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+			var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+
+			// console.log('render');
 
 
 			this.phase += this.phaseStep;
@@ -717,40 +719,18 @@ var Glitch = function () {
 				this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
 			}
 
-			var x0 = this.amplitude * Math.sin(Math.PI * 2 * this.phase) >> 0,
-			    x1 = void 0,
-			    x2 = void 0,
-			    x3 = void 0;
-
-			if (Math.random() >= this.glitchThreshold) {
-				x0 *= this.glitchAmplitude;
-			}
-
-			x1 = this.width - this.textWidth >> 1;
-			x2 = x1 + x0;
-			x3 = x1 - x0;
-
-			// console.log(x3);
-			// change de channel chaque seconde.
-			// x1 = placement classique
-			// x2 = variant Math.random range + amplitude
-			// x3 = variant 2 Math.random range + amplitude
-
-
-			// console.log(x1, x2, x3, this.channel);
-
 			// clear temp context
 			this.ctx.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 			switch (this.channel) {
 				case 0:
-					this.renderChannels(x1, x2, x3, calm);
+					this.renderChannels(obj);
 					break;
 				case 1:
-					this.renderChannels(x2, x3, x1, calm);
+					this.renderChannels(obj);
 					break;
 				case 2:
-					this.renderChannels(x3, x1, x2, calm);
+					this.renderChannels(obj);
 					break;
 			}
 
@@ -764,7 +744,7 @@ var Glitch = function () {
 		}
 	}, {
 		key: 'renderChannels',
-		value: function renderChannels(x1, x2, x3, calm) {
+		value: function renderChannels(obj) {
 
 			// alpha video
 			if (this.ctxAlphaBuffer) {
@@ -772,7 +752,7 @@ var Glitch = function () {
 				// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 				// r.p : We select only the first half
 				var videoWidth = this.width;
-				var videoHeight = this.width * 2;
+				var videoHeight = this.width * 2; // square in that case
 				if (this.ui.canvasAlphaBuffer.width !== videoWidth) {
 					this.ui.canvasAlphaBuffer.width = videoWidth;
 					this.video.width = videoWidth;
@@ -781,6 +761,8 @@ var Glitch = function () {
 					this.ui.canvasAlphaBuffer.height = videoHeight;
 					// this.video.height = videoHeight;
 				}
+				// this.ctxAlphaBuffer.clearRect(0, 0, videoWidth, videoHeight);
+				this.ctxAlphaBuffer.beginPath();
 
 				this.ctxAlphaBuffer.drawImage(this.video, 0, 0, videoWidth, videoHeight);
 				this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, videoWidth, videoHeight / 2); // --> top part of video
@@ -793,9 +775,8 @@ var Glitch = function () {
 					imageData[i] = alphaData[i - 1];
 				}
 			}
-			// MOST IMPORTANT HERE
 
-			var top = 0; // move image
+			var top = 0; // top of image
 			var centerY = this.height / 2 + this.textHeight / 2;
 			// let margeStart = this.textWidth * 0.2;
 			var startClip = (this.width - this.textWidth) / 2;
@@ -818,6 +799,63 @@ var Glitch = function () {
 			// 		width: 0
 			// 	}]
 			// }];
+
+			if (obj.stop === true) {
+				// DEFAULT
+				// Just text and image alpha mask, no glitch
+				// this.ctxBuffer.save();
+				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
+
+				this.ctxBuffer.fillStyle = this.color;
+				// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.textWidth) / 2, top, 0, 0, this.textWidth + 30, this.height);
+				// this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+				// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
+
+				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
+
+				return false;
+			}
+
+			if (obj.type === 'intro') {
+
+				// DEFAULT
+				// Just text and image alpha mask, no glitch
+				this.ctxBuffer.save();
+				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+				this.ctxBuffer.beginPath(); // avoid Drop fps
+
+				this.ctxBuffer.fillStyle = this.color;
+				// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+				this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.sndTextWidth) / 2, top, 0, 0, this.sndTextWidth + 30, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.font = this.ctxBuffer.font = this.font;
+
+				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY - 30); // First Text
+
+				this.ctxBuffer.restore();
+
+				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
+
+				this.ctxBuffer.save();
+				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+				this.ctxBuffer.beginPath(); // avoid Drop fps
+
+				this.ctxBuffer.fillStyle = this.color;
+				this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.sndTextWidth) / 2, top, 0, 0, this.sndTextWidth + 30, this.height);
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.font = this.ctxBuffer.font = this.textSize - 20 + 'px "Theinhardt"';
+				this.ctxBuffer.fillText(this.sndText, (this.width - this.sndTextWidth) / 2, centerY + 30); // Second Text
+
+				this.ctxBuffer.restore();
+
+				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
+
+				// this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
+
+				return false;
+			}
 
 			// offset gesture
 			this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
@@ -855,47 +893,26 @@ var Glitch = function () {
 			this.posY5 = this.randomTimed(10, 20, this.posY5);
 			this.width5 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.2, this.width5);
 
-			if (calm === true) {
-				// DEFAULT
-				// Normal Text, center white, with image
-				// this.ctxBuffer.save();
-				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
-
-				this.ctxBuffer.fillStyle = 'rgba(255, 255, 255, 1)';
-				// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
-				this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.textWidth) / 2, top);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
-				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
-				// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
-
-				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
-
-				return false;
-			}
-
 			// Draw First Comp
 			// Start of Text, Offset Left, white, with image
 			this.ctxBuffer.save();
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			// // // // Ici on veut que une fois sur 3 (tt les 3 seconds ? ou moins, on mais le Y en décallé haut gauche.)
-			// // // // et 2 fois sur 3 gauche
-			// // // // et par défaut normal
-			this.ctxBuffer.fillStyle = this.color; // Third Text
+			this.ctxBuffer.fillStyle = this.sndColor;
 
-			if (this.channel === 1) {} else if (this.channel === 2) {
+			if (this.channel === 2) {
 
 				this.ctxBuffer.rect(startClip + this.margeX12.val, 0, this.textWidth, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 			} else {
 
 				this.ctxBuffer.rect(startClip + this.margeX1.val, 0, this.textWidth, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 			}
@@ -911,38 +928,29 @@ var Glitch = function () {
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 			this.ctxBuffer.beginPath();
 
-			this.ctxBuffer.fillStyle = 'rgb(255,255,255)';
+			this.ctxBuffer.fillStyle = this.color;
 
 			if (this.channel === 0) {
 				this.ctxBuffer.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 				// Draw image that gonna be use as mask.
-				this.ctxBuffer.putImageData(this.imageAlpha, x3 + this.margeX2.val + 2, top);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
-				// this.ctxBuffer.fillText(this.text, x3 + posX2, centerY + posY2);
-				// this.ctxBuffer.putImageData(this.imageAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 			} else if (this.channel === 2) {
-				this.ctxBuffer.rect(x3, 0, this.width22.val, this.height); // create clip rectangle
+				this.ctxBuffer.rect(startClip, 0, this.width22.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
-				this.ctxBuffer.putImageData(this.imageAlpha, x3 + 2, top);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
-				// this.ctxBuffer.fillText(this.text, x3 + posX22, centerY + posY22);
-				// this.ctxBuffer.putImageData(this.imageAlpha, x1, top, this.textWidth + 30, this.textWidth + 30);
 			} else {
-				this.ctxBuffer.putImageData(this.imageAlpha, x3, top);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in'; // put the reste on top and mask
 			}
 
-			this.ctxBuffer.fillText(this.text, x3, centerY); // First Text
-
-
-			// this.ctxBuffer.fillStyle = 'rgb(0,0,0)'; // Black, center, without image
-			// this.ctxBuffer.fillText(this.text, x2, centerY); // Second Text
+			this.ctxBuffer.fillText(this.text, startClip, centerY); // First Text
 
 			this.ctxBuffer.restore();
 
 			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
-
 
 			// Draw Third Comp
 			// Start of Text, Offset Left, white, with image
@@ -950,14 +958,14 @@ var Glitch = function () {
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			this.ctxBuffer.fillStyle = this.color; // Third Text
+			this.ctxBuffer.fillStyle = this.sndColor; // Third Text
 
-			if (this.channel === 0) {} else if (this.channel === 1) {
+			if (this.channel === 1) {
 
 				this.ctxBuffer.rect(startClip + this.margeX3.val, 0, this.width3.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, 0, 0, this.width3.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 			} else {
@@ -965,7 +973,7 @@ var Glitch = function () {
 				this.ctxBuffer.rect(startClip + this.margeX32.val, 0, this.width32.val - 10, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, 0, 0, this.width32.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 			}
@@ -980,17 +988,17 @@ var Glitch = function () {
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			this.ctxBuffer.fillStyle = 'rgb(255,255,255)'; // Third Text
+			this.ctxBuffer.fillStyle = this.color; // Third Text
 
 			if (this.channel === 1) {
 
 				this.ctxBuffer.rect(startClip + this.margeX4.val, 0, this.width4.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
-			} else {}
+			}
 
 			this.ctxBuffer.restore();
 
@@ -1002,24 +1010,23 @@ var Glitch = function () {
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
 			this.ctxBuffer.beginPath(); // avoid Drop fps
 
-			this.ctxBuffer.fillStyle = 'rgb(255,255,255)'; // Third Text
+			this.ctxBuffer.fillStyle = this.color; // Third Text
 
 			if (this.channel === 1) {
 
 				this.ctxBuffer.rect(startClip + this.margeX5.val, 0, this.width5.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top);
+				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
-			} else {}
+			}
 
 			this.ctxBuffer.restore();
 
 			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 			if (this.clock.getElapsedTime() >= this.last + 0.035) {
-				// 
 				this.last = this.clock.getElapsedTime();
 				this.breakTime = true;
 			} else {
@@ -1078,7 +1085,8 @@ var Glitch = function () {
 
 			// return false;
 			//this.height = window.innerHeight;
-			this.textSize = this.ui.canvas.offsetHeight / 3;
+			this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
+			this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
 			this.textHeight = this.textSize; // need a real calcul
 			this.height = this.ui.canvas.offsetHeight;
 			this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
@@ -1086,6 +1094,12 @@ var Glitch = function () {
 			this.text = this.txt;
 			this.textWidth = Math.round(this.ctxBuffer.measureText(this.text).width);
 			this.width = this.textWidth + this.biggestRange;
+			if (this.sndTxt) {
+				this.sndText = this.sndTxt;
+				this.ctx.font = this.ctxBuffer.font = this.textSize - 20 + 'px "Theinhardt"';
+				this.sndTextWidth = Math.round(this.ctxBuffer.measureText(this.sndText).width);
+				this.width = this.sndTextWidth + this.biggestRange;
+			}
 
 			if (this.ui.canvas) {
 				this.ui.canvas.height = this.height;
@@ -2258,7 +2272,8 @@ var RouterManager = function () {
 					this.currentPage = new _Glitch2.default({
 						el: document.querySelector('.glitch'),
 						txt: 'AKTR',
-						color: 'rgb(41,64,16)',
+						color: 'white',
+						sndColor: 'blue',
 						debug: true,
 						clock: _SceneManager2.default.clock
 					});
@@ -2799,8 +2814,14 @@ var Blob = function (_ProjectView) {
 			var geometry = new _three.IcosahedronGeometry(5, 5);
 			// const material = new MeshLambertMaterial({ color: 0x4682b4 });
 
-			var video = document.getElementById('video');
-			var tex = new _three.VideoTexture(video);
+			this.video = document.createElement('video');
+			this.video.id = 'video';
+			this.video.src = 'videos/blob2.mp4';
+			this.video.autoplay = true;
+			this.video.loop = true;
+			this.video.muted = true;
+			this.el.appendChild(this.video);
+			var tex = new _three.VideoTexture(this.video);
 			tex.minFilter = _three.LinearFilter;
 			tex.magFilter = _three.LinearFilter;
 			tex.format = _three.RGBFormat;
@@ -2850,7 +2871,7 @@ var Blob = function (_ProjectView) {
 						time: { type: 'f', value: 0 },
 						weight: { type: 'f', value: 0 },
 						brightness: { type: 'f', value: 0 },
-						contrast: { type: 'f', value: 0.5 }
+						contrast: { type: 'f', value: 0.0 }
 					},
 					vertexShader: blobLightShader.vertexShader,
 					fragmentShader: blobLightShader.fragmentShader
@@ -3022,11 +3043,11 @@ var Blob = function (_ProjectView) {
 				// // // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 				// // el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
-				if (el.mesh.material.uniforms['contrast'].value >= 0.4) {
+				if (el.mesh.material.uniforms['contrast'].value >= 0.0) {
 					if (el.active === true) {
-						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.5, 5);
+						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.0, 1);
 					} else {
-						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value - 0.1, 0.5, 5);
+						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value - 0.1, 0.0, 1);
 					}
 				}
 			});
@@ -9839,6 +9860,10 @@ var _Ui2 = _interopRequireDefault(_Ui);
 
 var _utilsThree = require('../helpers/utils-three');
 
+var _Glitch = require('../components/Glitch');
+
+var _Glitch2 = _interopRequireDefault(_Glitch);
+
 var _three = require('three');
 
 var _threeCameraDollyCustom = require('../vendors/three-camera-dolly-custom');
@@ -9914,6 +9939,8 @@ var IntroView = function (_AbstractView) {
 		_this.transitionIn = _this.transitionIn.bind(_this);
 		_this.transitionOut = _this.transitionOut.bind(_this);
 		_this.onClick = _this.onClick.bind(_this);
+		_this.onHoverStart = _this.onHoverStart.bind(_this);
+		_this.onLeaveStart = _this.onLeaveStart.bind(_this);
 
 		// preload Models
 		Promise.all([(0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
@@ -9940,7 +9967,6 @@ var IntroView = function (_AbstractView) {
 	_createClass(IntroView, [{
 		key: 'events',
 		value: function events(method) {
-			var _this2 = this;
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			var onListener = method === false ? 'off' : 'on';
@@ -9959,19 +9985,13 @@ var IntroView = function (_AbstractView) {
 			document[evListener]('keydown', this.onW, false);
 			document[evListener]('click', this.onClick, false);
 
-			this.UI.button[evListener]('mouseenter', function () {
-				_this2.startIsHover = true;
-				global.CURSOR.interractHover();
-			});
-			this.UI.button[evListener]('mouseleave', function () {
-				_this2.startIsHover = false;
-				global.CURSOR.interractLeave();
-			});
+			this.UI.button[evListener]('mouseenter', this.onHoverStart);
+			this.UI.button[evListener]('mouseleave', this.onLeaveStart);
 		}
 	}, {
 		key: 'init',
 		value: function init() {
-			var _this3 = this;
+			var _this2 = this;
 
 			// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
@@ -9996,6 +10016,7 @@ var IntroView = function (_AbstractView) {
 			this.asteroids = [];
 			this.asteroidsM = [];
 			this.asteroidsMove = false;
+			this.maxDash = 635;
 
 			this.mouseMoved = false;
 			this.mouseCoords = new _three.Vector2();
@@ -10037,13 +10058,11 @@ var IntroView = function (_AbstractView) {
 			this.valuesChanger();
 			var buttonSmooth = {
 				smoothWater: function smoothWater() {
-					_this3.smoothWater();
+					_this2.smoothWater();
 				}
 			};
 			gui.add(buttonSmooth, 'smoothWater');
 			gui.close();
-
-			console.log('what');
 
 			global.CURSOR.el.classList.add('alt');
 		}
@@ -10342,7 +10361,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'fillTexture',
 		value: function fillTexture(texture) {
-			var _this4 = this;
+			var _this3 = this;
 
 			var waterMaxHeight = 10;
 
@@ -10351,7 +10370,7 @@ var IntroView = function (_AbstractView) {
 				var mult = 0.025;
 				var r = 0;
 				for (var i = 0; i < 15; i++) {
-					r += multR * _this4.simplex.noise(x * mult, y * mult);
+					r += multR * _this3.simplex.noise(x * mult, y * mult);
 					multR *= 0.53 + 0.025 * i;
 					mult *= 1.25;
 				}
@@ -10506,6 +10525,40 @@ var IntroView = function (_AbstractView) {
 			}
 		}
 	}, {
+		key: 'onHoverStart',
+		value: function onHoverStart() {
+			var _this4 = this;
+
+			this.startIsHover = true;
+			global.CURSOR.interractHover();
+			if (this.animBtn === true) return false;
+
+			var tl = new TimelineMax();
+			TweenMax.killTweensOf(['.start .close-up', '.start .close-down', '.start .open-up', '.start .open-down']);
+			TweenMax.to('.start circle', 0, { opacity: 0 });
+
+			tl.to('.start .close-up', 1, { strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut }, 0);
+			tl.to('.start .close-down', 1.2, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut }, 0);
+			tl.set(['.start .close-up', '.start .close-down', '.start .open-up', '.start .open-down'], { clearProps: 'all' });
+			tl.add(function () {
+				_this4.animBtn = false;
+			});
+
+			tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 0);
+			tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0);
+		}
+	}, {
+		key: 'onLeaveStart',
+		value: function onLeaveStart() {
+			global.CURSOR.interractLeave();
+			this.startIsHover = false;
+			TweenMax.fromTo('.start circle', 0.2, { opacity: 0 }, { opacity: 1 });
+			TweenMax.fromTo('.start circle', 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
+
+			TweenMax.to('.start p', 1, { y: 20, ease: window.Expo.easeOut });
+			TweenMax.to('.start p', 0.2, { opacity: 0, ease: window.Linear.easeNone });
+		}
+	}, {
 		key: 'onClick',
 		value: function onClick() {
 			var _this5 = this;
@@ -10566,7 +10619,7 @@ var IntroView = function (_AbstractView) {
 			// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 			// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-			this.waterMesh.position.y -= 0.00152;
+			this.waterMesh.position.y -= 0.0016;
 
 			// console.log(this.waterMesh.position);
 
@@ -10652,6 +10705,19 @@ var IntroView = function (_AbstractView) {
 				if (this.clickAsteroid === true) global.CURSOR.interractHover();else global.CURSOR.interractLeave();
 			}
 
+			// glitch title
+			if (this.glitch) {
+
+				if (this.glitch.start === true) {
+					this.glitch.render({ type: 'intro' });
+				} else {
+					if (this.glitch.stop !== true) {
+						this.glitch.render({ stop: true });
+						this.glitch.stop = true;
+					}
+				}
+			}
+
 			this.render();
 		}
 	}, {
@@ -10670,65 +10736,80 @@ var IntroView = function (_AbstractView) {
 			global.MENU.el.classList.remove('is-active');
 
 			_Ui2.default.el.style.display = 'block';
-			var title1Arr = new _SplitText2.default(this.UI.title1, { type: 'chars' });
-			var title2Arr = new _SplitText2.default(this.UI.title2, { type: 'words' });
-			var tl = new TimelineMax();
+			// const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
+			// const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
 
 			if (fromProject === false) {
+				this.glitchEl = document.querySelector('.intro__glitch');
+
+				this.glitch = new _Glitch2.default({ // issue link to ui footer here but Css
+					el: this.glitchEl,
+					textSize: 50,
+					sndColor: 'red',
+					color: 'black',
+					txt: 'R O B I N   P A Y O T',
+					sndTxt: 'I N T E R A C T I V E   D E V E L O P E R',
+					clock: this.clock
+				});
+
+				var canvas = this.glitchEl.querySelector('.glitch__canvas');
+
+				var tl = new TimelineMax();
 
 				tl.set(this.UI.overlay, { opacity: 1 });
-				tl.set([title1Arr.chars, title2Arr.words], { opacity: 0 });
+				tl.set(canvas, { opacity: 0, visibility: 'visible', display: 'block' });
+
+				tl.fromTo(canvas, 3, {
+					opacity: 0
+				}, {
+					opacity: 1,
+					ease: window.Linear.easeNone
+				}, 2);
+				// tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
 				// tl.set(this.asteroidsM.material, {opacity: 0});
-
-				tl.staggerFromTo(title1Arr.chars, 0.7, {
-					opacity: 0,
-					y: 10,
-					// force3D: true,
-					ease: Expo.easeOut
-				}, {
-					opacity: 1,
-					y: 0
-				}, 0.07, 1);
-
-				tl.staggerFromTo(title2Arr.words, 0.7, {
-					opacity: 0,
-					y: 10,
-					// force3D: true,
-					ease: Expo.easeOut
-				}, {
-					opacity: 1,
-					y: 0
-				}, 0.07);
-				tl.to(this.UI.overlay, 1.5, { opacity: 0 });
+				tl.add(function () {
+					_this7.glitch.start = true;
+				}, 0);
+				tl.add(function () {
+					// start move Ast
+					_this7.startMove = true;
+				});
+				tl.to(this.UI.overlay, 1.5, { opacity: 0 }, 4);
 				tl.add(function () {
 					_this7.moveCameraIn(fromProject);
-				}, 1);
-				tl.to([this.UI.title1, this.UI.title2], 2, { autoAlpha: 0 }, '+=3');
+				}, 2);
+				tl.to(this.glitchEl, 1, { autoAlpha: 0, onComplete: function onComplete() {
+						_this7.glitch.start = false;
+						console.log('stop');
+					} }, '+=1');
+
 				tl.set(this.UI.button, { opacity: 0, display: 'block' }, '+=1.5');
 				tl.to(this.UI.button, 3, { opacity: 1 });
-				tl.to('.overlay', 1, {
-					opacity: 0
-				}, 0);
+				// tl.to('.overlay', 1, {
+				// 	opacity: 0
+				// }, 0);
 			} else {
-				this.UI.title1.style.display = 'none';
-				this.UI.title2.style.display = 'none';
+
+				var _tl = new TimelineMax();
+				// this.UI.title1.style.display = 'none';
+				// this.UI.title2.style.display = 'none';
 
 				this.camera.position.set(0, this.maxZoom, 0);
 				this.camera.rotation.x = (0, _utils.toRadian)(-90);
-				tl.add(function () {
+				_tl.add(function () {
 					_this7.moveCameraIn(fromProject);
 				}, 1.5);
-				tl.set(this.UI.button, { opacity: 0, display: 'block' }, '+=1.5');
-				tl.to(this.UI.button, 3, { opacity: 1 });
-				tl.to('.overlay', 1, {
+				_tl.set(this.UI.button, { opacity: 0, display: 'block' }, '+=1.5');
+				_tl.to(this.UI.button, 3, { opacity: 1 });
+				_tl.to('.overlay', 1, {
 					opacity: 0
 				}, 1.6);
-			}
 
-			tl.add(function () {
-				// start move Ast
-				_this7.startMove = true;
-			}, 0);
+				_tl.add(function () {
+					// start move Ast
+					_this7.startMove = true;
+				}, 0);
+			}
 
 			// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
 		}
@@ -10845,7 +10926,7 @@ exports.default = IntroView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":28,"../shaders/WaterVertexShader":32,"../shapes/Asteroid":34,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":46,"dat-gui":54,"three":108}],48:[function(require,module,exports){
+},{"../components/Glitch":5,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":11,"../helpers/utils-three":10,"../managers/EmitterManager":13,"../managers/SceneManager":16,"../shaders/HeightmapFragmentShader":28,"../shaders/WaterVertexShader":32,"../shapes/Asteroid":34,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":39,"../vendors/SimplexNoise":41,"../vendors/SplitText.js":42,"../vendors/three-camera-dolly-custom":44,"./AbstractView":46,"dat-gui":54,"three":108}],48:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -11477,7 +11558,8 @@ var ProjectView = function (_AbstractView) {
 
 				this.glitch = new _Glitch2.default({ // issue link to ui footer here but Css
 					el: this.glitchEl,
-					color: this.data.color,
+					sndColor: this.data.color,
+					color: '#4e4e4e',
 					txt: this.data.title,
 					clock: this.clock
 				});
@@ -12103,7 +12185,7 @@ var ProjectView = function (_AbstractView) {
 					this.glitch.stop = false;
 				} else {
 					if (this.glitch.stop !== true) {
-						this.glitch.render(true);
+						this.glitch.render({ stop: true });
 						this.glitch.stop = true;
 					}
 				}
