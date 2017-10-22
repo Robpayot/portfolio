@@ -238,9 +238,9 @@ export default class IntroView extends AbstractView {
 			finalBounds = height;
 		}
 
-		const extra = bigger === true ? 800 : 100; // for rotation camera left / right
+		const extra = bigger === true ? 800 : 100; // for rotation camera left / right must 
 		this.BOUNDS = finalBounds + extra; // Water size
-		this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut, we see the horizon
+		this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut,
 		this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 		let materialColor = 0xffffff;
