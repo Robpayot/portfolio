@@ -97,7 +97,7 @@ export default class Cursor {
 			this.c2.style.stroke = obj.color;
 			this.hoverGoTo = true;
 			// remplie
-			TweenMax.to(this.c2, 5, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
+			TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
 				if (this.hoverGoTo = true) window.location.href = obj.href;
 			}});
 		}

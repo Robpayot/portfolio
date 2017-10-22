@@ -570,7 +570,8 @@ export default class ProjectView extends AbstractView {
 
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
-				color: this.data.color,
+				sndColor: this.data.color,
+				color: '#4e4e4e',
 				txt: this.data.title,
 				clock: this.clock
 			});
@@ -1192,7 +1193,7 @@ export default class ProjectView extends AbstractView {
 				this.glitch.stop = false;
 			} else {
 				if (this.glitch.stop !== true) {
-					this.glitch.render(true);
+					this.glitch.render({stop: true});
 					this.glitch.stop = true;
 				}
 			}

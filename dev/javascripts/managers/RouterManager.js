@@ -223,7 +223,8 @@ class RouterManager {
 				this.currentPage = new Glitch({
 					el: document.querySelector('.glitch'),
 					txt: 'AKTR',
-					color: 'rgb(41,64,16)',
+					color: 'white',
+					sndColor: 'blue',
 					debug: true,
 					clock: SceneManager.clock
 				});

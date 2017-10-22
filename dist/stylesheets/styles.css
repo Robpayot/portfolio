@@ -277,8 +277,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 body {
   font-family: 'Theinhardt';
   overflow: hidden;
-  cursor: none !important;
-  background-color: red; }
+  cursor: none !important; }
   body a {
     cursor: none !important; }
 
@@ -824,6 +823,51 @@ body {
       display: none;
       cursor: pointer;
       letter-spacing: 0.4em; }
+      .ui-intro .start p {
+        font-size: 0.8rem;
+        letter-spacing: 4px;
+        margin-right: -4px;
+        margin-top: 15px;
+        font-family: 'Theinhardt-regular';
+        font-weight: normal;
+        font-style: normal;
+        opacity: 0; }
+      .ui-intro .start svg polyline,
+      .ui-intro .start svg circle {
+        stroke: black; }
+      .ui-intro .start svg {
+        margin: 0 auto;
+        display: block;
+        width: 50px;
+        height: 50px;
+        position: relative;
+        -webkit-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        transform: rotate(-90deg); }
+        .ui-intro .start svg circle {
+          -webkit-transform-origin: 75% 75%;
+          -ms-transform-origin: 75% 75%;
+          transform-origin: 75% 75%; }
+        .ui-intro .start svg.is-close .open-down,
+        .ui-intro .start svg.is-close .open-up {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 635; }
+        .ui-intro .start svg.is-close .close-up {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 0; }
+        .ui-intro .start svg.is-close .close-down {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 840; }
+        .ui-intro .start svg.is-open .open-up {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 0; }
+        .ui-intro .start svg.is-open .open-down {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 430; }
+        .ui-intro .start svg.is-open .close-up,
+        .ui-intro .start svg.is-open .close-down {
+          stroke-dasharray: 635;
+          stroke-dashoffset: 635; }
     .ui-intro__overlay {
       position: absolute;
       left: 0px;

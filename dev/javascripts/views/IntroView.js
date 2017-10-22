@@ -7,6 +7,7 @@ import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
 import { loadJSON } from '../helpers/utils-three';
+import Glitch from '../components/Glitch';
 
 
 import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
@@ -56,6 +57,8 @@ export default class IntroView extends AbstractView {
 		this.transitionIn = this.transitionIn.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
 		this.onClick = this.onClick.bind(this);
+		this.onHoverStart = this.onHoverStart.bind(this);
+		this.onLeaveStart = this.onLeaveStart.bind(this);
 
 		// preload Models
 		Promise.all([
@@ -102,14 +105,8 @@ export default class IntroView extends AbstractView {
 		document[evListener]( 'keydown', this.onW , false );
 		document[evListener]( 'click', this.onClick , false );
 
-		this.UI.button[evListener]('mouseenter', () => {
-			this.startIsHover = true;
-			global.CURSOR.interractHover();
-		});
-		this.UI.button[evListener]('mouseleave', () => {
-			this.startIsHover = false;
-			global.CURSOR.interractLeave();
-		});
+		this.UI.button[evListener]('mouseenter', this.onHoverStart);
+		this.UI.button[evListener]('mouseleave', this.onLeaveStart);
 
 	}
 
@@ -138,6 +135,7 @@ export default class IntroView extends AbstractView {
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
+		this.maxDash = 635;
 
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
@@ -184,8 +182,6 @@ export default class IntroView extends AbstractView {
 		};
 		gui.add( buttonSmooth, 'smoothWater' );
 		gui.close();
-
-		console.log('what');
 
 		global.CURSOR.el.classList.add('alt');
 
@@ -634,6 +630,37 @@ export default class IntroView extends AbstractView {
 		}
 	}
 
+	onHoverStart() {
+
+		this.startIsHover = true;
+		global.CURSOR.interractHover();
+		if (this.animBtn === true) return false;
+
+		const tl = new TimelineMax();
+		TweenMax.killTweensOf(['.start .close-up','.start .close-down','.start .open-up','.start .open-down']);
+		TweenMax.to('.start circle', 0, {opacity: 0});
+
+		tl.to('.start .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
+		tl.to('.start .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+		tl.set(['.start .close-up','.start .close-down','.start .open-up','.start .open-down'], {clearProps: 'all'});
+		tl.add(()=> {
+			this.animBtn = false;
+		});
+
+		tl.fromTo('.start p', 1, {y: 20}, {y:0, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
+	}
+
+	onLeaveStart() {
+		global.CURSOR.interractLeave();
+		this.startIsHover = false;
+		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.fromTo('.start circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+
+		TweenMax.to('.start p', 1, {y: 20, ease: window.Expo.easeOut});
+		TweenMax.to('.start p', 0.2, {opacity: 0, ease: window.Linear.easeNone});
+	}
+
 	onClick() {
 		if (this.clickAsteroid === true) {
 
@@ -690,7 +717,7 @@ export default class IntroView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.00152;
+		this.waterMesh.position.y -= 0.0016;
 
 		// console.log(this.waterMesh.position);
 
@@ -780,6 +807,19 @@ export default class IntroView extends AbstractView {
 			else global.CURSOR.interractLeave();
 		}
 
+		// glitch title
+		if (this.glitch) {
+
+			if (this.glitch.start === true) {
+				this.glitch.render({type: 'intro'});
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render({stop: true});
+					this.glitch.stop = true;
+				}
+			}
+		}
+
 		this.render();
 
 
@@ -795,49 +835,64 @@ export default class IntroView extends AbstractView {
 		global.MENU.el.classList.remove('is-active');
 
 		Ui.el.style.display = 'block';
-		const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
-		const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
-		const tl = new TimelineMax();
+		// const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
+		// const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
 
 		if (fromProject === false) {
+			this.glitchEl = document.querySelector('.intro__glitch');
+
+			this.glitch = new Glitch({ // issue link to ui footer here but Css
+				el: this.glitchEl,
+				textSize: 50,
+				sndColor: 'red',
+				color: 'black',
+				txt: 'R O B I N   P A Y O T',
+				sndTxt: 'I N T E R A C T I V E   D E V E L O P E R',
+				clock: this.clock
+			});
+
+			const canvas = this.glitchEl.querySelector('.glitch__canvas');
+
+			const tl = new TimelineMax();
 
 			tl.set(this.UI.overlay, {opacity: 1});
-			tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
+			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
+
+			tl.fromTo(canvas, 3, {
+				opacity: 0
+			}, {
+				opacity: 1,
+				ease: window.Linear.easeNone
+			}, 2);
+			// tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
 			// tl.set(this.asteroidsM.material, {opacity: 0});
-
-			tl.staggerFromTo(title1Arr.chars, 0.7, {
-				opacity: 0,
-				y: 10,
-				// force3D: true,
-				ease: Expo.easeOut
-			}, {
-				opacity: 1,
-				y: 0
-			}, 0.07, 1);
-
-			tl.staggerFromTo(title2Arr.words, 0.7, {
-				opacity: 0,
-				y: 10,
-				// force3D: true,
-				ease: Expo.easeOut
-			}, {
-				opacity: 1,
-				y: 0
-			}, 0.07);
-			tl.to(this.UI.overlay, 1.5, {opacity: 0});
+			tl.add(() => {
+				this.glitch.start = true;
+			}, 0);
+			tl.add(() => {
+				// start move Ast
+				this.startMove = true;
+			});
+			tl.to(this.UI.overlay, 1.5, {opacity: 0}, 4);
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 1);
-			tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=3');
+			}, 2);
+			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
+				this.glitch.start = false;
+				console.log('stop');
+			}}, '+=1');
+
 			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
 			tl.to(this.UI.button, 3, {opacity: 1});
-			tl.to('.overlay', 1, {
-				opacity: 0
-			}, 0);
+			// tl.to('.overlay', 1, {
+			// 	opacity: 0
+			// }, 0);
 
 		} else {
-			this.UI.title1.style.display = 'none';
-			this.UI.title2.style.display = 'none';
+
+			const tl = new TimelineMax();
+			// this.UI.title1.style.display = 'none';
+			// this.UI.title2.style.display = 'none';
 
 			this.camera.position.set(0, this.maxZoom, 0);
 			this.camera.rotation.x = toRadian(-90);
@@ -849,12 +904,14 @@ export default class IntroView extends AbstractView {
 			tl.to('.overlay', 1, {
 				opacity: 0
 			}, 1.6);
+
+			tl.add(() => {
+				// start move Ast
+				this.startMove = true;
+			},0);
 		}
 
-		tl.add(() => {
-			// start move Ast
-			this.startMove = true;
-		},0);
+
 
 
 
