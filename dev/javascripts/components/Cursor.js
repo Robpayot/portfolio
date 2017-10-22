@@ -86,13 +86,18 @@ export default class Cursor {
 		if (this.hoverGlobal === true) return false;
 		this.hoverGlobal = true;
 
-		console.log('hover');
+		// console.log('hover');
+
+		if (obj.back === true) {
+			TweenMax.set('text', {display: 'block'});
+			TweenMax.to('text', 0.5, {opacity: 1});
+		}
 
 		if (obj.color !== undefined) {
 			this.c2.style.stroke = obj.color;
 			this.hoverGoTo = true;
 			// remplie
-			TweenMax.to(this.c2, 5, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
+			TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
 				if (this.hoverGoTo = true) window.location.href = obj.href;
 			}});
 		}
@@ -113,7 +118,7 @@ export default class Cursor {
 				}});
 			}
 		} else {
-			TweenMax.to(this.circleObj,1.5, { val: 49, ease: window.Expo.easeOut, onUpdate:() => {
+			TweenMax.to(this.circleObj,0.7, { val: 49, ease: window.Expo.easeOut, onUpdate:() => {
 				this.c1.setAttribute('r', this.circleObj.val);
 				this.c2.setAttribute('r', this.circleObj.val);
 			}});
@@ -124,9 +129,14 @@ export default class Cursor {
 	interractLeave(obj = {}) {
 		if (this.hoverGlobal === false) return false;
 		this.hoverGlobal = false;
-		console.log('leave');
+		// console.log('leave');
 		// remplie
 		TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
+
+		if (obj.back === true) {
+			TweenMax.to('text', 0.2, {opacity: 0});
+			TweenMax.set('text', {display: 'block', delay: 0.2});
+		}
 
 		if (obj.color !== undefined) {
 			this.hoverGoTo = false;
@@ -144,7 +154,7 @@ export default class Cursor {
 				}});
 			}
 		} else {
-			TweenMax.to(this.circleObj,1.5, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
+			TweenMax.to(this.circleObj,0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
 				this.c1.setAttribute('r', this.circleObj.val);
 				this.c2.setAttribute('r', this.circleObj.val);
 			}});

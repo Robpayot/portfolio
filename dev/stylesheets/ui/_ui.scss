@@ -9,7 +9,19 @@
 	z-index: 100;
 
 	@import "ui/intro";
-	@import "ui/project";
 	@import "ui/menu";
+
+	&-content {
+		width: 100%;
+		height: 100%;
+
+		position: absolute;
+		top: 0;
+		left: 0;
+
+		@import "ui/about";
+		@import "ui/project";
+
+	}
 
 }

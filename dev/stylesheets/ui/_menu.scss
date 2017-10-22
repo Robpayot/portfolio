@@ -5,7 +5,7 @@
 	align-items: center;
 	padding: 0 7vw;
 	
-	// justify-content: space-between;
+	z-index: 900;
 
 	color: white;
 	&.is-active {
@@ -30,9 +30,13 @@
 			&__button {
 				color: white;
 				border-color: white;
+				svg polyline,
+				svg circle {
+					stroke: white;
+				}
 			}
 			&__overlay {
-				opacity: 0.85;
+				opacity: 0.9;
 			}
 			&__links {
 				opacity: 1;
@@ -131,7 +135,8 @@
 			}
 		}
 
-		&.is-active {
+		&.is-active,
+		&.is-hover {
 			.title--3 {
 				opacity: 1;
 			}
@@ -142,6 +147,8 @@
 		position: absolute;
 		top: 5em;
 		font-family: 'Theinhardt-light';
+	    font-weight: 300;
+	    font-style: normal;
 	}
 
 	&__sublink {

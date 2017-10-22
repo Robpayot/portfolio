@@ -240,6 +240,13 @@ gulp.task('copy:image', function() {
 		.pipe(gulp.dest('./dist/images'))
 });
 
+// VIDEOS FILE
+gulp.task('copy:video', function() {
+	return gulp.src('./dev/videos/**')
+		// Concat all errors
+		.pipe(gulp.dest('./dist/videos'))
+});
+
 // TEMPLATE FILE
 gulp.task('copy:template', function() {
 	return gulp.src('./dev/templates/**')
@@ -253,6 +260,7 @@ gulp.task('copy:font', function() {
 		// Concat all errors
 		.pipe(gulp.dest('./dist/fonts'))
 });
+
 
 // sound files
 gulp.task('copy:sound', function() {
@@ -270,6 +278,8 @@ gulp.task('copy', ['copy:sound']);
 
 gulp.task('copy', ['copy:image']);
 
+gulp.task('copy', ['copy:video']);
+
 gulp.task('copy', ['copy:template']);
 
 gulp.task('copy', ['copy:font']);
@@ -285,6 +295,7 @@ gulp.task('watch', function() {
 	gulp.watch(copyRoot, ['copy:root']);
 	gulp.watch('./dev/sounds/**', ['copy:sound']);
 	gulp.watch('./dev/images/**', ['copy:image']);
+	gulp.watch('./dev/videos/**', ['copy:video']);
 	gulp.watch('./dev/templates/**', ['copy:template']);
 	gulp.watch('./dev/fonts/**', ['copy:font']);
 	
@@ -293,6 +304,7 @@ gulp.task('watch', function() {
 		'./dist/stylesheets/**',
 		'./dist/javascripts/**',
 		'./dist/images/**',
+		'./dist/videos/**',
 		'./dist/templates/**',
 		'./dist/fonts/**',
 		copyRoot

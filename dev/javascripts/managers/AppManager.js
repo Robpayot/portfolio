@@ -4,12 +4,14 @@ import RouterManager from './RouterManager';
 import { Device } from '../helpers/Device';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';
-import GraphicBars from '../components/GraphicBars';
+// import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
 import Menu from '../components/Menu';
 import Cursor from '../components/Cursor';
 import bean from 'bean';
 import Handlebars from 'handlebars';
+
+global.OVERLAY;
 
 
 class AppManager {
@@ -43,7 +45,7 @@ class AppManager {
 
 		// SoundManager
 
-		this.graphicBars = new GraphicBars();
+		// this.graphicBars = new GraphicBars();
 		this.menu = global.MENU = new Menu();
 		this.cursor = global.CURSOR = new Cursor();
 
@@ -57,6 +59,8 @@ class AppManager {
 			overlay: document.querySelector('.overlay'),
 			body: document.getElementsByTagName('body')[0] // not sure needed
 		};
+
+		global.OVERLAY = this.ui.overlay;
 
 		RouterManager.start();
 	}

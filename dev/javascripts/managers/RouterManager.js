@@ -1,4 +1,5 @@
 import EmitterManager from './EmitterManager';
+import SceneManager from './SceneManager';
 // import PreloadManager from './PreloadManager';
 // import ProjectView from '../views/ProjectView';
 import AboutView from '../views/AboutView';
@@ -209,10 +210,10 @@ class RouterManager {
 				break;
 
 			case '/intro':
-				console.log('introooooooo');
 
 				this.currentPage = new IntroView({
 					gravity: true,
+					fromUrl
 				});
 				window.location = '#intro';
 				break;
@@ -222,8 +223,10 @@ class RouterManager {
 				this.currentPage = new Glitch({
 					el: document.querySelector('.glitch'),
 					txt: 'AKTR',
-					color: 'rgb(41,64,16)',
-					debug: true
+					color: 'white',
+					sndColor: 'blue',
+					debug: true,
+					clock: SceneManager.clock
 				});
 				window.location = '#glitch';
 				break;

@@ -3,20 +3,20 @@ import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
-import Symbol from '../shapes/Symbol';
 import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
 import { loadJSON } from '../helpers/utils-three';
+import Glitch from '../components/Glitch';
 
 
-import { Vector2, Raycaster, Vector3, Fog, FaceColors, Scene, DirectionalLight, Texture, BoxGeometry, HemisphereLight, MeshLambertMaterial, PlaneGeometry, Mesh, MeshBasicMaterial, PlaneBufferGeometry, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
-import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
+// import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
 
 
@@ -56,8 +56,9 @@ export default class IntroView extends AbstractView {
 		this.moveCameraIn = this.moveCameraIn.bind(this);
 		this.transitionIn = this.transitionIn.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
-		this.onClickStart = this.onClickStart.bind(this);
 		this.onClick = this.onClick.bind(this);
+		this.onHoverStart = this.onHoverStart.bind(this);
+		this.onLeaveStart = this.onLeaveStart.bind(this);
 
 		// preload Models
 		Promise.all([
@@ -66,14 +67,13 @@ export default class IntroView extends AbstractView {
 			loadJSON('datas/models/iceberg-3.json')
 		]).then((results) => {
 			// when all is loaded
-			console.log(results);
 			this.models = results;
 			this.init();
 
 			this.events(true);
 			this.ui.overlay.classList.add('black');
 
-			this.transitionIn();
+			this.transitionIn(!obj.fromUrl);
 
 		}, (err) => {
 			console.log(err);
@@ -105,15 +105,8 @@ export default class IntroView extends AbstractView {
 		document[evListener]( 'keydown', this.onW , false );
 		document[evListener]( 'click', this.onClick , false );
 
-		this.UI.button[evListener]('click', this.onClickStart);
-		this.UI.button[evListener]('mouseenter', () => {
-			this.startIsHover = true;
-			global.CURSOR.interractHover();
-		});
-		this.UI.button[evListener]('mouseleave', () => {
-			this.startIsHover = false;
-			global.CURSOR.interractLeave();
-		});
+		this.UI.button[evListener]('mouseenter', this.onHoverStart);
+		this.UI.button[evListener]('mouseleave', this.onLeaveStart);
 
 	}
 
@@ -124,7 +117,7 @@ export default class IntroView extends AbstractView {
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
 
-		SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
+		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 		// set Camera
@@ -137,11 +130,12 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.nbAst = 16;
-		this.mouseSize = 32.0; // wave agitation
+		this.nbAst = 25;
+		this.maxZoom = 700;
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
+		this.maxDash = 635;
 
 		this.mouseMoved = false;
 		this.mouseCoords = new Vector2();
@@ -162,6 +156,11 @@ export default class IntroView extends AbstractView {
 			this.controls.enableZoom = true;
 		}
 
+		this.effectController = {
+			mouseSize: 46.0,
+			viscosity: 0.03
+		};
+
 		this.initWater(false, false);
 
 		this.setAsteroids();
@@ -173,12 +172,6 @@ export default class IntroView extends AbstractView {
 		// }, 10000);
 
 		let gui = new dat.GUI();
-
-		this.effectController = {
-			mouseSize: 20.0,
-			viscosity: 0.03
-		};
-
 		gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
 		gui.add( this.effectController, 'viscosity', 0.0, 0.1, 0.001 ).onChange( this.valuesChanger );
 		this.valuesChanger();
@@ -230,11 +223,11 @@ export default class IntroView extends AbstractView {
 
 	initWater(destroy = false, bigger = false) {
 
-		this.WIDTH = 62; // Texture width for simulation bits
+		this.WIDTH = 96; // Texture width for simulation bits
 
 		// Magic calculs ;)
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const height = 2 * Math.tan( vFOV / 2 ) * 400; // dist between 0 and camerapos.y
+		const height = 2 * Math.tan( vFOV / 2 ) * this.maxZoom; // dist between 0 and camerapos.y
 
 		const aspect = window.innerWidth / window.innerHeight;
 		let finalBounds;
@@ -247,7 +240,7 @@ export default class IntroView extends AbstractView {
 
 		const extra = bigger === true ? 800 : 100; // for rotation camera left / right
 		this.BOUNDS = finalBounds + extra; // Water size
-		this.BOUNDSSUP = bigger === true ? 700 : 0; // Bounds supp for TransitionOut, we see the horizon
+		this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut, we see the horizon
 		this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 		let materialColor = 0xffffff;
@@ -311,6 +304,8 @@ export default class IntroView extends AbstractView {
 			this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
 			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
 			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
+			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
 
 			let error = this.gpuCompute.init();
 			if ( error !== null ) {
@@ -325,7 +320,7 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	generateTexture() {
+	generateGradient() {
 
 		// Use a classic image for better pef
 
@@ -342,10 +337,10 @@ export default class IntroView extends AbstractView {
 		// draw gradient
 		context.rect( 0, 0, size, size );
 		const gradient = context.createRadialGradient(size / 2,size / 2,size,size / 2,size / 2,100);
-		gradient.addColorStop(1, '#e9ebee');
+		gradient.addColorStop(1, '#e9ebee'); // white-grey
 		gradient.addColorStop(0.98, '#e9ebee');
-		gradient.addColorStop(0.8, '#000000');
-		gradient.addColorStop(0, '#000000'); // dark blue
+		gradient.addColorStop(0.9, '#000000');
+		gradient.addColorStop(0, '#000000'); // dark
 		context.fillStyle = gradient;
 		context.fill();
 
@@ -362,7 +357,7 @@ export default class IntroView extends AbstractView {
 	setGround() {
 
 		// Generate gradient
-		this.generateTexture();
+		this.generateGradient();
 		const img = document.querySelector('#pic');
 		const texture = new Texture( img );
 		texture.needsUpdate = true;
@@ -386,7 +381,7 @@ export default class IntroView extends AbstractView {
 		// const mat2 = new MeshBasicMaterial({color: 0x00FFFF});
 		const blackGround = new Mesh(geometry2, mat2);
 		blackGround.rotation.z = toRadian(90);
-		blackGround.position.y = -300;
+		blackGround.position.y = -500;
 		blackGround.position.z = -2000;
 
 		this.scene.add(blackGround);
@@ -394,11 +389,12 @@ export default class IntroView extends AbstractView {
 
 	setAsteroids() {
 		// ADD Iceberg
-		this.astXMin = -180;
-		this.astXMax = 180;
+		this.astXMin = -380;
+		this.astXMax = 380;
 		this.ipRadius = 50; // intra perimeter Radius
-
-		console.log(this.models[0]);
+		this.startZ = -600;
+		this.reappearZ = -300;
+		this.endZ = 200;
 
 		for (let i = 0; i < this.nbAst; i++) {
 
@@ -422,7 +418,7 @@ export default class IntroView extends AbstractView {
 			let pos = {
 				x: getRandom(this.astXMin, this.astXMax),
 				y: 4,
-				z: getRandom(-550, 50),
+				z: getRandom(this.startZ, this.endZ),
 			};
 
 			// check if ast already in other ast position
@@ -440,11 +436,11 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(40, 50)
+				z: getRandom(30, 50)
 			};
 
-			const scale = getRandom(0.05, 0.06);
-			const speed = getRandom(500, 600); // more is slower
+			const scale = getRandom(0.045, 0.075);
+			// const speed = getRandom(500, 600); // more is slower
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
 			const offsetScale = 1.6;
@@ -462,12 +458,11 @@ export default class IntroView extends AbstractView {
 				scale,
 				offsetScale,
 				range,
-				speed,
+				// speed,
 				timeRotate
 			});
 
 			asteroid.mesh.index = i;
-			asteroid.speedZ = getRandom(0.3, 0.8);
 			asteroid.pos = pos;
 
 			if (this.gravity === true) {
@@ -552,14 +547,29 @@ export default class IntroView extends AbstractView {
 
 	resetWater() {
 
-		let currentRenderTarget = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable );
-		let alternateRenderTarget = this.gpuCompute.getAlternateRenderTarget( this.heightmapVariable );
+		let obj = this.scene.getObjectByName('water');
+		if (obj.geometry) obj.geometry.dispose();
 
-		this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
-		this.gpuCompute.doRenderTarget( this.smoothShader, alternateRenderTarget );
+		if (obj.material) {
 
-		this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
-		this.gpuCompute.doRenderTarget( this.smoothShader, currentRenderTarget );
+			if (obj.material.materials) {
+
+				for (const mat of obj.material.materials) {
+
+					if (mat.map) mat.map.dispose();
+
+					mat.dispose();
+				}
+			} else {
+
+				if (obj.material.map) obj.material.map.dispose();
+
+				obj.material.dispose();
+			}
+		}
+		this.scene.remove( obj );
+
+		this.initWater();
 	}
 
 	setMouseCoords( x, y ) {
@@ -620,6 +630,37 @@ export default class IntroView extends AbstractView {
 		}
 	}
 
+	onHoverStart() {
+
+		this.startIsHover = true;
+		global.CURSOR.interractHover();
+		if (this.animBtn === true) return false;
+
+		const tl = new TimelineMax();
+		TweenMax.killTweensOf(['.start .close-up','.start .close-down','.start .open-up','.start .open-down']);
+		TweenMax.to('.start circle', 0, {opacity: 0});
+
+		tl.to('.start .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
+		tl.to('.start .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+		tl.set(['.start .close-up','.start .close-down','.start .open-up','.start .open-down'], {clearProps: 'all'});
+		tl.add(()=> {
+			this.animBtn = false;
+		});
+
+		tl.fromTo('.start p', 1, {y: 20}, {y:0, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
+	}
+
+	onLeaveStart() {
+		global.CURSOR.interractLeave();
+		this.startIsHover = false;
+		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.fromTo('.start circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+
+		TweenMax.to('.start p', 1, {y: 20, ease: window.Expo.easeOut});
+		TweenMax.to('.start p', 0.2, {opacity: 0, ease: window.Linear.easeNone});
+	}
+
 	onClick() {
 		if (this.clickAsteroid === true) {
 
@@ -630,65 +671,31 @@ export default class IntroView extends AbstractView {
 			this.onAsteroidAnim = true;
 			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
 
+			this.heightmapVariable.material.uniforms.mouseSize = { value: 30.0 }; // change mouse size
+			this.heightmapVariable.material.uniforms.viscosity = { value: 0.015 };
+
 			const tl = new TimelineMax();
 
 			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, {y: -dest, ease: window.Expo.easeOut});
 
 			tl.add(()=> {
+				this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize };
+				this.heightmapVariable.material.uniforms.viscosity = { value: this.effectController.viscosity };
 				this.onAsteroidAnim = false;
-			});
+			}, 0.5);
+
+			// this.heightmapVariable.material.uniforms.mouseSize = { value: 50.0 };
+			// this.clickAnim = true;
+			// this.currentPosLastX = this.currentPos.x;
+
+			// setTimeout(() => {
+			// 	this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
+			// 	this.clickAnim = false;
+			// }, 100);
 
 		} else {
 			// console.log('false');
 		}
-	}
-
-	onClickStart(e) {
-
-		// e.preventDefault();
-
-		if (this.clicked === true) return false;
-		this.clicked = true;
-
-
-
-		// const tl = new TimelineMax({delay: 2});
-		const tl = new TimelineMax();
-
-		tl.add(() => {
-			console.log('switch water');
-			// Clean water and replace it !
-			const obj = this.scene.getObjectByName('water');
-			if (obj.geometry) obj.geometry.dispose();
-
-			if (obj.material) {
-
-				if (obj.material.materials) {
-
-					for (const mat of obj.material.materials) {
-
-						if (mat.map) mat.map.dispose();
-
-						mat.dispose();
-					}
-				} else {
-
-					if (obj.material.map) obj.material.map.dispose();
-
-					obj.material.dispose();
-				}
-			}
-			this.scene.remove( obj );
-			this.initWater(true, true);
-		}, '+=1.8');
-
-		// tl.to(this.symbol.mesh.position, 10, {y: this.symbol.endPointY, z: this.symbol.endPointZ, ease: window.Expo.easeOut }, '+=0.2');
-		// tl.to(this.symbol.mesh.material, 0.5, {opacity: 0 }, 1.5);
-
-		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
-		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
-
-
 	}
 
 	raf() {
@@ -700,7 +707,6 @@ export default class IntroView extends AbstractView {
 		// console.log(pointX, pointZ);
 
 		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
-		this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSize }; // water agitation
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
@@ -711,7 +717,7 @@ export default class IntroView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.0015;
+		this.waterMesh.position.y -= 0.0016;
 
 		// console.log(this.waterMesh.position);
 
@@ -721,11 +727,6 @@ export default class IntroView extends AbstractView {
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
 
-			// el.mesh.position.z -= 1 * el.speedZ;
-			// if (el.mesh.position.z >= 200) el.mesh.position.z = -300;
-
-			// Move top and bottom --> Float effect
-			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
 			if (el.animated === false) {
 				el.mesh.position.y = el.body.position.y = 4; // constraint pos y
 			}
@@ -752,7 +753,7 @@ export default class IntroView extends AbstractView {
 					// el.mesh.position.z = el.body.position.z =
 					// el.body.position.x = el.mesh.position.x = getRandom(this.astXMin, this.astXMax);
 
-					let z = el.mesh.index % 2 === 0 ? getRandom(0, -300) : -300;
+					let z = el.mesh.index % 2 === 0 ? getRandom(0, this.reappearZ) : this.reappearZ;
 					let x = getRandom(this.astXMin, this.astXMax);
 					el.mesh.position.z = el.body.position.z = z;
 					el.body.position.x = el.mesh.position.x = x;
@@ -806,14 +807,25 @@ export default class IntroView extends AbstractView {
 			else global.CURSOR.interractLeave();
 		}
 
+		// glitch title
+		if (this.glitch) {
 
+			if (this.glitch.start === true) {
+				this.glitch.render({type: 'intro'});
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render({stop: true});
+					this.glitch.stop = true;
+				}
+			}
+		}
 
 		this.render();
 
 
 	}
 
-	transitionIn() {
+	transitionIn(fromProject = false) {
 
 		this.el.classList.add('intro');
 		this.el.classList.remove('project');
@@ -823,65 +835,92 @@ export default class IntroView extends AbstractView {
 		global.MENU.el.classList.remove('is-active');
 
 		Ui.el.style.display = 'block';
+		// const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
+		// const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
 
-		const tl = new TimelineMax();
+		if (fromProject === false) {
+			this.glitchEl = document.querySelector('.intro__glitch');
 
-		const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
-		const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
+			this.glitch = new Glitch({ // issue link to ui footer here but Css
+				el: this.glitchEl,
+				textSize: 50,
+				sndColor: 'red',
+				color: 'black',
+				txt: 'R O B I N   P A Y O T',
+				sndTxt: 'I N T E R A C T I V E   D E V E L O P E R',
+				clock: this.clock
+			});
 
-		tl.set(this.UI.overlay, {opacity: 1});
-		tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
-		// tl.set(this.asteroidsM.material, {opacity: 0});
+			const canvas = this.glitchEl.querySelector('.glitch__canvas');
 
-		tl.staggerFromTo(title1Arr.chars, 0.7, {
-			opacity: 0,
-			y: 10,
-			// force3D: true,
-			ease: Expo.easeOut
-		}, {
-			opacity: 1,
-			y: 0
-		}, 0.07, 1);
+			const tl = new TimelineMax();
 
-		tl.staggerFromTo(title2Arr.words, 0.7, {
-			opacity: 0,
-			y: 10,
-			// force3D: true,
-			ease: Expo.easeOut
-		}, {
-			opacity: 1,
-			y: 0
-		}, 0.07);
-		tl.to(this.UI.overlay, 1.5, {opacity: 0});
-		tl.add(() => {
-			this.moveCameraIn();
-		}, 1);
-		tl.to([this.UI.title1,this.UI.title2], 2, {autoAlpha: 0}, '+=3');
-		tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
-		tl.to(this.UI.button, 3, {opacity: 1});
+			tl.set(this.UI.overlay, {opacity: 1});
+			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
 
-		tl.add(() => {
-			// start move Ast
-			this.startMove = true;
-		},0);
+			tl.fromTo(canvas, 3, {
+				opacity: 0
+			}, {
+				opacity: 1,
+				ease: window.Linear.easeNone
+			}, 2);
+			// tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
+			// tl.set(this.asteroidsM.material, {opacity: 0});
+			tl.add(() => {
+				this.glitch.start = true;
+			}, 0);
+			tl.add(() => {
+				// start move Ast
+				this.startMove = true;
+			});
+			tl.to(this.UI.overlay, 1.5, {opacity: 0}, 4);
+			tl.add(() => {
+				this.moveCameraIn(fromProject);
+			}, 2);
+			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
+				this.glitch.start = false;
+				console.log('stop');
+			}}, '+=1');
+
+			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.to(this.UI.button, 3, {opacity: 1});
+			// tl.to('.overlay', 1, {
+			// 	opacity: 0
+			// }, 0);
+
+		} else {
+
+			const tl = new TimelineMax();
+			// this.UI.title1.style.display = 'none';
+			// this.UI.title2.style.display = 'none';
+
+			this.camera.position.set(0, this.maxZoom, 0);
+			this.camera.rotation.x = toRadian(-90);
+			tl.add(() => {
+				this.moveCameraIn(fromProject);
+			}, 1.5);
+			tl.set(this.UI.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.to(this.UI.button, 3, {opacity: 1});
+			tl.to('.overlay', 1, {
+				opacity: 0
+			}, 1.6);
+
+			tl.add(() => {
+				// start move Ast
+				this.startMove = true;
+			},0);
+		}
 
 
-		tl.to('.overlay', 1, {
-			opacity: 0
-		}, 0);
+
+
+
 		// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
 
 	}
 
-	moveCameraIn(dest) {
+	moveCameraIn(fromProject = false) {
 
-		// this.camera.lookAt(new Vector3(0,0,0));
-		// const tl2 = new TimelineMax();
-
-		// tl2.to(this.camera.position, 5, {y: 800});
-		// tl2.to(this.camera.rotation, 5, {x: toRadian(180)});
-		// const tl2 = new TimelineMax();
-		// tl2.to(this.camera.position, 10, {y: -400});
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -893,159 +932,45 @@ export default class IntroView extends AbstractView {
 
 			}
 		});
-		tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
+
+		if (fromProject === true) {
+			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: 400, ease: window.Expo.easeOut}, 0);
+		} else {
+			tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
+		}
+
+
 		tl.add(() => {
 
 			this.asteroidsMove = true;
 		}, 0);
 
-		// this.cameraMove = true;
-		// // Set camera Dolly
-		// const points = {
-		// 	'camera': [{
-		// 		'x': 0,
-		// 		'y': 70,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 150,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 400,
-		// 		'z': 0
-		// 	}],
-		// 	'lookat': [{
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}, {
-		// 		'x': 0,
-		// 		'y': 0,
-		// 		'z': 0
-		// 	}]
-		// };
-
-		// this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		// this.dolly.cameraPosition = 0;
-		// this.dolly.lookatPosition = 0;
-		// this.dolly.range = [0, 1];
-		// this.dolly.both = 0;
-
-		// const tl = new TimelineMax({
-		// 	onComplete: () => {
-		// 		this.cameraMove = false;
-		// 		this.currentCameraRotX = this.camera.rotation.x;
-
-		// 	}
-		// });
-
-		// tl.to(this.dolly, 7, {
-		// 	cameraPosition: 1,
-		// 	lookatPosition: 1,
-		// 	ease: window.Power3.easeInOut,
-		// 	onUpdate: () => {
-		// 		this.dolly.update();
-		// 	}
-		// });
-		// tl.add(() => {
-
-		// 	this.asteroidsMove = true;
-		// }, 0);
-
-		// tl.to(this.symbol.mesh.position, 7, {y: this.symbol.initPointY, ease: window.Power3.easeOut }, 2);
-		// tl.set(this.UI.button, {opacity: 0, display: 'block'}, '-=3');
-		// tl.to(this.UI.button, 3, {opacity: 1}, '-=3');
-
 	}
 
 	transitionOut(dest) {
+
+		// this.resetWater();
+
+		const tl = new TimelineMax({delay: 0});
+
+		tl.to(this.UI.button, 0.5, {opacity: 0}, 0);
+		tl.set(this.UI.button, {opacity: 0, display: 'none'}, 0.5);
+
+		tl.fromTo(this.camera.position, 4, {y: 400 }, {y: 900, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.overlay', 1, {
+			opacity: 0
+		}, {
+			opacity: 1,
+			ease: window.Linear.easeNone
+		}, 0);
+		tl.add(() => {
+			EmitterManager.emit('view:transition:out');
+		},2);
 
 
 		this.animating = true;
 
 		this.cameraMove = true;
-
-		// const tl2 = new TimelineMax();
-
-		// tl2.to(this.camera.position, 2, {y: 100, ease: window.Expo.easeOut});
-		// tl2.to(this.camera.rotation, 3, {x: toRadian(0), ease: window.Expo.easeOut}, 0);
-		// // tl2.to(this.camera.position, 2, {z: 0}, 2);
-		// tl2.to(this.camera.rotation, 2, {x: toRadian(45), ease: window.Expo.easeOut}, '-=1');
-		// tl2.to(this.camera.position, 4, {z: -5000, y: 2000}, '-=2');
-		// // tl2.to(this.camera.rotation, 2, {x: toRadian(90)})
-
-		// return false;
-
-		// if (this.animating === true) return false;
-
-
-		// console.log(this.symbols[0].mesh.getPosition());
-		// Set camera Dolly
-		const points = {
-			'camera': [{
-				'x': this.camera.position.x,
-				'y': this.camera.position.y,
-				'z': this.camera.position.z
-			}, {
-				'x': 0,
-				'y': 100,
-				'z': -100
-			}, {
-				'x': 0,
-				'y': 300,
-				'z': -3000
-			}],
-			'lookat': [{
-				'x': 0,
-				'y': 0,
-				'z': -1
-			}, {
-				'x': 0,
-				'y': 100, // symbol.endPointY = 2000;
-				'z': -200 // symbol.endPointZ = 5000;
-			}, {
-				'x': 0,
-				'y': 300, // symbol.endPointY = 2000;
-				'z': -3000 // symbol.endPointZ = 5000;
-			}]
-		};
-
-		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-
-		this.dolly.cameraPosition = 0;
-		this.dolly.lookatPosition = 0;
-		this.dolly.range = [0, 1];
-		this.dolly.both = 0;
-
-		const tl = new TimelineMax({
-			onComplete: () => {
-
-				this.cameraMove = false;
-				// this.currentCameraRotX = this.camera.rotation.x;
-
-				// EmitterManager.emit('router:switch', '/project-0', 0);
-				EmitterManager.emit('view:transition:out');
-			}
-		});
-
-		tl.to(this.dolly, 4, {
-			cameraPosition: 1,
-			lookatPosition: 1,
-			ease: window.Power4.easeIn,
-			onUpdate: () => {
-				this.dolly.update();
-			}
-		});
-
-		tl.to('.overlay', 0.5, {
-			opacity: 1
-		}, 2.9);
 
 	}
 

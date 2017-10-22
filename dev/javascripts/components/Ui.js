@@ -9,7 +9,8 @@ class Ui {
 			title2: this.el.querySelector('.title--2'),
 			button: this.el.querySelector('.start'),
 			overlay: this.el.querySelector('.ui-intro__overlay'),
-			intro: this.el.querySelector('.ui-intro')
+			intro: this.el.querySelector('.ui-intro'),
+			content: this.el.querySelector('.ui-content')
 		};
 
 	}

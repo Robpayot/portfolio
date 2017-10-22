@@ -63,6 +63,8 @@ export default class GraphicBars {
 
 	raf() {
 
+		console.log('raf');
+
 		// Create background
 		this.canvasCtx.fillStyle = 'rgb(255, 255, 255)';
 		this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);

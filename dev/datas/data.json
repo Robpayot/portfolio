@@ -6,7 +6,7 @@
         "descr": "Scary 360 experiment in Virtual Reality (Google cardboard).",
         "technos": "WebGL, Three.js",
         "awards": "1 x SOTD FWA, 1 x SOTD FWA Mobile",
-        "imgs": ["theforest-1.jpg", "theforest-2.jpg"],
+        "imgs": ["theforest-1.jpg", "theforest-2.jpg", "bmw-1.jpg", "bmw-2.jpg"],
         "link": "http://thesuicideforest.com/",
         "color": "#1FB04C"
     },{
