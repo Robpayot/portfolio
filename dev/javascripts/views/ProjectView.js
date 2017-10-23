@@ -653,22 +653,28 @@ export default class ProjectView extends AbstractView {
 	////////////
 
 	onClickContainer(e) {
+		console.log('click container');
 		e.stopPropagation();
 	}
 
 	onHoverLink(e) {
 
-		if (this.hoverLink === true) return false;
 		global.CURSOR.interractHover();
-		if (this.animLink === true) return false;
+		// if (this.hoverLink === true) return false;
+		// if (this.animLink === true) return false;
 
 		this.animLink = true;
 		this.hoverLink = true;
 
 		TweenMax.to('.project__link circle', 0, {opacity: 0});
-		const tl = new TimelineMax();
 
-		tl.to('.project__link .close-down-2', 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
+		TweenMax.killTweensOf('.project__link .close-up');
+		TweenMax.killTweensOf('.project__link .close-down');
+		TweenMax.killTweensOf('.project__link .close-down-2');
+
+		const tl = new TimelineMax();
+		tl.set(['.project__link .close-up','.project__link .close-down','.project__link .close-down-2','.project__link .open-up','.project__link .open-down'], {clearProps: 'all'});
+		tl.to('.project__link .close-down-2', 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut });
 		tl.to('.project__link .close-down', 0.9, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
 		tl.to('.project__link .close-up', 1, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
 		tl.set(['.project__link .close-up','.project__link .close-down','.project__link .close-down-2','.project__link .open-up','.project__link .open-down'], {clearProps: 'all'});
@@ -693,9 +699,10 @@ export default class ProjectView extends AbstractView {
 		bean.off(document.body, '.project'); // off events related to init state
 
 		// on events related to projectContent state
+		bean.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
 		bean.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
 		bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
-		bean.on(document.body, 'mouseover.projectContent', '.project__link svg', this.onHoverLink);
+		bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
 		bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
 
 		this.animating = true;
@@ -790,7 +797,6 @@ export default class ProjectView extends AbstractView {
 			global.CURSOR.interractLeave();
 		});
 		bean.on(document.body, 'click.project', '.project__title', this.showContent);
-		bean.on(document.body, 'click.project', '.project__container', this.onClickContainer);
 		bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 		bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -963,27 +969,28 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onClick(e) {
-
+		console.log('click 1');
 		if (this.contentOpen === true) {
+			console.log('click 2');
 			this.backFromContent();
 		}
 
 		// update Mouse position for touch devices
-		if (Device.touch === true) {
-			const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
-			const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+		// if (Device.touch === true) {
+		// 	const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
+		// 	const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
 
-			this.mouse.x = eventX / window.innerWidth * 2 - 1;
-			this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
+		// 	this.mouse.x = eventX / window.innerWidth * 2 - 1;
+		// 	this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
 
-			// U/!\ Important / dangerous
-			// update raf for trigger intersect on mobile
-			this.raf();
-		}
+		// 	// U/!\ Important / dangerous
+		// 	// update raf for trigger intersect on mobile
+		// 	// this.raf();
+		// }
 
-		if (this.clickAsteroid === true) {
-			this.currentAstClicked.impulse();
-		}
+		// if (this.clickAsteroid === true) {
+		// 	this.currentAstClicked.impulse();
+		// }
 
 	}
 
@@ -996,10 +1003,9 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onHoverBtn(e) {
-
-		if (this.hoverBtn === true) return false;
 		const el = e.currentTarget;
 		global.CURSOR.interractHover({color: el.getAttribute('data-color'), href: el.href});
+		if (this.hoverBtn === true) return false;
 		if (this.animLink === true) return false;
 
 		// this.animLink = true;

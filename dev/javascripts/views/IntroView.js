@@ -714,8 +714,6 @@ export default class IntroView extends AbstractView {
 			// 	this.clickAnim = false;
 			// }, 100);
 
-		} else {
-			// console.log('false');
 		}
 	}
 
