@@ -770,6 +770,7 @@ export default class Glitch {
 		this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
 		this.width = this.textWidth + this.biggestRange;
 		if (this.sndTxt) {
+			console.log('lol');
 			this.sndText = this.sndTxt;
 			this.ctx.font = this.ctxBuffer.font =  `${this.textSize - 20}px "Theinhardt"`;
 			this.sndTextWidth = Math.round((this.ctxBuffer.measureText(this.sndText)).width);
