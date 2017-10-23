@@ -68,15 +68,15 @@ export default class Menu {
 		this.animBtn = true;
 		this.animClicked = true;
 
-		const tl = new TimelineMax();
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 
 		if (this.el.classList.contains('is-open') === true || close === true) {
 
 			this.el.classList.remove('is-open');
 			global.CURSOR.el.classList.remove('menu-open');
+			const tl = new TimelineMax();
 
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut });
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.1 );
 			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
@@ -92,6 +92,9 @@ export default class Menu {
 
 			this.el.classList.add('is-open');
 			global.CURSOR.el.classList.add('menu-open');
+
+			const tl = new TimelineMax();
+
 			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut });
 			tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut}, 0.1 );

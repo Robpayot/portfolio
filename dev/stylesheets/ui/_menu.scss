@@ -126,6 +126,7 @@
 	&__link {
 		margin-right: 10vw;
 		text-align: left;
+		overflow: hidden;
 		
 		.title--3 {
 			opacity: 0.5;
@@ -156,6 +157,7 @@
 		opacity: 0.5;
 		font-size: 0.8rem;
 		transition: opacity 0.2s ease;
+		overflow: hidden;
 		&.is-active {
 			opacity: 1;
 		}
