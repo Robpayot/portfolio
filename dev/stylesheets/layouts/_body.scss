@@ -1,5 +1,10 @@
-body {
+html, body {
 	font-family: 'Theinhardt';
+    font-size: $base-font-size;
+    line-height:$base-line-height;
+	@include small-desktop {
+		font-size: 14px;
+	}
 	overflow: hidden;
     cursor:none !important;
     a {
