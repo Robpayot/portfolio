@@ -9,7 +9,8 @@ module.exports={
         "awards": "",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
         "link": "http://mondialautomobile.bmw.fr/",
-        "color": "#EF1300"
+        "color": "#EF1300",
+        "colorName": "red"
     },{
         "title": "BMW Motorshow",
         "context": "84.Paris",
@@ -19,7 +20,8 @@ module.exports={
         "awards": "1 x SOTD FWA, 1 x SOTD AWWWARDS",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
         "link": "http://mondialautomobile.bmw.fr/",
-        "color": "#53E1FF"
+        "color": "#53E1FF",
+        "colorName": "blue"
     },{
         "title": "Withings",
         "context": "84.Paris",
@@ -29,7 +31,8 @@ module.exports={
         "awards": "",
         "imgs": ["bmw-1.jpg", "bmw-2.jpg"],
         "link": "http://mondialautomobile.bmw.fr/",
-        "color": "#EF489C"
+        "color": "#EF489C",
+        "colorName": "pink"
     },{
         "title": "The Forest",
         "context": "UNIT 9",
@@ -39,7 +42,8 @@ module.exports={
         "awards": "1 x SOTD FWA, 1 x SOTD FWA Mobile",
         "imgs": ["theforest-1.jpg", "theforest-2.jpg", "bmw-1.jpg", "bmw-2.jpg"],
         "link": "http://thesuicideforest.com/",
-        "color": "#1FB04C"
+        "color": "#1FB04C",
+        "colorName": "green"
     }]
 }
 
@@ -224,6 +228,8 @@ var Cursor = function () {
 
 			// console.log('hover');
 
+			var maxVal = obj.small === true ? 35 : 49;
+
 			if (obj.back === true) {
 				TweenMax.set('text', { display: 'block' });
 				TweenMax.to('text', 0.5, { opacity: 1 });
@@ -233,9 +239,13 @@ var Cursor = function () {
 				this.c2.style.stroke = obj.color;
 				this.hoverGoTo = true;
 				// remplie
-				TweenMax.to(this.c2, 3, { strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete: function onComplete() {
-						if (_this.hoverGoTo = true) window.location.href = obj.href;
-					} });
+				if (obj.small !== true) {
+					TweenMax.to(this.c2, 3, { strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete: function onComplete() {
+							if (_this.hoverGoTo = true) window.location.href = obj.href;
+						} });
+				} else {
+					TweenMax.set(this.c2, { strokeDashoffset: '0%' });
+				}
 			}
 
 			if (obj.magnet === true) {
@@ -248,13 +258,13 @@ var Cursor = function () {
 					this.stopFollow = true;
 					TweenMax.to(this.el, 0.3, { left: vpOffset.left + vpOffset.width / 2, top: vpOffset.top + vpOffset.height / 2 });
 					TweenMax.to(this.cursorSmooth, 0.3, { x: vpOffset.left + vpOffset.width / 2, y: vpOffset.top + vpOffset.height / 2 });
-					TweenMax.to(this.circleObj, 1.5, { val: 49, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
+					TweenMax.to(this.circleObj, 1.5, { val: maxVal, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
 							_this.c1.setAttribute('r', _this.circleObj.val);
 							_this.c2.setAttribute('r', _this.circleObj.val);
 						} });
 				}
 			} else {
-				TweenMax.to(this.circleObj, 0.7, { val: 49, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
+				TweenMax.to(this.circleObj, 0.7, { val: maxVal, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
 						_this.c1.setAttribute('r', _this.circleObj.val);
 						_this.c2.setAttribute('r', _this.circleObj.val);
 					} });
@@ -1213,6 +1223,10 @@ var Menu = function () {
 				this.ui.links[i][evListener]('mouseleave', this.onLeaveLink);
 			}
 
+			for (var _i = 0; _i < this.ui.subLinks.length; _i++) {
+				this.ui.subLinks[_i][evListener]('mouseenter', this.onHoverLink);
+				this.ui.subLinks[_i][evListener]('mouseleave', this.onLeaveLink);
+			}
 			// svg.addEventListener('mouseleave', () => {
 			// 	console.log('leave');
 			// 	hover = false;
@@ -1239,6 +1253,7 @@ var Menu = function () {
 				global.CURSOR.el.classList.remove('menu-open');
 				var tl = new TimelineMax();
 
+				// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
 				tl.to('.menu__button .open-up', 0.3, { strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
 				tl.to('.menu__button .open-down', 0.3, { strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
 				tl.to('.menu__button .close-up', 0.65, { strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut }, 0.1);
@@ -1255,9 +1270,15 @@ var Menu = function () {
 				this.el.classList.add('is-open');
 				global.CURSOR.el.classList.add('menu-open');
 
+				var links = document.querySelectorAll('.menu__link .title--3');
+
 				var _tl = new TimelineMax();
 
-				_tl.to('.menu__button .close-up', 0.3, { strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut });
+				_tl.set(links, { opacity: 0 });
+				_tl.staggerFromTo([links[2], links[1], links[0]], 1.5, { x: '-120%', opacity: 0 }, { x: '0%', opacity: 1, ease: window.Expo.easeOut }, 0.05, 0.2);
+				// tl.set('.menu__sublink span', {opacity: 1}, 1.5);
+				_tl.staggerFromTo('.menu__sublink div', 1.5, { x: '-120%', opacity: 0 }, { x: '0%', opacity: 1, ease: window.Expo.easeOut }, 0.03, 0.4);
+				_tl.to('.menu__button .close-up', 0.3, { strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
 				_tl.to('.menu__button .close-down', 0.3, { strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
 				_tl.to('.menu__button .open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.1);
 				_tl.to('.menu__button .open-up', 0.9, { strokeDashoffset: 0, ease: window.Expo.easeOut }, 0.3);
@@ -1275,7 +1296,12 @@ var Menu = function () {
 		value: function onHoverLink(e) {
 			var el = e.currentTarget;
 			el.classList.add('is-hover');
-			global.CURSOR.interractHover();
+
+			if (el.getAttribute('data-color')) {
+				global.CURSOR.interractHover({ color: el.getAttribute('data-color'), small: true });
+			} else {
+				global.CURSOR.interractHover();
+			}
 		}
 	}, {
 		key: 'onLeaveLink',

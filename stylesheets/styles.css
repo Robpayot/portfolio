@@ -274,11 +274,16 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 .column--12 {
   width: 100%; }
 
-body {
+html, body {
   font-family: 'Theinhardt';
+  font-size: 16px;
+  line-height: 22px;
   overflow: hidden;
   cursor: none !important; }
-  body a {
+  @media screen and (max-width: 1440px) {
+    html, body {
+      font-size: 14px; } }
+  html a, body a {
     cursor: none !important; }
 
 .dg.ac {
@@ -347,10 +352,6 @@ body {
 /* ------------------------------------------------------------------ */
 /*        GLOBAL
 /* ------------------------------------------------------------------ */
-body {
-  font-size: 16px;
-  line-height: 22px; }
-
 /* ------------------------------------------------------------------ */
 /*        TITLE DECLARATION
 /* ------------------------------------------------------------------ */
@@ -629,14 +630,18 @@ body {
 .cursor {
   margin: 0 auto;
   display: block;
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   position: absolute;
   -webkit-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   z-index: 9000;
   pointer-events: none; }
+  @media screen and (max-width: 1440px) {
+    .cursor {
+      width: 50px;
+      height: 50px; } }
   .cursor .c-2 {
     stroke-dasharray: 308%;
     stroke-dashoffset: 308%;
@@ -670,6 +675,18 @@ body {
     stroke: black; }
   .cursor.menu-open circle {
     stroke: white; }
+
+.color-red {
+  color: #EF1300; }
+
+.color-blue {
+  color: #53E1FF; }
+
+.color-pink {
+  color: #EF489C; }
+
+.color-green {
+  color: #1FB04C; }
 
 .project__title {
   font-size: 4.6em;
@@ -846,9 +863,13 @@ body {
       .ui .menu__button svg {
         margin: 0 auto;
         display: block;
-        width: 50px;
-        height: 50px;
+        width: 70px;
+        height: 70px;
         position: relative; }
+        @media screen and (max-width: 1440px) {
+          .ui .menu__button svg {
+            width: 50px;
+            height: 50px; } }
         .ui .menu__button svg circle {
           -webkit-transform-origin: 75% 75%;
           -ms-transform-origin: 75% 75%;
@@ -878,20 +899,20 @@ body {
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
-      left: 27.5vw;
+      left: 29vw;
       opacity: 0;
       transition: opacity 0.5s ease; }
+      @media screen and (max-width: 1440px) {
+        .ui .menu__links {
+          left: 27.5vw; } }
     .ui .menu__link {
       margin-right: 10vw;
-      text-align: left;
-      overflow: hidden; }
+      text-align: left; }
       .ui .menu__link .title--3 {
-        opacity: 0.5;
-        transition: opacity 0.2s ease; }
-        .ui .menu__link .title--3:hover {
-          opacity: 1; }
-      .ui .menu__link.is-active .title--3, .ui .menu__link.is-hover .title--3 {
-        opacity: 1; }
+        color: rgba(255, 255, 255, 0.5);
+        transition: color 0.2s ease; }
+      .ui .menu__link.is-active .title--3 {
+        color: white; }
     .ui .menu__sublinks {
       position: absolute;
       top: 5em;
@@ -899,17 +920,36 @@ body {
       font-weight: 300;
       font-style: normal; }
     .ui .menu__sublink {
-      margin-bottom: 15px;
+      margin: 1em 0;
       opacity: 0.5;
-      font-size: 0.8rem;
+      font-size: 1rem;
+      line-height: 1.6em;
       transition: opacity 0.2s ease;
-      overflow: hidden; }
+      display: inline-block;
+      vertical-align: middle; }
+      .ui .menu__sublink .menu__subtitle {
+        transition: margin 0.5s cubic-bezier(0.16, 0.29, 0, 1); }
+      .ui .menu__sublink:first-child {
+        margin-top: 1.4em; }
       .ui .menu__sublink.is-active {
         opacity: 1; }
-      .ui .menu__sublink:hover {
-        opacity: 1; }
+        .ui .menu__sublink.is-active .menu__subtitle {
+          margin-left: 1.5em; }
+      .ui .menu__sublink:hover .menu__subtitle {
+        margin-left: 1.5em; }
+      .ui .menu__sublink:hover .color-red {
+        color: #EF1300; }
+      .ui .menu__sublink:hover .color-blue {
+        color: #53E1FF; }
+      .ui .menu__sublink:hover .color-pink {
+        color: #EF489C; }
+      .ui .menu__sublink:hover .color-green {
+        color: #1FB04C; }
     .ui .menu__nb {
       margin-right: 5px; }
+    .ui .menu__color {
+      transition: color 0.2s ease;
+      color: white; }
     .ui .menu__overlay {
       position: absolute;
       top: 0;
