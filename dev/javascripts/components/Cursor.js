@@ -138,7 +138,6 @@ export default class Cursor {
 		this.hoverGlobal = false;
 		// console.log('leave');
 		// remplie
-		TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 
 		if (obj.back === true) {
 			TweenMax.to('text', 0.2, {opacity: 0});
@@ -146,7 +145,12 @@ export default class Cursor {
 		}
 
 		if (obj.color !== undefined) {
+			TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 			this.hoverGoTo = false;
+		}
+
+		if (obj.small === true) {
+			TweenMax.to(this.c2, 0, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 		}
 
 		if (obj.magnet === true) {

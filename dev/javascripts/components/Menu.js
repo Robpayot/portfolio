@@ -17,7 +17,9 @@ export default class Menu {
 			buttonSvg: this.el.querySelector('.menu__button svg'),
 			overlay: this.el.querySelector('.menu__overlay'),
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
-			links: this.el.querySelectorAll('.menu__link')
+			subLinksTitles: this.el.querySelectorAll('.menu__sublink > div'),
+			links: this.el.querySelectorAll('.menu__link'),
+			linksTitles: this.el.querySelectorAll('.menu__link .title--3')
 		};
 
 		this.maxDash = 635;
@@ -50,14 +52,14 @@ export default class Menu {
 		this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 		this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
 		console.log(this.ui.links, [...this.ui.links]);
-		for (let i = 0; i < this.ui.links.length; i++) {
-			this.ui.links[i][evListener]('mouseenter', this.onHoverLink);
-			this.ui.links[i][evListener]('mouseleave', this.onLeaveLink);
+		for (let i = 0; i < this.ui.linksTitles.length; i++) {
+			this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
+			this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 		}
 
-		for (let i = 0; i < this.ui.subLinks.length; i++) {
-			this.ui.subLinks[i][evListener]('mouseenter', this.onHoverLink);
-			this.ui.subLinks[i][evListener]('mouseleave', this.onLeaveLink);
+		for (let i = 0; i < this.ui.subLinksTitles.length; i++) {
+			this.ui.subLinksTitles[i][evListener]('mouseenter', this.onHoverLink);
+			this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 		}
 		// svg.addEventListener('mouseleave', () => {
 		// 	console.log('leave');
@@ -122,10 +124,10 @@ export default class Menu {
 
 	onHoverLink(e) {
 		const el = e.currentTarget;
-		el.classList.add('is-hover');
+		el.parentNode.classList.add('is-hover');
 
-		if (el.getAttribute('data-color')) {
-			global.CURSOR.interractHover({color: el.getAttribute('data-color'), small: true });
+		if (el.parentNode.getAttribute('data-color')) {
+			global.CURSOR.interractHover({color: el.parentNode.getAttribute('data-color'), small: true });
 		} else {
 			global.CURSOR.interractHover();
 		}
@@ -133,8 +135,8 @@ export default class Menu {
 
 	onLeaveLink(e) {
 		const el = e.currentTarget;
-		el.classList.remove('is-hover');
-		global.CURSOR.interractLeave();
+		el.parentNode.classList.remove('is-hover');
+		global.CURSOR.interractLeave({ small: true });
 	}
 
 	onHoverBtn(e) {

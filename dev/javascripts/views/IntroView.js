@@ -13,7 +13,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, PointLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
@@ -37,7 +37,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = false;
+		this.isControls = true;
 
 		// bind
 
@@ -134,6 +134,7 @@ export default class IntroView extends AbstractView {
 		if (this.gravity === true) this.initPhysics();
 
 		this.nbAst = 25;
+		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
 		this.asteroidsM = [];
@@ -159,9 +160,14 @@ export default class IntroView extends AbstractView {
 			this.controls.enableZoom = true;
 		}
 
+		this.mouseSize = 40.0;
+		this.mouseSizeClick = 30.0;
+		this.viscosity = 0.015;
+		this.viscosityClick = 0.015;
+
 		this.effectController = {
-			mouseSize: 46.0,
-			viscosity: 0.03
+			mouseSize: this.mouseSize,
+			viscosity: this.viscosity
 		};
 
 		this.initWater(false, false);
@@ -226,13 +232,17 @@ export default class IntroView extends AbstractView {
 	}
 
 	setLight() {
-		let sun = new DirectionalLight( 0xFFFFFF, 1.0 );
-		sun.position.set( 300, 400, -205 );
-		this.scene.add( sun );
+		// let sun = new DirectionalLight( 0xFFFFFF, 1 );
+		// sun.position.set( 300, 400, -500 );
+		// this.scene.add( sun );
 
-		let sun2 = new DirectionalLight( 0xe8f0ff, 0.2 );
-		sun2.position.set( -100, 350, -20 );
-		this.scene.add( sun2 );
+		// let sun2 = new DirectionalLight( 0xB6C5DB, 0.5 );
+		// sun2.position.set( 300, 400, 500 );
+		// this.scene.add( sun2 );
+
+		let light = new PointLight( 0xFFFFFF, 1, 1000 );
+		light.position.set( 0, 50, 0 );
+		this.scene.add( light );
 
 		// let hemisphere = new HemisphereLight( 0x00FFFF, 0xFF0000, 1 );
 		// this.scene.add( hemisphere );
@@ -246,23 +256,23 @@ export default class IntroView extends AbstractView {
 
 		this.WIDTH = 96; // Texture width for simulation bits
 
-		// Magic calculs ;)
-		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const height = 2 * Math.tan( vFOV / 2 ) * this.maxZoom; // dist between 0 and camerapos.y
+		// get real height / width based on camera distance
 
-		const aspect = window.innerWidth / window.innerHeight;
-		let finalBounds;
-		if (aspect > 1) {
+		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+		this.heightCamera = 2 * Math.tan( vFOV / 2 ) * (this.maxZoom + 200); // dist between 0 and camerapos.y
+
+		this.aspect = window.innerWidth / window.innerHeight;
+
+		if (this.aspect > 1) {
 			// landscape
-			finalBounds = height * aspect;
+			this.finalBounds = this.heightCamera * this.aspect;
 		} else {
-			finalBounds = height;
+			this.finalBounds = this.heightCamera;
 		}
 
-		const extra = bigger === true ? 800 : finalBounds * 0.5; // for rotation camera left / right must
-		this.BOUNDS = finalBounds + extra; // Water size
+		const extra = bigger === true ? 800 : this.finalBounds * 0.5; // for rotation camera left / right must
+		this.BOUNDS = this.finalBounds + extra; // Water size
 		this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut,
-		this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 		let materialColor = 0xffffff;
 
@@ -544,7 +554,7 @@ export default class IntroView extends AbstractView {
 	valuesChanger() {
 
 		// this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
-		this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
+		// this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
 
 	}
 
@@ -692,8 +702,8 @@ export default class IntroView extends AbstractView {
 			this.onAsteroidAnim = true;
 			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
 
-			this.heightmapVariable.material.uniforms.mouseSize = { value: 30.0 }; // change mouse size
-			this.heightmapVariable.material.uniforms.viscosity = { value: 0.015 };
+			this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSizeClick }; // change mouse size
+			this.heightmapVariable.material.uniforms.viscosity = { value: this.viscosityClick };
 
 			const tl = new TimelineMax();
 
@@ -720,9 +730,12 @@ export default class IntroView extends AbstractView {
 	raf() {
 
 		// Manual simulation of infinite waves
-		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
-		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
+		// left to right
+		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 5 ) * (this.heightCamera * this.aspect) / 8;
+		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -this.heightCamera / 2;
 
+		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : 0;
+		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z :  Math.sin(this.clock.getElapsedTime() * 5 ) * -this.heightCamera / 6 - this.heightCamera / 2;
 		// console.log(pointX, pointZ);
 
 		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
@@ -953,9 +966,9 @@ export default class IntroView extends AbstractView {
 		});
 
 		if (fromProject === true) {
-			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: 400, ease: window.Expo.easeOut}, 0);
+			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0);
 		} else {
-			tl.to(this.camera.position, 7, {y: 400, ease: window.Expo.easeInOut});
+			tl.to(this.camera.position, 7, {y: this.minZoom, ease: window.Expo.easeInOut});
 		}
 
 
@@ -975,7 +988,7 @@ export default class IntroView extends AbstractView {
 		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
 		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
 
-		tl.fromTo(this.camera.position, 4, {y: 400 }, {y: 900, ease: window.Expo.easeOut}, 0);
+		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 200, ease: window.Expo.easeOut}, 0);
 		tl.fromTo('.overlay', 1, {
 			opacity: 0
 		}, {
