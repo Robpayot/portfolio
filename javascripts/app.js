@@ -281,7 +281,6 @@ var Cursor = function () {
 			this.hoverGlobal = false;
 			// console.log('leave');
 			// remplie
-			TweenMax.to(this.c2, 0.5, { strokeDashoffset: '308%', ease: window.Expo.easeOut });
 
 			if (obj.back === true) {
 				TweenMax.to('text', 0.2, { opacity: 0 });
@@ -289,7 +288,12 @@ var Cursor = function () {
 			}
 
 			if (obj.color !== undefined) {
+				TweenMax.to(this.c2, 0.5, { strokeDashoffset: '308%', ease: window.Expo.easeOut });
 				this.hoverGoTo = false;
+			}
+
+			if (obj.small === true) {
+				TweenMax.to(this.c2, 0, { strokeDashoffset: '308%', ease: window.Expo.easeOut });
 			}
 
 			if (obj.magnet === true) {
@@ -1183,7 +1187,9 @@ var Menu = function () {
 			buttonSvg: this.el.querySelector('.menu__button svg'),
 			overlay: this.el.querySelector('.menu__overlay'),
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
-			links: this.el.querySelectorAll('.menu__link')
+			subLinksTitles: this.el.querySelectorAll('.menu__sublink > div'),
+			links: this.el.querySelectorAll('.menu__link'),
+			linksTitles: this.el.querySelectorAll('.menu__link .title--3')
 		};
 
 		this.maxDash = 635;
@@ -1218,14 +1224,14 @@ var Menu = function () {
 			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
 			console.log(this.ui.links, [].concat(_toConsumableArray(this.ui.links)));
-			for (var i = 0; i < this.ui.links.length; i++) {
-				this.ui.links[i][evListener]('mouseenter', this.onHoverLink);
-				this.ui.links[i][evListener]('mouseleave', this.onLeaveLink);
+			for (var i = 0; i < this.ui.linksTitles.length; i++) {
+				this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
+				this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 			}
 
-			for (var _i = 0; _i < this.ui.subLinks.length; _i++) {
-				this.ui.subLinks[_i][evListener]('mouseenter', this.onHoverLink);
-				this.ui.subLinks[_i][evListener]('mouseleave', this.onLeaveLink);
+			for (var _i = 0; _i < this.ui.subLinksTitles.length; _i++) {
+				this.ui.subLinksTitles[_i][evListener]('mouseenter', this.onHoverLink);
+				this.ui.subLinksTitles[_i][evListener]('mouseleave', this.onLeaveLink);
 			}
 			// svg.addEventListener('mouseleave', () => {
 			// 	console.log('leave');
@@ -1295,10 +1301,10 @@ var Menu = function () {
 		key: 'onHoverLink',
 		value: function onHoverLink(e) {
 			var el = e.currentTarget;
-			el.classList.add('is-hover');
+			el.parentNode.classList.add('is-hover');
 
-			if (el.getAttribute('data-color')) {
-				global.CURSOR.interractHover({ color: el.getAttribute('data-color'), small: true });
+			if (el.parentNode.getAttribute('data-color')) {
+				global.CURSOR.interractHover({ color: el.parentNode.getAttribute('data-color'), small: true });
 			} else {
 				global.CURSOR.interractHover();
 			}
@@ -1307,8 +1313,8 @@ var Menu = function () {
 		key: 'onLeaveLink',
 		value: function onLeaveLink(e) {
 			var el = e.currentTarget;
-			el.classList.remove('is-hover');
-			global.CURSOR.interractLeave();
+			el.parentNode.classList.remove('is-hover');
+			global.CURSOR.interractLeave({ small: true });
 		}
 	}, {
 		key: 'onHoverBtn',
@@ -9368,7 +9374,7 @@ var IntroView = function (_AbstractView) {
 		_this.gravity = obj.gravity;
 		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.name = 'intro';
-		_this.isControls = false;
+		_this.isControls = true;
 
 		// bind
 
@@ -9464,6 +9470,7 @@ var IntroView = function (_AbstractView) {
 			if (this.gravity === true) this.initPhysics();
 
 			this.nbAst = 25;
+			this.minZoom = 400;
 			this.maxZoom = 700;
 			this.asteroids = [];
 			this.asteroidsM = [];
@@ -9489,9 +9496,14 @@ var IntroView = function (_AbstractView) {
 				this.controls.enableZoom = true;
 			}
 
+			this.mouseSize = 40.0;
+			this.mouseSizeClick = 30.0;
+			this.viscosity = 0.015;
+			this.viscosityClick = 0.015;
+
 			this.effectController = {
-				mouseSize: 46.0,
-				viscosity: 0.03
+				mouseSize: this.mouseSize,
+				viscosity: this.viscosity
 			};
 
 			this.initWater(false, false);
@@ -9556,13 +9568,17 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'setLight',
 		value: function setLight() {
-			var sun = new _three.DirectionalLight(0xFFFFFF, 1.0);
-			sun.position.set(300, 400, -205);
-			this.scene.add(sun);
+			// let sun = new DirectionalLight( 0xFFFFFF, 1 );
+			// sun.position.set( 300, 400, -500 );
+			// this.scene.add( sun );
 
-			var sun2 = new _three.DirectionalLight(0xe8f0ff, 0.2);
-			sun2.position.set(-100, 350, -20);
-			this.scene.add(sun2);
+			// let sun2 = new DirectionalLight( 0xB6C5DB, 0.5 );
+			// sun2.position.set( 300, 400, 500 );
+			// this.scene.add( sun2 );
+
+			var light = new _three.PointLight(0xFFFFFF, 1, 1000);
+			light.position.set(0, 50, 0);
+			this.scene.add(light);
 
 			// let hemisphere = new HemisphereLight( 0x00FFFF, 0xFF0000, 1 );
 			// this.scene.add( hemisphere );
@@ -9579,23 +9595,23 @@ var IntroView = function (_AbstractView) {
 
 			this.WIDTH = 96; // Texture width for simulation bits
 
-			// Magic calculs ;)
-			var vFOV = this.camera.fov * Math.PI / 180; // convert vertical fov to radians
-			var height = 2 * Math.tan(vFOV / 2) * this.maxZoom; // dist between 0 and camerapos.y
+			// get real height / width based on camera distance
 
-			var aspect = window.innerWidth / window.innerHeight;
-			var finalBounds = void 0;
-			if (aspect > 1) {
+			var vFOV = this.camera.fov * Math.PI / 180; // convert vertical fov to radians
+			this.heightCamera = 2 * Math.tan(vFOV / 2) * (this.maxZoom + 200); // dist between 0 and camerapos.y
+
+			this.aspect = window.innerWidth / window.innerHeight;
+
+			if (this.aspect > 1) {
 				// landscape
-				finalBounds = height * aspect;
+				this.finalBounds = this.heightCamera * this.aspect;
 			} else {
-				finalBounds = height;
+				this.finalBounds = this.heightCamera;
 			}
 
-			var extra = bigger === true ? 800 : finalBounds * 0.5; // for rotation camera left / right must
-			this.BOUNDS = finalBounds + extra; // Water size
+			var extra = bigger === true ? 800 : this.finalBounds * 0.5; // for rotation camera left / right must
+			this.BOUNDS = this.finalBounds + extra; // Water size
 			this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut,
-			this.mouseSize = bigger === true ? 100.0 : 32.0; // wave agitation
 
 			var materialColor = 0xffffff;
 
@@ -9870,7 +9886,8 @@ var IntroView = function (_AbstractView) {
 		value: function valuesChanger() {
 
 			// this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
-			this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
+			// this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
+
 		}
 	}, {
 		key: 'smoothWater',
@@ -10042,8 +10059,8 @@ var IntroView = function (_AbstractView) {
 				this.onAsteroidAnim = true;
 				var dest = this.currentAstClicked.height * this.currentAstClicked.scale;
 
-				this.heightmapVariable.material.uniforms.mouseSize = { value: 30.0 }; // change mouse size
-				this.heightmapVariable.material.uniforms.viscosity = { value: 0.015 };
+				this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSizeClick }; // change mouse size
+				this.heightmapVariable.material.uniforms.viscosity = { value: this.viscosityClick };
 
 				var tl = new TimelineMax();
 
@@ -10071,9 +10088,12 @@ var IntroView = function (_AbstractView) {
 			var _this6 = this;
 
 			// Manual simulation of infinite waves
-			var pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7) * (this.BOUNDS - this.BOUNDSSUP) / 4;
-			var pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
+			// left to right
+			// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 5 ) * (this.heightCamera * this.aspect) / 8;
+			// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -this.heightCamera / 2;
 
+			var pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : 0;
+			var pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : Math.sin(this.clock.getElapsedTime() * 5) * -this.heightCamera / 6 - this.heightCamera / 2;
 			// console.log(pointX, pointZ);
 
 			this.heightmapVariable.material.uniforms.mousePos.value.set(pointX, pointZ);
@@ -10300,9 +10320,9 @@ var IntroView = function (_AbstractView) {
 			});
 
 			if (fromProject === true) {
-				tl.fromTo(this.camera.position, 5, { y: this.maxZoom }, { y: 400, ease: window.Expo.easeOut }, 0);
+				tl.fromTo(this.camera.position, 5, { y: this.maxZoom }, { y: this.minZoom, ease: window.Expo.easeOut }, 0);
 			} else {
-				tl.to(this.camera.position, 7, { y: 400, ease: window.Expo.easeInOut });
+				tl.to(this.camera.position, 7, { y: this.minZoom, ease: window.Expo.easeInOut });
 			}
 
 			tl.add(function () {
@@ -10321,7 +10341,7 @@ var IntroView = function (_AbstractView) {
 			tl.to(this.ui.button, 0.5, { opacity: 0 }, 0);
 			tl.set(this.ui.button, { opacity: 0, display: 'none' }, 0.5);
 
-			tl.fromTo(this.camera.position, 4, { y: 400 }, { y: 900, ease: window.Expo.easeOut }, 0);
+			tl.fromTo(this.camera.position, 4, { y: this.minZoom }, { y: this.maxZoom + 200, ease: window.Expo.easeOut }, 0);
 			tl.fromTo('.overlay', 1, {
 				opacity: 0
 			}, {

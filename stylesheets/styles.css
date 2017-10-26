@@ -310,15 +310,15 @@ html, body {
   font-style: normal; }
 
 @font-face {
-  font-family: 'Theinhardt-light';
+  font-family: 'Theinhardt-medium';
   src: url("../fonts/theinhardt-light.otf");
   font-weight: 300;
   font-style: normal; }
 
 @font-face {
-  font-family: 'Theinhardt-medium';
-  src: url("../fonts/theinhardt-medium.otf");
-  font-weight: 500;
+  font-family: 'Theinhardt-light';
+  src: url("../fonts/theinhardt-light.otf");
+  font-weight: 300;
   font-style: normal; }
 
 /*
@@ -732,7 +732,7 @@ body {
   padding-left: 0px;
   font-size: 2.2rem;
   letter-spacing: 4px;
-  font-family: 'Theinhardt-regular';
+  font-family: 'Theinhardt';
   font-weight: normal;
   font-style: normal;
   top: 150px;
@@ -760,7 +760,7 @@ body {
   text-transform: uppercase;
   font-size: 2.2rem;
   letter-spacing: 4px;
-  font-family: 'Theinhardt-regular'; }
+  font-family: 'Theinhardt'; }
   .project__next hr, .project__prev hr {
     position: absolute;
     width: 3px;
@@ -989,7 +989,7 @@ body {
           letter-spacing: 4px;
           margin-right: -4px;
           margin-top: 15px;
-          font-family: 'Theinhardt-regular';
+          font-family: 'Theinhardt';
           font-weight: normal;
           font-style: normal;
           opacity: 0; }
@@ -1102,7 +1102,7 @@ body {
         padding-left: 0px;
         margin: 20px 0;
         letter-spacing: 2px;
-        font-family: 'Theinhardt-regular';
+        font-family: 'Theinhardt';
         opacity: 1;
         pointer-events: auto;
         position: relative; }
