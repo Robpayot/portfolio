@@ -16,6 +16,9 @@ import PreloadManager from '../managers/PreloadManager';
 import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, PointLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
+import '../shaders/OceanShader';
+import Ocean from '../vendors/Ocean';
+console.log(Ocean);
 import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
@@ -252,103 +255,80 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	initWater(destroy = false, bigger = false) {
+	initWater() {
 
-		this.WIDTH = 96; // Texture width for simulation bits
 
-		// get real height / width based on camera distance
+		this.lastTime =  (new Date()).getTime();
 
-		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		this.heightCamera = 2 * Math.tan( vFOV / 2 ) * (this.maxZoom + 200); // dist between 0 and camerapos.y
+		SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
+		SceneManager.renderer.context.getExtension('OES_texture_float');
+		SceneManager.renderer.context.getExtension('OES_texture_float_linear');
 
-		this.aspect = window.innerWidth / window.innerHeight;
+		let gsize = 512;
+		let res = 512;
+		let gres = 256;
+		// let origx = -gsize / 2;
+		// let origz = -gsize / 2;
+		this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene, {
+			INITIAL_SIZE : 200.0,
+			INITIAL_WIND : [ 10.0, 10.0 ],
+			INITIAL_CHOPPINESS : 3.6,
+			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
+			SUN_DIRECTION : [-1.0, 1.0, 1.0],
+			OCEAN_COLOR: new Vector3( 2, 2, 2 ),
+			SKY_COLOR: new Vector3( 1, 1, 1 ),
+			EXPOSURE : 2,
+			GEOMETRY_RESOLUTION: gres,
+			GEOMETRY_SIZE : gsize,
+			RESOLUTION : res
+		} );
 
-		if (this.aspect > 1) {
-			// landscape
-			this.finalBounds = this.heightCamera * this.aspect;
-		} else {
-			this.finalBounds = this.heightCamera;
-		}
+		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix = { value: this.camera.projectionMatrix };
+		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix = { value: this.camera.matrixWorldInverse };
+		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { value: this.camera.position };
+		this.scene.add(this.ms_Ocean.oceanMesh);
 
-		const extra = bigger === true ? 800 : this.finalBounds * 0.5; // for rotation camera left / right must
-		this.BOUNDS = this.finalBounds + extra; // Water size
-		this.BOUNDSSUP = bigger === true ? this.maxZoom : 100; // Bounds supp for TransitionOut,
-
-		let materialColor = 0xffffff;
-
-		let geometry = new PlaneGeometry( this.BOUNDS, this.BOUNDS , this.WIDTH - 1, this.WIDTH - 1 );
-
-		// material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-		let material = new ShaderMaterial({
-			uniforms: UniformsUtils.merge([
-				ShaderLib[ 'phong' ].uniforms,
-				{
-					heightmap: { value: null }
-				}
-			]),
-			vertexShader: WaterVertexShader.vertexShader,
-			fragmentShader: ShaderChunk[ 'meshphong_frag' ]
-
+		let gui = new dat.GUI();
+		let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
+		c1.onChange(function(v) {
+			this.object.size = v;
+			this.object.changed = true;
 		});
-
-		material.lights = true;
-		// Material attributes from MeshPhongMaterial
-		material.color = new Color( materialColor );
-		material.specular = new Color( 0x111111 );
-		material.shininess = 1;
-
-		// Sets the uniforms with the material values
-		material.uniforms.diffuse.value = material.color;
-		material.uniforms.specular.value = material.specular;
-		material.uniforms.shininess.value = Math.max( material.shininess, 1e-4 );
-		material.uniforms.opacity.value = material.opacity;
-
-		// Defines
-		material.defines.WIDTH = this.WIDTH.toFixed( 1 );
-		material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
-
-		this.waterUniforms = material.uniforms;
-
-		this.waterMesh = new Mesh( geometry, material );
-		this.waterMesh.rotation.x = -Math.PI / 2;
-		this.waterMesh.position.set( 0, 0, 0);
-		this.waterMesh.name = 'water';
-		// this.waterMesh.matrixAutoUpdate = false;
-		// this.waterMesh.updateMatrix();
-
-		this.scene.add( this.waterMesh );
-
-		if (destroy === false ) { // if not already set
-			this.gpuCompute = new GPUComputationRenderer( this.WIDTH, this.WIDTH, SceneManager.renderer );
-
-			let heightmap0 = this.gpuCompute.createTexture();
-
-			this.fillTexture( heightmap0 );
-
-			this.heightmapVariable = this.gpuCompute.addVariable( 'heightmap', HeightmapFragmentShader.fragmentShader, heightmap0 );
-
-			// console.log(this.heightmapVariable);
-
-			this.gpuCompute.setVariableDependencies( this.heightmapVariable, [ this.heightmapVariable ] );
-
-			this.heightmapVariable.material.uniforms.debug = { value: new Vector2( 0, 0 ) };
-			this.heightmapVariable.material.uniforms.mousePos = { value: new Vector2( 10000, 10000 ) };
-			this.heightmapVariable.material.uniforms.viscosityConstant = { value: 0.08 };
-			this.heightmapVariable.material.defines.BOUNDS = this.BOUNDS.toFixed( 1 );
-			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
-			this.heightmapVariable.material.uniforms.viscosityConstant = { value: this.effectController.viscosity };
-
-			let error = this.gpuCompute.init();
-			if ( error !== null ) {
-				console.error( error );
-			}
-
-			// Create compute shader to smooth the water surface and velocity
-			// this.smoothShader = this.gpuCompute.createShaderMaterial( SmoothFragmentShader.fragmentShader, { texture: { value: null } } ); --> A étudier
-
-			// console.log(this.heightmapVariable, this.smoothShader);
-		}
-
+		let c2 = gui.add(this.ms_Ocean, 'choppiness', 0.1, 4);
+		c2.onChange(function(v) {
+			this.object.choppiness = v;
+			this.object.changed = true;
+		});
+		let c3 = gui.add(this.ms_Ocean, 'windX',-15, 15);
+		c3.onChange(function(v) {
+			this.object.windX = v;
+			this.object.changed = true;
+		});
+		let c4 = gui.add(this.ms_Ocean, 'windY', -15, 15);
+		c4.onChange(function(v) {
+			this.object.windY = v;
+			this.object.changed = true;
+		});
+		let c5 = gui.add(this.ms_Ocean, 'sunDirectionX', -1.0, 1.0);
+		c5.onChange(function(v) {
+			this.object.sunDirectionX = v;
+			this.object.changed = true;
+		});
+		let c6 = gui.add(this.ms_Ocean, 'sunDirectionY', -1.0, 1.0);
+		c6.onChange(function(v) {
+			this.object.sunDirectionY = v;
+			this.object.changed = true;
+		});
+		let c7 = gui.add(this.ms_Ocean, 'sunDirectionZ', -1.0, 1.0);
+		c7.onChange(function(v) {
+			this.object.sunDirectionZ = v;
+			this.object.changed = true;
+		});
+		let c8 = gui.add(this.ms_Ocean, 'exposure', 0.0, 6);
+		c8.onChange(function(v) {
+			this.object.exposure = v;
+			this.object.changed = true;
+		});
 	}
 
 	generateGradient() {
@@ -403,7 +383,7 @@ export default class IntroView extends AbstractView {
 		ground.rotation.x = toRadian(-90);
 		ground.position.y = -15;
 
-		this.scene.add(ground);
+		// this.scene.add(ground);
 
 		const geometry2 = new PlaneGeometry(3000,3000);
 
@@ -415,7 +395,7 @@ export default class IntroView extends AbstractView {
 		blackGround.position.y = -500;
 		blackGround.position.z = -2000;
 
-		this.scene.add(blackGround);
+		// this.scene.add(blackGround);
 	}
 
 	setAsteroids() {
@@ -448,7 +428,7 @@ export default class IntroView extends AbstractView {
 
 			let pos = {
 				x: getRandom(this.astXMin, this.astXMax),
-				y: 4,
+				y: 0,
 				z: getRandom(this.startZ, this.endZ),
 			};
 
@@ -702,16 +682,16 @@ export default class IntroView extends AbstractView {
 			this.onAsteroidAnim = true;
 			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
 
-			this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSizeClick }; // change mouse size
-			this.heightmapVariable.material.uniforms.viscosity = { value: this.viscosityClick };
+			// this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSizeClick }; // change mouse size
+			// this.heightmapVariable.material.uniforms.viscosity = { value: this.viscosityClick };
 
 			const tl = new TimelineMax();
 
 			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, {y: -dest, ease: window.Expo.easeOut});
 
 			tl.add(()=> {
-				this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize };
-				this.heightmapVariable.material.uniforms.viscosity = { value: this.effectController.viscosity };
+				// this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize };
+				// this.heightmapVariable.material.uniforms.viscosity = { value: this.effectController.viscosity };
 				this.onAsteroidAnim = false;
 			}, 0.5);
 
@@ -729,27 +709,46 @@ export default class IntroView extends AbstractView {
 
 	raf() {
 
+		// water
+		let currentTime = new Date().getTime();
+		this.ms_Ocean.deltaTime = (currentTime - this.lastTime) / 1000 || 0.0;
+		this.lastTime = currentTime;
+		this.ms_Ocean.render(this.ms_Ocean.deltaTime);
+		this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
+		if (this.ms_Ocean.changed) {
+			this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
+			this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.set( this.ms_Ocean.sunDirectionX, this.ms_Ocean.sunDirectionY, this.ms_Ocean.sunDirectionZ );
+			this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
+			this.ms_Ocean.changed = false;
+		}
+		this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer.texture;
+		this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer.texture;
+		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix.value = this.camera.projectionMatrix;
+		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.camera.matrixWorldInverse;
+		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.camera.position;
+		this.ms_Ocean.materialOcean.depthTest = true;
+
 		// Manual simulation of infinite waves
 		// left to right
 		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 5 ) * (this.heightCamera * this.aspect) / 8;
 		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -this.heightCamera / 2;
 
-		let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : 0;
-		let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z :  Math.sin(this.clock.getElapsedTime() * 5 ) * -this.heightCamera / 6 - this.heightCamera / 2;
-		// console.log(pointX, pointZ);
+		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : 0;
+		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z :  Math.sin(this.clock.getElapsedTime() * 5 ) * -this.heightCamera / 6 - this.heightCamera / 2;
+		// // console.log(pointX, pointZ);
 
-		this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
+		// this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
 
-		// Do the gpu computation
-		this.gpuCompute.compute();
+		// // Do the gpu computation
+		// this.gpuCompute.compute();
 
-		// Get compute output in custom uniform
-		this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable ).texture;
-		// this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
-		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
+		// // Get compute output in custom uniform
+		// this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable ).texture;
+		// // this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
+		// // this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
-		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.0016;
+		// // issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
+		// this.waterMesh.position.y -= 0.0016;
 
 		// console.log(this.waterMesh.position);
 
