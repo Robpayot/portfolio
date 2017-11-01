@@ -136,7 +136,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.nbAst = 25;
+		this.nbAst = 0;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -264,9 +264,22 @@ export default class IntroView extends AbstractView {
 		SceneManager.renderer.context.getExtension('OES_texture_float');
 		SceneManager.renderer.context.getExtension('OES_texture_float_linear');
 
-		let gsize = 512;
+		// good size
+		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+		this.heightCamera = 2 * Math.tan( vFOV / 2 ) * (this.maxZoom + 200); // dist between 0 and camerapos.y
+
+		this.aspect = window.innerWidth / window.innerHeight;
+
+		if (this.aspect > 1) {
+			// landscape
+			this.finalBounds = this.heightCamera * this.aspect;
+		} else {
+			this.finalBounds = this.heightCamera;
+		}
+
+		let gsize = 712;
 		let res = 512;
-		let gres = 256;
+		let gres = gsize / 2;
 		// let origx = -gsize / 2;
 		// let origz = -gsize / 2;
 		this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene, {
@@ -852,6 +865,9 @@ export default class IntroView extends AbstractView {
 		}
 
 		this.render();
+
+		// Update ocean data
+		// this.ms_Ocean.update();
 
 
 	}
