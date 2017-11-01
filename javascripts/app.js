@@ -2883,7 +2883,7 @@ var Blob = function (_ProjectView) {
 			// });
 
 			var pos = void 0;
-			var posFixed = [{ x: 0, y: 0, z: 0, s: 6 }, { x: -50, y: 15, z: 30 }, { x: 40, y: -90, z: -80 }, { x: -40, y: 70, z: -50 }, { x: 60, y: 20, z: -40 }];
+			var posFixed = [{ x: 30, y: -20, z: -10, s: 6 }, { x: -50, y: 15, z: 30 }, { x: 40, y: -90, z: -80 }, { x: -40, y: 70, z: -50 }, { x: 60, y: 20, z: -40 }];
 
 			for (var i = 0; i < posFixed.length; i++) {
 
@@ -2910,8 +2910,7 @@ var Blob = function (_ProjectView) {
 						time: { type: 'f', value: 0 },
 						weight: { type: 'f', value: 0 },
 						brightness: { type: 'f', value: 0 },
-						contrast: { type: 'f', value: 0.0 }
-					},
+						contrast: { type: 'f', value: 0.7 } },
 					vertexShader: blobLightShader.vertexShader,
 					fragmentShader: blobLightShader.fragmentShader
 
@@ -3043,12 +3042,13 @@ var Blob = function (_ProjectView) {
 				this.ui.body.style.cursor = 'pointer';
 				this.hoverAst = true;
 				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
-				this.asteroids[intersectsAst[0].object.index].active = true;
+				var el = this.asteroids[intersectsAst[0].object.index];
+				el.active = true;
 			} else {
 				this.hoverAst = false;
-				// this.asteroids.forEach( (el) => {
-				// 	el.active = false;
-				// });
+				this.asteroids.forEach(function (el) {
+					el.active = false;
+				});
 			}
 
 			this.toggle += this.clock.getDelta();
@@ -3074,19 +3074,27 @@ var Blob = function (_ProjectView) {
 				el.mesh.position.y = el.initY + Math.sin(_this2.clock.getElapsedTime() * el.speed + el.offset) * el.range.coef + el.range.add;
 				// el.mesh.position.y = el.initY;
 				// rotate
-				el.mesh.material.uniforms['time'].value = .00015 * (Date.now() - _this2.inc);
-				el.mesh.material.uniforms['weight'].value = el.initW + Math.sin(_this2.clock.getElapsedTime() * el.speedMat + el.offset) * el.rangeMat.coef + el.rangeMat.add;
+				el.mesh.material.uniforms['time'].value = .00065 * (Date.now() - _this2.inc); // time for uniform
+				// el.mesh.material.uniforms[ 'weight' ].value = el.initW +  Math.sin(this.clock.getElapsedTime() * el.speedMat + el.offset) * el.rangeMat.coef + el.rangeMat.add;
 				// // el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
 				// // console.log(el.mesh.material.uniforms[ 'weight' ].value);
 				// // el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
 				// // // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 				// // el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
 
-				if (el.mesh.material.uniforms['contrast'].value >= 0.0) {
+				// if (el.mesh.material.uniforms['contrast'].value >= 0.0) {
+				// 	if (el.active === true) {
+				// 		el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.0 , 1);
+				// 	} else {
+				// 		el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.0 , 1);
+				// 	}
+				// }
+
+				if (el.mesh.material.uniforms['weight'].value >= 0.0) {
 					if (el.active === true) {
-						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value + 0.1, 0.0, 1);
+						el.mesh.material.uniforms['weight'].value = (0, _utils.clamp)(el.mesh.material.uniforms['weight'].value + 0.04, 0.0, el.initW + el.rangeMat.coef + el.rangeMat.add);
 					} else {
-						el.mesh.material.uniforms['contrast'].value = (0, _utils.clamp)(el.mesh.material.uniforms['contrast'].value - 0.1, 0.0, 1);
+						el.mesh.material.uniforms['weight'].value = (0, _utils.clamp)(el.mesh.material.uniforms['weight'].value - 0.04, 0.0, el.initW + el.rangeMat.coef + el.rangeMat.add);
 					}
 				}
 			});
@@ -9937,7 +9945,7 @@ var IntroView = function (_AbstractView) {
 			// Set physics
 			if (this.gravity === true) this.initPhysics();
 
-			this.nbAst = 25;
+			this.nbAst = 0;
 			this.minZoom = 400;
 			this.maxZoom = 700;
 			this.asteroids = [];
@@ -10064,9 +10072,22 @@ var IntroView = function (_AbstractView) {
 			_SceneManager2.default.renderer.context.getExtension('OES_texture_float');
 			_SceneManager2.default.renderer.context.getExtension('OES_texture_float_linear');
 
-			var gsize = 512;
+			// good size
+			var vFOV = this.camera.fov * Math.PI / 180; // convert vertical fov to radians
+			this.heightCamera = 2 * Math.tan(vFOV / 2) * (this.maxZoom + 200); // dist between 0 and camerapos.y
+
+			this.aspect = window.innerWidth / window.innerHeight;
+
+			if (this.aspect > 1) {
+				// landscape
+				this.finalBounds = this.heightCamera * this.aspect;
+			} else {
+				this.finalBounds = this.heightCamera;
+			}
+
+			var gsize = 712;
 			var res = 512;
-			var gres = 256;
+			var gres = gsize / 2;
 			// let origx = -gsize / 2;
 			// let origz = -gsize / 2;
 			this.ms_Ocean = new _Ocean2.default(_SceneManager2.default.renderer, this.camera, this.scene, {
@@ -10670,6 +10691,10 @@ var IntroView = function (_AbstractView) {
 			}
 
 			this.render();
+
+			// Update ocean data
+			// this.ms_Ocean.update();
+
 		}
 	}, {
 		key: 'transitionIn',
