@@ -921,7 +921,7 @@ var Glitch = function () {
 				this.ctxBuffer.clip();
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 			} else {
 
@@ -929,7 +929,7 @@ var Glitch = function () {
 				this.ctxBuffer.clip();
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2 , this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX1.val + 2, top, this.textWidth - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 			}
 
@@ -952,17 +952,17 @@ var Glitch = function () {
 				// Draw image that gonna be use as mask.
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 			} else if (this.channel === 2) {
 				this.ctxBuffer.rect(startClip, 0, this.width22.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + 2, top, this.width22.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 			} else {
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip, top, this.textWidth + 30, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in'; // put the reste on top and mask
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
 			}
 
 			this.ctxBuffer.fillText(this.text, startClip, centerY); // First Text
@@ -986,7 +986,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , 0, 0, this.width3.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 			} else {
 
@@ -995,7 +995,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , 0, 0, this.width32.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 			}
 
@@ -1018,7 +1018,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 			}
 
@@ -1041,7 +1041,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'source-in';
+				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 			}
 
