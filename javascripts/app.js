@@ -626,7 +626,7 @@ var Glitch = function () {
 				canvasBuffer: this.el.querySelector('.glitch__canvas-buffer'),
 				canvasAlphaBuffer: this.el.querySelector('.glitch__canvas-alpha-buffer')
 			};
-			// Nathan Gordon <3
+			// From Nathan Gordon (y)
 			// //Create a canvas that is to become our reference image
 			// const baseCanvas = document.createElement('canvas');
 			// baseCanvas.width = 600;
@@ -761,7 +761,7 @@ var Glitch = function () {
 		value: function renderChannels(obj) {
 
 			// alpha video
-			if (this.ctxAlphaBuffer) {
+			if (this.ctxAlphaBuffer && obj.type === 'intro') {
 
 				// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 				// r.p : We select only the first half
@@ -919,14 +919,16 @@ var Glitch = function () {
 
 				this.ctxBuffer.rect(startClip + this.margeX12.val, 0, this.textWidth, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 			} else {
 
 				this.ctxBuffer.rect(startClip + this.margeX1.val, 0, this.textWidth, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2 , this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX1.val + 2, top, this.textWidth - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 			}
@@ -948,15 +950,18 @@ var Glitch = function () {
 				this.ctxBuffer.rect(startClip + this.margeX2.val, top, this.width2.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 				// Draw image that gonna be use as mask.
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 			} else if (this.channel === 2) {
 				this.ctxBuffer.rect(startClip, 0, this.width22.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + 2, top, this.width22.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 			} else {
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip, top, this.textWidth + 30, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in'; // put the reste on top and mask
 			}
 
@@ -979,7 +984,8 @@ var Glitch = function () {
 				this.ctxBuffer.rect(startClip + this.margeX3.val, 0, this.width3.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, 0, 0, this.width3.val - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , 0, 0, this.width3.val - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 			} else {
@@ -987,7 +993,8 @@ var Glitch = function () {
 				this.ctxBuffer.rect(startClip + this.margeX32.val, 0, this.width32.val - 10, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, 0, 0, this.width32.val - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , 0, 0, this.width32.val - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 			}
@@ -1009,7 +1016,8 @@ var Glitch = function () {
 				this.ctxBuffer.rect(startClip + this.margeX4.val, 0, this.width4.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 			}
@@ -1031,7 +1039,8 @@ var Glitch = function () {
 				this.ctxBuffer.rect(startClip + this.margeX5.val, 0, this.width5.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 
-				this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
+				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
+				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
 				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 			}
@@ -1109,7 +1118,6 @@ var Glitch = function () {
 			this.textWidth = Math.round(this.ctxBuffer.measureText(this.text).width);
 			this.width = this.textWidth + this.biggestRange;
 			if (this.sndTxt) {
-				console.log('lol');
 				this.sndText = this.sndTxt;
 				this.ctx.font = this.ctxBuffer.font = this.textSize - 20 + 'px "Theinhardt"';
 				this.sndTextWidth = Math.round(this.ctxBuffer.measureText(this.sndText).width);
