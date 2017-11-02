@@ -11067,6 +11067,9 @@ var ProjectView = function (_AbstractView) {
 		_this.onHoverBtn = _this.onHoverBtn.bind(_this);
 		_this.onLeaveBtn = _this.onLeaveBtn.bind(_this);
 		_this.onClickContainer = _this.onClickContainer.bind(_this);
+		_this.killGlitch = _this.killGlitch.bind(_this);
+		_this.onHoverTitle = _this.onHoverTitle.bind(_this);
+		_this.onLeaveTitle = _this.onLeaveTitle.bind(_this);
 
 		_this.bounceArea = 200; // default bounceArea
 		_this.animLink = false;
@@ -11077,6 +11080,8 @@ var ProjectView = function (_AbstractView) {
 		_this.scrollY = _this.scrollYSmooth = 0;
 		console.log('mon id', _this.id);
 
+		_this.tlGlitch = new TimelineMax({ repeat: -1, repeatDelay: 1.5, paused: true });
+
 		// ScrollManager.on();
 
 
@@ -11086,7 +11091,6 @@ var ProjectView = function (_AbstractView) {
 	_createClass(ProjectView, [{
 		key: 'events',
 		value: function events(method) {
-			var _this2 = this;
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			var onListener = method === false ? 'off' : 'on';
@@ -11106,22 +11110,18 @@ var ProjectView = function (_AbstractView) {
 			_EmitterManager2.default[onListener]('raf', this.raf);
 
 			if (method === true) {
-				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', function () {
-					console.log('hover glitch');
-					_this2.glitch.hover = true;
-					global.CURSOR.interractHover();
-				});
-				_bean2.default.on(document.body, 'mouseleave.project', '.glitch', function () {
-					_this2.glitch.hover = false;
-					global.CURSOR.interractLeave();
-				});
+
 				_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
 				_bean2.default.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+				_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 				_bean2.default.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 				_bean2.default.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 			} else {
 				_bean2.default.off(document.body, '.project');
 				_bean2.default.off(document.body, '.projectContent');
+				this.glitch.hover = false;
+				this.tlGlitch.kill();
 			}
 		}
 	}, {
@@ -11623,6 +11623,11 @@ var ProjectView = function (_AbstractView) {
 		////////////
 
 	}, {
+		key: 'killGlitch',
+		value: function killGlitch() {
+			this.glitch.hover = false;
+		}
+	}, {
 		key: 'onClickContainer',
 		value: function onClickContainer(e) {
 			console.log('click container');
@@ -11631,7 +11636,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'onHoverLink',
 		value: function onHoverLink(e) {
-			var _this3 = this;
+			var _this2 = this;
 
 			global.CURSOR.interractHover();
 			// if (this.hoverLink === true) return false;
@@ -11653,7 +11658,7 @@ var ProjectView = function (_AbstractView) {
 			tl.to('.project__link .close-up', 1, { strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
 			tl.set(['.project__link .close-up', '.project__link .close-down', '.project__link .close-down-2', '.project__link .open-up', '.project__link .open-down'], { clearProps: 'all' });
 			tl.add(function () {
-				_this3.animLink = false;
+				_this2.animLink = false;
 			});
 		}
 	}, {
@@ -11667,12 +11672,14 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'showContent',
 		value: function showContent(e) {
-			var _this4 = this;
+			var _this3 = this;
 
 			e.stopPropagation();
 
 			if (this.animating === true) return false;
 
+			this.glitch.hover = false; // kill Glitch
+			this.tlGlitch.kill();
 			_bean2.default.off(document.body, '.project'); // off events related to init state
 
 			// on events related to projectContent state
@@ -11696,8 +11703,8 @@ var ProjectView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					// this.cameraRotX = true;
-					_this4.animating = false;
-					_this4.glitch.stop = true;
+					_this3.animating = false;
+					_this3.glitch.stop = true;
 				}
 			});
 
@@ -11739,8 +11746,8 @@ var ProjectView = function (_AbstractView) {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this3.camera.position.z = _this3.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 				}
 			}, 0);
 
@@ -11751,7 +11758,7 @@ var ProjectView = function (_AbstractView) {
 
 			tl.add(function () {
 				global.CURSOR.interractLeave();
-				_this4.glitch.hover = false;
+				_this3.glitch.hover = false;
 
 				_ScrollManager2.default.on(); // start scrollmanager
 			}, 0.5);
@@ -11759,20 +11766,15 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'backFromContent',
 		value: function backFromContent() {
-			var _this5 = this;
+			var _this4 = this;
 
 			_bean2.default.off(document.body, '.projectContent'); // off events related state projectContent
 
 			// on events related to init state
-			_bean2.default.on(document.body, 'mouseenter.project', '.glitch', function () {
-				_this5.glitch.hover = true;
-				global.CURSOR.interractHover();
-			});
-			_bean2.default.on(document.body, 'mouseleave.project', '.glitch', function () {
-				_this5.glitch.hover = false;
-				global.CURSOR.interractLeave();
-			});
 			_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
+			_bean2.default.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+			_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+			_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 			_bean2.default.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			_bean2.default.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -11793,11 +11795,11 @@ var ProjectView = function (_AbstractView) {
 			this.currentRotateY = { angle: (0, _utils.toRadian)(90) };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
 					// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
-					_this5.scrollY = 0;
-					TweenMax.set(_this5.ui.container, { y: -_this5.scrollY });
-					_this5.cameraMove = false;
-					_this5.camera.rotation.order = 'XYZ';
-					_this5.contentOpen = false;
+					_this4.scrollY = 0;
+					TweenMax.set(_this4.ui.container, { y: -_this4.scrollY });
+					_this4.cameraMove = false;
+					_this4.camera.rotation.order = 'XYZ';
+					_this4.contentOpen = false;
 				} });
 
 			tl.staggerTo(['.project__top', '.project__image', '.project__footer'], 1.2, {
@@ -11812,8 +11814,8 @@ var ProjectView = function (_AbstractView) {
 				ease: window.Power3.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
-					_this5.camera.position.x = _this5.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
-					_this5.camera.position.z = _this5.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
+					_this4.camera.position.x = _this4.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
+					_this4.camera.position.z = _this4.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 					// this.camera.lookAt(this.cameraTarget);
 				}
 			}, 0.5);
@@ -11834,7 +11836,7 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'slideUp',
 		value: function slideUp() {
-			var _this6 = this;
+			var _this5 = this;
 
 			if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
 
@@ -11847,15 +11849,15 @@ var ProjectView = function (_AbstractView) {
 				y: -this.galleryAngle * (this.currentSlide + 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this6.currentSlide++;
-					_this6.isSliding = false;
+					_this5.currentSlide++;
+					_this5.isSliding = false;
 				}
 			});
 		}
 	}, {
 		key: 'slideDown',
 		value: function slideDown() {
-			var _this7 = this;
+			var _this6 = this;
 
 			if (this.isSliding === true || this.currentSlide === 0) return false;
 
@@ -11868,8 +11870,8 @@ var ProjectView = function (_AbstractView) {
 				y: -this.galleryAngle * (this.currentSlide - 1),
 				ease: window.Expo.easeInOut,
 				onComplete: function onComplete() {
-					_this7.currentSlide--;
-					_this7.isSliding = false;
+					_this6.currentSlide--;
+					_this6.isSliding = false;
 				}
 			});
 		}
@@ -11973,6 +11975,30 @@ var ProjectView = function (_AbstractView) {
 		key: 'onLeaveContainer',
 		value: function onLeaveContainer() {
 			global.CURSOR.interractHover({ back: true });
+		}
+	}, {
+		key: 'onHoverTitle',
+		value: function onHoverTitle() {
+			var _this7 = this;
+
+			console.log('hover glitch');
+			this.tlGlitch.restart();
+			this.tlGlitch.repeatDelay((0, _utils.getRandom)(1.2, 2));
+			this.tlGlitch.add(function () {
+				_this7.glitch.hover = true;
+			});
+			this.tlGlitch.add(function () {
+				_this7.glitch.hover = false;
+			}, (0, _utils.getRandom)(0.4, 0.8));
+
+			global.CURSOR.interractHover();
+		}
+	}, {
+		key: 'onLeaveTitle',
+		value: function onLeaveTitle() {
+			this.glitch.hover = false;
+			this.tlGlitch.kill();
+			global.CURSOR.interractLeave();
 		}
 	}, {
 		key: 'onHoverBtn',

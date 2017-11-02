@@ -80,6 +80,9 @@ export default class ProjectView extends AbstractView {
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.onClickContainer = this.onClickContainer.bind(this);
+		this.killGlitch = this.killGlitch.bind(this);
+		this.onHoverTitle = this.onHoverTitle.bind(this);
+		this.onLeaveTitle = this.onLeaveTitle.bind(this);
 
 		this.bounceArea = 200; // default bounceArea
 		this.animLink = false;
@@ -89,6 +92,8 @@ export default class ProjectView extends AbstractView {
 		this.hoverBtn = false;
 		this.scrollY = this.scrollYSmooth = 0;
 		console.log('mon id', this.id);
+
+		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
 
 		// ScrollManager.on();
 
@@ -115,23 +120,19 @@ export default class ProjectView extends AbstractView {
 		EmitterManager[onListener]('raf', this.raf);
 
 		if (method === true) {
-			bean.on(document.body, 'mouseenter.project', '.glitch', () => {
-				console.log('hover glitch');
-				this.glitch.hover = true;
-				global.CURSOR.interractHover();
-			});
-			bean.on(document.body, 'mouseleave.project', '.glitch', () => {
-				this.glitch.hover = false;
-				global.CURSOR.interractLeave();
-			});
+
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			bean.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 			bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		} else {
 			bean.off(document.body, '.project');
 			bean.off(document.body, '.projectContent');
+			this.glitch.hover = false;
+			this.tlGlitch.kill();
 		}
 
 
@@ -652,6 +653,10 @@ export default class ProjectView extends AbstractView {
 	// EVENTS
 	////////////
 
+	killGlitch() {
+		this.glitch.hover = false;
+	}
+
 	onClickContainer(e) {
 		console.log('click container');
 		e.stopPropagation();
@@ -696,6 +701,8 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 
+		this.glitch.hover = false; // kill Glitch
+		this.tlGlitch.kill();
 		bean.off(document.body, '.project'); // off events related to init state
 
 		// on events related to projectContent state
@@ -788,15 +795,10 @@ export default class ProjectView extends AbstractView {
 		bean.off(document.body, '.projectContent'); // off events related state projectContent
 
 		// on events related to init state
-		bean.on(document.body, 'mouseenter.project', '.glitch', () => {
-			this.glitch.hover = true;
-			global.CURSOR.interractHover();
-		});
-		bean.on(document.body, 'mouseleave.project', '.glitch', () => {
-			this.glitch.hover = false;
-			global.CURSOR.interractLeave();
-		});
 		bean.on(document.body, 'click.project', '.project__title', this.showContent);
+		bean.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+		bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+		bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 		bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 		bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -1000,6 +1002,27 @@ export default class ProjectView extends AbstractView {
 
 	onLeaveContainer() {
 		global.CURSOR.interractHover({back: true});
+	}
+
+	onHoverTitle() {
+
+		console.log('hover glitch');
+		this.tlGlitch.restart();
+		this.tlGlitch.repeatDelay(getRandom(1.2,2));
+		this.tlGlitch.add(() => {
+			this.glitch.hover = true;
+		});
+		this.tlGlitch.add(() => {
+			this.glitch.hover = false;
+		}, getRandom(0.4,0.8));
+
+		global.CURSOR.interractHover();
+	}
+
+	onLeaveTitle() {
+		this.glitch.hover = false;
+		this.tlGlitch.kill();
+		global.CURSOR.interractLeave();
 	}
 
 	onHoverBtn(e) {
