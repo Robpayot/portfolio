@@ -151,8 +151,6 @@ export default class Stars extends ProjectView {
 
 		}
 
-		console.log(this.mlib[ 'heightmap' ]);
-
 
 		const plane = new PlaneBufferGeometry( SCREEN_WIDTH, SCREEN_HEIGHT );
 
@@ -211,7 +209,7 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < this.nbUnif; i++) {
 
 			let uniforms = UniformsUtils.clone(shaderPoint.uniforms);
-			console.log(uniforms);
+			// console.log(uniforms);
 			uniforms.map.value = new Texture(img);
 			uniforms.map.value.needsUpdate = true;
 			uniforms.scale.value = window.innerHeight * 1;
@@ -257,7 +255,7 @@ export default class Stars extends ProjectView {
 		}
 
 		const blobLightShader = new BrightnessShader();
-		console.log(shaderPoint);
+		// console.log(shaderPoint);
 
 
 		for (let i = 0; i < this.nbAst; i++) {

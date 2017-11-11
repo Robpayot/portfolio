@@ -341,8 +341,8 @@ export default class Glitch {
 
 		this.channel = 0; // 0 = red, 1 = green, 2 = blue
 		this.compOp = 'lighter'; // CompositeOperation = lighter || darker || xor
-		this.phase = 0.0;
-		this.phaseStep = 0.05; //determines how often we will change channel and amplitude
+		this.phase = 5.0;
+		this.phaseStep = 0.2; //determines how often we will change channel and amplitude
 		this.amplitude = 0.0;
 		this.amplitudeBase = 2; //2.0;
 		this.amplitudeRange = 3; // 2.0;
@@ -381,9 +381,9 @@ export default class Glitch {
 
 		this.phase += this.phaseStep;
 
-		const frequency = getRandom(0.2, 2);
+		const frequency = getRandom(3.2, 4);
 
-		if (this.phase > frequency) { // time for ezch channel
+		if (this.phase > frequency) { // time for each channel
 			this.phase = 0.0;
 			this.channel = this.channel === 2 ? 0 : this.channel + 1;
 			this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
@@ -580,7 +580,7 @@ export default class Glitch {
 			this.ctxBuffer.clip();
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 		} else {
 
@@ -588,7 +588,7 @@ export default class Glitch {
 			this.ctxBuffer.clip();
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2 , this.height);
 			this.ctxBuffer.drawImage(this.ui.img,  startClip + this.margeX1.val + 2, top, this.textWidth - 2 , this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 		}
 
@@ -611,17 +611,17 @@ export default class Glitch {
 			// Draw image that gonna be use as mask.
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 		} else if (this.channel === 2) {
 			this.ctxBuffer.rect(startClip, 0, this.width22.val, this.height); // create clip rectangle
 			this.ctxBuffer.clip();
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + 2, top, this.width22.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 		} else {
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip, top, this.textWidth + 30, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
+			this.ctxBuffer.globalCompositeOperation = 'source-in'; // put the reste on top and mask
 		}
 
 		this.ctxBuffer.fillText(this.text, startClip, centerY); // First Text
@@ -645,7 +645,7 @@ export default class Glitch {
 
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , 0, 0, this.width3.val - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 		} else {
 
@@ -654,7 +654,7 @@ export default class Glitch {
 
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , 0, 0, this.width32.val - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 		}
 
@@ -677,7 +677,7 @@ export default class Glitch {
 
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 
 		}
@@ -701,7 +701,7 @@ export default class Glitch {
 
 			// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
 			this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+			this.ctxBuffer.globalCompositeOperation = 'source-in';
 			this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 
 		}

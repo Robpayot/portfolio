@@ -18,7 +18,12 @@ class ScrollManager {
 	}
 
 	off() {
+		console.log('off');
 		virtualScroll.off();
+	}
+
+	destroy() {
+		virtualScroll.destroy();
 	}
 
 	scroll(e) {

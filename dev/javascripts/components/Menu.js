@@ -51,7 +51,6 @@ export default class Menu {
 		this.ui.button[evListener]('click', this.toggleOpen);
 		this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 		this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
-		console.log(this.ui.links, [...this.ui.links]);
 		for (let i = 0; i < this.ui.linksTitles.length; i++) {
 			this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
 			this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);

@@ -681,8 +681,8 @@ var Glitch = function () {
 
 			this.channel = 0; // 0 = red, 1 = green, 2 = blue
 			this.compOp = 'lighter'; // CompositeOperation = lighter || darker || xor
-			this.phase = 0.0;
-			this.phaseStep = 0.05; //determines how often we will change channel and amplitude
+			this.phase = 5.0;
+			this.phaseStep = 0.2; //determines how often we will change channel and amplitude
 			this.amplitude = 0.0;
 			this.amplitudeBase = 2; //2.0;
 			this.amplitudeRange = 3; // 2.0;
@@ -724,10 +724,10 @@ var Glitch = function () {
 
 			this.phase += this.phaseStep;
 
-			var frequency = (0, _utils.getRandom)(0.2, 2);
+			var frequency = (0, _utils.getRandom)(3.2, 4);
 
 			if (this.phase > frequency) {
-				// time for ezch channel
+				// time for each channel
 				this.phase = 0.0;
 				this.channel = this.channel === 2 ? 0 : this.channel + 1;
 				this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
@@ -921,7 +921,7 @@ var Glitch = function () {
 				this.ctxBuffer.clip();
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX12.val + 2, top, 0, 0, this.textWidth - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX12.val + 2, top, this.textWidth - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX12.val, centerY + this.posY12.val);
 			} else {
 
@@ -929,7 +929,7 @@ var Glitch = function () {
 				this.ctxBuffer.clip();
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX1.val + 2, top, 0, 0, this.textWidth - 2 , this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX1.val + 2, top, this.textWidth - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX1.val, centerY + this.posY1.val);
 			}
 
@@ -952,17 +952,17 @@ var Glitch = function () {
 				// Draw image that gonna be use as mask.
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX2.val + 2, top, 0, 0, this.width2.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX2.val + 2, top, this.width2.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 			} else if (this.channel === 2) {
 				this.ctxBuffer.rect(startClip, 0, this.width22.val, this.height); // create clip rectangle
 				this.ctxBuffer.clip();
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + 2, top, 0, 0, this.width22.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + 2, top, this.width22.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 			} else {
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip, top, 0, 0, this.textWidth + 30, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip, top, this.textWidth + 30, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop'; // put the reste on top and mask
+				this.ctxBuffer.globalCompositeOperation = 'source-in'; // put the reste on top and mask
 			}
 
 			this.ctxBuffer.fillText(this.text, startClip, centerY); // First Text
@@ -986,7 +986,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight , 0, 0, this.width3.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX3.val + 2, centerY + this.posY3.val - this.textHeight, this.width3.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX3.val, centerY + this.posY3.val);
 			} else {
 
@@ -995,7 +995,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight , 0, 0, this.width32.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX32.val + 2, centerY + this.posY32.val - this.textHeight, this.width32.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX32.val.val, centerY + this.posY32.val);
 			}
 
@@ -1018,7 +1018,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, 0, 0, this.width4.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX4.val + 2, top - this.posY4.val - this.textHeight + 50, this.width4.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX4.val, centerY + this.posY4.val);
 			}
 
@@ -1041,7 +1041,7 @@ var Glitch = function () {
 
 				// this.ctxBuffer.putImageData(this.imageAlpha, startClip + this.margeX5.val + 2, top, 0, 0, this.width5.val - 2, this.height);
 				this.ctxBuffer.drawImage(this.ui.img, startClip + this.margeX5.val + 2, top, this.width5.val - 2, this.height);
-				this.ctxBuffer.globalCompositeOperation = 'destination-atop';
+				this.ctxBuffer.globalCompositeOperation = 'source-in';
 				this.ctxBuffer.fillText(this.text, startClip + this.posX5.val, centerY + this.posY5.val);
 			}
 
@@ -1177,8 +1177,6 @@ var _data2 = _interopRequireDefault(_data);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Menu = function () {
@@ -1231,7 +1229,6 @@ var Menu = function () {
 			this.ui.button[evListener]('click', this.toggleOpen);
 			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
-			console.log(this.ui.links, [].concat(_toConsumableArray(this.ui.links)));
 			for (var i = 0; i < this.ui.linksTitles.length; i++) {
 				this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
 				this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
@@ -2180,6 +2177,8 @@ var RouterManager = function () {
 				this.currentPage.transitionOut(); // animation Out
 				global.MENU.toggleOpen(true); // close Menu
 
+				this.lastId = this.currentPage.id;
+
 				_EmitterManager2.default.once('view:transition:out', function () {
 
 					// When animation out, destroy scene, init new view
@@ -2201,6 +2200,8 @@ var RouterManager = function () {
 
 
 			// let slug;
+			var dir = void 0;
+			var id = void 0;
 
 			switch (goToPage) {
 				case '/about':
@@ -2227,15 +2228,21 @@ var RouterManager = function () {
 					// data: data.projects[0],
 					// fromUrl
 					// if (this.project0 === null) {
+					id = 0;
+					dir = this.lastId > id ? -1 : 1;
+					console.log(this.lastId);
+					if (this.lastId === 3 || this.lastId === undefined) dir = 1;
+					console.log(dir);
 					this.currentPage = this.project0 = new _Stars2.default({ // Attention, Garde en mémoire une cette variable très lourde !
-						id: 0,
+						id: id,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[0],
-						fromUrl: fromUrl
+						fromUrl: fromUrl,
+						dir: dir
 					});
 					// } else {
 					// 	this.currentPage = this.project0;
@@ -2248,15 +2255,18 @@ var RouterManager = function () {
 				case '/project-1':
 
 					// if (this.project1 === null) {
+					id = 1;
+					dir = this.lastId > id ? -1 : 1;
 					this.currentPage = this.project1 = new _Blob2.default({
-						id: 1,
+						id: id,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[1],
-						fromUrl: fromUrl
+						fromUrl: fromUrl,
+						dir: dir
 					});
 					// } else {
 					// 	this.currentPage = this.project1;
@@ -2268,15 +2278,18 @@ var RouterManager = function () {
 				case '/project-2':
 
 					// if (this.project2 === null) {
+					id = 2;
+					dir = this.lastId > id ? -1 : 1;
 					this.currentPage = this.project2 = new _Circular2.default({
-						id: 2,
+						id: id,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[2],
-						fromUrl: fromUrl
+						fromUrl: fromUrl,
+						dir: dir
 					});
 					// } else {
 					// 	this.currentPage = this.project2;
@@ -2288,15 +2301,19 @@ var RouterManager = function () {
 				case '/project-3':
 
 					// if (this.project3 === null) {
+					id = 3;
+					dir = this.lastId > id ? -1 : 1;
+					if (this.lastId === 0) dir = -1;
 					this.currentPage = this.project3 = new _Levit2.default({
-						id: 3,
+						id: id,
 						bkg: 0x0101010,
 						astd: 'cubes',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[3],
-						fromUrl: fromUrl
+						fromUrl: fromUrl,
+						dir: dir
 					});
 					// } else {
 					// 	this.currentPage = this.project3;
@@ -2482,7 +2499,13 @@ var ScrollManager = function () {
 	}, {
 		key: 'off',
 		value: function off() {
+			console.log('off');
 			virtualScroll.off();
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			virtualScroll.destroy();
 		}
 	}, {
 		key: 'scroll',
@@ -2671,8 +2694,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 /**
  * @author alteredq / http://alteredqualia.com/
  */
-console.log(_FilmShader.FilmShader);
-
 var FilmPass = function FilmPass(noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale) {
 
 	THREE.Pass.call(this);
@@ -3781,8 +3802,6 @@ var Stars = function (_ProjectView) {
 				this.mlib[params[i][0]] = _material;
 			}
 
-			console.log(this.mlib['heightmap']);
-
 			var plane = new _three.PlaneBufferGeometry(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 			this.quadTarget = new _three.Mesh(plane, new _three.MeshBasicMaterial({ color: 0x000000 }));
@@ -3838,7 +3857,7 @@ var Stars = function (_ProjectView) {
 			for (var i = 0; i < this.nbUnif; i++) {
 
 				var uniforms = _three.UniformsUtils.clone(shaderPoint.uniforms);
-				console.log(uniforms);
+				// console.log(uniforms);
 				uniforms.map.value = new _three.Texture(img);
 				uniforms.map.value.needsUpdate = true;
 				uniforms.scale.value = window.innerHeight * 1;
@@ -3883,7 +3902,8 @@ var Stars = function (_ProjectView) {
 			}
 
 			var blobLightShader = new _BrightnessShader.BrightnessShader();
-			console.log(shaderPoint);
+			// console.log(shaderPoint);
+
 
 			for (var _i = 0; _i < this.nbAst; _i++) {
 
@@ -11035,6 +11055,7 @@ var ProjectView = function (_AbstractView) {
 		_this.pointsLight = obj.pointsLight;
 		_this.alt = obj.alt;
 		_this.fromUrl = obj.fromUrl;
+		_this.dir = obj.dir;
 		_this.sound = _SoundManager2.default;
 
 		_this.name = 'project-' + _this.id;
@@ -11078,12 +11099,17 @@ var ProjectView = function (_AbstractView) {
 		_this.animBtn = false;
 		_this.hoverBtn = false;
 		_this.scrollY = _this.scrollYSmooth = 0;
+		_this.scrollZ = _this.scrollZSmooth = 160;
+		_this.coefScrollZ = 0.15;
+		_this.zoomZ = 160;
+		_this.minZoomZ = 210;
+		_this.maxZoomZ = 0;
 		console.log('mon id', _this.id);
+		// this.stopScrollZ = true;
 
 		_this.tlGlitch = new TimelineMax({ repeat: -1, repeatDelay: 1.5, paused: true });
 
-		// ScrollManager.on();
-
+		_ScrollManager2.default.on();
 
 		return _this;
 	}
@@ -11355,7 +11381,7 @@ var ProjectView = function (_AbstractView) {
 			// this.camera.useTarget = false;
 			this.camera.lookAt(this.cameraTarget);
 
-			this.pathRadius = 160;
+			this.pathRadius = this.zoomZ;
 			this.camera.position.set(-60, 170, 70);
 			if (_Device.Device.size === 'mobile') {
 				this.camera.position.set(0, 0, 200);
@@ -11438,13 +11464,13 @@ var ProjectView = function (_AbstractView) {
 			title.position.set(20, 0, 10);
 			title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
-			var prevId = this.id - 1 < 0 ? _data2.default.projects.length - 1 : this.id - 1;
-			var nextId = this.id + 1 > _data2.default.projects.length - 1 ? 0 : this.id + 1;
+			this.prevId = this.id - 1 < 0 ? _data2.default.projects.length - 1 : this.id - 1;
+			this.nextId = this.id + 1 > _data2.default.projects.length - 1 ? 0 : this.id + 1;
 
 			// Pixel to Units magic FORMULE
 			var distZ = -10;
 			var vFOV = this.camera.fov * Math.PI / 180; // convert vertical fov to radians
-			var wHeight = 2 * Math.tan(vFOV / 2) * (160 - distZ); // visible height dist = 60 (160 - 100)
+			var wHeight = 2 * Math.tan(vFOV / 2) * (this.zoomZ - distZ); // visible height dist = 60 (160 - 100)
 			var margePosY = 7;
 			var finalPosY = wHeight / 2 - margePosY;
 			// console.log(finalPosY);
@@ -11454,14 +11480,14 @@ var ProjectView = function (_AbstractView) {
 
 			// Prev project
 			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-prev'));
-			html = template({ id: prevId, color: _data2.default.projects[prevId].color });
+			html = template({ id: this.prevId, color: _data2.default.projects[this.prevId].color });
 			this.prevProject = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			this.prevProject.position.set(0, -finalPosY, -distZ);
 			this.prevProject.scale.multiplyScalar(this.coefText);
 
 			// Next project
 			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-next'));
-			html = template({ id: nextId, color: _data2.default.projects[nextId].color });
+			html = template({ id: this.nextId, color: _data2.default.projects[this.nextId].color });
 			this.nextProject = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
 			this.nextProject.position.set(0, finalPosY, -distZ);
 			this.nextProject.scale.multiplyScalar(this.coefText);
@@ -11760,7 +11786,7 @@ var ProjectView = function (_AbstractView) {
 				global.CURSOR.interractLeave();
 				_this3.glitch.hover = false;
 
-				_ScrollManager2.default.on(); // start scrollmanager
+				// ScrollManager.on(); // start scrollmanager
 			}, 0.5);
 		}
 	}, {
@@ -11780,7 +11806,8 @@ var ProjectView = function (_AbstractView) {
 
 			this.cameraRotX = true;
 			this.glitch.stop = false;
-			_ScrollManager2.default.off(); // stop scrollmanager
+			// ScrollManager.off(); // stop scrollmanager
+			this.contentOpen = false;
 			global.CURSOR.interractLeave({ back: true });
 
 			TweenMax.set(global.MENU.ui.button, { display: 'block' });
@@ -11795,11 +11822,11 @@ var ProjectView = function (_AbstractView) {
 			this.currentRotateY = { angle: (0, _utils.toRadian)(90) };
 			var tl = new TimelineMax({ onComplete: function onComplete() {
 					// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
-					_this4.scrollY = 0;
+					_this4.scrollY = _this4.scrollYSmooth = 0;
 					TweenMax.set(_this4.ui.container, { y: -_this4.scrollY });
 					_this4.cameraMove = false;
 					_this4.camera.rotation.order = 'XYZ';
-					_this4.contentOpen = false;
+					// this.contentOpen = false;
 				} });
 
 			tl.staggerTo(['.project__top', '.project__image', '.project__footer'], 1.2, {
@@ -11825,10 +11852,18 @@ var ProjectView = function (_AbstractView) {
 				ease: window.Power3.easeInOut
 			}, 0.5);
 
-			tl.staggerTo(['.project__prev', '.project__next', '.project__title'], 0.6, {
-				opacity: 1,
-				ease: window.Power4.easeOut
-			}, 0.2, 1.5);
+			tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
+				opacity: 0,
+				y: 80
+			}, {
+				opacity: 0.8,
+				y: 0,
+				ease: window.Expo.easeOut
+			}, 0.1, 2.6);
+
+			tl.set(['.project__title'], {
+				opacity: 1
+			}, 2.6);
 		}
 	}, {
 		key: 'slide',
@@ -11879,28 +11914,58 @@ var ProjectView = function (_AbstractView) {
 		key: 'scroll',
 		value: function scroll(e) {
 
-			// this.topContentTargetY -= e.deltaY * 0.01;
-			// need profil for each browser
-			this.scrollY -= e.deltaY * 0.2;
-
-			// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
-			// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
-			// }
-
-			// if (this.scrollY < 0) {
-			// 	this.scrollY = this.scrollYSmooth = 0;
-			// }
+			if (this.transitionInComplete !== true) e.deltaY = 0; // prevent inertia
 
 
-			for (var i = 1; i < this.ui.imgs.length; i++) {
+			if (this.contentOpen === true) {
+				// this.topContentTargetY -= e.deltaY * 0.01;
+				// need profil for each browser
+				this.scrollY -= e.deltaY * 0.2;
 
-				if (this.ui.imgs[i].classList.contains('is-visible') === false) {
+				// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
+				// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
+				// }
 
-					if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+				// if (this.scrollY < 0) {
+				// 	this.scrollY = this.scrollYSmooth = 0;
+				// }
 
-						var tl = new TimelineMax();
-						tl.set(this.ui.imgs[i], { visibility: 'visible' });
-						tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+
+				for (var i = 1; i < this.ui.imgs.length; i++) {
+
+					if (this.ui.imgs[i].classList.contains('is-visible') === false) {
+
+						if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+
+							var tl = new TimelineMax();
+							tl.set(this.ui.imgs[i], { visibility: 'visible' });
+							tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+								opacity: 0,
+								y: 80
+							}, {
+								opacity: 0.9,
+								y: 0,
+								ease: window.Expo.easeOut
+							});
+
+							tl.fromTo(this.ui.imgs[i], 1.2, {
+								scaleY: 2
+							}, {
+								scaleY: 1,
+								ease: window.Expo.easeOut
+							}, 0);
+							this.ui.imgs[i].classList.add('is-visible');
+						}
+					}
+				}
+
+				if (this.ui.footer.classList.contains('is-visible') === false) {
+
+					if ((0, _utils.getOffsetTop)(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
+
+						var _tl = new TimelineMax();
+						_tl.set(this.ui.footer, { visibility: 'visible' });
+						_tl.fromTo(this.ui.footer, 1.2, { // 1.2
 							opacity: 0,
 							y: 80
 						}, {
@@ -11908,37 +11973,21 @@ var ProjectView = function (_AbstractView) {
 							y: 0,
 							ease: window.Expo.easeOut
 						});
-
-						tl.fromTo(this.ui.imgs[i], 1.2, {
-							scaleY: 2
-						}, {
-							scaleY: 1,
-							ease: window.Expo.easeOut
-						}, 0);
-						this.ui.imgs[i].classList.add('is-visible');
+						this.ui.footer.classList.add('is-visible');
 					}
 				}
+			} else {
+				if (this.stopScrollZ === true) return false;
+
+				this.scrollZ += (0, _utils.clamp)(e.deltaY * 0.04, -6, 6); //reverse
+
+				console.log((0, _utils.clamp)(e.deltaY * 0.04, -4, 4));
+
+				// console.log(this.scrollZSmooth);
+				// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
+				// console.log(this.camera.position.z);
+				// TweenMax.set(this.ui.container, { y: -this.scrollY});
 			}
-
-			if (this.ui.footer.classList.contains('is-visible') === false) {
-
-				if ((0, _utils.getOffsetTop)(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
-
-					var _tl = new TimelineMax();
-					_tl.set(this.ui.footer, { visibility: 'visible' });
-					_tl.fromTo(this.ui.footer, 1.2, { // 1.2
-						opacity: 0,
-						y: 80
-					}, {
-						opacity: 0.9,
-						y: 0,
-						ease: window.Expo.easeOut
-					});
-					this.ui.footer.classList.add('is-visible');
-				}
-			}
-
-			// TweenMax.set(this.ui.container, { y: -this.scrollY});
 		}
 	}, {
 		key: 'onClick',
@@ -11983,13 +12032,16 @@ var ProjectView = function (_AbstractView) {
 
 			console.log('hover glitch');
 			this.tlGlitch.restart();
-			this.tlGlitch.repeatDelay((0, _utils.getRandom)(1.2, 2));
+			// this.tlGlitch.play();
+			this.tlGlitch.repeatDelay(1.3);
 			this.tlGlitch.add(function () {
 				_this7.glitch.hover = true;
 			});
 			this.tlGlitch.add(function () {
 				_this7.glitch.hover = false;
-			}, (0, _utils.getRandom)(0.4, 0.8));
+				// manual repeat
+				// this.onHoverTitle(); //
+			}, 0.6);
 
 			global.CURSOR.interractHover();
 		}
@@ -12149,8 +12201,49 @@ var ProjectView = function (_AbstractView) {
 			// 	// this.ui.body.style.cursor = 'auto';
 			// 	this.clickAsteroid = false;
 			// }
+			// on scroll Z
+			// smooth scroll
+			if ((0, _utils.round)(this.scrollZ, 10) !== (0, _utils.round)(this.scrollZSmooth, 10)) {
+				// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
 
-			// on scroll
+				// smooth scroll
+				this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
+
+				// if (this.scrollZSmooth >= this.minZoomZ) { // end
+				// 	this.scrollZ = this.scrollZSmooth = this.minZoomZ;
+				// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
+				// } else if (this.scrollZSmooth < this.maxZoomZ) { // top
+				// 	this.scrollZ = this.scrollZSmooth = this.maxZoomZ;
+				// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
+				// }
+
+				if (this.scrollZSmooth < this.zoomZ) {
+					// top
+					// ScrollManager.off();
+					this.transitionOutFast = true;
+					this.stopScrollZ = true;
+					this.scrollZ = this.maxZoomZ; // final destination
+					this.coefScrollZ = 0.027;
+					TweenMax.set(this.camera.position, { z: this.scrollZSmooth });
+					if (this.scrollZSmooth < this.maxZoomZ + 30) {
+						window.location.href = '#project-' + this.nextId; // transitionOut
+					}
+				} else if (this.scrollZSmooth > this.zoomZ) {
+					// top
+					this.transitionOutFast = true;
+					this.stopScrollZ = true;
+					this.scrollZ = this.minZoomZ; // final destination
+					this.coefScrollZ = 0.027;
+					TweenMax.set(this.camera.position, { z: this.scrollZSmooth });
+					if (this.scrollZSmooth > this.minZoomZ - 30) {
+						window.location.href = '#project-' + this.prevId; // transitionOut
+					}
+				} else {
+					TweenMax.set(this.camera.position, { z: this.scrollZSmooth });
+				}
+			}
+
+			// on scroll Content
 			if ((0, _utils.round)(this.scrollY, 10) !== (0, _utils.round)(this.scrollYSmooth, 10)) {
 				// console.log(round(this.scrollY, 10), this.scrollYSmooth);
 
@@ -12359,7 +12452,7 @@ var ProjectView = function (_AbstractView) {
 
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
-					_this9.camera.position.set(0, 0, 160);
+					_this9.camera.position.set(0, 0, _this9.zoomZ);
 					if (noDolly === false) _this9.cameraMove = false;
 					_this9.clicked = false;
 				}
@@ -12375,28 +12468,30 @@ var ProjectView = function (_AbstractView) {
 					}
 				});
 			} else {
-				tl.fromTo(this.camera.position, 2, { z: 240 }, { z: 160, ease: window.Power4.easeOut }); // 2
+				console.log(this.dir);
+				var start = this.dir === -1 ? 0 : 260;
+				tl.fromTo(this.camera.position, 3, { z: start }, { z: this.zoomZ, ease: window.Expo.easeOut }); // 2
 			}
 
-			tl.to('.overlay', 1, {
+			tl.to('.overlay', 0.8, {
 				opacity: 0
 			}, 0);
 
 			tl.add(function () {
 				// remover overlay class
 				// this.ui.overlay.classList.remove('black');
-
-			});
+				_this9.transitionInComplete = true;
+			}, 0.8);
 
 			// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-			tl.staggerFromTo(['.glitch', '.project__more', '.project__number', '.project__prev', '.project__next'], 1.2, { // 1.2
+			tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
 				opacity: 0,
-				y: 20
+				y: 80
 			}, {
 				opacity: 0.8,
 				y: 0,
-				ease: window.Power4.easeOut
+				ease: window.Expo.easeOut
 			}, 0.1, delay);
 
 			// tl.add( () => { // add transition hover css ????
@@ -12452,38 +12547,49 @@ var ProjectView = function (_AbstractView) {
 			// this.dolly.range = [0, 1];
 			// this.dolly.both = 0;
 
-			var tl = new TimelineMax({
-				onComplete: function onComplete() {
-					// this.cameraMove = false;
+			var tl = new TimelineMax();
+
+			if (this.transitionOutFast !== true) {
+				tl.to(this.camera.position, 2, { z: 0, ease: window.Power2.easeIn });
+
+				// tl.to(this.dolly, 2, {
+				// 	cameraPosition: 1,
+				// 	// lookatPosition: 1,
+				// 	ease: window.Power2.easeIn,
+				// 	onUpdate: () => {
+				// 		this.dolly.update();
+				// 	}
+				// });
+
+				tl.to('.overlay', 0.5, {
+					opacity: 1
+				}, 1.7);
+				tl.add(function () {
 					_this10.animating = false;
 
-					TweenMax.killAll();
+					TweenMax.killAll(); // venere
 					// TweenMax.killTweensOf(this.symbol.mesh.position);
 
 					// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 					_EmitterManager2.default.emit('view:transition:out');
 					// console.log('transition out', this.id);
-				}
-			});
+				});
+			} else {
+				// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
+				tl.to('.overlay', 0.5, {
+					opacity: 1
+				});
+				tl.add(function () {
+					_this10.animating = false;
 
-			tl.to(this.camera.position, 2, { z: 0, ease: window.Power2.easeIn });
+					TweenMax.killAll(); // venere
+					// TweenMax.killTweensOf(this.symbol.mesh.position);
 
-			// tl.to(this.dolly, 2, {
-			// 	cameraPosition: 1,
-			// 	// lookatPosition: 1,
-			// 	ease: window.Power2.easeIn,
-			// 	onUpdate: () => {
-			// 		this.dolly.update();
-			// 	}
-			// });
-
-			tl.to('.overlay', 0.5, {
-				opacity: 1
-			}, 1.7);
-
-			// setTimeout(()=>{
-
-			// },200);
+					// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
+					_EmitterManager2.default.emit('view:transition:out');
+					// console.log('transition out', this.id);
+				}, 0.8);
+			}
 		}
 	}, {
 		key: 'reset',
@@ -12494,7 +12600,7 @@ var ProjectView = function (_AbstractView) {
 
 			this.cameraRotX = true;
 			this.glitch.stop = false;
-			_ScrollManager2.default.off(); // stop scrollmanager
+			// ScrollManager.off(); // stop scrollmanager
 
 			var tl = new TimelineMax({ onComplete: function onComplete() {
 					// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
@@ -12564,6 +12670,12 @@ var ProjectView = function (_AbstractView) {
 			this.camera.rotation.y = (0, _utils.toRadian)(this.effectController.rotY);
 			this.camera.rotation.z = (0, _utils.toRadian)(this.effectController.rotZ);
 			// this.camera.updateProjectionMatrix();
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			_ScrollManager2.default.off();
+			_get(ProjectView.prototype.__proto__ || Object.getPrototypeOf(ProjectView.prototype), 'destroy', this).call(this);
 		}
 	}]);
 
