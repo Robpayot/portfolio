@@ -12,13 +12,18 @@ class ScrollManager {
 
 	}
 
-	on(e) {
+	on() {
 		virtualScroll.on(this.scroll);
 
 	}
 
 	off() {
+		console.log('off');
 		virtualScroll.off();
+	}
+
+	destroy() {
+		virtualScroll.destroy();
 	}
 
 	scroll(e) {

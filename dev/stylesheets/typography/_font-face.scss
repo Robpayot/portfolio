@@ -11,31 +11,33 @@
 
 @font-face {
     font-family: 'Theinhardt';
-    src: url('../fonts/THEINHARDT-REGULAR.OTF');
+    src: url('../fonts/theinhardt.otf');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
+    font-family: 'Theinhardt-medium';
+    src: url('../fonts/theinhardt-light.otf');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
     font-family: 'Theinhardt-light';
-    src: url('../fonts/THEINHARDT-LIGHT.OTF');
+    src: url('../fonts/theinhardt-light.otf');
     font-weight: 300;
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'Theinhardt-ita';
-    src: url('../fonts/THEINHARDT-REGULARITA.OTF');
-    font-weight: 500;
-    font-style: italic;
-}
+// @font-face {
+//     font-family: 'Theinhardt-ita';
+//     src: url('../fonts/THEINHARDT-REGULARITA.OTF');
+//     font-weight: 500;
+//     font-style: italic;
+// }
 
-@font-face {
-    font-family: 'Theinhardt-medium';
-    src: url('../fonts/THEINHARDT-MEDIUM.OTF');
-    font-weight: 500;
-    font-style: normal;
-}
+
 
 
 
@@ -86,8 +88,3 @@
 /*        GLOBAL
 /* ------------------------------------------------------------------ */
 
-body {
-    // @extend %Regular;
-    font-size:$base-font-size;
-    line-height:$base-line-height;
-}

@@ -17,7 +17,9 @@ export default class Menu {
 			buttonSvg: this.el.querySelector('.menu__button svg'),
 			overlay: this.el.querySelector('.menu__overlay'),
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
-			links: this.el.querySelectorAll('.menu__link')
+			subLinksTitles: this.el.querySelectorAll('.menu__sublink > div'),
+			links: this.el.querySelectorAll('.menu__link'),
+			linksTitles: this.el.querySelectorAll('.menu__link .title--3')
 		};
 
 		this.maxDash = 635;
@@ -49,12 +51,15 @@ export default class Menu {
 		this.ui.button[evListener]('click', this.toggleOpen);
 		this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 		this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
-		console.log(this.ui.links, [...this.ui.links]);
-		for (let i = 0; i < this.ui.links.length; i++) {
-			this.ui.links[i][evListener]('mouseenter', this.onHoverLink);
-			this.ui.links[i][evListener]('mouseleave', this.onLeaveLink);
+		for (let i = 0; i < this.ui.linksTitles.length; i++) {
+			this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
+			this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 		}
 
+		for (let i = 0; i < this.ui.subLinksTitles.length; i++) {
+			this.ui.subLinksTitles[i][evListener]('mouseenter', this.onHoverLink);
+			this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
+		}
 		// svg.addEventListener('mouseleave', () => {
 		// 	console.log('leave');
 		// 	hover = false;
@@ -63,24 +68,38 @@ export default class Menu {
 
 	toggleOpen(close = false) {
 
+		if (close === true) {
+
+			TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+			this.el.classList.remove('is-open');
+			global.CURSOR.el.classList.remove('menu-open');
+			this.ui.buttonSvg.classList.remove('is-open');
+			this.ui.buttonSvg.classList.add('is-close');
+			this.animBtn = false;
+			this.animClicked = false;
+			console.log('close');
+			return false;
+		}
+
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
 		this.animBtn = true;
 		this.animClicked = true;
 
-		const tl = new TimelineMax();
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 
 		if (this.el.classList.contains('is-open') === true || close === true) {
 
 			this.el.classList.remove('is-open');
 			global.CURSOR.el.classList.remove('menu-open');
+			const tl = new TimelineMax();
 
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut });
+			// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.1 );
 			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
-			tl.add(()=> {
+			tl.add(() => {
 				this.ui.buttonSvg.classList.remove('is-open');
 				this.ui.buttonSvg.classList.add('is-close');
 				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
@@ -92,7 +111,16 @@ export default class Menu {
 
 			this.el.classList.add('is-open');
 			global.CURSOR.el.classList.add('menu-open');
-			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut });
+
+			const links = document.querySelectorAll('.menu__link .title--3');
+
+			const tl = new TimelineMax();
+
+			tl.set(links, {opacity: 0});
+			tl.staggerFromTo([links[2], links[1], links[0]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
+			// tl.set('.menu__sublink span', {opacity: 1}, 1.5);
+			tl.staggerFromTo('.menu__sublink div', 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.03, 0.4);
+			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
 			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut}, 0.1 );
 			tl.to('.menu__button .open-up', 0.9, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0.3);
@@ -108,14 +136,19 @@ export default class Menu {
 
 	onHoverLink(e) {
 		const el = e.currentTarget;
-		el.classList.add('is-hover');
-		global.CURSOR.interractHover();
+		el.parentNode.classList.add('is-hover');
+
+		if (el.parentNode.getAttribute('data-color')) {
+			global.CURSOR.interractHover({color: el.parentNode.getAttribute('data-color'), small: true });
+		} else {
+			global.CURSOR.interractHover();
+		}
 	}
 
 	onLeaveLink(e) {
 		const el = e.currentTarget;
-		el.classList.remove('is-hover');
-		global.CURSOR.interractLeave();
+		el.parentNode.classList.remove('is-hover');
+		global.CURSOR.interractLeave({ small: true });
 	}
 
 	onHoverBtn(e) {

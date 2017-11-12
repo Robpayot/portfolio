@@ -33,7 +33,7 @@ export default class Stars extends ProjectView {
 
 		this.setTerrain();
 
-		console.log('Stars view');
+		console.log('Stars view', this.clock.getElapsedTime());
 
 	}
 
@@ -151,8 +151,6 @@ export default class Stars extends ProjectView {
 
 		}
 
-		console.log(this.mlib[ 'heightmap' ]);
-
 
 		const plane = new PlaneBufferGeometry( SCREEN_WIDTH, SCREEN_HEIGHT );
 
@@ -211,7 +209,7 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < this.nbUnif; i++) {
 
 			let uniforms = UniformsUtils.clone(shaderPoint.uniforms);
-			console.log(uniforms);
+			// console.log(uniforms);
 			uniforms.map.value = new Texture(img);
 			uniforms.map.value.needsUpdate = true;
 			uniforms.scale.value = window.innerHeight * 1;
@@ -256,8 +254,8 @@ export default class Stars extends ProjectView {
 
 		}
 
-		const blobLightShader = new BrightnessShader();
-		console.log(shaderPoint);
+		// const blobLightShader = new BrightnessShader();
+		// console.log(shaderPoint);
 
 
 		for (let i = 0; i < this.nbAst; i++) {
@@ -388,7 +386,7 @@ export default class Stars extends ProjectView {
 				el.progress = 0;
 				el.initPosY = getRandom(this.topY - 5, this.topY);
 			}
-			el.progress += (delta * 4);
+			el.progress += delta * 4;
 			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
 			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;

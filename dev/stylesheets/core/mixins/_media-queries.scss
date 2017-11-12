@@ -15,6 +15,12 @@
 }
 
 @mixin small-desktop {
+    @media screen and (max-width: $breakpoint-small-desktop) {
+        @content;
+    }
+}
+
+@mixin desktop {
     @media screen and (max-width: $breakpoint-desktop) {
         @content;
     }

@@ -88,6 +88,8 @@ export default class Cursor {
 
 		// console.log('hover');
 
+		let maxVal = obj.small === true ? 35 : 49;
+
 		if (obj.back === true) {
 			TweenMax.set('text', {display: 'block'});
 			TweenMax.to('text', 0.5, {opacity: 1});
@@ -97,9 +99,14 @@ export default class Cursor {
 			this.c2.style.stroke = obj.color;
 			this.hoverGoTo = true;
 			// remplie
-			TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
-				if (this.hoverGoTo = true) window.location.href = obj.href;
-			}});
+			if (obj.small !== true) {
+				TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
+					if (this.hoverGoTo = true) window.location.href = obj.href;
+				}});
+			} else {
+				TweenMax.set(this.c2, {strokeDashoffset: '0%'});
+			}
+
 		}
 
 		if (obj.magnet === true) {
@@ -112,13 +119,13 @@ export default class Cursor {
 				this.stopFollow = true;
 				TweenMax.to(this.el, 0.3, {left: vpOffset.left + vpOffset.width / 2, top: vpOffset.top + vpOffset.height / 2});
 				TweenMax.to(this.cursorSmooth, 0.3, {x: vpOffset.left + vpOffset.width / 2, y: vpOffset.top + vpOffset.height / 2});
-				TweenMax.to(this.circleObj,1.5, { val: 49, ease: window.Expo.easeOut, onUpdate:() => {
+				TweenMax.to(this.circleObj,1.5, { val: maxVal, ease: window.Expo.easeOut, onUpdate:() => {
 					this.c1.setAttribute('r', this.circleObj.val);
 					this.c2.setAttribute('r', this.circleObj.val);
 				}});
 			}
 		} else {
-			TweenMax.to(this.circleObj,0.7, { val: 49, ease: window.Expo.easeOut, onUpdate:() => {
+			TweenMax.to(this.circleObj,0.7, { val: maxVal, ease: window.Expo.easeOut, onUpdate:() => {
 				this.c1.setAttribute('r', this.circleObj.val);
 				this.c2.setAttribute('r', this.circleObj.val);
 			}});
@@ -131,7 +138,6 @@ export default class Cursor {
 		this.hoverGlobal = false;
 		// console.log('leave');
 		// remplie
-		TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 
 		if (obj.back === true) {
 			TweenMax.to('text', 0.2, {opacity: 0});
@@ -139,7 +145,12 @@ export default class Cursor {
 		}
 
 		if (obj.color !== undefined) {
+			TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 			this.hoverGoTo = false;
+		}
+
+		if (obj.small === true) {
+			TweenMax.to(this.c2, 0, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 		}
 
 		if (obj.magnet === true) {
