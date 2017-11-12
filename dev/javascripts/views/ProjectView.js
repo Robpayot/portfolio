@@ -48,6 +48,7 @@ export default class ProjectView extends AbstractView {
 		this.pointsLight = obj.pointsLight;
 		this.alt = obj.alt;
 		this.fromUrl = obj.fromUrl;
+		this.dir = obj.dir;
 		this.sound = SoundManager;
 
 		this.name = `project-${this.id}`;
@@ -80,6 +81,9 @@ export default class ProjectView extends AbstractView {
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.onClickContainer = this.onClickContainer.bind(this);
+		this.killGlitch = this.killGlitch.bind(this);
+		this.onHoverTitle = this.onHoverTitle.bind(this);
+		this.onLeaveTitle = this.onLeaveTitle.bind(this);
 
 		this.bounceArea = 200; // default bounceArea
 		this.animLink = false;
@@ -88,9 +92,15 @@ export default class ProjectView extends AbstractView {
 		this.animBtn = false;
 		this.hoverBtn = false;
 		this.scrollY = this.scrollYSmooth = 0;
+		this.scrollZ = this.scrollZSmooth = 160;
+		this.coefScrollZ = 0.15;
+		this.zoomZ = 160;
+		this.minZoomZ = 210;
+		this.maxZoomZ = 0;
 		console.log('mon id', this.id);
+		// this.stopScrollZ = true;
 
-		// ScrollManager.on();
+		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
 
 
 	}
@@ -115,23 +125,19 @@ export default class ProjectView extends AbstractView {
 		EmitterManager[onListener]('raf', this.raf);
 
 		if (method === true) {
-			bean.on(document.body, 'mouseenter.project', '.glitch', () => {
-				console.log('hover glitch');
-				this.glitch.hover = true;
-				global.CURSOR.interractHover();
-			});
-			bean.on(document.body, 'mouseleave.project', '.glitch', () => {
-				this.glitch.hover = false;
-				global.CURSOR.interractLeave();
-			});
+
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			bean.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 			bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		} else {
 			bean.off(document.body, '.project');
 			bean.off(document.body, '.projectContent');
+			this.glitch.hover = false;
+			this.tlGlitch.kill();
 		}
 
 
@@ -359,6 +365,8 @@ export default class ProjectView extends AbstractView {
 		////////////////////
 		// EVENTS
 		////////////////////
+		console.log(ScrollManager);
+		ScrollManager.on();
 
 		this.events(true);
 
@@ -376,7 +384,7 @@ export default class ProjectView extends AbstractView {
 		// this.camera.useTarget = false;
 		this.camera.lookAt(this.cameraTarget);
 
-		this.pathRadius = 160;
+		this.pathRadius = this.zoomZ;
 		this.camera.position.set(-60, 170, 70);
 		if (Device.size === 'mobile') {
 			this.camera.position.set(0, 0, 200);
@@ -465,13 +473,13 @@ export default class ProjectView extends AbstractView {
 		title.position.set(20, 0, 10);
 		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
-		const prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
-		const nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
+		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
+		this.nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
 
 		// Pixel to Units magic FORMULE
 		const distZ = -10;
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const wHeight = 2 * Math.tan( vFOV / 2 ) * (160 - distZ); // visible height dist = 60 (160 - 100)
+		const wHeight = 2 * Math.tan( vFOV / 2 ) * (this.zoomZ - distZ); // visible height dist = 60 (160 - 100)
 		const margePosY = 7;
 		const finalPosY = wHeight / 2 - margePosY;
 		// console.log(finalPosY);
@@ -481,7 +489,7 @@ export default class ProjectView extends AbstractView {
 
 		// Prev project
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-prev'));
-		html  = template({id: prevId, color: DATA.projects[prevId].color });
+		html  = template({id: this.prevId, color: DATA.projects[this.prevId].color });
 		this.prevProject = new CssContainer(html, this.cssScene, this.cssObjects);
 		this.prevProject.position.set(0, -finalPosY, -distZ);
 		this.prevProject.scale.multiplyScalar(this.coefText);
@@ -489,7 +497,7 @@ export default class ProjectView extends AbstractView {
 
 		// Next project
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
-		html  = template({id: nextId, color: DATA.projects[nextId].color});
+		html  = template({id: this.nextId, color: DATA.projects[this.nextId].color});
 		this.nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
 		this.nextProject.position.set(0, finalPosY, -distZ);
 		this.nextProject.scale.multiplyScalar(this.coefText);
@@ -652,6 +660,10 @@ export default class ProjectView extends AbstractView {
 	// EVENTS
 	////////////
 
+	killGlitch() {
+		this.glitch.hover = false;
+	}
+
 	onClickContainer(e) {
 		console.log('click container');
 		e.stopPropagation();
@@ -696,6 +708,8 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 
+		this.glitch.hover = false; // kill Glitch
+		this.tlGlitch.kill();
 		bean.off(document.body, '.project'); // off events related to init state
 
 		// on events related to projectContent state
@@ -731,7 +745,6 @@ export default class ProjectView extends AbstractView {
 
 		tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 2.4);  // ,2.4
 		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 2.4);
-
 
 		tl.staggerFromTo(['.project__top', this.ui.imgs[0]], 1.2, { // 1.2
 			opacity: 0,
@@ -778,7 +791,7 @@ export default class ProjectView extends AbstractView {
 			global.CURSOR.interractLeave();
 			this.glitch.hover = false;
 
-			ScrollManager.on(); // start scrollmanager
+			// ScrollManager.on(); // start scrollmanager
 		}, 0.5);
 
 	}
@@ -788,21 +801,17 @@ export default class ProjectView extends AbstractView {
 		bean.off(document.body, '.projectContent'); // off events related state projectContent
 
 		// on events related to init state
-		bean.on(document.body, 'mouseenter.project', '.glitch', () => {
-			this.glitch.hover = true;
-			global.CURSOR.interractHover();
-		});
-		bean.on(document.body, 'mouseleave.project', '.glitch', () => {
-			this.glitch.hover = false;
-			global.CURSOR.interractLeave();
-		});
 		bean.on(document.body, 'click.project', '.project__title', this.showContent);
+		bean.on(document.body, 'click.project', '.project__container', this.onClickContainer);
+		bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+		bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 		bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 		bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
-		ScrollManager.off(); // stop scrollmanager
+		// ScrollManager.off(); // stop scrollmanager
+		this.contentOpen = false;
 		global.CURSOR.interractLeave({back: true});
 
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
@@ -817,11 +826,11 @@ export default class ProjectView extends AbstractView {
 		this.currentRotateY = { angle: toRadian(90)};
 		const tl = new TimelineMax({ onComplete: () => {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
-			this.scrollY = 0;
+			this.scrollY = this.scrollYSmooth = 0;
 			TweenMax.set(this.ui.container, { y: -this.scrollY});
 			this.cameraMove = false;
 			this.camera.rotation.order = 'XYZ';
-			this.contentOpen = false;
+			// this.contentOpen = false;
 		} });
 
 		tl.staggerTo(['.project__top', '.project__image', '.project__footer' ], 1.2, {
@@ -848,10 +857,18 @@ export default class ProjectView extends AbstractView {
 			ease: window.Power3.easeInOut
 		}, 0.5);
 
-		tl.staggerTo(['.project__prev','.project__next','.project__title'], 0.6, {
-			opacity: 1,
-			ease: window.Power4.easeOut
-		},0.2,1.5);
+		tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
+			opacity: 0,
+			y: 80
+		}, {
+			opacity: 0.8,
+			y: 0,
+			ease: window.Expo.easeOut
+		}, 0.1, 2.6);
+
+		tl.set(['.project__title'], {
+			opacity: 1
+		}, 2.6);
 
 	}
 
@@ -899,30 +916,63 @@ export default class ProjectView extends AbstractView {
 	}
 
 	scroll(e) {
+		console.log(this.transitionInComplete);
+
+		if (this.transitionInComplete !== true) e.deltaY = 0; // prevent inertia
 
 
-		// this.topContentTargetY -= e.deltaY * 0.01;
-		// need profil for each browser
-		this.scrollY -= e.deltaY * 0.2;
+		if (this.contentOpen === true) {
+			// this.topContentTargetY -= e.deltaY * 0.01;
+			// need profil for each browser
+			this.scrollY -= e.deltaY * 0.2;
 
-		// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
-		// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
-		// }
+			// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
+			// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
+			// }
 
-		// if (this.scrollY < 0) {
-		// 	this.scrollY = this.scrollYSmooth = 0;
-		// }
+			// if (this.scrollY < 0) {
+			// 	this.scrollY = this.scrollYSmooth = 0;
+			// }
 
 
-		for (let i = 1; i < this.ui.imgs.length; i++) {
+			for (let i = 1; i < this.ui.imgs.length; i++) {
 
-			if (this.ui.imgs[i].classList.contains('is-visible') === false) {
+				if (this.ui.imgs[i].classList.contains('is-visible') === false) {
 
-				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+					if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+
+						const tl = new TimelineMax();
+						tl.set(this.ui.imgs[i], {visibility: 'visible'});
+						tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+							opacity: 0,
+							y: 80
+						}, {
+							opacity: 0.9,
+							y: 0,
+							ease: window.Expo.easeOut
+						});
+
+						tl.fromTo(this.ui.imgs[i], 1.2, {
+							scaleY: 2
+						}, {
+							scaleY: 1,
+							ease: window.Expo.easeOut
+						}, 0);
+						this.ui.imgs[i].classList.add('is-visible');
+
+
+
+					}
+				}
+			}
+
+			if (this.ui.footer.classList.contains('is-visible') === false) {
+
+				if (getOffsetTop(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
 
 					const tl = new TimelineMax();
-					tl.set(this.ui.imgs[i], {visibility: 'visible'});
-					tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+					tl.set(this.ui.footer, {visibility: 'visible'});
+					tl.fromTo(this.ui.footer, 1.2, { // 1.2
 						opacity: 0,
 						y: 80
 					}, {
@@ -930,41 +980,23 @@ export default class ProjectView extends AbstractView {
 						y: 0,
 						ease: window.Expo.easeOut
 					});
-
-					tl.fromTo(this.ui.imgs[i], 1.2, {
-						scaleY: 2
-					}, {
-						scaleY: 1,
-						ease: window.Expo.easeOut
-					}, 0);
-					this.ui.imgs[i].classList.add('is-visible');
-
-
+					this.ui.footer.classList.add('is-visible');
 
 				}
 			}
+		} else {
+			if (this.stopScrollZ === true) return false;
+
+			this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
+
+			console.log( clamp(e.deltaY * 0.04, -4, 4));
+
+			// console.log(this.scrollZSmooth);
+			// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
+			// console.log(this.camera.position.z);
+			// TweenMax.set(this.ui.container, { y: -this.scrollY});
 		}
 
-		if (this.ui.footer.classList.contains('is-visible') === false) {
-
-			if (getOffsetTop(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
-
-				const tl = new TimelineMax();
-				tl.set(this.ui.footer, {visibility: 'visible'});
-				tl.fromTo(this.ui.footer, 1.2, { // 1.2
-					opacity: 0,
-					y: 80
-				}, {
-					opacity: 0.9,
-					y: 0,
-					ease: window.Expo.easeOut
-				});
-				this.ui.footer.classList.add('is-visible');
-
-			}
-		}
-
-		// TweenMax.set(this.ui.container, { y: -this.scrollY});
 
 	}
 
@@ -1000,6 +1032,31 @@ export default class ProjectView extends AbstractView {
 
 	onLeaveContainer() {
 		global.CURSOR.interractHover({back: true});
+	}
+
+	onHoverTitle() {
+
+		console.log('hover glitch');
+		this.tlGlitch.restart();
+		// this.tlGlitch.play();
+		this.tlGlitch.repeatDelay(1.3);
+		this.tlGlitch.add(() => {
+			this.glitch.hover = true;
+		});
+		this.tlGlitch.add(() => {
+			this.glitch.hover = false;
+			// manual repeat
+			// this.onHoverTitle(); //
+		}, 0.6);
+
+
+		global.CURSOR.interractHover();
+	}
+
+	onLeaveTitle() {
+		this.glitch.hover = false;
+		this.tlGlitch.kill();
+		global.CURSOR.interractLeave();
 	}
 
 	onHoverBtn(e) {
@@ -1147,8 +1204,48 @@ export default class ProjectView extends AbstractView {
 		// 	// this.ui.body.style.cursor = 'auto';
 		// 	this.clickAsteroid = false;
 		// }
+		// on scroll Z
+		// smooth scroll
+		if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
+			// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
 
-		// on scroll
+			// smooth scroll
+			this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
+
+			// if (this.scrollZSmooth >= this.minZoomZ) { // end
+			// 	this.scrollZ = this.scrollZSmooth = this.minZoomZ;
+			// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
+			// } else if (this.scrollZSmooth < this.maxZoomZ) { // top
+			// 	this.scrollZ = this.scrollZSmooth = this.maxZoomZ;
+			// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
+			// }
+
+			if (this.scrollZSmooth < this.zoomZ ) { // top
+				// ScrollManager.off();
+				this.transitionOutFast = true;
+				this.stopScrollZ = true;
+				this.scrollZ = this.maxZoomZ; // final destination
+				this.coefScrollZ = 0.027;
+				TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
+				if (this.scrollZSmooth < this.maxZoomZ + 30)  {
+					window.location.href = `#project-${this.nextId}`; // transitionOut
+				}
+			} else if (this.scrollZSmooth > this.zoomZ) { // top
+				this.transitionOutFast = true;
+				this.stopScrollZ = true;
+				this.scrollZ = this.minZoomZ; // final destination
+				this.coefScrollZ = 0.027;
+				TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
+				if (this.scrollZSmooth > this.minZoomZ - 30 )  {
+					window.location.href = `#project-${this.prevId}`; // transitionOut
+				}
+			} else {
+				TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
+			}
+
+		}
+
+		// on scroll Content
 		if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
 			// console.log(round(this.scrollY, 10), this.scrollYSmooth);
 
@@ -1353,9 +1450,10 @@ export default class ProjectView extends AbstractView {
 
 		const tl = new TimelineMax({
 			onComplete: () => {
-				this.camera.position.set(0, 0, 160);
+				this.camera.position.set(0, 0, this.zoomZ);
 				if (noDolly === false) this.cameraMove = false;
 				this.clicked = false;
+
 			}
 		});
 
@@ -1370,30 +1468,34 @@ export default class ProjectView extends AbstractView {
 			});
 
 		} else {
-			tl.fromTo(this.camera.position, 2, {z : 240}, {z : 160, ease: window.Power4.easeOut}); // 2
+			console.log(this.dir);
+			let start = this.dir === -1 ? 0 : 260;
+			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}); // 2
+
 		}
 
 
 
-		tl.to('.overlay', 1, {
+		tl.to('.overlay', 0.8, {
 			opacity: 0
 		}, 0);
 
 		tl.add(() => {
 			// remover overlay class
 			// this.ui.overlay.classList.remove('black');
-
-		});
+			console.log('yes');
+			this.transitionInComplete = true;
+		}, 0.8);
 
 		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
-		tl.staggerFromTo(['.glitch', '.project__more', '.project__number', '.project__prev', '.project__next'], 1.2, { // 1.2
+		tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
 			opacity: 0,
-			y: 20
+			y: 80
 		}, {
 			opacity: 0.8,
 			y: 0,
-			ease: window.Power4.easeOut
+			ease: window.Expo.easeOut
 		}, 0.1, delay);
 
 		// tl.add( () => { // add transition hover css ????
@@ -1447,38 +1549,51 @@ export default class ProjectView extends AbstractView {
 		// this.dolly.range = [0, 1];
 		// this.dolly.both = 0;
 
-		const tl = new TimelineMax({
-			onComplete: () => {
-				// this.cameraMove = false;
+		const tl = new TimelineMax();
+
+		if (this.transitionOutFast !== true) {
+			tl.to(this.camera.position, 2, {z : 0, ease: window.Power2.easeIn});
+
+			// tl.to(this.dolly, 2, {
+			// 	cameraPosition: 1,
+			// 	// lookatPosition: 1,
+			// 	ease: window.Power2.easeIn,
+			// 	onUpdate: () => {
+			// 		this.dolly.update();
+			// 	}
+			// });
+
+			tl.to('.overlay', 0.5, {
+				opacity: 1
+			}, 1.7);
+			tl.add(() => {
 				this.animating = false;
 
-				TweenMax.killAll();
+				TweenMax.killAll(); // venere
 				// TweenMax.killTweensOf(this.symbol.mesh.position);
 
 				// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
 				EmitterManager.emit('view:transition:out');
 				// console.log('transition out', this.id);
-			}
-		});
+			});
+		} else {
+			// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
+			tl.to('.overlay', 0.5, {
+				opacity: 1
+			});
+			tl.add(() => {
+				this.animating = false;
 
-		tl.to(this.camera.position, 2, {z : 0, ease: window.Power2.easeIn});
+				TweenMax.killAll(); // venere
+				// TweenMax.killTweensOf(this.symbol.mesh.position);
 
-		// tl.to(this.dolly, 2, {
-		// 	cameraPosition: 1,
-		// 	// lookatPosition: 1,
-		// 	ease: window.Power2.easeIn,
-		// 	onUpdate: () => {
-		// 		this.dolly.update();
-		// 	}
-		// });
+				// EmitterManager.emit('router:switch', `/project-${dest}`, dest);
+				EmitterManager.emit('view:transition:out');
+				// console.log('transition out', this.id);
+			}, 0.8);
+		}
 
-		tl.to('.overlay', 0.5, {
-			opacity: 1
-		}, 1.7);
 
-		// setTimeout(()=>{
-
-		// },200);
 
 	}
 
@@ -1487,7 +1602,7 @@ export default class ProjectView extends AbstractView {
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
-		ScrollManager.off(); // stop scrollmanager
+		// ScrollManager.off(); // stop scrollmanager
 
 		const tl = new TimelineMax({ onComplete: () => {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
@@ -1552,6 +1667,12 @@ export default class ProjectView extends AbstractView {
 		this.camera.rotation.y = toRadian(this.effectController.rotY);
 		this.camera.rotation.z = toRadian(this.effectController.rotZ);
 		// this.camera.updateProjectionMatrix();
+	}
+
+	destroy() {
+		console.log('destroy ?');
+		ScrollManager.off();
+		super.destroy();
 	}
 
 }

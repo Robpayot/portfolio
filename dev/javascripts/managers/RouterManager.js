@@ -90,11 +90,14 @@ class RouterManager {
 			this.lastPage = this.currentPage.name;
 
 			this.currentPage.transitionOut(); // animation Out
-			global.MENU.toggleOpen(true); // close Menu
+
+			this.lastId = this.currentPage.id;
 
 			EmitterManager.once('view:transition:out', () => {
 
+				global.MENU.toggleOpen(true); // close Menu
 				// When animation out, destroy scene, init new view
+
 
 				this.currentPage.destroy(true);
 				this.initView(goToPage, index, false);
@@ -112,6 +115,8 @@ class RouterManager {
 	initView(goToPage, index = null, fromUrl, lastPage = null) {
 
 		// let slug;
+		let dir;
+		let id;
 
 		switch (goToPage) {
 			case '/about':
@@ -138,15 +143,21 @@ class RouterManager {
 						// data: data.projects[0],
 						// fromUrl
 				// if (this.project0 === null) {
+					id = 0;
+					dir = this.lastId > id ? -1 : 1;
+					console.log(this.lastId);
+					if (this.lastId === 3 || this.lastId === undefined) dir = 1;
+					console.log(dir);
 					this.currentPage = this.project0 = new Stars({ // Attention, Garde en mémoire une cette variable très lourde !
-						id: 0,
+						id,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: data.projects[0],
-						fromUrl
+						fromUrl,
+						dir
 					});
 				// } else {
 				// 	this.currentPage = this.project0;
@@ -159,15 +170,18 @@ class RouterManager {
 			case '/project-1':
 
 				// if (this.project1 === null) {
+					id = 1;
+					dir = this.lastId > id ? -1 : 1;
 					this.currentPage = this.project1 = new Blob({
-						id: 1,
+						id,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: data.projects[1],
-						fromUrl
+						fromUrl,
+						dir
 					});
 				// } else {
 				// 	this.currentPage = this.project1;
@@ -179,15 +193,18 @@ class RouterManager {
 			case '/project-2':
 
 				// if (this.project2 === null) {
+					id = 2;
+					dir = this.lastId > id ? -1 : 1;
 					this.currentPage = this.project2 = new Circular({
-						id: 2,
+						id,
 						bkg: 0x0101010,
 						astd: 'spheres',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: data.projects[2],
-						fromUrl
+						fromUrl,
+						dir
 					});
 				// } else {
 				// 	this.currentPage = this.project2;
@@ -199,15 +216,19 @@ class RouterManager {
 			case '/project-3':
 
 				// if (this.project3 === null) {
+					id = 3;
+					dir = this.lastId > id ? -1 : 1;
+					if (this.lastId === 0) dir = -1;
 					this.currentPage = this.project3 = new Levit({
-						id: 3,
+						id,
 						bkg: 0x0101010,
 						astd: 'cubes',
 						gravity: false,
 						pointsLight: true,
 						alt: false,
 						data: data.projects[3],
-						fromUrl
+						fromUrl,
+						dir
 					});
 				// } else {
 				// 	this.currentPage = this.project3;

@@ -3,7 +3,6 @@
  */
 import * as THREE from 'three';
 import { FilmShader } from '../shaders/FilmShader';
-console.log(FilmShader);
 
 let FilmPass = function ( noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale ) {
 
