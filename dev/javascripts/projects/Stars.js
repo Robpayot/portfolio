@@ -33,7 +33,7 @@ export default class Stars extends ProjectView {
 
 		this.setTerrain();
 
-		console.log('Stars view');
+		console.log('Stars view', this.clock.getElapsedTime());
 
 	}
 
@@ -254,7 +254,7 @@ export default class Stars extends ProjectView {
 
 		}
 
-		const blobLightShader = new BrightnessShader();
+		// const blobLightShader = new BrightnessShader();
 		// console.log(shaderPoint);
 
 
@@ -386,7 +386,7 @@ export default class Stars extends ProjectView {
 				el.progress = 0;
 				el.initPosY = getRandom(this.topY - 5, this.topY);
 			}
-			el.progress += (delta * 4);
+			el.progress += delta * 4;
 			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
 			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;

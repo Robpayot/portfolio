@@ -1,6 +1,7 @@
 // import PreloadManager from './PreloadManager';
 import EmitterManager from './EmitterManager';
 import RouterManager from './RouterManager';
+import ScrollManager from '../managers/ScrollManager';
 import { Device } from '../helpers/Device';
 // import WebFont from 'webfontloader';
 // import SoundManager from './SoundManager';

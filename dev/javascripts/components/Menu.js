@@ -68,6 +68,19 @@ export default class Menu {
 
 	toggleOpen(close = false) {
 
+		if (close === true) {
+
+			TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+			this.el.classList.remove('is-open');
+			global.CURSOR.el.classList.remove('menu-open');
+			this.ui.buttonSvg.classList.remove('is-open');
+			this.ui.buttonSvg.classList.add('is-close');
+			this.animBtn = false;
+			this.animClicked = false;
+			console.log('close');
+			return false;
+		}
+
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
 		this.animBtn = true;

@@ -13,7 +13,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, BackSide, LoadingManager, BoxGeometry, CubeTexture, DirectionalLight, PointLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, BackSide, LoadingManager, ImageLoader, BoxGeometry, CubeTexture, DirectionalLight, PointLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import '../shaders/ScreenSpaceShader';
@@ -43,7 +43,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 
@@ -72,7 +72,8 @@ export default class IntroView extends AbstractView {
 		Promise.all([
 			loadJSON('datas/models/iceberg-1.json'),
 			loadJSON('datas/models/iceberg-2.json'),
-			loadJSON('datas/models/iceberg-3.json')
+			loadJSON('datas/models/iceberg-3.json'),
+			loadJSON('datas/models/voronoi.json')
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
@@ -263,7 +264,7 @@ export default class IntroView extends AbstractView {
 
 		this.lastTime =  (new Date()).getTime();
 
-		SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
+		// SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
 		SceneManager.renderer.context.getExtension('OES_texture_float');
 		SceneManager.renderer.context.getExtension('OES_texture_float_linear');
 
@@ -280,24 +281,42 @@ export default class IntroView extends AbstractView {
 			this.finalBounds = this.heightCamera;
 		}
 
+		this.ms_MainDirectionalLight = new DirectionalLight( 0xffffff, 1.5 );
+		this.ms_MainDirectionalLight.position.set( -0.2, 0.5, 1 );
+		this.scene.add( this.ms_MainDirectionalLight );
+
 		let gsize = 512;
 		let res = 512;
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
 		// let origz = -gsize / 2;
-		this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene, {
+		this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene,
+		{
 			INITIAL_SIZE : 200.0,
 			INITIAL_WIND : [ 10.0, 10.0 ],
 			INITIAL_CHOPPINESS : 3.6,
 			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
-			SUN_DIRECTION : [-1.0, 1.0, 1.0],
-			OCEAN_COLOR: new Vector3( 2, 2, 2 ),
-			SKY_COLOR: new Vector3( 1, 1, 1 ),
-			EXPOSURE : 2,
+			SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(),
+			OCEAN_COLOR: new Vector3( 2, 2, 2 ), // depend maintenant du Mirror Effect
+			SKY_COLOR: new Vector3( 1, 1, 1 ), // depend maintenant du Mirror Effect
+			EXPOSURE : 0.40,
 			GEOMETRY_RESOLUTION: gres,
 			GEOMETRY_SIZE : gsize,
 			RESOLUTION : res
 		} );
+		// this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene, {
+		// 	INITIAL_SIZE : 200.0,
+		// 	INITIAL_WIND : [ 10.0, 10.0 ],
+		// 	INITIAL_CHOPPINESS : 3.6,
+		// 	CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
+		// 	SUN_DIRECTION : [-1.0, 1.0, 1.0],
+		// 	OCEAN_COLOR: new Vector3( 2, 2, 2 ),
+		// 	SKY_COLOR: new Vector3( 1, 1, 1 ),
+		// 	EXPOSURE : 2,
+		// 	GEOMETRY_RESOLUTION: gres,
+		// 	GEOMETRY_SIZE : gsize,
+		// 	RESOLUTION : res
+		// } );
 
 		this.loadSkybox();
 
@@ -364,45 +383,63 @@ export default class IntroView extends AbstractView {
 		// skyBoxMaterial = new MeshBasicMaterial( { color: "0xffffff", side: BackSide } )
 
 		this.ms_SkyBox = new Mesh(
-			new BoxGeometry( 450000, 450000, 450000 ),
+			new BoxGeometry( this.finalBounds, this.finalBounds, this.finalBounds ),
 			skyBoxMaterial
 		);
 
 		this.scene.add( this.ms_SkyBox );
 
-		var textureName = '';
-		var textureExt = ".jpg";
-		var directionalLightPosition = null;
-		var directionalLightColor = null;
-		var raining = false;
-		textureName = 'interstellar';
-
-		var sources = [
-			`${global.BASE}/images/textures/intro_west.jpg`,
-			`${global.BASE}/images/textures/intro_east.jpg`,
-			`${global.BASE}/images/textures/intro_up.jpg`,
-			`${global.BASE}/images/textures/intro_down.jpg`,
-			`${global.BASE}/images/textures/intro_south.jpg`,
-			`${global.BASE}/images/textures/intro_north.jpg`
+		let sources = [
+			`${global.BASE}/images/textures/intro2_west.jpg`,
+			`${global.BASE}/images/textures/intro2_east.jpg`,
+			`${global.BASE}/images/textures/intro2_up.jpg`,
+			`${global.BASE}/images/textures/intro2_down.jpg`,
+			`${global.BASE}/images/textures/intro2_south.jpg`,
+			`${global.BASE}/images/textures/intro2_north.jpg`
 		];
-		var images = [];
+		let images = [];
 
-		var cubeMap = new CubeTexture( images );
+		let cubeMap = new CubeTexture( images );
 		cubeMap.flipY = false;
 
-		var imageLoader = new LoadingManager();
+		this.ms_Loader = new LoadingManager();
+		let log = function( message, type, timeout ) {
+		  console.log( message );
+		  // messg( message, type, timeout );
+		}
+		
+		let delay = 1500;
+		this.ms_Loader.onProgress = function( item, loaded, total ) {
+		  log( 'Loaded ' + loaded + '/' + total + ':' + item, 'info', delay );
+		};
+		this.ms_Loader.onLoad = function () {
+		  log( 'Loaded.', 'success', delay );
+		};
+		this.ms_Loader.onError = function () {
+		  log( 'Loading error.', 'error', delay );
+		};
+		
+		
+		this.ms_ImageLoader = new ImageLoader( this.ms_Loader );
+
+		let imageLoader = this.ms_ImageLoader;
 		console.log(imageLoader);
 		var loaded = 0;
 
-		for ( var i = 0, il = sources.length; i < il; ++ i ) {
-
-			cubeMap.images[ i ] = sources[i];
-			loaded++;
+		var loadTexture = function ( i ) {
+		  imageLoader.load( sources[ i ], function ( image ) {
+			cubeMap.images[ i ] = image;
+			loaded ++;
 			if ( loaded === 6 ) {
 			  cubeMap.needsUpdate = true;
 			}
+		  } );
+
 		}
-		
+
+		for ( var i = 0, il = sources.length; i < il; ++ i ) {
+		  loadTexture( i );
+		}
 		cubeMap.format = RGBFormat;
 		cubeMap.generateMipmaps = false;
 		cubeMap.magFilter = LinearFilter;
@@ -479,6 +516,19 @@ export default class IntroView extends AbstractView {
 	}
 
 	setAsteroids() {
+
+
+		// let mat = new MeshPhongMaterial( {
+		// 	color: 0xffffff,
+		// 	flatShading: true
+		// } );
+		// let mesh = new Mesh(this.models[3], mat);
+		// mesh.position.y = -10;
+
+		// this.scene.add(mesh);
+
+
+
 		// ADD Iceberg
 		this.astXMin = -380;
 		this.astXMax = 380;
@@ -793,24 +843,25 @@ export default class IntroView extends AbstractView {
 		let currentTime = new Date().getTime();
 		this.ms_Ocean.deltaTime = (currentTime - this.lastTime) / 1000 || 0.0;
 		this.lastTime = currentTime;
-		this.ms_Ocean.render(this.ms_Ocean.deltaTime);
+		// this.ms_Ocean.render(this.ms_Ocean.deltaTime);
+		this.ms_Ocean.render();
 		// Update ocean data
 		this.ms_Ocean.update();
 
 		// ?
-		this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
-		if (this.ms_Ocean.changed) {
-			this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
-			this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.set( this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection );
-			this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
-			this.ms_Ocean.changed = false;
-		}
-		this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer.texture;
-		this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer.texture;
-		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix.value = this.camera.projectionMatrix;
-		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.camera.matrixWorldInverse;
-		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.camera.position;
-		this.ms_Ocean.materialOcean.depthTest = true;
+		// this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
+		// if (this.ms_Ocean.changed) {
+		// 	this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
+		// 	this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.set( this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection );
+		// 	this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
+		// 	this.ms_Ocean.changed = false;
+		// }
+		// this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer.texture;
+		// this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer.texture;
+		// this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix.value = this.camera.projectionMatrix;
+		// this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.camera.matrixWorldInverse;
+		// this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.camera.position;
+		// this.ms_Ocean.materialOcean.depthTest = true;
 
 		// Manual simulation of infinite waves
 		// left to right
@@ -1116,7 +1167,7 @@ export default class IntroView extends AbstractView {
 		}
 		this.scene.remove( obj );
 
-		this.initWater(true);
+		// this.initWater(true);
 	}
 
 

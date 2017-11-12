@@ -102,8 +102,6 @@ export default class ProjectView extends AbstractView {
 
 		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
 
-		ScrollManager.on();
-
 
 	}
 
@@ -367,6 +365,8 @@ export default class ProjectView extends AbstractView {
 		////////////////////
 		// EVENTS
 		////////////////////
+		console.log(ScrollManager);
+		ScrollManager.on();
 
 		this.events(true);
 
@@ -916,7 +916,7 @@ export default class ProjectView extends AbstractView {
 	}
 
 	scroll(e) {
-
+		console.log(this.transitionInComplete);
 
 		if (this.transitionInComplete !== true) e.deltaY = 0; // prevent inertia
 
@@ -1483,6 +1483,7 @@ export default class ProjectView extends AbstractView {
 		tl.add(() => {
 			// remover overlay class
 			// this.ui.overlay.classList.remove('black');
+			console.log('yes');
 			this.transitionInComplete = true;
 		}, 0.8);
 
@@ -1669,6 +1670,7 @@ export default class ProjectView extends AbstractView {
 	}
 
 	destroy() {
+		console.log('destroy ?');
 		ScrollManager.off();
 		super.destroy();
 	}

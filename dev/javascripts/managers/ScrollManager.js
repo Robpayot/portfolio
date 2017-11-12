@@ -12,7 +12,7 @@ class ScrollManager {
 
 	}
 
-	on(e) {
+	on() {
 		virtualScroll.on(this.scroll);
 
 	}
