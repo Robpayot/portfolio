@@ -43,7 +43,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 
@@ -329,11 +329,11 @@ export default class IntroView extends AbstractView {
 		// Simple top Plane
 		let texture = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
 		this.plane = new Mesh(
-			new PlaneGeometry(this.finalBounds, this.finalBounds),
+			new PlaneGeometry(this.finalBounds * 2, this.finalBounds * 2),
 			new MeshBasicMaterial({map: texture, side: DoubleSide})
 		);
 
-		this.plane.position.y = this.finalBounds / 2;
+		this.plane.position.y = this.maxZoom;
 		this.plane.rotation.x = toRadian(-90);
 
 		this.sceneMirror.add( this.plane );
