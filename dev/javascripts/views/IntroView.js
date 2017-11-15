@@ -128,7 +128,7 @@ export default class IntroView extends AbstractView {
 		this.scene.background = new Color(0x000000);
 
 		this.sceneMirror = new Scene(); // scene only for reflect of Ocean
-		this.sceneMirror.background = new Color(0xFFFFFF);
+		this.sceneMirror.background = new Color(0x000000);
 
 		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
@@ -143,7 +143,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.nbAst = 15;
+		this.nbAst = 20;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -269,7 +269,7 @@ export default class IntroView extends AbstractView {
 	initWater() {
 
 
-		this.lastTime =  0;
+		this.lastTime = (new Date()).getTime();
 
 		// SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
 		SceneManager.renderer.context.getExtension('OES_texture_float');
@@ -947,21 +947,21 @@ export default class IntroView extends AbstractView {
 		}
 
 		// // deceleration
-		// if (this.cameraMove === false && this.isControls === false) {
+		if (this.cameraMove === false && this.isControls === false) {
 
-		// 	// Specify target we want
-		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
+			// Specify target we want
+			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+			this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
 
-		// 	// Smooth it with deceleration
-		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+			// Smooth it with deceleration
+			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
 
-		// 	// Apply rotation
-		// 	this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-		// 	this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+			// Apply rotation
+			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
-		// }
+		}
 
 		if (this.startIsHover !== true) {
 			if (this.clickAsteroid === true) global.CURSOR.interractHover();
@@ -969,17 +969,17 @@ export default class IntroView extends AbstractView {
 		}
 
 		// glitch title
-		// if (this.glitch) {
+		if (this.glitch) {
 
-		// 	if (this.glitch.start === true) {
-		// 		this.glitch.render({type: 'intro'});
-		// 	} else {
-		// 		if (this.glitch.stop !== true) {
-		// 			this.glitch.render({stop: true});
-		// 			this.glitch.stop = true;
-		// 		}
-		// 	}
-		// }
+			if (this.glitch.start === true) {
+				this.glitch.render({type: 'intro'});
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render({stop: true});
+					this.glitch.stop = true;
+				}
+			}
+		}
 
 		this.render();
 
