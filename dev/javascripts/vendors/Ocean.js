@@ -26,7 +26,7 @@ let Ocean = function (renderer, camera, scene, options) {
 	this.renderer.context.getExtension('OES_texture_float_linear');
 	
 	// Create mirror rendering
-	this.mirror = new THREE.MirrorRenderer( renderer, camera, scene ) ;
+	this.mirror = new THREE.MirrorRenderer( renderer, camera, options.SCENEMIRROR ) ;
 	this.mirror.position.y = -10.0;
 	
 	// Assign optional parameters as variables and object properties
@@ -50,7 +50,7 @@ let Ocean = function (renderer, camera, scene, options) {
 	this.size = optionalParameter(options.INITIAL_SIZE, 250.0),
 	this.choppiness = optionalParameter(options.INITIAL_CHOPPINESS, 1.5);
 	
-	this.matrixNeedsUpdate = false;
+	this.matrixNeedsUpdate = false; // ?
 	
 	// Setup framebuffer pipeline
 	var BaseParams = {
@@ -214,7 +214,7 @@ let Ocean = function (renderer, camera, scene, options) {
 	// Generate the ocean mesh
 	this.generateMesh();
 	this.mirror.mesh = this.oceanMesh;
-	camera.add( this.oceanMesh );
+	// camera.add( this.oceanMesh ); // ?
   
 };
 
