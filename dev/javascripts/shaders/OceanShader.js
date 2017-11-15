@@ -78,7 +78,7 @@ THREE.ShaderLib['ocean_main'] = {
 			'float specularFactor = pow( max( 0.0, dot( view, reflection ) ), 500.0 ) * 20.0;',
 		
 			// Get reflection color
-			'vec3 distortion = 200.0 * normal * vec3( 1.0, 0.0, 0.1 );',	
+			'vec3 distortion = 200.0 * normal * vec3( 1.0, 0.0, 0.1 );',
 			'vec3 reflectionColor = texture2DProj( u_reflection, vReflectCoordinates.xyz + distortion ).xyz;',
 			
 			// Smooth the normal following the distance

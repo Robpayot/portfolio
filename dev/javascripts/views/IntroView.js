@@ -13,7 +13,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, BackSide, LoadingManager, ImageLoader, BoxGeometry, CubeTexture, DirectionalLight, PointLight, Texture, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, BackSide, LoadingManager, ImageLoader, BoxGeometry, CubeTexture, DoubleSide, DirectionalLight, PointLight, Texture, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import SimplexNoise from '../vendors/SimplexNoise';
 import '../shaders/ScreenSpaceShader';
@@ -22,10 +22,10 @@ import '../shaders/OceanShader';
 import '../vendors/MirrorRenderer';
 import Ocean from '../vendors/Ocean';
 console.log(Ocean);
-import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
-import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
+// import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
+// import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
-import WaterVertexShader from '../shaders/WaterVertexShader';
+// import WaterVertexShader from '../shaders/WaterVertexShader';
 
 
 import dat from 'dat-gui';
@@ -43,7 +43,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = false;
+		this.isControls = true;
 
 		// bind
 
@@ -127,6 +127,9 @@ export default class IntroView extends AbstractView {
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
 
+		this.sceneMirror = new Scene(); // scene only for reflect of Ocean
+		this.sceneMirror.background = new Color(0xFFFFFF);
+
 		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
@@ -140,7 +143,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.nbAst = 0;
+		this.nbAst = 15;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -180,7 +183,7 @@ export default class IntroView extends AbstractView {
 		this.initWater(false, false);
 
 		this.setAsteroids();
-		this.setGround();
+		// this.setGround();
 
 		// reset Water bits to 64
 		// setInterval(() => {
@@ -239,17 +242,21 @@ export default class IntroView extends AbstractView {
 	}
 
 	setLight() {
-		// let sun = new DirectionalLight( 0xFFFFFF, 1 );
-		// sun.position.set( 300, 400, -500 );
-		// this.scene.add( sun );
+		let sun = new DirectionalLight( 0xFFFFFF, 20 );
+		sun.position.set( 0, -1, 0 );
+		this.scene.add( sun );
 
-		// let sun2 = new DirectionalLight( 0xB6C5DB, 0.5 );
-		// sun2.position.set( 300, 400, 500 );
-		// this.scene.add( sun2 );
+		let sun2 = new DirectionalLight( 0xFFFFFF, 1 );
+		sun2.position.set( 0, 1, 0 );
+		this.scene.add( sun2 );
 
-		let light = new PointLight( 0xFFFFFF, 1, 1000 );
-		light.position.set( 0, 50, 0 );
-		this.scene.add( light );
+		// let light = new PointLight( 0xFFFFFF, 1, 1000 );
+		// light.position.set( 0, 50, 0 );
+		// this.scene.add( light );
+
+		// light = new PointLight( 0xFFFFFF, 1, 1000 );
+		// light.position.set( 0, -10, 0 );
+		// this.scene.add( light );
 
 		// let hemisphere = new HemisphereLight( 0x00FFFF, 0xFF0000, 1 );
 		// this.scene.add( hemisphere );
@@ -262,7 +269,7 @@ export default class IntroView extends AbstractView {
 	initWater() {
 
 
-		this.lastTime =  (new Date()).getTime();
+		this.lastTime =  0;
 
 		// SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
 		SceneManager.renderer.context.getExtension('OES_texture_float');
@@ -282,27 +289,27 @@ export default class IntroView extends AbstractView {
 		}
 
 		this.ms_MainDirectionalLight = new DirectionalLight( 0xffffff, 1.5 );
-		this.ms_MainDirectionalLight.position.set( -0.2, 0.5, 1 );
-		this.scene.add( this.ms_MainDirectionalLight );
+		this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
+		// this.scene.add( this.ms_MainDirectionalLight );
 
-		let gsize = 512;
+		let gsize = 256; // size of a square which is repeated
 		let res = 512;
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
 		// let origz = -gsize / 2;
-		this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene,
-		{
+		this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene,{
 			INITIAL_SIZE : 200.0,
 			INITIAL_WIND : [ 10.0, 10.0 ],
 			INITIAL_CHOPPINESS : 3.6,
 			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
-			SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(),
-			OCEAN_COLOR: new Vector3( 2, 2, 2 ), // depend maintenant du Mirror Effect
-			SKY_COLOR: new Vector3( 1, 1, 1 ), // depend maintenant du Mirror Effect
+			SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(), // affect reflects colors (not mirrored)
+			OCEAN_COLOR: new Vector3( 2, 2, 2 ), // affect reflects colors (not mirrored)
+			SKY_COLOR: new Vector3( 1, 1, 1 ), // affect reflects colors (not mirrored)
 			EXPOSURE : 0.40,
 			GEOMETRY_RESOLUTION: gres,
 			GEOMETRY_SIZE : gsize,
-			RESOLUTION : res
+			RESOLUTION : res,
+			SCENEMIRROR : this.sceneMirror
 		} );
 		// this.ms_Ocean = new Ocean( SceneManager.renderer, this.camera, this.scene, {
 		// 	INITIAL_SIZE : 200.0,
@@ -318,7 +325,18 @@ export default class IntroView extends AbstractView {
 		// 	RESOLUTION : res
 		// } );
 
-		this.loadSkybox();
+		// this.loadSkybox(); // Sky Box
+		// Sumple top Plane
+		let texture = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
+		this.plane = new Mesh(
+			new PlaneGeometry(this.finalBounds, this.finalBounds),
+			new MeshBasicMaterial({map: texture, side: DoubleSide})
+		);
+
+		this.plane.position.y = this.finalBounds / 2;
+		this.plane.rotation.x = toRadian(-90);
+
+		this.sceneMirror.add( this.plane );
 
 		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix = { value: this.camera.projectionMatrix };
 		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix = { value: this.camera.matrixWorldInverse };
@@ -371,9 +389,9 @@ export default class IntroView extends AbstractView {
 	}
 
 	loadSkybox() {
-		var cubeShader = ShaderLib['cube'];
+		let cubeShader = ShaderLib['cube'];
 
-		var skyBoxMaterial = new ShaderMaterial( {
+		let skyBoxMaterial = new ShaderMaterial( {
 			fragmentShader: cubeShader.fragmentShader,
 			vertexShader: cubeShader.vertexShader,
 			uniforms: cubeShader.uniforms,
@@ -387,7 +405,7 @@ export default class IntroView extends AbstractView {
 			skyBoxMaterial
 		);
 
-		this.scene.add( this.ms_SkyBox );
+		this.sceneMirror.add( this.ms_SkyBox );
 
 		let sources = [
 			`${global.BASE}/images/textures/intro2_west.jpg`,
@@ -424,12 +442,12 @@ export default class IntroView extends AbstractView {
 
 		let imageLoader = this.ms_ImageLoader;
 		console.log(imageLoader);
-		var loaded = 0;
+		let loaded = 0;
 
-		var loadTexture = function ( i ) {
+		let loadTexture = function ( i ) {
 		  imageLoader.load( sources[ i ], function ( image ) {
 			cubeMap.images[ i ] = image;
-			loaded ++;
+			loaded++;
 			if ( loaded === 6 ) {
 			  cubeMap.needsUpdate = true;
 			}
@@ -437,7 +455,7 @@ export default class IntroView extends AbstractView {
 
 		}
 
-		for ( var i = 0, il = sources.length; i < il; ++ i ) {
+		for ( let i = 0, il = sources.length; i < il; ++ i ) {
 		  loadTexture( i );
 		}
 		cubeMap.format = RGBFormat;
@@ -518,14 +536,15 @@ export default class IntroView extends AbstractView {
 	setAsteroids() {
 
 
-		// let mat = new MeshPhongMaterial( {
-		// 	color: 0xffffff,
-		// 	flatShading: true
-		// } );
-		// let mesh = new Mesh(this.models[3], mat);
-		// mesh.position.y = -10;
+		let mat = new MeshPhongMaterial( {
+			color: 0xffffff,
+			flatShading: true
+		} );
+		let mesh = new Mesh(this.models[0], mat);
+		mesh.position.y = 0;
+		mesh.scale.set(0.075, 0.075, 0.075);
 
-		// this.scene.add(mesh);
+		this.scene.add(mesh);
 
 
 
@@ -849,43 +868,19 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.update();
 
 		// ?
-		// this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
-		// if (this.ms_Ocean.changed) {
-		// 	this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
-		// 	this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.set( this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection );
-		// 	this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
-		// 	this.ms_Ocean.changed = false;
-		// }
-		// this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer.texture;
-		// this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer.texture;
-		// this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix.value = this.camera.projectionMatrix;
-		// this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.camera.matrixWorldInverse;
-		// this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.camera.position;
-		// this.ms_Ocean.materialOcean.depthTest = true;
-
-		// Manual simulation of infinite waves
-		// left to right
-		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 5 ) * (this.heightCamera * this.aspect) / 8;
-		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -this.heightCamera / 2;
-
-		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : 0;
-		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z :  Math.sin(this.clock.getElapsedTime() * 5 ) * -this.heightCamera / 6 - this.heightCamera / 2;
-		// // console.log(pointX, pointZ);
-
-		// this.heightmapVariable.material.uniforms.mousePos.value.set( pointX, pointZ );
-
-		// // Do the gpu computation
-		// this.gpuCompute.compute();
-
-		// // Get compute output in custom uniform
-		// this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable ).texture;
-		// // this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
-		// // this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
-
-		// // issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		// this.waterMesh.position.y -= 0.0016;
-
-		// console.log(this.waterMesh.position);
+		this.ms_Ocean.overrideMaterial = this.ms_Ocean.materialOcean;
+		if (this.ms_Ocean.changed) {
+			this.ms_Ocean.materialOcean.uniforms.u_size.value = this.ms_Ocean.size;
+			this.ms_Ocean.materialOcean.uniforms.u_sunDirection.value.set( this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection, this.ms_Ocean.sunDirection );
+			this.ms_Ocean.materialOcean.uniforms.u_exposure.value = this.ms_Ocean.exposure;
+			this.ms_Ocean.changed = false;
+		}
+		this.ms_Ocean.materialOcean.uniforms.u_normalMap.value = this.ms_Ocean.normalMapFramebuffer.texture;
+		this.ms_Ocean.materialOcean.uniforms.u_displacementMap.value = this.ms_Ocean.displacementMapFramebuffer.texture;
+		this.ms_Ocean.materialOcean.uniforms.u_projectionMatrix.value = this.camera.projectionMatrix;
+		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix.value = this.camera.matrixWorldInverse;
+		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition.value = this.camera.position;
+		this.ms_Ocean.materialOcean.depthTest = true;
 
 
 		if (this.gravity === true && this.startMove === true) this.world.step();
@@ -952,21 +947,21 @@ export default class IntroView extends AbstractView {
 		}
 
 		// // deceleration
-		if (this.cameraMove === false && this.isControls === false) {
+		// if (this.cameraMove === false && this.isControls === false) {
 
-			// Specify target we want
-			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-			this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
+		// 	// Specify target we want
+		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
 
-			// Smooth it with deceleration
-			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+		// 	// Smooth it with deceleration
+		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
 
-			// Apply rotation
-			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+		// 	// Apply rotation
+		// 	this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+		// 	this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
-		}
+		// }
 
 		if (this.startIsHover !== true) {
 			if (this.clickAsteroid === true) global.CURSOR.interractHover();
@@ -974,17 +969,17 @@ export default class IntroView extends AbstractView {
 		}
 
 		// glitch title
-		if (this.glitch) {
+		// if (this.glitch) {
 
-			if (this.glitch.start === true) {
-				this.glitch.render({type: 'intro'});
-			} else {
-				if (this.glitch.stop !== true) {
-					this.glitch.render({stop: true});
-					this.glitch.stop = true;
-				}
-			}
-		}
+		// 	if (this.glitch.start === true) {
+		// 		this.glitch.render({type: 'intro'});
+		// 	} else {
+		// 		if (this.glitch.stop !== true) {
+		// 			this.glitch.render({stop: true});
+		// 			this.glitch.stop = true;
+		// 		}
+		// 	}
+		// }
 
 		this.render();
 
