@@ -10420,9 +10420,9 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'setLight',
 		value: function setLight() {
-			var sun = new _three.DirectionalLight(0xFFFFFF, 20);
-			sun.position.set(0, -1, 0);
-			this.scene.add(sun);
+			// let sun = new DirectionalLight( 0xFFFFFF, 20 );
+			// sun.position.set( 0, -1, 0 );
+			// this.scene.add( sun );
 
 			var sun2 = new _three.DirectionalLight(0xFFFFFF, 1);
 			sun2.position.set(0, 1, 0);
@@ -10469,7 +10469,7 @@ var IntroView = function (_AbstractView) {
 			this.ms_MainDirectionalLight.position.set(-0.2, -0.5, 1);
 			// this.scene.add( this.ms_MainDirectionalLight );
 
-			var gsize = 256; // size of a square which is repeated
+			var gsize = 512; // size of a square which is repeated
 			var res = 512;
 			var gres = gsize / 2;
 			// let origx = -gsize / 2;
@@ -10503,7 +10503,7 @@ var IntroView = function (_AbstractView) {
 			// } );
 
 			// this.loadSkybox(); // Sky Box
-			// Sumple top Plane
+			// Simple top Plane
 			var texture = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
 			this.plane = new _three.Mesh(new _three.PlaneGeometry(this.finalBounds, this.finalBounds), new _three.MeshBasicMaterial({ map: texture, side: _three.DoubleSide }));
 
@@ -10695,15 +10695,16 @@ var IntroView = function (_AbstractView) {
 		key: 'setAsteroids',
 		value: function setAsteroids() {
 
-			var mat = new _three.MeshPhongMaterial({
-				color: 0xffffff,
-				flatShading: true
-			});
-			var mesh = new _three.Mesh(this.models[0], mat);
-			mesh.position.y = 0;
-			mesh.scale.set(0.075, 0.075, 0.075);
+			// let mat = new MeshPhongMaterial( {
+			// 	color: 0xffffff,
+			// 	flatShading: true
+			// } );
+			// let mesh = new Mesh(this.models[0], mat);
+			// mesh.position.y = 0;
+			// mesh.scale.set(0.075, 0.075, 0.075);
 
-			this.scene.add(mesh);
+			// this.scene.add(mesh);
+
 
 			// ADD Iceberg
 			this.astXMin = -380;
