@@ -242,9 +242,9 @@ export default class IntroView extends AbstractView {
 	}
 
 	setLight() {
-		let sun = new DirectionalLight( 0xFFFFFF, 20 );
-		sun.position.set( 0, -1, 0 );
-		this.scene.add( sun );
+		// let sun = new DirectionalLight( 0xFFFFFF, 20 );
+		// sun.position.set( 0, -1, 0 );
+		// this.scene.add( sun );
 
 		let sun2 = new DirectionalLight( 0xFFFFFF, 1 );
 		sun2.position.set( 0, 1, 0 );
@@ -292,7 +292,7 @@ export default class IntroView extends AbstractView {
 		this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
 		// this.scene.add( this.ms_MainDirectionalLight );
 
-		let gsize = 256; // size of a square which is repeated
+		let gsize = 512; // size of a square which is repeated
 		let res = 512;
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
@@ -326,7 +326,7 @@ export default class IntroView extends AbstractView {
 		// } );
 
 		// this.loadSkybox(); // Sky Box
-		// Sumple top Plane
+		// Simple top Plane
 		let texture = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
 		this.plane = new Mesh(
 			new PlaneGeometry(this.finalBounds, this.finalBounds),
@@ -536,15 +536,15 @@ export default class IntroView extends AbstractView {
 	setAsteroids() {
 
 
-		let mat = new MeshPhongMaterial( {
-			color: 0xffffff,
-			flatShading: true
-		} );
-		let mesh = new Mesh(this.models[0], mat);
-		mesh.position.y = 0;
-		mesh.scale.set(0.075, 0.075, 0.075);
+		// let mat = new MeshPhongMaterial( {
+		// 	color: 0xffffff,
+		// 	flatShading: true
+		// } );
+		// let mesh = new Mesh(this.models[0], mat);
+		// mesh.position.y = 0;
+		// mesh.scale.set(0.075, 0.075, 0.075);
 
-		this.scene.add(mesh);
+		// this.scene.add(mesh);
 
 
 
