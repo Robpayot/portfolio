@@ -13,7 +13,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, MeshLambertMaterial, BoxGeometry, DoubleSide, DirectionalLight, PointLight, Texture, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, MeshLambertMaterial, BoxGeometry, DoubleSide, DirectionalLight, PointLight, RepeatWrapping, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import '../shaders/ScreenSpaceShader';
 import '../shaders/FFTOceanShader';
@@ -136,7 +136,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		this.nbAst = 0;
+		this.nbAst = 20;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -172,6 +172,7 @@ export default class IntroView extends AbstractView {
 		this.initWater(false, false);
 
 		this.setAsteroids();
+		this.setPhysicPath();
 
 
 		global.CURSOR.el.classList.add('alt');
@@ -181,9 +182,8 @@ export default class IntroView extends AbstractView {
 	setUiContainer() {
 
 		const data = DATA;
-		// console.log(data, PreloadManager.getResult('tpl-about-content'));
 
-		// Context + gallery arrows
+		// Intro content
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-intro-content'));
 		let html  = template(data);
 
@@ -213,38 +213,13 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	setLight() {
-		// let sun = new DirectionalLight( 0xFFFFFF, 20 );
-		// sun.position.set( 0, -1, 0 );
-		// this.scene.add( sun );
-
-		let sun2 = new DirectionalLight( 0xFFFFFF, 1 );
-		sun2.position.set( 1, 1, 0 );
-		this.scene.add( sun2 );
-
-		// let light = new PointLight( 0xFFFFFF, 1, 1000 );
-		// light.position.set( 0, 50, 0 );
-		// this.scene.add( light );
-
-		// light = new PointLight( 0xFFFFFF, 1, 1000 );
-		// light.position.set( 0, -10, 0 );
-		// this.scene.add( light );
-
-		// let hemisphere = new HemisphereLight( 0x00FFFF, 0xFF0000, 1 );
-		// this.scene.add( hemisphere );
-
-		// FOG
-		// this.scene.fog = new Fog( 0xFFFFFF, 1, 200 ); --> dosent affect water
-
-	}
-
 	initWater() {
 
 		// SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
 		SceneManager.renderer.context.getExtension('OES_texture_float');
 		SceneManager.renderer.context.getExtension('OES_texture_float_linear');
 
-		// good size
+		// Get size Three unit to pixel window
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
 		this.heightCamera = 2 * Math.tan( vFOV / 2 ) * (this.maxZoom + 200); // dist between 0 and camerapos.y
 
@@ -257,8 +232,8 @@ export default class IntroView extends AbstractView {
 			this.finalBounds = this.heightCamera;
 		}
 
-		this.ms_MainDirectionalLight = new DirectionalLight( 0xffffff, 1.5 );
-		this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
+		// this.ms_MainDirectionalLight = new DirectionalLight( 0xffffff, 1.5 );
+		// this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
 		// this.scene.add( this.ms_MainDirectionalLight );
 
 		let gsize = 512; // size of a square which is repeated
@@ -271,7 +246,7 @@ export default class IntroView extends AbstractView {
 			INITIAL_WIND : [ 10.0, 10.0 ],
 			INITIAL_CHOPPINESS : 3.6,
 			CLEAR_COLOR : [ 1.0, 1.0, 1.0, 0.0 ],
-			SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(), // affect reflects colors (not mirrored)
+			// SUN_DIRECTION : this.ms_MainDirectionalLight.position.clone(), // affect reflects colors (not mirrored)
 			OCEAN_COLOR: new Vector3( 2, 2, 2 ), // affect reflects colors (not mirrored)
 			SKY_COLOR: new Vector3( 1, 1, 1 ), // affect reflects colors (not mirrored)
 			EXPOSURE : 0.40,
@@ -282,10 +257,13 @@ export default class IntroView extends AbstractView {
 		} );
 
 		// Simple top Plane for Mirror
-		let texture = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
+		this.skyTex = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
+		this.skyTex.wrapS = this.skyTex.wrapT = RepeatWrapping;
+		this.skyTex.offset.x = 0.5;
+		this.skyTex.repeat.set( 1, 1 );
 		this.plane = new Mesh(
 			new PlaneGeometry(this.finalBounds * 2, this.finalBounds * 2),
-			new MeshBasicMaterial({map: texture, side: DoubleSide})
+			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide})
 		);
 
 		this.plane.position.y = this.maxZoom;
@@ -297,8 +275,6 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.materialOcean.uniforms.u_viewMatrix = { value: this.camera.matrixWorldInverse };
 		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { value: this.camera.position };
 		this.scene.add(this.ms_Ocean.oceanMesh);
-
-
 
 		let gui = new dat.GUI();
 		let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
@@ -326,6 +302,132 @@ export default class IntroView extends AbstractView {
 			this.object.exposure = v;
 			this.object.changed = true;
 		});
+	}
+
+	setLight() {
+		let sun = new DirectionalLight( 0xFFFFFF, 1 );
+		sun.position.set( 600, 1000, 0 );
+		this.scene.add( sun );
+
+		let sun2 = new DirectionalLight( 0xFFFFFF, 0.65 );
+		sun.position.set( -300, 1000, 100 );
+		this.scene.add( sun2 );
+
+		// let light = new PointLight( 0xFFFFFF, 0.5, 1000 );
+		// light.position.set( 0, 100, 0 );
+		// this.scene.add( light );
+
+		// light = new PointLight( 0xFFFFFF, 0.5, 1000 );
+		// light.position.set( -40, 100, 0 );
+		// this.scene.add( light );
+
+		let mat, mesh;
+
+		mat = new MeshPhongMaterial( {
+			color: 0xffffff,
+			flatShading: true
+		} );
+		mesh = new Mesh(this.models[0], mat);
+		mesh.position.y = 20;
+		mesh.position.x = -20;
+		mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
+
+
+		// this.scene.add(mesh);
+
+		mat = new MeshPhongMaterial( {
+			color: 0xffffff,
+			flatShading: true
+		} );
+		mesh = new Mesh(this.models[3], mat);
+		mesh.position.y = 20;
+		mesh.position.x = 20;
+		mesh.scale.set(15, 15, 15);
+		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
+
+
+		// this.scene.add(mesh);
+
+		mat = new MeshPhongMaterial( {
+			color: 0xffffff,
+			flatShading: true
+		} );
+		mesh = new Mesh(this.models[4], mat);
+		mesh.position.y = 0;
+		mesh.position.x = 0;
+		mesh.scale.set(25, 25, 25);
+		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
+
+
+		this.scene.add(mesh);
+
+	}
+
+	setPhysicPath() {
+
+		let mat;
+
+		mat = new MeshBasicMaterial( {
+			color: 0x0000ff,
+			side: DoubleSide,
+			transparent: true,
+			opacity: 0.2
+		} );
+
+		let blocksParams = [{
+			size: {w: 150, h: 150, d: 150},
+			pos: {x: 10, y: 0, z: -120},
+			rot: {x: 0, y: -40, z: 0}
+		}, {
+			size: {w: 180, h: 180, d: 180},
+			pos: {x: -180, y: 0, z: 100},
+			rot: {x: 0, y: 0, z: 0}
+		}, {
+			size: {w: 180, h: 180, d: 180},
+			pos: {x: -220, y: 0, z: 0},
+			rot: {x: 0, y: 40, z: 0}
+		}, {
+			size: {w: 50, h: 50, d: 50},
+			pos: {x: 130, y: 0, z: 50},
+			rot: {x: 0, y: 40, z: 0}
+		}, {
+			size: {w: 40, h: 40, d: 40},
+			pos: {x: 180, y: 0, z: -60},
+			rot: {x: 0, y: 45, z: 0}
+		}];
+
+		this.blocks = [];
+
+
+		blocksParams.forEach((el) => {
+			let mesh = new Mesh(new BoxGeometry(el.size.w, el.size.h, el.size.d), mat);
+			mesh.visible = this.isControls;
+
+			this.scene.add(mesh);
+
+			// physic body
+			mesh.physics = {
+				type: 'box', // type of shape : sphere, box, cylinder
+				// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
+				size: [el.size.w, el.size.h, el.size.d],
+				pos: [el.pos.x, el.pos.y, el.pos.z], // start position in degree
+				rot: [el.rot.x, el.rot.y, el.rot.z], // start rotation in degree
+				move: false, // dynamic or statique
+				density: 1,
+				friction: 0.2,
+				restitution: 0.2,
+				belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+				collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+			};
+
+			if (this.gravity === true) {
+				// add physic body to world
+				mesh.body = this.world.add(mesh.physics);
+			}
+
+			this.blocks.push(mesh);
+		});
+
 	}
 
 	// generateGradient() {
@@ -364,34 +466,6 @@ export default class IntroView extends AbstractView {
 
 	setAsteroids() {
 
-		let mat, mesh;
-
-
-		mat = new MeshPhongMaterial( {
-			color: 0xffffff,
-			flatShading: true
-		} );
-		mesh = new Mesh(this.models[0], mat);
-		mesh.position.y = 20;
-		mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
-
-
-		this.scene.add(mesh);
-
-		mat = new MeshPhongMaterial( {
-			color: 0xffffff,
-			flatShading: true
-		} );
-		mesh = new Mesh(this.models[3], mat);
-		mesh.position.y = 20;
-		mesh.scale.set(15, 15, 15);
-		// mesh.scale.set(0.075, 0.075, 0.075); old iceberg
-
-
-		this.scene.add(mesh);
-
-
-
 		// ADD Iceberg
 		this.astXMin = -380;
 		this.astXMax = 380;
@@ -402,7 +476,8 @@ export default class IntroView extends AbstractView {
 
 		for (let i = 0; i < this.nbAst; i++) {
 
-			const model = Math.round(getRandom(0, 2));
+			// const model = Math.round(getRandom(0, 2));
+			const model = 3;
 
 			let finalMat = new MeshPhongMaterial( {
 				color: 0xffffff,
@@ -415,7 +490,7 @@ export default class IntroView extends AbstractView {
 			const rot = {
 				x: 0,
 				y: getRandom(-180, 180),
-				z: 90,
+				z: 0,
 			};
 
 
@@ -440,14 +515,14 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(30, 50)
+				z: getRandom(30, 40)
 			};
 
-			const scale = getRandom(0.045, 0.075);
+			const scale = getRandom(10, 17);
 			// const speed = getRandom(500, 600); // more is slower
 			const range = getRandom(2, 5);
 			const timeRotate = getRandom(14000, 16000);
-			const offsetScale = 1.6;
+			const offsetScale = -10;
 
 			const asteroid = new Asteroid({
 				type: 'sphere',
@@ -539,29 +614,15 @@ export default class IntroView extends AbstractView {
 			this.currentAstClicked = this.currentAstHover;
 			this.currentAstClicked.animated = true;
 			this.onAsteroidAnim = true;
-			const dest = this.currentAstClicked.height * this.currentAstClicked.scale;
-
-			// this.heightmapVariable.material.uniforms.mouseSize = { value: this.mouseSizeClick }; // change mouse size
-			// this.heightmapVariable.material.uniforms.viscosity = { value: this.viscosityClick };
+			const dest = this.currentAstClicked.height * this.currentAstClicked.scale * 2;
 
 			const tl = new TimelineMax();
 
-			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 3, {y: -dest, ease: window.Expo.easeOut});
+			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 2.5, {y: -dest, ease: window.Expo.easeOut});
 
 			tl.add(()=> {
-				// this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize };
-				// this.heightmapVariable.material.uniforms.viscosity = { value: this.effectController.viscosity };
 				this.onAsteroidAnim = false;
 			}, 0.5);
-
-			// this.heightmapVariable.material.uniforms.mouseSize = { value: 50.0 };
-			// this.clickAnim = true;
-			// this.currentPosLastX = this.currentPos.x;
-
-			// setTimeout(() => {
-			// 	this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
-			// 	this.clickAnim = false;
-			// }, 100);
 
 		}
 	}
@@ -573,6 +634,12 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.render();
 
 		if (this.gravity === true && this.startMove === true) this.world.step();
+
+		// physics Path
+		this.blocks.forEach((el) => {
+			el.position.copy(el.body.getPosition());
+			el.quaternion.copy(el.body.getQuaternion());
+		});
 
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
@@ -592,7 +659,8 @@ export default class IntroView extends AbstractView {
 					// Clamp rotation
 
 					el.body.angularVelocity.x = 0;
-					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
+					// el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
+					el.body.angularVelocity.y = 0;
 					el.body.angularVelocity.z = 0;
 				}
 
@@ -658,17 +726,20 @@ export default class IntroView extends AbstractView {
 		}
 
 		// glitch title
-		// if (this.glitch) {
+		if (this.glitch) {
 
-		// 	if (this.glitch.start === true) {
-		// 		this.glitch.render({type: 'intro'});
-		// 	} else {
-		// 		if (this.glitch.stop !== true) {
-		// 			this.glitch.render({stop: true});
-		// 			this.glitch.stop = true;
-		// 		}
-		// 	}
-		// }
+			if (this.glitch.start === true) {
+				this.glitch.render({type: 'intro'});
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render({stop: true});
+					this.glitch.stop = true;
+				}
+			}
+		}
+
+		// move sky
+		this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
 
 		this.render();
 
@@ -761,12 +832,6 @@ export default class IntroView extends AbstractView {
 			},0);
 		}
 
-
-
-
-
-		// tl.o(this.asteroidsM.material, 0.5, {opacity: 1}, 5);
-
 	}
 
 	moveCameraIn(fromProject = false) {
@@ -798,8 +863,6 @@ export default class IntroView extends AbstractView {
 	}
 
 	transitionOut(dest) {
-
-		// this.resetWater();
 
 		const tl = new TimelineMax({delay: 0});
 
@@ -847,8 +910,6 @@ export default class IntroView extends AbstractView {
 			}
 		}
 		this.scene.remove( obj );
-
-		// this.initWater(true);
 	}
 
 
