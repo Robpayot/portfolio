@@ -28,6 +28,7 @@ export default class Stars extends ProjectView {
 
 		this.nbAst = 100;
 		this.lights = [];
+		this.coefSpeed = 0.015;
 
 		this.init();
 
@@ -370,7 +371,7 @@ export default class Stars extends ProjectView {
 
 	raf() {
 
-		let delta = this.clock.getDelta();
+		// console.log(this.animDelta, this.animDeltaDir, this.clock.getDelta());
 
 		// update uniforms
 
@@ -386,7 +387,7 @@ export default class Stars extends ProjectView {
 				el.progress = 0;
 				el.initPosY = getRandom(this.topY - 5, this.topY);
 			}
-			el.progress += delta * 4;
+			el.progress += this.coefSpeed * 4;
 			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
 
 			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
@@ -403,7 +404,7 @@ export default class Stars extends ProjectView {
 
 			// relative to light ???
 
-			this.lightVal = MathThree.clamp( this.lightVal + 0.5 * delta * this.lightDir, fLow, fHigh );
+			this.lightVal = MathThree.clamp( this.lightVal + 0.5 * this.coefSpeed * this.lightDir, fLow, fHigh );
 
 			let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
 
@@ -412,7 +413,7 @@ export default class Stars extends ProjectView {
 			if ( this.updateNoise ) {
 
 				this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
-				this.uniformsNoise[ 'time' ].value += delta * this.animDelta;
+				this.uniformsNoise[ 'time' ].value += this.coefSpeed * this.animDelta;
 
 				// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
 
@@ -421,7 +422,7 @@ export default class Stars extends ProjectView {
 				this.quadTarget.material = this.mlib[ 'heightmap' ];
 				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 50;
+				// this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 50;
 				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 			}
