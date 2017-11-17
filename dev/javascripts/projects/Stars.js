@@ -5,15 +5,10 @@ import SceneManager from '../managers/SceneManager';
 
 
 // THREE JS
-import { SphereGeometry, Clock, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import { SphereGeometry, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
-import { BlobLightShader } from '../shaders/BlobLightShader';
-import { BrightnessShader } from '../shaders/BrightnessShader';
-
-// POSTPROCESSING
-// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 
 
 export default class Stars extends ProjectView {
@@ -24,7 +19,6 @@ export default class Stars extends ProjectView {
 
 		// bind
 		this.setTerrain = this.setTerrain.bind(this);
-		this.onKeyDown = this.onKeyDown.bind(this);
 
 		this.nbAst = 100;
 		this.lights = [];
@@ -34,7 +28,7 @@ export default class Stars extends ProjectView {
 
 		this.setTerrain();
 
-		console.log('Stars view', this.clock.getElapsedTime());
+		console.log('Stars view', CanvasTexture);
 
 	}
 
@@ -171,18 +165,6 @@ export default class Stars extends ProjectView {
 		this.terrain.rotation.z = toRadian(-45);
 		this.scene.add( this.terrain );
 
-		// EVENTS
-
-		document.addEventListener( 'keydown', this.onKeyDown, false );
-
-		const geometry = new SphereGeometry(6,6,50);
-
-		const material = new MeshBasicMaterial({color: 0x00FFFFF});
-
-		this.test = new Points(geometry, material);
-		// this.scene.add(this.test);
-
-
 		this.animDeltaDir *= -1;
 
 	}
@@ -191,67 +173,57 @@ export default class Stars extends ProjectView {
 
 		this.asteroids = [];
 		this.asteroidsM = [];
-		this.uniforms = [];
+		this.materials = [];
 
-		const img = PreloadManager.getResult('texture-star');
-
-		// create point
-		const geometry = new Geometry();
-		geometry.vertices.push(
-			new Vector3( 0, 0, 0 )
-		);
-
-		const shaderPoint = ShaderLib.points;
-
-		this.nbUnif = 5;
+		this.nbMat = 5;
 		this.topY = 25;
 		this.bottomY = -45;
 
-		for (let i = 0; i < this.nbUnif; i++) {
+		for (let i = 0; i < this.nbMat; i++) {
 
-			let uniforms = UniformsUtils.clone(shaderPoint.uniforms);
-			// console.log(uniforms);
-			uniforms.map.value = new Texture(img);
-			uniforms.map.value.needsUpdate = true;
-			uniforms.scale.value = window.innerHeight * 1;
-			uniforms.brightness = { type: 'f', value: 0 };
-			uniforms.contrast = { type: 'f', value: 0.5 };
+			const material = new SpriteMaterial( {
+				blending: AdditiveBlending,
+				transparent: true
+			});
 
 			switch (i) {
 				case 0:
-					uniforms.offset = 300;
-					uniforms.time = 1;
-					uniforms.range = oscillate(0.9,1.5);
-					uniforms.diffuse.value = new Color(0xEF1300);
+					material.offset = 300;
+					material.time = 1;
+					material.range = oscillate(0.2,1);
+					// material.diffuse.value = new Color(0xEF1300);
+					material.map = new CanvasTexture( this.generateSprite('rgba(239, 19, 0, 1)') ); // color
 					break;
 				case 1:
-					uniforms.offset = 1000;
-					uniforms.time = 2;
-					uniforms.range = oscillate(0.9,1.8);
-					uniforms.diffuse.value = new Color(0xEF1300);
+					material.offset = 1000;
+					material.time = 2;
+					material.range = oscillate(0.3,1);
+					// material.diffuse.value = new Color(0xEF1300);
+					material.map = new CanvasTexture( this.generateSprite('rgba(239, 19, 0, 1)') ); // color
 					break;
 				case 2:
-					uniforms.offset = 200;
-					uniforms.time = 0.5;
-					uniforms.range = oscillate(1.2,1.7);
-					uniforms.diffuse.value = new Color(0xEF1300);
+					material.offset = 200;
+					material.time = 0.5;
+					material.range = oscillate(0.8,1);
+					// material.diffuse.value = new Color(0xEF1300);
+					material.map = new CanvasTexture( this.generateSprite('rgba(239, 19, 0, 1)') ); // color
 					break;
 				case 3:
-					uniforms.offset = 400;
-					uniforms.time = 0.5;
-					uniforms.range = oscillate(0.8,1.5);
-					uniforms.diffuse.value = new Color(0xEF4007);
+					material.offset = 400;
+					material.time = 0.5;
+					material.range = oscillate(0.5,1);
+					// material.diffuse.value = new Color(0xEF4007);
+					material.map = new CanvasTexture( this.generateSprite('rgba(239, 64, 7, 1)') ); // color
 					break;
 				case 4:
-					uniforms.offset = 700;
-					uniforms.time = 1.5;
-					uniforms.range = oscillate(0.9,1.6);
-					uniforms.diffuse.value = new Color(0xEF4007);
+					material.offset = 700;
+					material.time = 1.5;
+					material.range = oscillate(0.2,0.8);
+					// material.diffuse.value = new Color(0xEF4007);
+					material.map = new CanvasTexture( this.generateSprite('rgba(239, 64, 7, 1)') ); // color
 					break;
 			}
-
-			// uniforms.fogColor.value = new Color(0x000000);
-			this.uniforms.push(uniforms);
+			this.materials.push(material);
 
 		}
 
@@ -269,30 +241,24 @@ export default class Stars extends ProjectView {
 				z: getRandom(-100, 30),
 			};
 
-			const random = Math.round(getRandom(0,this.nbUnif - 1));
+			const random = Math.round(getRandom(0,this.nbMat - 1));
 
-			const asteroid = new Points(geometry, /* material || */ new ShaderMaterial({
-				uniforms: this.uniforms[random],
-				defines: {
-					USE_MAP: '',
-					USE_SIZEATTENUATION: ''
-				},
-				transparent: true,
-				// alphaTest: .4,
-				depthWrite: false,
-				// depthTest: false,
-				blending: AdditiveBlending,
-				vertexShader: shaderPoint.vertexShader,
-				fragmentShader: shaderPoint.fragmentShader
-			}));
-				// uniforms: {
-				// 	tInput: { type: 't', value: new Texture(img) },
-				// 	brightness: { type: 'f', value: 3 },
-				// 	contrast: { type: 'f', value: 5 },
-				// },
-				// // blending: AdditiveBlending,
-				// vertexShader: blobLightShader.vertexShader,
-				// fragmentShader: blobLightShader.fragmentShader
+			// const asteroid = new Points(geometry, /* material || */ new ShaderMaterial({
+			// 	uniforms: this.uniforms[random],
+			// 	defines: {
+			// 		USE_MAP: '',
+			// 		USE_SIZEATTENUATION: ''
+			// 	},
+			// 	transparent: true,
+			// 	// alphaTest: .4,
+			// 	depthWrite: false,
+			// 	// depthTest: false,
+			// 	blending: AdditiveBlending,
+			// 	vertexShader: shaderPoint.vertexShader,
+			// 	fragmentShader: shaderPoint.fragmentShader
+			// }));
+
+			const asteroid = new Sprite( this.materials[random] );
 			asteroid.progress = 0;
 			asteroid.position.set(pos.x, pos.y, pos.z);
 			asteroid.initPosY = pos.y;
@@ -310,10 +276,27 @@ export default class Stars extends ProjectView {
 
 	}
 
+	generateSprite(color) {
+		// gradient
+		let canvas = document.createElement( 'canvas' );
+		canvas.width = 64;
+		canvas.height = 64;
+		let context = canvas.getContext( '2d' );
+		let gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+		gradient.addColorStop( 0, color );
+		// gradient.addColorStop( 0.1, 'rgba(0,255,255,1)' );
+		gradient.addColorStop( 0.3, color );
+		gradient.addColorStop( 0.7, 'rgba(0,0,0,0.5)' );
+		gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+		context.fillStyle = gradient;
+		context.fillRect( 0, 0, canvas.width, canvas.height );
+		return canvas;
+	}
+
 	setLight() {
 
 		let paramsLight = [
-			{ x: -10, y: 0, z: 0, d: 120, it: 3, moving: true },
+			{ x: 0, y: 0, z: -10, d: 120, it: 1.5, moving: true },
 			// { x: 0, y: 0, z: -100, d: 150, it: 2 },
 			// { x: 0, y: 0, z: 0, d: 30, it: 2 },
 			// { x: 0, y: 30, z: 30 },
@@ -331,11 +314,13 @@ export default class Stars extends ProjectView {
 			const it = paramsLight[i].it || 1;
 
 			// create a point light
-			let pointLight = new PointLight(0x707070, it, d, 1);
+			let pointLight = new PointLight(0xffffff, it, d, 1);
 			// set its position
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+			pointLight.range = 60;
+			pointLight.offset = -40;
 			// pointLight.power = 20;
-			pointLight.visible = true;
+			// pointLight.visible = true;
 
 			// add to the scene
 			this.scene.add(pointLight);
@@ -350,17 +335,15 @@ export default class Stars extends ProjectView {
 		// light2.position.set( 1, 0, 0 );
 		// this.scene.add( light2 );
 
+		// test
 
-	}
+		const geometry = new SphereGeometry(6,6,50);
 
-	onKeyDown( event ) {
+		const material = new MeshBasicMaterial({color: 0x00FFFFF});
 
-		// switch ( event.keyCode ) {
+		this.test = new Points(geometry, material);
+		// this.scene.add(this.test);
 
-		// 	case 78: /*N*/  this.lightDir *= -1; break;
-		// 	case 77: /*M*/  this.animDeltaDir *= -1; break;
-
-		// }
 
 	}
 
@@ -375,8 +358,8 @@ export default class Stars extends ProjectView {
 
 		// update uniforms
 
-		this.uniforms.forEach( (el)=> {
-			el.size.value = Math.sin(this.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
+		this.materials.forEach( (el)=> {
+			el.opacity = Math.sin(this.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
 		});
 
 		// Asteroids meshs
@@ -422,7 +405,7 @@ export default class Stars extends ProjectView {
 				this.quadTarget.material = this.mlib[ 'heightmap' ];
 				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				// this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 50;
+				this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
 				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 			}
