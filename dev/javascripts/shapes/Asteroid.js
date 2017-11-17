@@ -54,37 +54,4 @@ export default class Asteroid extends AbstractShape {
 
 	}
 
-	changeDirection() {
-		// reverse direction
-		this.force.x = this.initForce.x = -this.initForce.x;
-		this.force.y = this.initForce.y = -this.initForce.y;
-		this.force.z = this.initForce.z = -this.initForce.z;
-
-		// random x / y coef to have diff direction
-		this.force.x += getRandom(-1, 1);
-		this.force.y += getRandom(-1, 1);
-
-
-		// Slow down force
-		if (this.force.z < -10) {
-			this.force.z += 60;
-			this.initForce.z = this.force.z;
-		}
-
-		if (this.force.z > 10) {
-			this.force.z -= 60;
-			this.initForce.z = this.force.z;
-		}
-		// console.log(this.force.z);
-		setTimeout(() => {
-			this.annilled = false;
-		}, 2000);
-	}
-
-	impulse() {
-		this.initForce.x = this.force.x;
-		this.initForce.y = this.force.y = -Math.abs(-this.force.y);
-		this.initForce.z = this.force.z = -70;
-	}
-
 }

@@ -13,7 +13,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, MeshLambertMaterial, BoxGeometry, DoubleSide, DirectionalLight, PointLight, RepeatWrapping, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, PointLight, RepeatWrapping, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import '../shaders/ScreenSpaceShader';
 import '../shaders/FFTOceanShader';
@@ -66,7 +66,8 @@ export default class IntroView extends AbstractView {
 			loadJSON('datas/models/iceberg-3.json'),
 			loadJSON('datas/models/triangle.json'),
 			loadJSON('datas/models/triangles.json'),
-			loadJSON('datas/models/triangles_circle.json')
+			loadJSON('datas/models/triangles_circle.json'),
+			loadJSON('datas/models/triangles_y.json')
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
@@ -134,7 +135,7 @@ export default class IntroView extends AbstractView {
 		this.setLight();
 
 		// Set physics
-		if (this.gravity === true) this.initPhysics();
+		if (this.gravity === true) this.initPhysics([0, 0, 0]);
 
 		this.nbAst = 20;
 		this.minZoom = 400;
@@ -170,9 +171,9 @@ export default class IntroView extends AbstractView {
 		};
 
 		this.initWater(false, false);
-
-		this.setAsteroids();
 		this.setPhysicPath();
+		this.setAsteroids();
+		
 
 
 		global.CURSOR.el.classList.add('alt');
@@ -237,7 +238,7 @@ export default class IntroView extends AbstractView {
 		// this.scene.add( this.ms_MainDirectionalLight );
 
 		let gsize = 512; // size of a square which is repeated
-		let res = 512;
+		let res = 256; // 512 :'(
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
 		// let origz = -gsize / 2;
@@ -305,11 +306,11 @@ export default class IntroView extends AbstractView {
 	}
 
 	setLight() {
-		let sun = new DirectionalLight( 0xFFFFFF, 1 );
+		let sun = new DirectionalLight( 0xFFFFFF, 1.2 );
 		sun.position.set( 600, 1000, 0 );
 		this.scene.add( sun );
 
-		let sun2 = new DirectionalLight( 0xFFFFFF, 0.65 );
+		let sun2 = new DirectionalLight( 0xFFFFFF, 1 );
 		sun.position.set( -300, 1000, 100 );
 		this.scene.add( sun2 );
 
@@ -321,79 +322,63 @@ export default class IntroView extends AbstractView {
 		// light.position.set( -40, 100, 0 );
 		// this.scene.add( light );
 
+	}
+
+	setPhysicPath() {
+
 		let mat, mesh;
 
+		// Island
 		mat = new MeshPhongMaterial( {
 			color: 0xffffff,
 			flatShading: true
 		} );
-		mesh = new Mesh(this.models[0], mat);
-		mesh.position.y = 20;
-		mesh.position.x = -20;
-		mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
-
-
-		// this.scene.add(mesh);
-
-		mat = new MeshPhongMaterial( {
-			color: 0xffffff,
-			flatShading: true
-		} );
-		mesh = new Mesh(this.models[3], mat);
-		mesh.position.y = 20;
-		mesh.position.x = 20;
-		mesh.scale.set(15, 15, 15);
-		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
-
-
-		// this.scene.add(mesh);
-
-		mat = new MeshPhongMaterial( {
-			color: 0xffffff,
-			flatShading: true
-		} );
-		mesh = new Mesh(this.models[4], mat);
+		mesh = new Mesh(this.models[6], mat);
 		mesh.position.y = 0;
 		mesh.position.x = 0;
-		mesh.scale.set(25, 25, 25);
+		mesh.rotation.y = toRadian(-180);
+		mesh.scale.set(20, 20, 20);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
 
 
 		this.scene.add(mesh);
 
-	}
-
-	setPhysicPath() {
-
-		let mat;
-
+		// invisble perimeter
 		mat = new MeshBasicMaterial( {
-			color: 0x0000ff,
-			side: DoubleSide,
+			color: 0xffff00,
 			transparent: true,
 			opacity: 0.2
 		} );
 
+		this.perimeter = 250;
+
+		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
+		mesh.visible = this.isControls;
+
+		this.scene.add(mesh);
+
+		// Invisible blocks
+
+		mat = new MeshBasicMaterial( {
+			color: 0x0000ff,
+			transparent: true,
+			opacity: 0.2
+		} );
+
+		this.fZone = 40; // Zone where asteroids can't appear. Or physic conflicts
+
 		let blocksParams = [{
-			size: {w: 150, h: 150, d: 150},
-			pos: {x: 10, y: 0, z: -120},
-			rot: {x: 0, y: -40, z: 0}
-		}, {
-			size: {w: 180, h: 180, d: 180},
-			pos: {x: -180, y: 0, z: 100},
+			size: {w: this.fZone * 2, h: 100, d: 160},
+			pos: {x: 0, y: 0, z: -70},
 			rot: {x: 0, y: 0, z: 0}
 		}, {
-			size: {w: 180, h: 180, d: 180},
-			pos: {x: -220, y: 0, z: 0},
-			rot: {x: 0, y: 40, z: 0}
+			size: {w: 70, h: 100, d: 160},
+			pos: {x: -50, y: 0, z: 65},
+			rot: {x: 0, y: -35, z: 0}
 		}, {
-			size: {w: 50, h: 50, d: 50},
-			pos: {x: 130, y: 0, z: 50},
-			rot: {x: 0, y: 40, z: 0}
-		}, {
-			size: {w: 40, h: 40, d: 40},
-			pos: {x: 180, y: 0, z: -60},
-			rot: {x: 0, y: 45, z: 0}
+			size: {w: 70, h: 100, d: 160},
+			pos: {x: 50, y: 0, z: 65},
+			rot: {x: 0, y: 35, z: 0}
 		}];
 
 		this.blocks = [];
@@ -424,6 +409,9 @@ export default class IntroView extends AbstractView {
 				// add physic body to world
 				mesh.body = this.world.add(mesh.physics);
 			}
+
+			mesh.position.copy(mesh.body.getPosition());
+			mesh.quaternion.copy(mesh.body.getQuaternion());
 
 			this.blocks.push(mesh);
 		});
@@ -467,9 +455,8 @@ export default class IntroView extends AbstractView {
 	setAsteroids() {
 
 		// ADD Iceberg
-		this.astXMin = -380;
-		this.astXMax = 380;
-		this.ipRadius = 50; // intra perimeter Radius
+		this.astXMin = -this.perimeter;
+		this.astXMax = this.perimeter;
 		this.startZ = -600;
 		this.reappearZ = -300;
 		this.endZ = 200;
@@ -499,13 +486,16 @@ export default class IntroView extends AbstractView {
 				y: 0,
 				z: getRandom(this.startZ, this.endZ),
 			};
+			if (pos.x > -this.fZone && pos.x < this.fZone ) {
+				pos.x = i % 2 === 0 ? pos.x + this.fZone : pos.x - this.fZone;
+			}
 
 			// check if ast already in other ast position
 			for (let y = 0; y < this.asteroidsM.length; y++) {
-				if (pos.x < this.ipRadius + this.asteroidsM[y].position.x && pos.x > -this.ipRadius + this.asteroidsM[y].position.x && pos.z < this.ipRadius + this.asteroidsM[y].position.z && pos.z > -this.ipRadius + this.asteroidsM[y].position.z) {
+				if (pos.x < this.fZone + this.asteroidsM[y].position.x && pos.x > -this.fZone + this.asteroidsM[y].position.x && pos.z < this.fZone + this.asteroidsM[y].position.z && pos.z > -this.fZone + this.asteroidsM[y].position.z) {
 					// console.log(i, ' dans le périmetre !');
-					pos.x += this.ipRadius;
-					pos.z += this.ipRadius;
+					pos.x += this.fZone;
+					pos.z += this.fZone;
 
 				}
 			}
@@ -635,12 +625,6 @@ export default class IntroView extends AbstractView {
 
 		if (this.gravity === true && this.startMove === true) this.world.step();
 
-		// physics Path
-		this.blocks.forEach((el) => {
-			el.position.copy(el.body.getPosition());
-			el.quaternion.copy(el.body.getQuaternion());
-		});
-
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
 
@@ -651,28 +635,37 @@ export default class IntroView extends AbstractView {
 			if (el.body !== undefined ) {
 
 				if (this.asteroidsMove === true) {
-					// APPLY IMPULSE
-					el.body.linearVelocity.x = el.force.x;
+					// Apply IMPULSE
+					// el.body.linearVelocity.x = el.force.x;
+					el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -40, 40);
 					el.body.linearVelocity.y = el.force.y;
 					el.body.linearVelocity.z = el.force.z;
 
 					// Clamp rotation
 
 					el.body.angularVelocity.x = 0;
-					// el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
-					el.body.angularVelocity.y = 0;
+					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
+					// el.body.angularVelocity.y = 0;
 					el.body.angularVelocity.z = 0;
 				}
 
 
 				el.mesh.position.copy(el.body.getPosition());
 				el.mesh.quaternion.copy(el.body.getQuaternion());
-				if (el.mesh.position.z >= 200) {
-					// el.mesh.position.z = el.body.position.z =
-					// el.body.position.x = el.mesh.position.x = getRandom(this.astXMin, this.astXMax);
 
+				// if out of Perimeter, reset
+				if ( Math.sqrt( Math.pow(Math.abs(el.mesh.position.x), 2) + Math.pow(Math.abs(el.mesh.position.z), 2) ) > this.perimeter) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
+
+					// el.mesh.position.y -= 1;
+					// el.body.position.y -= 1;
+
+					// if (el.mesh.position.y < -20) {
 					let z = el.mesh.index % 2 === 0 ? getRandom(0, this.reappearZ) : this.reappearZ;
 					let x = getRandom(this.astXMin, this.astXMax);
+					if (x > -this.fZone && x < this.fZone ) {
+						x = el.mesh.index % 2 === 0 ? x + this.fZone : x - this.fZone;
+					}
+
 					el.mesh.position.z = el.body.position.z = z;
 					el.body.position.x = el.mesh.position.x = x;
 
@@ -682,6 +675,8 @@ export default class IntroView extends AbstractView {
 					TweenMax.fromTo([el.mesh.position, el.body.position], 3, {y: -dest}, {y: el.endY, onComplete:() => {
 						el.animated = false;
 					}});
+					// }
+
 					// reboot
 				}
 
@@ -695,12 +690,15 @@ export default class IntroView extends AbstractView {
 		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
 		if (intersectsAst.length > 0) {
-			this.ui.body.style.cursor = 'pointer';
 			this.clickAsteroid = true;
 			this.currentAstHover = this.asteroids[intersectsAst[0].object.index];
 		} else {
-			this.ui.body.style.cursor = 'auto';
 			this.clickAsteroid = false;
+		}
+
+		if (this.startIsHover !== true) {
+			if (this.clickAsteroid === true) global.CURSOR.interractHover();
+			else global.CURSOR.interractLeave();
 		}
 
 		// // deceleration
@@ -718,11 +716,6 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
 			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
-		}
-
-		if (this.startIsHover !== true) {
-			if (this.clickAsteroid === true) global.CURSOR.interractHover();
-			else global.CURSOR.interractLeave();
 		}
 
 		// glitch title
@@ -889,27 +882,7 @@ export default class IntroView extends AbstractView {
 
 	resizeHandler() {
 		super.resizeHandler();
-		const obj = this.scene.getObjectByName('water');
-		if (obj.geometry) obj.geometry.dispose();
 
-		if (obj.material) {
-
-			if (obj.material.materials) {
-
-				for (const mat of obj.material.materials) {
-
-					if (mat.map) mat.map.dispose();
-
-					mat.dispose();
-				}
-			} else {
-
-				if (obj.material.map) obj.material.map.dispose();
-
-				obj.material.dispose();
-			}
-		}
-		this.scene.remove( obj );
 	}
 
 

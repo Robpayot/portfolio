@@ -31,11 +31,15 @@
 		svg {
 			margin: 0 auto;
 			display: block;
-			width: 50px;
-			height: 50px;
+			width: 70px;
+			height: 70px;
 			position: relative;
 			transform: rotate(-90deg);
 			// cursor: pointer;
+			@include small-desktop {
+				width: 50px;
+				height: 50px;
+			}
 			circle {
 				transform-origin: 75% 75%;
 			}
