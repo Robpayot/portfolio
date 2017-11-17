@@ -3665,10 +3665,6 @@ var _NoiseShader = require('../shaders/NoiseShader');
 
 var _NoiseShader2 = _interopRequireDefault(_NoiseShader);
 
-var _BlobLightShader = require('../shaders/BlobLightShader');
-
-var _BrightnessShader = require('../shaders/BrightnessShader');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3678,10 +3674,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 // THREE JS
-
-
-// POSTPROCESSING
-// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 
 
 var Stars = function (_ProjectView) {
@@ -3694,7 +3686,6 @@ var Stars = function (_ProjectView) {
 		var _this = _possibleConstructorReturn(this, (Stars.__proto__ || Object.getPrototypeOf(Stars)).call(this, obj));
 
 		_this.setTerrain = _this.setTerrain.bind(_this);
-		_this.onKeyDown = _this.onKeyDown.bind(_this);
 
 		_this.nbAst = 100;
 		_this.lights = [];
@@ -3704,7 +3695,7 @@ var Stars = function (_ProjectView) {
 
 		_this.setTerrain();
 
-		console.log('Stars view', _this.clock.getElapsedTime());
+		console.log('Stars view', _three.CanvasTexture);
 
 		return _this;
 	}
@@ -3809,7 +3800,7 @@ var Stars = function (_ProjectView) {
 
 			for (var i = 0; i < params.length; i++) {
 
-				var _material = new _three.ShaderMaterial({
+				var material = new _three.ShaderMaterial({
 
 					uniforms: params[i][3],
 					vertexShader: params[i][2],
@@ -3818,7 +3809,7 @@ var Stars = function (_ProjectView) {
 					fog: true
 				});
 
-				this.mlib[params[i][0]] = _material;
+				this.mlib[params[i][0]] = material;
 			}
 
 			var plane = new _three.PlaneBufferGeometry(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -3839,18 +3830,6 @@ var Stars = function (_ProjectView) {
 			this.terrain.rotation.z = (0, _utils.toRadian)(-45);
 			this.scene.add(this.terrain);
 
-			// EVENTS
-
-			document.addEventListener('keydown', this.onKeyDown, false);
-
-			var geometry = new _three.SphereGeometry(6, 6, 50);
-
-			var material = new _three.MeshBasicMaterial({ color: 0x00FFFFF });
-
-			this.test = new _three.Points(geometry, material);
-			// this.scene.add(this.test);
-
-
 			this.animDeltaDir *= -1;
 		}
 	}, {
@@ -3859,65 +3838,57 @@ var Stars = function (_ProjectView) {
 
 			this.asteroids = [];
 			this.asteroidsM = [];
-			this.uniforms = [];
+			this.materials = [];
 
-			var img = _PreloadManager2.default.getResult('texture-star');
-
-			// create point
-			var geometry = new _three.Geometry();
-			geometry.vertices.push(new _three.Vector3(0, 0, 0));
-
-			var shaderPoint = _three.ShaderLib.points;
-
-			this.nbUnif = 5;
+			this.nbMat = 5;
 			this.topY = 25;
 			this.bottomY = -45;
 
-			for (var i = 0; i < this.nbUnif; i++) {
+			for (var i = 0; i < this.nbMat; i++) {
 
-				var uniforms = _three.UniformsUtils.clone(shaderPoint.uniforms);
-				// console.log(uniforms);
-				uniforms.map.value = new _three.Texture(img);
-				uniforms.map.value.needsUpdate = true;
-				uniforms.scale.value = window.innerHeight * 1;
-				uniforms.brightness = { type: 'f', value: 0 };
-				uniforms.contrast = { type: 'f', value: 0.5 };
+				var material = new _three.SpriteMaterial({
+					blending: _three.AdditiveBlending,
+					transparent: true
+				});
 
 				switch (i) {
 					case 0:
-						uniforms.offset = 300;
-						uniforms.time = 1;
-						uniforms.range = (0, _utils.oscillate)(0.9, 1.5);
-						uniforms.diffuse.value = new _three.Color(0xEF1300);
+						material.offset = 300;
+						material.time = 1;
+						material.range = (0, _utils.oscillate)(0.2, 1);
+						// material.diffuse.value = new Color(0xEF1300);
+						material.map = new _three.CanvasTexture(this.generateSprite('rgba(239, 19, 0, 1)')); // color
 						break;
 					case 1:
-						uniforms.offset = 1000;
-						uniforms.time = 2;
-						uniforms.range = (0, _utils.oscillate)(0.9, 1.8);
-						uniforms.diffuse.value = new _three.Color(0xEF1300);
+						material.offset = 1000;
+						material.time = 2;
+						material.range = (0, _utils.oscillate)(0.3, 1);
+						// material.diffuse.value = new Color(0xEF1300);
+						material.map = new _three.CanvasTexture(this.generateSprite('rgba(239, 19, 0, 1)')); // color
 						break;
 					case 2:
-						uniforms.offset = 200;
-						uniforms.time = 0.5;
-						uniforms.range = (0, _utils.oscillate)(1.2, 1.7);
-						uniforms.diffuse.value = new _three.Color(0xEF1300);
+						material.offset = 200;
+						material.time = 0.5;
+						material.range = (0, _utils.oscillate)(0.8, 1);
+						// material.diffuse.value = new Color(0xEF1300);
+						material.map = new _three.CanvasTexture(this.generateSprite('rgba(239, 19, 0, 1)')); // color
 						break;
 					case 3:
-						uniforms.offset = 400;
-						uniforms.time = 0.5;
-						uniforms.range = (0, _utils.oscillate)(0.8, 1.5);
-						uniforms.diffuse.value = new _three.Color(0xEF4007);
+						material.offset = 400;
+						material.time = 0.5;
+						material.range = (0, _utils.oscillate)(0.5, 1);
+						// material.diffuse.value = new Color(0xEF4007);
+						material.map = new _three.CanvasTexture(this.generateSprite('rgba(239, 64, 7, 1)')); // color
 						break;
 					case 4:
-						uniforms.offset = 700;
-						uniforms.time = 1.5;
-						uniforms.range = (0, _utils.oscillate)(0.9, 1.6);
-						uniforms.diffuse.value = new _three.Color(0xEF4007);
+						material.offset = 700;
+						material.time = 1.5;
+						material.range = (0, _utils.oscillate)(0.2, 0.8);
+						// material.diffuse.value = new Color(0xEF4007);
+						material.map = new _three.CanvasTexture(this.generateSprite('rgba(239, 64, 7, 1)')); // color
 						break;
 				}
-
-				// uniforms.fogColor.value = new Color(0x000000);
-				this.uniforms.push(uniforms);
+				this.materials.push(material);
 			}
 
 			// const blobLightShader = new BrightnessShader();
@@ -3934,30 +3905,24 @@ var Stars = function (_ProjectView) {
 					z: (0, _utils.getRandom)(-100, 30)
 				};
 
-				var random = Math.round((0, _utils.getRandom)(0, this.nbUnif - 1));
+				var random = Math.round((0, _utils.getRandom)(0, this.nbMat - 1));
 
-				var asteroid = new _three.Points(geometry, /* material || */new _three.ShaderMaterial({
-					uniforms: this.uniforms[random],
-					defines: {
-						USE_MAP: '',
-						USE_SIZEATTENUATION: ''
-					},
-					transparent: true,
-					// alphaTest: .4,
-					depthWrite: false,
-					// depthTest: false,
-					blending: _three.AdditiveBlending,
-					vertexShader: shaderPoint.vertexShader,
-					fragmentShader: shaderPoint.fragmentShader
-				}));
-				// uniforms: {
-				// 	tInput: { type: 't', value: new Texture(img) },
-				// 	brightness: { type: 'f', value: 3 },
-				// 	contrast: { type: 'f', value: 5 },
-				// },
-				// // blending: AdditiveBlending,
-				// vertexShader: blobLightShader.vertexShader,
-				// fragmentShader: blobLightShader.fragmentShader
+				// const asteroid = new Points(geometry, /* material || */ new ShaderMaterial({
+				// 	uniforms: this.uniforms[random],
+				// 	defines: {
+				// 		USE_MAP: '',
+				// 		USE_SIZEATTENUATION: ''
+				// 	},
+				// 	transparent: true,
+				// 	// alphaTest: .4,
+				// 	depthWrite: false,
+				// 	// depthTest: false,
+				// 	blending: AdditiveBlending,
+				// 	vertexShader: shaderPoint.vertexShader,
+				// 	fragmentShader: shaderPoint.fragmentShader
+				// }));
+
+				var asteroid = new _three.Sprite(this.materials[random]);
 				asteroid.progress = 0;
 				asteroid.position.set(pos.x, pos.y, pos.z);
 				asteroid.initPosY = pos.y;
@@ -3973,10 +3938,28 @@ var Stars = function (_ProjectView) {
 			}
 		}
 	}, {
+		key: 'generateSprite',
+		value: function generateSprite(color) {
+			// gradient
+			var canvas = document.createElement('canvas');
+			canvas.width = 64;
+			canvas.height = 64;
+			var context = canvas.getContext('2d');
+			var gradient = context.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
+			gradient.addColorStop(0, color);
+			// gradient.addColorStop( 0.1, 'rgba(0,255,255,1)' );
+			gradient.addColorStop(0.3, color);
+			gradient.addColorStop(0.7, 'rgba(0,0,0,0.5)');
+			gradient.addColorStop(1, 'rgba(0,0,0,1)');
+			context.fillStyle = gradient;
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			return canvas;
+		}
+	}, {
 		key: 'setLight',
 		value: function setLight() {
 
-			var paramsLight = [{ x: -10, y: 0, z: 0, d: 120, it: 3, moving: true }];
+			var paramsLight = [{ x: 0, y: 0, z: -10, d: 120, it: 1.5, moving: true }];
 
 			// Check Ambient Light
 			// scene.add( new THREE.AmbientLight( 0x00020 ) );
@@ -3987,11 +3970,13 @@ var Stars = function (_ProjectView) {
 				var it = paramsLight[i].it || 1;
 
 				// create a point light
-				var pointLight = new _three.PointLight(0x707070, it, d, 1);
+				var pointLight = new _three.PointLight(0xffffff, it, d, 1);
 				// set its position
 				pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+				pointLight.range = 60;
+				pointLight.offset = -40;
 				// pointLight.power = 20;
-				pointLight.visible = true;
+				// pointLight.visible = true;
 
 				// add to the scene
 				this.scene.add(pointLight);
@@ -4006,17 +3991,14 @@ var Stars = function (_ProjectView) {
 			// light2.position.set( 1, 0, 0 );
 			// this.scene.add( light2 );
 
-		}
-	}, {
-		key: 'onKeyDown',
-		value: function onKeyDown(event) {
+			// test
 
-			// switch ( event.keyCode ) {
+			var geometry = new _three.SphereGeometry(6, 6, 50);
 
-			// 	case 78: /*N*/  this.lightDir *= -1; break;
-			// 	case 77: /*M*/  this.animDeltaDir *= -1; break;
+			var material = new _three.MeshBasicMaterial({ color: 0x00FFFFF });
 
-			// }
+			this.test = new _three.Points(geometry, material);
+			// this.scene.add(this.test);
 
 		}
 	}, {
@@ -4034,8 +4016,8 @@ var Stars = function (_ProjectView) {
 
 			// update uniforms
 
-			this.uniforms.forEach(function (el) {
-				el.size.value = Math.sin(_this2.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
+			this.materials.forEach(function (el) {
+				el.opacity = Math.sin(_this2.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
 			});
 
 			// Asteroids meshs
@@ -4081,7 +4063,7 @@ var Stars = function (_ProjectView) {
 					this.quadTarget.material = this.mlib['heightmap'];
 					_SceneManager2.default.renderer.render(this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true);
 
-					// this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime()) * 50;
+					this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
 					// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 				}
 			}
@@ -4094,7 +4076,7 @@ var Stars = function (_ProjectView) {
 
 exports.default = Stars;
 
-},{"../helpers/utils":11,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/BlobLightShader":25,"../shaders/BrightnessShader":26,"../shaders/NoiseShader":30,"../shaders/TerrainShader":33,"../vendors/BufferGeometryUtils":38,"../views/ProjectView":52,"three":112}],25:[function(require,module,exports){
+},{"../helpers/utils":11,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/NoiseShader":30,"../shaders/TerrainShader":33,"../vendors/BufferGeometryUtils":38,"../views/ProjectView":52,"three":112}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
