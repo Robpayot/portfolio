@@ -20,7 +20,7 @@ export default class AbstractView {
 
 	}
 
-	initPhysics() {
+	initPhysics(gravity) {
 
 		this.world = new World({
 			timestep: 1 / 60,
@@ -29,7 +29,7 @@ export default class AbstractView {
 			worldscale: 1, // scale full world
 			random: true, // randomize sample
 			info: false, // calculate statistic or not
-			gravity: [0, 0, 0] // 0 gravity
+			gravity // 0 gravity
 		});
 
 	}
@@ -48,8 +48,10 @@ export default class AbstractView {
 
 	resizeHandler() {
 
-		this.width = window.innerWidth * window.devicePixelRatio;
-		this.height = window.innerHeight * window.devicePixelRatio;
+		// this.width = window.innerWidth * window.devicePixelRatio;
+		// this.height = window.innerHeight * window.devicePixelRatio;
+		this.width = window.innerWidth;
+		this.height = window.innerHeight;
 
 		SceneManager.resizeHandler({
 			camera: this.camera,
