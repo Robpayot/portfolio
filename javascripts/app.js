@@ -566,6 +566,7 @@ var Glitch = function () {
 		this.sndTxt = obj.sndTxt;
 		this.debug = obj.debug;
 		this.clock = obj.clock;
+		this.stop = obj.stop;
 
 		this.el.style.display = 'block';
 
@@ -793,7 +794,7 @@ var Glitch = function () {
 			// 	}]
 			// }];
 
-			if (this.obj.stop === true) {
+			if (this.stop === true) {
 
 				if (this.obj.type === 'intro') return false;
 				// DEFAULT value
@@ -1105,17 +1106,14 @@ var Glitch = function () {
 				}
 			} else {
 				this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
-				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
-				this.ctx.font = this.ctxBuffer.font = this.font;
-
 				this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
 				this.textHeight = this.textSize; // need a real calcul
-				this.text = this.txt;
-
-				this.textWidth = Math.round(this.ctxBuffer.measureText(this.text).width);
-				console.log(this.textSize, this.textWidth);
-				this.width = this.textWidth + this.biggestRange;
 				this.height = this.ui.canvas.offsetHeight;
+				this.font = this.textSize + 'px "Theinhardt"'; // Theinhardt
+				this.ctxBuffer.font = this.font;
+				this.text = this.txt;
+				this.textWidth = Math.round(this.ctxBuffer.measureText(this.text).width);
+				this.width = this.textWidth + this.biggestRange;
 			}
 
 			if (this.ui.canvas) {
@@ -1129,7 +1127,33 @@ var Glitch = function () {
 				// this.ui.canvasAlphaBuffer.width = this.width;
 				// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
 
+				this.ctx.font = this.ctxBuffer.font = this.font;
 			}
+
+			// this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
+			// this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
+			// this.textHeight = this.textSize; // need a real calcul
+			// this.height = this.ui.canvas.offsetHeight;
+			// this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+			// this.ctxBuffer.font = this.font;
+			// this.text = this.txt;
+			// this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
+			// this.width = this.textWidth + this.biggestRange;
+
+			// if (this.ui.canvas) {
+			// 	this.ui.canvas.height = this.height;
+			// 	this.ui.canvasBuffer.height = this.height;
+			// 	// this.ui.canvasAlphaBuffer.height = this.width;
+			// 	// this.ui.canvasAlphaBuffer.style.height = this.height;
+
+			// 	this.ui.canvas.width = this.width;
+			// 	this.ui.canvasBuffer.width = this.width;
+			// 	// this.ui.canvasAlphaBuffer.width = this.width;
+			// 	// this.ui.canvasAlphaBuffer.style.width = this.width;
+
+			// 	this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+			// 	this.ctx.font = this.ctxBuffer.font = this.font;
+			// }
 		}
 	}, {
 		key: 'isHover',
@@ -3425,7 +3449,7 @@ var Levit = function (_ProjectView) {
 		_this.setAsteroids = _this.setAsteroids.bind(_this);
 
 		_this.nbAst = 10;
-		_this.bounceArea = 200;
+		_this.toggle = 0;
 
 		// preload Models
 		Promise.all([(0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
@@ -3482,7 +3506,7 @@ var Levit = function (_ProjectView) {
 				var scale = (0, _utils.getRandom)(0.025, 0.035);
 				var speed = (0, _utils.getRandom)(0.5, 0.72);
 				var range = (0, _utils.getRandom)(3, 8);
-				var timeRotate = (0, _utils.getRandom)(0.02, 0.04);
+				var timeRotate = (0, _utils.getRandom)(0.0010, 0.0013);
 
 				var model = Math.round((0, _utils.getRandom)(0, 2));
 
@@ -3594,17 +3618,44 @@ var Levit = function (_ProjectView) {
 		value: function raf() {
 			var _this2 = this;
 
+			this.raycaster.setFromCamera(this.mouse, this.camera);
+
+			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+			this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
+
+			if (this.toggle > 0.02 && this.intersection !== null) {
+				this.ui.body.style.cursor = 'pointer';
+				this.hoverAst = true;
+				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
+				var el = this.asteroids[intersectsAst[0].object.index];
+				el.active = true;
+			} else {
+				this.hoverAst = false;
+				this.asteroids.forEach(function (el) {
+					el.active = false;
+				});
+			}
+
+			this.toggle += this.clock.getDelta();
+
 			// Asteroids meshs
 			this.asteroids.forEach(function (el) {
 
+				if (el.active === true) {
+					el.mesh.rotation.y += (el.timeRotate + 0.03) * el.dir;
+				} else {
+
+					// el.time = this.clock.getElapsedTime();
+					// rotate
+					// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.clock.getElapsedTime() * el.timeRotate + el.offset) * (360 / 2) + 360 / 2 ) * el.dir;
+					el.mesh.rotation.y += el.timeRotate * el.dir;
+				}
 				// Move top and bottom --> Levit effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
 				el.mesh.position.y = el.endY + Math.sin(_this2.clock.getElapsedTime() * el.speed + el.offset) * (el.range / 2) + el.range / 2;
-				// rotate
-
-				el.mesh.rotation.y = (0, _utils.toRadian)(el.initRotateY + Math.sin(_this2.clock.getElapsedTime() * el.timeRotate + el.offset) * (360 / 2) + 360 / 2) * el.dir;
 				// el.mesh.rotation.x = toRadian(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeX ); // -30 to 30 deg rotation
 				el.mesh.rotation.z = (0, _utils.toRadian)(el.initRotateZ + Math.sin(_this2.clock.getElapsedTime() * el.timeRotate + el.offset) * el.rotateRangeZ) * el.dir; // -30 to 30 deg rotation
+
 
 				// if (el.mesh.index === 0) {
 				// 	console.log(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeZ, el.rotateRangeZ);
@@ -11641,7 +11692,8 @@ var ProjectView = function (_AbstractView) {
 					sndColor: this.data.color,
 					color: 'white',
 					txt: this.data.title,
-					clock: this.clock
+					clock: this.clock,
+					stop: true
 				});
 
 				// Start transition In
