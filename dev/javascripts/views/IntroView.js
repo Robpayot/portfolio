@@ -734,10 +734,10 @@ export default class IntroView extends AbstractView {
 		if (this.glitch) {
 
 			if (this.glitch.start === true) {
-				this.glitch.render({type: 'intro'});
+				this.glitch.render();
 			} else {
 				if (this.glitch.stop !== true) {
-					this.glitch.render({stop: true});
+					this.glitch.render();
 					this.glitch.stop = true;
 				}
 			}
@@ -769,11 +769,7 @@ export default class IntroView extends AbstractView {
 
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
-				textSize: 50,
-				sndColor: 'red',
-				color: 'black',
-				txt: 'R O B I N   P A Y O T',
-				sndTxt: 'I N T E R A C T I V E   D E V E L O P E R',
+				type: 'intro',
 				clock: this.clock
 			});
 

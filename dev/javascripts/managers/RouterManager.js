@@ -247,14 +247,16 @@ class RouterManager {
 				break;
 
 			case '/glitch':
-
 				this.currentPage = new Glitch({
 					el: document.querySelector('.glitch'),
-					txt: 'AKTR',
-					color: 'white',
-					sndColor: 'blue',
+					textSize: 50,
+					sndColor: 'red',
+					color: 'black',
+					txt: 'R O B I N   P A Y O T',
+					sndTxt: 'I N T E R A C T I V E   D E V E L O P E R',
+					clock: SceneManager.clock,
 					debug: true,
-					clock: SceneManager.clock
+					type: 'intro'
 				});
 				window.location = '#glitch';
 				break;

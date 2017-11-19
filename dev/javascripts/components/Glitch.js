@@ -245,7 +245,8 @@ export default class Glitch {
 
 
 			PreloadManager.loadManifest([
-				{ id: 'template-glitch', src: `templates/glitch.hbs` },
+				{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` },
+				{ id: 'svg', src: `${base}/images/name.svg` }
 			]);
 
 			PreloadManager.load();
@@ -295,8 +296,17 @@ export default class Glitch {
 		this.textHeight = this.textSize; // need a real calcul
 		this.last = 0;
 
-		this.init();
+		if (this.obj.type === 'intro') {
+			this.introTxt = new Image();
+			this.introTxt.onload = () => {
+				this.init();
+			};
+			this.introTxt.src = '/images/name.png';
+		} else {
+			this.init();
+		}
 
+		// console.log(PreloadManager.getResult('svg'));
 	}
 
 	setAlphaVideo() {
@@ -318,12 +328,13 @@ export default class Glitch {
 		this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
 
 		this.initOptions();
-		this.resizeHandler();
 		// set up alpha video
 		this.setAlphaVideo();
+		this.resizeHandler();
 
 		if (this.debug === true) {
 			this.events(true);
+
 		} else {
 			this.render();
 		}
@@ -374,7 +385,7 @@ export default class Glitch {
 		// gui.close(); // start the control panel cloased
 	}
 
-	render(obj = {}) {
+	render() {
 
 		// console.log('render');
 
@@ -394,13 +405,13 @@ export default class Glitch {
 
 		switch (this.channel) {
 			case 0:
-				this.renderChannels(obj);
+				this.renderChannels();
 				break;
 			case 1:
-				this.renderChannels(obj);
+				this.renderChannels();
 				break;
 			case 2:
-				this.renderChannels(obj);
+				this.renderChannels();
 				break;
 		}
 
@@ -415,37 +426,7 @@ export default class Glitch {
 	}
 
 
-	renderChannels(obj) {
-
-		// alpha video
-		if (this.ctxAlphaBuffer && obj.type === 'intro') {
-
-			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
-			// r.p : We select only the first half
-			let videoWidth = this.width;
-			let videoHeight = this.width * 2; // square in that case
-			if (this.ui.canvasAlphaBuffer.width !== videoWidth) {
-				this.ui.canvasAlphaBuffer.width = videoWidth;
-				this.video.width = videoWidth;
-			}
-			if (this.ui.canvasAlphaBuffer.height !== videoHeight) {
-				this.ui.canvasAlphaBuffer.height = videoHeight;
-				// this.video.height = videoHeight;
-			}
-			// this.ctxAlphaBuffer.clearRect(0, 0, videoWidth, videoHeight);
-			this.ctxAlphaBuffer.beginPath();
-
-			this.ctxAlphaBuffer.drawImage(this.video, 0, 0, videoWidth, videoHeight);
-			this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, videoWidth, videoHeight / 2); // --> top part of video
-			let imageData = this.imageAlpha.data,
-				alphaData = this.ctxAlphaBuffer.getImageData(0, videoHeight / 2, videoWidth, videoHeight / 2).data; // --> bottom part 50/50
-			// r.p : We select the second half
-			// we apply alpha
-			for (let i = 3; i < imageData.length; i += 4) { // why 3 and 4 ?
-				imageData[i] = alphaData[i - 1];
-			}
-		}
-
+	renderChannels() {
 
 		const top = 0; // top of image
 		const centerY = this.height / 2 + this.textHeight / 2;
@@ -471,8 +452,10 @@ export default class Glitch {
 		// 	}]
 		// }];
 
-		if (obj.stop === true) {
-			// DEFAULT
+		if (this.obj.stop === true) {
+
+			if (this.obj.type === 'intro') return false;
+			// DEFAULT value
 			// Just text and image alpha mask, no glitch
 			// this.ctxBuffer.save();
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
@@ -489,42 +472,38 @@ export default class Glitch {
 			return false;
 		}
 
-		if (obj.type === 'intro') {
+		if (this.ctxAlphaBuffer && this.obj.type === 'intro') {
+			// alpha video
+			// this.ctxAlphaBuffer.save();
+			// this.ctxAlphaBuffer.clearRect(0, 0, this.videoWidth, this.videoHeight);
+			this.ctxAlphaBuffer.beginPath();
 
-			// DEFAULT
-			// Just text and image alpha mask, no glitch
-			this.ctxBuffer.save();
-			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctxBuffer.beginPath(); // avoid Drop fps
+			this.ctxAlphaBuffer.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
+			this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, this.videoWidth, this.videoHeight / 2); // --> top part of video
+			let imageData = this.imageAlpha.data,
+				alphaData = this.ctxAlphaBuffer.getImageData(0, this.videoHeight / 2, this.videoWidth, this.videoHeight / 2).data; // --> bottom part 50/50
+			// r.p : We select the second half
+			// we apply alpha
+			for (let i = 3; i < imageData.length; i += 4) { // why 3 and 4 ?
+				imageData[i] = alphaData[i - 1];
+			}
+			// this.ctxAlphaBuffer.restore();
 
-			this.ctxBuffer.fillStyle = this.color;
-			// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
-			this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.sndTextWidth) / 2, top, 0, 0, this.sndTextWidth + 30, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'source-in';
-			this.ctxBuffer.font = this.ctxBuffer.font = this.font;
+			// Txt as an image --> Better perf
+			// this.ctx.save();
+			// this.ctx.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
+			this.ctx.beginPath(); // avoid Drop fps
 
-			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY - 30); // First Text
+			// this.ctx.fillStyle = this.color;
+			// this.ctx.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
+			this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
+			this.ctx.globalCompositeOperation = 'source-in';
 
-			this.ctxBuffer.restore();
-
-			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
-
-
-			this.ctxBuffer.save();
-			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctxBuffer.beginPath(); // avoid Drop fps
-
-			this.ctxBuffer.fillStyle = this.color;
-			this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.sndTextWidth) / 2, top, 0, 0, this.sndTextWidth + 30, this.height);
-			this.ctxBuffer.globalCompositeOperation = 'source-in';
-			this.ctxBuffer.font = this.ctxBuffer.font = `${this.textSize - 20}px "Theinhardt"`;
-			this.ctxBuffer.fillText(this.sndText, (this.width - this.sndTextWidth) / 2, centerY + 30); // Second Text
-
-			this.ctxBuffer.restore();
-
-			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
-
-			// this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
+			// old
+			// this.ctx.font = this.ctx.font = this.font;
+			// this.ctx.fillText(this.text, (this.width - this.textWidth) / 2, centerY - 30); // First Text
+			this.ctx.drawImage(this.introTxt, 0, 0, this.width, this.height);
+			// this.ctx.restore();
 
 			return false;
 		}
@@ -769,35 +748,49 @@ export default class Glitch {
 
 		// return false;
 		//this.height = window.innerHeight;
-		this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
-		this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
-		this.textHeight = this.textSize; // need a real calcul
-		this.height = this.ui.canvas.offsetHeight;
-		this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-		this.ctxBuffer.font = this.font;
-		this.text = this.txt;
-		this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
-		this.width = this.textWidth + this.biggestRange;
-		if (this.sndTxt) {
-			this.sndText = this.sndTxt;
-			this.ctx.font = this.ctxBuffer.font =  `${this.textSize - 20}px "Theinhardt"`;
-			this.sndTextWidth = Math.round((this.ctxBuffer.measureText(this.sndText)).width);
-			this.width = this.sndTextWidth + this.biggestRange;
+
+		if (this.obj.type === 'intro') {
+			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
+			// r.p : We select only the first half
+			this.width = 600; // Higher than 500 its getting laggy a lot
+			this.height = this.width * this.introTxt.height / this.introTxt.width;
+			this.videoWidth = this.width;
+			this.videoHeight = this.width * 2; // square in that case
+			if (this.ui.canvasAlphaBuffer.width !== this.videoWidth) {
+				this.ui.canvasAlphaBuffer.width = this.videoWidth;
+				this.video.width = this.videoWidth;
+			}
+			if (this.ui.canvasAlphaBuffer.height !== this.videoHeight) {
+				this.ui.canvasAlphaBuffer.height = this.videoHeight;
+				// this.video.height = this.videoHeight;
+			}
+		} else {
+			this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
+			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+			this.ctx.font = this.ctxBuffer.font = this.font;
+
+			this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
+			this.textHeight = this.textSize; // need a real calcul
+			this.text = this.txt;
+
+			this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
+			console.log(this.textSize, this.textWidth);
+			this.width = this.textWidth + this.biggestRange;
+			this.height = this.ui.canvas.offsetHeight;
 		}
 
 		if (this.ui.canvas) {
 			this.ui.canvas.height = this.height;
 			this.ui.canvasBuffer.height = this.height;
 			// this.ui.canvasAlphaBuffer.height = this.width;
-			// this.ui.canvasAlphaBuffer.style.height = this.height;
+			// this.ui.canvasAlphaBuffer.style.height = this.height * 2; // retina
 
 			this.ui.canvas.width = this.width;
 			this.ui.canvasBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.width = this.width;
-			// this.ui.canvasAlphaBuffer.style.width = this.width;
+			// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
 
-			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-			this.ctx.font = this.ctxBuffer.font = this.font;
+
 		}
 	}
 
