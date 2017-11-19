@@ -274,16 +274,27 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 .column--12 {
   width: 100%; }
 
-html, body {
+html {
   font-family: 'Theinhardt';
-  font-size: 16px;
   line-height: 22px;
+  font-size: 12px; }
+  @media screen and (max-width: 1920px) {
+    html {
+      font-size: 12px; } }
+  @media screen and (max-width: 1440px) {
+    html {
+      font-size: 10px; } }
+  @media screen and (max-width: 1080px) {
+    html {
+      font-size: 9px; } }
+  @media screen and (max-width: 720px) {
+    html {
+      font-size: 8px; } }
+
+body {
   overflow: hidden;
   cursor: none !important; }
-  @media screen and (max-width: 1440px) {
-    html, body {
-      font-size: 14px; } }
-  html a, body a {
+  body a {
     cursor: none !important; }
 
 .dg.ac {
@@ -367,7 +378,7 @@ html, body {
   letter-spacing: 0.3em; }
 
 .title--3 {
-  font-size: 3rem;
+  font-size: 4.8rem;
   line-height: 1.6em; }
 
 .title--4 {
@@ -566,9 +577,6 @@ html, body {
     .jauge .frequencies .low .circle {
       background-color: Steelblue; }
 
-body {
-  height: 100vh; }
-
 .glitch {
   display: none;
   position: absolute;
@@ -629,18 +637,15 @@ body {
 .cursor {
   margin: 0 auto;
   display: block;
-  width: 70px;
-  height: 70px;
+  width: 5.0rem;
+  height: 5.0rem;
   position: absolute;
   -webkit-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   z-index: 9000;
-  pointer-events: none; }
-  @media screen and (max-width: 1440px) {
-    .cursor {
-      width: 50px;
-      height: 50px; } }
+  pointer-events: none;
+  font-size: 1.6rem; }
   .cursor .c-2 {
     stroke-dasharray: 308%;
     stroke-dashoffset: 308%;
@@ -688,7 +693,7 @@ body {
   color: #1FB04C; }
 
 .project__title {
-  font-size: 4.1em;
+  font-size: 404%;
   display: inline-block;
   vertical-align: middle;
   white-space: nowrap;
@@ -723,13 +728,13 @@ body {
 .project__number {
   position: absolute;
   top: -300px;
-  font-size: 3rem;
+  font-size: 5rem;
   left: 5px; }
 
 .project__more {
   left: 0px;
   padding-left: 0px;
-  font-size: 2.2rem;
+  font-size: 4.2rem;
   letter-spacing: 4px;
   font-family: 'Theinhardt';
   font-weight: normal;
@@ -862,13 +867,9 @@ body {
       .ui .menu__button svg {
         margin: 0 auto;
         display: block;
-        width: 70px;
-        height: 70px;
+        width: 5.0rem;
+        height: 5.0rem;
         position: relative; }
-        @media screen and (max-width: 1440px) {
-          .ui .menu__button svg {
-            width: 50px;
-            height: 50px; } }
         .ui .menu__button svg circle {
           -webkit-transform-origin: 75% 75%;
           -ms-transform-origin: 75% 75%;
@@ -921,7 +922,7 @@ body {
     .ui .menu__sublink {
       margin: 1em 0;
       opacity: 0.5;
-      font-size: 1rem;
+      font-size: 1.6rem;
       line-height: 1.6em;
       transition: opacity 0.2s ease;
       display: inline-block;
@@ -929,7 +930,7 @@ body {
       .ui .menu__sublink .menu__subtitle {
         transition: margin 0.5s cubic-bezier(0.16, 0.29, 0, 1); }
       .ui .menu__sublink:first-child {
-        margin-top: 1.4em; }
+        margin-top: 4rem; }
       .ui .menu__sublink.is-active {
         opacity: 1; }
         .ui .menu__sublink.is-active .menu__subtitle {
@@ -984,7 +985,7 @@ body {
         cursor: pointer;
         letter-spacing: 0.4em; }
         .ui-content.is-intro .start p {
-          font-size: 0.8rem;
+          font-size: 1.4rem;
           letter-spacing: 4px;
           margin-right: -4px;
           margin-top: 15px;
@@ -998,16 +999,12 @@ body {
         .ui-content.is-intro .start svg {
           margin: 0 auto;
           display: block;
-          width: 70px;
-          height: 70px;
+          width: 5.0rem;
+          height: 5.0rem;
           position: relative;
           -webkit-transform: rotate(-90deg);
           -ms-transform: rotate(-90deg);
           transform: rotate(-90deg); }
-          @media screen and (max-width: 1440px) {
-            .ui-content.is-intro .start svg {
-              width: 50px;
-              height: 50px; } }
           .ui-content.is-intro .start svg circle {
             -webkit-transform-origin: 75% 75%;
             -ms-transform-origin: 75% 75%;
@@ -1050,21 +1047,22 @@ body {
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      font-size: 0.8em;
+      font-size: 1.2rem;
       width: calc(100vw - 36vw);
       left: 50%;
       -webkit-transform: translateX(-50%);
       -ms-transform: translateX(-50%);
       transform: translateX(-50%);
       max-width: 1000px; }
-      .ui-content.is-about p {
+      .ui-content.is-about p, .ui-content.is-about li {
         font-size: 1.2em;
         line-height: 2em;
         color: black; }
       .ui-content.is-about .socials li {
         display: inline-block;
         color: black;
-        margin-right: 2em; }
+        margin-right: 2em;
+        line-height: 1.4em; }
       .ui-content.is-about .socials a span {
         bottom: 0px; }
       .ui-content.is-about .strong {
@@ -1100,7 +1098,7 @@ body {
         display: inline-block; }
       .ui-content.is-about .about__more, .ui-content.is-about .about__back {
         display: inline-block;
-        font-size: 0.7em;
+        font-size: 0.8em;
         left: 0px;
         padding-left: 0px;
         margin: 20px 0;
@@ -1181,7 +1179,7 @@ body {
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      font-size: 0.8em;
+      font-size: 1.4rem;
       width: calc(100vw - 36vw);
       left: 50%;
       -webkit-transform: translateX(-50%);
@@ -1221,7 +1219,7 @@ body {
         align-items: baseline;
         margin-bottom: 20px; }
       .ui-content.is-project .project__date {
-        color: #4e4e4e; }
+        color: #979797; }
       .ui-content.is-project .project__descr {
         width: 100%;
         line-height: 2em;
@@ -1248,7 +1246,7 @@ body {
         .ui-content.is-project .project__role p:first-child, .ui-content.is-project .project__technos p:first-child, .ui-content.is-project .project__context p:first-child {
           margin-bottom: 10px; }
         .ui-content.is-project .project__role p:last-child, .ui-content.is-project .project__technos p:last-child, .ui-content.is-project .project__context p:last-child {
-          color: #4e4e4e; }
+          color: #979797; }
       .ui-content.is-project .project__link {
         width: 40%;
         display: -webkit-box;
@@ -1324,7 +1322,7 @@ body {
         text-align: left;
         width: 100%; }
       .ui-content.is-project .project__awards {
-        color: #4e4e4e; }
+        color: #979797; }
       .ui-content.is-project .project__back {
         display: none;
         position: absolute;
