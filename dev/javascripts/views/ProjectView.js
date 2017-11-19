@@ -795,6 +795,10 @@ export default class ProjectView extends AbstractView {
 			// ScrollManager.on(); // start scrollmanager
 		}, 0.5);
 
+		if (global.SCROLLED === false) {
+			tl.to('.scroll', 0.5, {opacity: 0}, 0);
+		}
+
 	}
 
 	backFromContent() {
@@ -871,6 +875,10 @@ export default class ProjectView extends AbstractView {
 			opacity: 1
 		}, 2.6);
 
+		if (global.SCROLLED === false) {
+			tl.to('.scroll', 1, {opacity: 1}, 2.6);
+		}
+
 	}
 
 	slide(dir) {
@@ -917,9 +925,17 @@ export default class ProjectView extends AbstractView {
 	}
 
 	scroll(e) {
-		console.log(this.transitionInComplete);
 
-		if (this.transitionInComplete !== true) e.deltaY = 0; // prevent inertia
+		if (this.transitionInComplete !== true) {
+			e.deltaY = 0; // prevent inertia
+		} else {
+			if (global.SCROLLED === false && this.contentOpen !== true) {
+				global.SCROLLED = true;
+				TweenMax.to('.scroll', 0.5, {opacity: 0, onComplete: () => {
+					document.documentElement.classList.add('scrolled');
+				}});
+			}
+		}
 
 
 		if (this.contentOpen === true) {
@@ -1226,9 +1242,9 @@ export default class ProjectView extends AbstractView {
 				this.transitionOutFast = true;
 				this.stopScrollZ = true;
 				this.scrollZ = this.maxZoomZ; // final destination
-				this.coefScrollZ = 0.027;
+				this.coefScrollZ = 0.043;
 				TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
-				if (this.scrollZSmooth < this.maxZoomZ + 30)  {
+				if (this.scrollZSmooth < this.maxZoomZ + 10)  {
 					window.location.href = `#project-${this.nextId}`; // transitionOut
 				}
 			} else if (this.scrollZSmooth > this.zoomZ) { // top
@@ -1470,7 +1486,7 @@ export default class ProjectView extends AbstractView {
 
 		} else {
 			console.log(this.dir);
-			let start = this.dir === -1 ? 0 : 260;
+			let start = this.dir === -1 ? 0 : 300;
 			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}); // 2
 
 		}
@@ -1498,6 +1514,10 @@ export default class ProjectView extends AbstractView {
 			y: 0,
 			ease: window.Expo.easeOut
 		}, 0.1, delay);
+
+		if (global.SCROLLED === false) {
+			tl.to('.scroll', 1, {opacity: 1}, 5);
+		}
 
 		// tl.add( () => { // add transition hover css ????
 		// 	const title = document.querySelector('.project__title svg');

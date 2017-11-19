@@ -23,6 +23,9 @@
 
 			}
 		}
+		.navigate {
+			color: black;
+		}
 	}
 
 	&.is-open {
@@ -133,7 +136,7 @@
 			color: rgba(255,255,255,0.5);
 			transition: color 0.2s ease;
 			&:hover {
-				// color: rgba(255,255,255,1);
+				color: rgba(255,255,255,1);
 			}
 		}
 
@@ -153,26 +156,47 @@
 	}
 
 	&__sublink {
-		margin: 1em 0;
-		opacity: 0.5;
+		margin: 2rem 0;
+		color: rgba(255,255,255,0.5);
 		font-size: 1.6rem;
 		line-height: 1.6em;
-		transition: opacity 0.2s ease;
+		transition: color 0.2s ease;
 		// overflow: hidden;
 		display: inline-block;
 		vertical-align: middle;
 
 		.menu__subtitle {
-			transition: margin 0.5s $easeToinou;
+			display: inline-block;
+			position: relative;
+			transition: padding 0.4s $easeToinou;
+
+			&:after {
+				content: '';
+				position: absolute;
+				width: 0px;
+				height: 1px;
+				background-color: white;
+				left: 0px;
+				top: 50%;
+				transform: translateY(-50%);
+				transition: width 0.4s $easeToinou;
+			}
+
 		}
 
 		&:first-child{
 			margin-top: 4rem;
 		}
 		&.is-active {
-			opacity: 1;
+			color: rgba(255,255,255,1);
+			.menu__nb {
+				color: rgba(255,255,255,1);
+			}
 			.menu__subtitle {
-				margin-left: 1.5em;
+				padding-left: 1.5em;
+				&::after {
+					width: 1.6rem;
+				}
 			}
 			// .color {
 			// 	&-red {
@@ -194,8 +218,15 @@
 		}
 		&:hover {
 			// opacity: 1;
+			color: rgba(255,255,255,1);
+			.menu__nb {
+				color: rgba(255,255,255,1);
+			}
 			.menu__subtitle {
-				margin-left: 1.5em;
+				padding-left: 1.5em;
+				&::after {
+					width: 1.6rem;
+				}
 			}
 			.color {
 				&-red {
@@ -219,11 +250,12 @@
 
 	&__nb {
 		margin-right: 5px;
+		color: rgba(255,255,255,0.5);
 	}
 
 	&__color {
 		transition: color 0.2s ease;
-		color: white;
+		// color: white;
 	}
 
 	&__overlay {
@@ -239,7 +271,20 @@
 		transition: opacity 0.5s ease;
 	}
 
+	.navigate {
+		position: absolute;
+		color: white;
+		bottom: -3.0rem;
+		left: 50%;
+		transform: translate(-50%, 100%);
+    	letter-spacing: 2.5px;
+    	font-family: 'Theinhardt-light';
+	    font-weight: normal;
+	    font-style: normal;
+	    text-transform: uppercase;
+	    font-size: 1rem;
+	    opacity: 0;
 
-
+	}
 
 }

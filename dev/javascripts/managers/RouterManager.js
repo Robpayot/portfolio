@@ -92,11 +92,10 @@ class RouterManager {
 			this.currentPage.transitionOut(); // animation Out
 
 			this.lastId = this.currentPage.id;
+			global.MENU.toggleOpen(true); // close Menu
+			// When animation out, destroy scene, init new view
 
 			EmitterManager.once('view:transition:out', () => {
-
-				global.MENU.toggleOpen(true); // close Menu
-				// When animation out, destroy scene, init new view
 
 
 				this.currentPage.destroy(true);

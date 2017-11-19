@@ -303,7 +303,11 @@ export default class Glitch {
 			};
 			this.introTxt.src = `${global.BASE}/images/name.png`;
 		} else {
-			this.init();
+			this.ui.img = new Image();
+			this.ui.img.onload = () => {
+				this.init();
+			};
+			this.ui.img.src = `${global.BASE}/images/textures/glitch-1.png`;
 		}
 
 		// console.log(PreloadManager.getResult('svg'));

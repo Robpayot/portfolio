@@ -14,6 +14,7 @@ import PreloadManager from './managers/PreloadManager';
 global.MENU;
 global.PROD = false;
 global.BASE = '';
+global.SCROLLED = false;
 
 if (window.location.host === 'robpayot.github.io') {
 	global.PROD = true;
