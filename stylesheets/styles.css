@@ -587,7 +587,6 @@ body {
   .glitch__canvas {
     box-sizing: border-box;
     text-align: center;
-    height: 50vh;
     z-index: 9000;
     position: absolute;
     top: 50%;
