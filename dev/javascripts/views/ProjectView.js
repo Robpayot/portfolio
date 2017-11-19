@@ -581,7 +581,8 @@ export default class ProjectView extends AbstractView {
 				sndColor: this.data.color,
 				color: 'white',
 				txt: this.data.title,
-				clock: this.clock
+				clock: this.clock,
+				stop: true
 			});
 
 			// Start transition In

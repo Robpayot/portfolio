@@ -219,6 +219,7 @@ export default class Glitch {
 		this.sndTxt = obj.sndTxt;
 		this.debug = obj.debug;
 		this.clock = obj.clock;
+		this.stop = obj.stop;
 
 		this.el.style.display = 'block';
 
@@ -452,7 +453,7 @@ export default class Glitch {
 		// 	}]
 		// }];
 
-		if (this.obj.stop === true) {
+		if (this.stop === true) {
 
 			if (this.obj.type === 'intro') return false;
 			// DEFAULT value
@@ -766,17 +767,14 @@ export default class Glitch {
 			}
 		} else {
 			this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
-			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-			this.ctx.font = this.ctxBuffer.font = this.font;
-
 			this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
 			this.textHeight = this.textSize; // need a real calcul
-			this.text = this.txt;
-
-			this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
-			console.log(this.textSize, this.textWidth);
-			this.width = this.textWidth + this.biggestRange;
 			this.height = this.ui.canvas.offsetHeight;
+			this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+			this.ctxBuffer.font = this.font;
+			this.text = this.txt;
+			this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
+			this.width = this.textWidth + this.biggestRange;
 		}
 
 		if (this.ui.canvas) {
@@ -790,8 +788,33 @@ export default class Glitch {
 			// this.ui.canvasAlphaBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
 
-
+			this.ctx.font = this.ctxBuffer.font = this.font;
 		}
+
+		// this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
+		// this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
+		// this.textHeight = this.textSize; // need a real calcul
+		// this.height = this.ui.canvas.offsetHeight;
+		// this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+		// this.ctxBuffer.font = this.font;
+		// this.text = this.txt;
+		// this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
+		// this.width = this.textWidth + this.biggestRange;
+
+		// if (this.ui.canvas) {
+		// 	this.ui.canvas.height = this.height;
+		// 	this.ui.canvasBuffer.height = this.height;
+		// 	// this.ui.canvasAlphaBuffer.height = this.width;
+		// 	// this.ui.canvasAlphaBuffer.style.height = this.height;
+
+		// 	this.ui.canvas.width = this.width;
+		// 	this.ui.canvasBuffer.width = this.width;
+		// 	// this.ui.canvasAlphaBuffer.width = this.width;
+		// 	// this.ui.canvasAlphaBuffer.style.width = this.width;
+
+		// 	this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
+		// 	this.ctx.font = this.ctxBuffer.font = this.font;
+		// }
 	}
 
 	isHover() {
