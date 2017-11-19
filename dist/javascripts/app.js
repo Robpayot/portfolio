@@ -86,7 +86,7 @@ if (window.location.host === 'robpayot.github.io') {
 
 	_PreloadManager2.default.loadManifest([{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' }, { id: 'texture-star', src: 'images/textures/star-2.png' },
 	// { id: 'damier', src: 'images/textures/damier.jpg' },
-	{ id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-project-prev', src: global.BASE + '/templates/projectPrev.hbs' }, { id: 'tpl-project-next', src: global.BASE + '/templates/projectNext.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }, { id: 'tpl-intro-content', src: global.BASE + '/templates/introContent.hbs' }, global.BASE + '/images/textures/intro_west.jpg', global.BASE + '/images/textures/intro_east.jpg', global.BASE + '/images/textures/intro_up.jpg', global.BASE + '/images/textures/intro_down.jpg', global.BASE + '/images/textures/intro_south.jpg', global.BASE + '/images/textures/intro_north.jpg'
+	{ id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-project-prev', src: global.BASE + '/templates/projectPrev.hbs' }, { id: 'tpl-project-next', src: global.BASE + '/templates/projectNext.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }, { id: 'tpl-intro-content', src: global.BASE + '/templates/introContent.hbs' }, { id: 'introTxt', src: global.BASE + '/images/name.png' }, global.BASE + '/images/textures/intro_west.jpg', global.BASE + '/images/textures/intro_east.jpg', global.BASE + '/images/textures/intro_up.jpg', global.BASE + '/images/textures/intro_down.jpg', global.BASE + '/images/textures/intro_south.jpg', global.BASE + '/images/textures/intro_north.jpg'
 	// { id: 'template-menu', src: ''}
 	]);
 
@@ -322,6 +322,7 @@ var Cursor = function () {
 exports.default = Cursor;
 
 },{"../managers/EmitterManager":13}],5:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -590,7 +591,7 @@ var Glitch = function () {
 
 			console.log(base + '/templates/glitch.hbs', _handlebars2.default);
 
-			_PreloadManager2.default.loadManifest([{ id: 'template-glitch', src: base + '/templates/glitch.hbs' }, { id: 'svg', src: base + '/images/name.svg' }]);
+			_PreloadManager2.default.loadManifest([{ id: 'template-glitch', src: base + '/templates/glitch.hbs' }]);
 
 			_PreloadManager2.default.load();
 		}
@@ -642,7 +643,7 @@ var Glitch = function () {
 				this.introTxt.onload = function () {
 					_this.init();
 				};
-				this.introTxt.src = '/images/name.png';
+				this.introTxt.src = global.BASE + '/images/name.png';
 			} else {
 				this.init();
 			}
@@ -1092,7 +1093,7 @@ var Glitch = function () {
 			if (this.obj.type === 'intro') {
 				// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 				// r.p : We select only the first half
-				this.width = 600; // Higher than 500 its getting laggy a lot
+				this.width = (0, _utils.clamp)(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy a lot
 				this.height = this.width * this.introTxt.height / this.introTxt.width;
 				this.videoWidth = this.width;
 				this.videoHeight = this.width * 2; // square in that case
@@ -1129,31 +1130,6 @@ var Glitch = function () {
 
 				this.ctx.font = this.ctxBuffer.font = this.font;
 			}
-
-			// this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
-			// this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
-			// this.textHeight = this.textSize; // need a real calcul
-			// this.height = this.ui.canvas.offsetHeight;
-			// this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-			// this.ctxBuffer.font = this.font;
-			// this.text = this.txt;
-			// this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
-			// this.width = this.textWidth + this.biggestRange;
-
-			// if (this.ui.canvas) {
-			// 	this.ui.canvas.height = this.height;
-			// 	this.ui.canvasBuffer.height = this.height;
-			// 	// this.ui.canvasAlphaBuffer.height = this.width;
-			// 	// this.ui.canvasAlphaBuffer.style.height = this.height;
-
-			// 	this.ui.canvas.width = this.width;
-			// 	this.ui.canvasBuffer.width = this.width;
-			// 	// this.ui.canvasAlphaBuffer.width = this.width;
-			// 	// this.ui.canvasAlphaBuffer.style.width = this.width;
-
-			// 	this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-			// 	this.ctx.font = this.ctxBuffer.font = this.font;
-			// }
 		}
 	}, {
 		key: 'isHover',
@@ -1167,6 +1143,8 @@ var Glitch = function () {
 }();
 
 exports.default = Glitch;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"dat-gui":58,"handlebars":91}],6:[function(require,module,exports){
 (function (global){
@@ -10932,7 +10910,7 @@ var IntroView = function (_AbstractView) {
 				tl.set(this.ui.overlay, { opacity: 1 });
 				tl.set(canvas, { opacity: 0, visibility: 'visible', display: 'block' });
 
-				tl.fromTo(canvas, 0, { // 3
+				tl.fromTo(canvas, 2, { // 3
 					opacity: 0
 				}, {
 					opacity: 1,

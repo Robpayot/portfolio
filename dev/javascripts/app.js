@@ -36,6 +36,7 @@ if (window.location.host === 'robpayot.github.io') {
 		{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` },
 		{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
 		{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },
+		{ id: 'introTxt', src: `${global.BASE}/images/name.png` },
 		`${global.BASE}/images/textures/intro_west.jpg`,
 		`${global.BASE}/images/textures/intro_east.jpg`,
 		`${global.BASE}/images/textures/intro_up.jpg`,

@@ -3,7 +3,7 @@ import EmitterManager from '../managers/EmitterManager';
 import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import dat from 'dat-gui';
-import { getRandom } from '../helpers/utils';
+import { getRandom, clamp } from '../helpers/utils';
 
 export default class Glitch {
 
@@ -246,8 +246,7 @@ export default class Glitch {
 
 
 			PreloadManager.loadManifest([
-				{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` },
-				{ id: 'svg', src: `${base}/images/name.svg` }
+				{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` }
 			]);
 
 			PreloadManager.load();
@@ -302,7 +301,7 @@ export default class Glitch {
 			this.introTxt.onload = () => {
 				this.init();
 			};
-			this.introTxt.src = '/images/name.png';
+			this.introTxt.src = `${global.BASE}/images/name.png`;
 		} else {
 			this.init();
 		}
@@ -753,7 +752,7 @@ export default class Glitch {
 		if (this.obj.type === 'intro') {
 			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 			// r.p : We select only the first half
-			this.width = 600; // Higher than 500 its getting laggy a lot
+			this.width = clamp(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy a lot
 			this.height = this.width * this.introTxt.height / this.introTxt.width;
 			this.videoWidth = this.width;
 			this.videoHeight = this.width * 2; // square in that case
@@ -791,30 +790,6 @@ export default class Glitch {
 			this.ctx.font = this.ctxBuffer.font = this.font;
 		}
 
-		// this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
-		// this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
-		// this.textHeight = this.textSize; // need a real calcul
-		// this.height = this.ui.canvas.offsetHeight;
-		// this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-		// this.ctxBuffer.font = this.font;
-		// this.text = this.txt;
-		// this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
-		// this.width = this.textWidth + this.biggestRange;
-
-		// if (this.ui.canvas) {
-		// 	this.ui.canvas.height = this.height;
-		// 	this.ui.canvasBuffer.height = this.height;
-		// 	// this.ui.canvasAlphaBuffer.height = this.width;
-		// 	// this.ui.canvasAlphaBuffer.style.height = this.height;
-
-		// 	this.ui.canvas.width = this.width;
-		// 	this.ui.canvasBuffer.width = this.width;
-		// 	// this.ui.canvasAlphaBuffer.width = this.width;
-		// 	// this.ui.canvasAlphaBuffer.style.width = this.width;
-
-		// 	this.font = `${this.textSize}px "Theinhardt"`; // Theinhardt
-		// 	this.ctx.font = this.ctxBuffer.font = this.font;
-		// }
 	}
 
 	isHover() {

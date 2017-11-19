@@ -1,10 +1,25 @@
-html, body {
+html {
 	font-family: 'Theinhardt';
-    font-size: $base-font-size;
     line-height:$base-line-height;
-	@include small-desktop {
-		font-size: 14px;
+    font-size: 12px; // > 1920
+	@include desktop { // 1900
+		font-size: 12px;
 	}
+	@include small-desktop { // 1440 --> BASE
+		font-size: 10px;
+	}
+	@include tablet { // 
+		font-size: 9px;
+	}
+	@include mobile {
+		font-size: 8px;
+	}
+
+}
+
+body {
+
+
 	overflow: hidden;
     cursor:none !important;
     a {

@@ -780,7 +780,7 @@ export default class IntroView extends AbstractView {
 			tl.set(this.ui.overlay, {opacity: 1});
 			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
 
-			tl.fromTo(canvas, 0, { // 3
+			tl.fromTo(canvas, 2, { // 3
 				opacity: 0
 			}, {
 				opacity: 1,

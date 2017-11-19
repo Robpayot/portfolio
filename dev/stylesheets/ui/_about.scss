@@ -4,14 +4,14 @@
 	z-index: 10;
 	text-align: left;
 	user-select: none;
-	font-size: 0.8em;
+	font-size: 1.2rem;
 	width: calc(100vw - 36vw);
 	// height: 100%;
 	left: 50%;
 	transform: translateX(-50%);
 	max-width: 1000px;
 
-	p {
+	p, li {
 		font-size: 1.2em;
 		line-height: 2em;
 		color: black;
@@ -22,6 +22,7 @@
 			display: inline-block;
 			color: black;
 			margin-right: 2em;
+			line-height: 1.4em;
 		}
 
 		a span {
@@ -71,7 +72,7 @@
 	    &__more,
 	    &__back {
 	    	display: inline-block;
-	    	font-size: 0.7em;
+	    	font-size: 0.8em;
 	    	left: 0px;
 	    	padding-left: 0px;
 	    	margin: 20px 0;

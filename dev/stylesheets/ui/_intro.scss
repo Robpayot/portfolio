@@ -15,7 +15,7 @@
 		letter-spacing: 0.4em;
 
 		p {
-			font-size: 0.8rem;
+			font-size: 1.4rem;
 	    	letter-spacing: 4px;
 	    	margin-right: -4px;
 	    	margin-top: 15px;
@@ -31,15 +31,11 @@
 		svg {
 			margin: 0 auto;
 			display: block;
-			width: 70px;
-			height: 70px;
+			width: 5.0rem;
+			height: 5.0rem;
 			position: relative;
 			transform: rotate(-90deg);
 			// cursor: pointer;
-			@include small-desktop {
-				width: 50px;
-				height: 50px;
-			}
 			circle {
 				transform-origin: 75% 75%;
 			}
