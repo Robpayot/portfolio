@@ -245,7 +245,7 @@ export default class Blob extends ProjectView {
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
 		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-		this.intersection = ( intersectsAst.length ) > 0 ? intersectsAst[ 0 ] : null;
+		this.intersection = intersectsAst.length > 0 ? intersectsAst[ 0 ] : null;
 
 		if ( this.toggle > 0.02 && this.intersection !== null) {
 			this.ui.body.style.cursor = 'pointer';

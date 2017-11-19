@@ -6,7 +6,7 @@ $project3D-w : 1075px;
 	z-index: 10;
 	text-align: left;
 	user-select: none;
-	font-size: 0.8em;
+	font-size: 1.4rem;
 	width: calc(100vw - 36vw);
 	// height: 100%;
 	left: 50%;
@@ -44,7 +44,7 @@ $project3D-w : 1075px;
 	    	display: flex;
 			justify-content: space-between;
 	    	align-items: baseline;
-	    	margin-bottom: 20px;
+	    	margin-bottom: 2.0rem;
 
 	    }
 
@@ -65,7 +65,7 @@ $project3D-w : 1075px;
 	    	display: flex;
 			justify-content: flex-start;
 			align-items: center;
-			margin-top: 30px;
+			margin-top: 3.0rem;
 
 			font-family: 'Theinhardt-light';
 		    font-weight: 300;
@@ -78,7 +78,7 @@ $project3D-w : 1075px;
 	    	width: 20%;
 
 	    	p:first-child {
-				margin-bottom: 10px;
+				margin-bottom: 1.0rem;
 	    	}
 
 	    	p:last-child {
@@ -93,14 +93,14 @@ $project3D-w : 1075px;
 	    	align-items: center;
 
 	    	span {
-	    		margin-right: 20px;
+	    		margin-right: 2.0rem;
 	    	}
 
 	    	a {
 
 	    		svg {
-				 	width: 45px;
-					height: 45px;
+				 	width: 4.5rem;
+					height: 4.5rem;
 					position: relative;
 
 					circle {
@@ -133,8 +133,8 @@ $project3D-w : 1075px;
 	    }
 
 	    &__gallery {
-	    	margin-top: 100px;
-	    	margin-bottom: 60px;
+	    	margin-top: 10.0rem;
+	    	margin-bottom: 6.0rem;
 	    	position: relative;
 	        width: 100%;
 	    }
@@ -145,7 +145,7 @@ $project3D-w : 1075px;
 	        opacity: 0.9;
 	        user-select: none;
 	        visibility: hidden;
-	        margin-bottom: 40px;
+	        margin-bottom: 4.0rem;
 	        transform-origin: 0% 0%;
 
 	        img {
@@ -177,7 +177,7 @@ $project3D-w : 1075px;
 		&__back {
 			display: none;
 			position: absolute;
-			top: 180px;
+			top: 18.0rem;
 			left: 50%;
 			transform: translateX(-50%);
 			text-align: center;
@@ -185,13 +185,13 @@ $project3D-w : 1075px;
 
 			.button {
 				text-transform: none;
-				margin-top: 20px;
+				margin-top: 2.0rem;
 			}
 		}
 
 	    .link {
 	        img {
-	            width: 40px;
+	            width: 4.0rem;
 	            margin-left: 20px;
 	            margin-bottom: -5px;
 	        }
@@ -248,6 +248,26 @@ $project3D-w : 1075px;
 	    //     }
 	    // }
 
+
+	}
+
+	.scroll {
+		position: fixed;
+		color: white;
+		bottom: 20vh;
+		left: 50%;
+		transform: translateX(-50%);
+    	letter-spacing: 2.5px;
+    	font-family: 'Theinhardt-light';
+	    font-weight: normal;
+	    font-style: normal;
+	    text-transform: uppercase;
+	    font-size: 1rem;
+	    opacity: 0;
+
+	    .scrolled & {
+	    	display: none;
+	    }
 
 	}
 }

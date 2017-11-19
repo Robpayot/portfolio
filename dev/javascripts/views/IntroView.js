@@ -171,9 +171,8 @@ export default class IntroView extends AbstractView {
 		};
 
 		this.initWater(false, false);
-		this.setPhysicPath();
+		this.setPhysicBlocks();
 		this.setAsteroids();
-		
 
 
 		global.CURSOR.el.classList.add('alt');
@@ -324,7 +323,7 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	setPhysicPath() {
+	setPhysicBlocks() {
 
 		let mat, mesh;
 
@@ -350,7 +349,7 @@ export default class IntroView extends AbstractView {
 			opacity: 0.2
 		} );
 
-		this.perimeter = 250;
+		this.perimeter = 220;
 
 		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
 		mesh.visible = this.isControls;
@@ -379,6 +378,10 @@ export default class IntroView extends AbstractView {
 			size: {w: 70, h: 100, d: 160},
 			pos: {x: 50, y: 0, z: 65},
 			rot: {x: 0, y: 35, z: 0}
+		},{
+			size: {w: 60, h: 60, d: 60},
+			pos: {x: 0, y: 0, z: -155},
+			rot: {x: 0, y: -45, z: 0}
 		}];
 
 		this.blocks = [];
@@ -487,7 +490,7 @@ export default class IntroView extends AbstractView {
 				z: getRandom(this.startZ, this.endZ),
 			};
 			if (pos.x > -this.fZone && pos.x < this.fZone ) {
-				pos.x = i % 2 === 0 ? pos.x + this.fZone : pos.x - this.fZone;
+				pos.x = i % 2 === 0 ? pos.x + this.fZone * 2 : pos.x - this.fZone * 2;
 			}
 
 			// check if ast already in other ast position
@@ -505,12 +508,13 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(30, 40)
+				z: getRandom(20, 30)
 			};
 
 			const scale = getRandom(10, 17);
 			// const speed = getRandom(500, 600); // more is slower
-			const range = getRandom(2, 5);
+			// const range = getRandom(2, 5);
+			const range = 0;
 			const timeRotate = getRandom(14000, 16000);
 			const offsetScale = -10;
 
@@ -602,17 +606,17 @@ export default class IntroView extends AbstractView {
 			global.CURSOR.interractLeave();
 
 			this.currentAstClicked = this.currentAstHover;
-			this.currentAstClicked.animated = true;
-			this.onAsteroidAnim = true;
-			const dest = this.currentAstClicked.height * this.currentAstClicked.scale * 2;
+			this.currentAstClicked.clicked = true;
+			// this.onAsteroidAnim = true;
+			// const dest = this.currentAstClicked.height * this.currentAstClicked.scale * 2;
 
-			const tl = new TimelineMax();
+			// const tl = new TimelineMax();
 
-			tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 2.5, {y: -dest, ease: window.Expo.easeOut});
+			// tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 2.5, {y: -dest, ease: window.Expo.easeOut});
 
-			tl.add(()=> {
-				this.onAsteroidAnim = false;
-			}, 0.5);
+			// tl.add(()=> {
+			// 	this.onAsteroidAnim = false;
+			// }, 0.5);
 
 		}
 	}
@@ -628,16 +632,13 @@ export default class IntroView extends AbstractView {
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
 
-			if (el.animated === false) {
-				el.mesh.position.y = el.body.position.y = 4; // constraint pos y
-			}
-
 			if (el.body !== undefined ) {
-
+				el.mesh.position.copy(el.body.getPosition());
+				el.mesh.quaternion.copy(el.body.getQuaternion());
 				if (this.asteroidsMove === true) {
 					// Apply IMPULSE
 					// el.body.linearVelocity.x = el.force.x;
-					el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -40, 40);
+					el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
 					el.body.linearVelocity.y = el.force.y;
 					el.body.linearVelocity.z = el.force.z;
 
@@ -649,33 +650,44 @@ export default class IntroView extends AbstractView {
 					el.body.angularVelocity.z = 0;
 				}
 
+				if (el.animated === false) { // if no plonge, constant Y
+					el.mesh.position.y = el.body.position.y = 0; // constraint pos y
+				}
 
-				el.mesh.position.copy(el.body.getPosition());
-				el.mesh.quaternion.copy(el.body.getQuaternion());
+				if ( el.reappear === true) {
+					// refait surface
+					el.mesh.position.y = el.body.position.y = el.mesh.position.y + 1;
+					if (el.mesh.position.y >= el.endY) {
+						el.reappear = false;
+						el.animated = false;
+					}
+				}
 
 				// if out of Perimeter, reset
-				if ( Math.sqrt( Math.pow(Math.abs(el.mesh.position.x), 2) + Math.pow(Math.abs(el.mesh.position.z), 2) ) > this.perimeter) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
+				if ( Math.sqrt( Math.pow(Math.abs(el.mesh.position.x), 2) + Math.pow(Math.abs(el.mesh.position.z), 2) ) > this.perimeter || el.clicked === true) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
 
-					// el.mesh.position.y -= 1;
-					// el.body.position.y -= 1;
-
-					// if (el.mesh.position.y < -20) {
-					let z = el.mesh.index % 2 === 0 ? getRandom(0, this.reappearZ) : this.reappearZ;
-					let x = getRandom(this.astXMin, this.astXMax);
-					if (x > -this.fZone && x < this.fZone ) {
-						x = el.mesh.index % 2 === 0 ? x + this.fZone : x - this.fZone;
-					}
-
-					el.mesh.position.z = el.body.position.z = z;
-					el.body.position.x = el.mesh.position.x = x;
 
 					el.animated = true;
-					const dest = el.height * el.scale;
-					// TweenMax.fromTo(el.mesh.material, 0.5, {opacity: 0}, {opacity: 1}); // convert in time raf
-					TweenMax.fromTo([el.mesh.position, el.body.position], 3, {y: -dest}, {y: el.endY, onComplete:() => {
-						el.animated = false;
-					}});
-					// }
+					// Plonge
+					el.mesh.position.y = el.body.position.y = el.mesh.position.y - 1;
+
+					if (el.mesh.position.y <= -20) {
+
+						// reset position
+						let z = el.mesh.index % 2 === 0 ? getRandom(0, this.reappearZ) : this.reappearZ;
+						let x = getRandom(this.astXMin, this.astXMax);
+						if (x > -this.fZone && x < this.fZone ) {
+							x = el.mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
+						}
+
+						el.mesh.position.z = el.body.position.z = z;
+						el.body.position.x = el.mesh.position.x = x;
+						el.reappear = true;
+						el.clicked = false;
+
+						// const dest = el.height * el.scale;
+						// console.log(el.endY);
+					}
 
 					// reboot
 				}
@@ -722,10 +734,10 @@ export default class IntroView extends AbstractView {
 		if (this.glitch) {
 
 			if (this.glitch.start === true) {
-				this.glitch.render({type: 'intro'});
+				this.glitch.render();
 			} else {
 				if (this.glitch.stop !== true) {
-					this.glitch.render({stop: true});
+					this.glitch.render();
 					this.glitch.stop = true;
 				}
 			}
@@ -757,11 +769,7 @@ export default class IntroView extends AbstractView {
 
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
-				textSize: 50,
-				sndColor: 'red',
-				color: 'black',
-				txt: 'R O B I N   P A Y O T',
-				sndTxt: 'I N T E R A C T I V E   D E V E L O P E R',
+				type: 'intro',
 				clock: this.clock
 			});
 
@@ -772,7 +780,7 @@ export default class IntroView extends AbstractView {
 			tl.set(this.ui.overlay, {opacity: 1});
 			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
 
-			tl.fromTo(canvas, 0, { // 3
+			tl.fromTo(canvas, 2, { // 3
 				opacity: 0
 			}, {
 				opacity: 1,

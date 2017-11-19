@@ -1,16 +1,14 @@
 .cursor {
 	margin: 0 auto;
 	display: block;
-	width: 70px;
-	height: 70px;
+	width: 5.0rem;
+	height: 5.0rem;
 	position: absolute;
 	transform: translate(-50%,-50%);
 	z-index: 9000;
 	pointer-events: none;
-	@include small-desktop {
-		width: 50px;
-		height: 50px;
-	}
+	font-size: 1.6rem;
+
 	.c-2 {
 		stroke-dasharray: 308%; // 848;
 		stroke-dashoffset: 308%; // 713;

@@ -131,6 +131,9 @@ export default class Menu {
 				this.animBtn = false;
 				this.animClicked = false;
 			});
+
+			TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});
+			TweenMax.to('.navigate', 0.2, {opacity: 0, ease: window.Linear.easeNone});
 		}
 	}
 
@@ -173,6 +176,9 @@ export default class Menu {
 			tl.add(()=> {
 				this.animBtn = false;
 			});
+
+			tl.fromTo('.navigate', 1, {y: 20}, {y:0, ease: window.Expo.easeOut}, 0);
+			tl.fromTo('.navigate', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
 		} else {
 			tl.to('.menu__button .open-up', 1, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0 );
 			tl.to('.menu__button .open-down', 1.2, {strokeDashoffset: -this.maxDash - 205, ease: window.Expo.easeOut}, 0);
@@ -188,6 +194,9 @@ export default class Menu {
 		this.hoverBtn = false;
 		TweenMax.fromTo('.menu__button circle', 0.2, {opacity: 0}, {opacity: 1});
 		TweenMax.fromTo('.menu__button circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+
+		TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});
+		TweenMax.to('.navigate', 0.2, {opacity: 0, ease: window.Linear.easeNone});
 	}
 
 	update(view, index) {
