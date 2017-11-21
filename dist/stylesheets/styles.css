@@ -857,11 +857,8 @@ body {
       display: block; }
     .ui .menu__button {
       position: absolute;
-      top: 50%;
+      top: calc(50% - 5.0rem);
       left: 7vw;
-      -webkit-transform: translateY(-50%);
-      -ms-transform: translateY(-50%);
-      transform: translateY(-50%);
       pointer-events: auto; }
       .ui .menu__button svg polyline,
       .ui .menu__button svg circle {
@@ -1016,11 +1013,8 @@ body {
         z-index: 1; }
       .ui-content.is-intro .start {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        -webkit-transform: translate(-50%, -50%);
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
+        top: calc(50% - 5.0rem);
+        left: calc(50% - 5.0rem);
         color: black;
         font-size: 2rem;
         pointer-events: auto;
