@@ -7,10 +7,6 @@ import { MeshPhongMaterial, DirectionalLight } from 'three';
 import Asteroid from '../shapes/Asteroid';
 
 
-// POSTPROCESSING
-// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
-
-
 export default class Levit extends ProjectView {
 
 	constructor(obj) {

@@ -41,7 +41,6 @@ export default class Cursor {
 
 	onMouseMove(x,y) {
 
-		console.log(x,y);
 
 		this.mouse.x = x;
 		this.mouse.y = y;
