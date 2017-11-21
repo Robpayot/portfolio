@@ -9,7 +9,7 @@
 	// height: 100%;
 	left: 50%;
 	transform: translateX(-50%);
-	max-width: 1000px;
+	// max-width: 1000px;
 
 	p, li {
 		font-size: 1.2em;
@@ -55,7 +55,7 @@
 
     .about {
 		&__intro {
-			width: 410px;
+			width: 41.0rem;
 			position: absolute;
 			left: 0;
 			top: 50%;
@@ -110,7 +110,7 @@
 	    	display: flex;
 	    	align-items: center;
 	    	justify-content: space-between;
-	    	margin-bottom: 36px;
+	    	margin-bottom: 3.6rem;
 			line-height: 2em;
 			font-size: 2em;
 			// padding: 0 20vw;
@@ -122,8 +122,8 @@
 		    	display: flex;
 		    	align-items: center;
 	    		svg {
-				 	width: 45px;
-					height: 45px;
+				 	width: 4.5rem;
+					height: 4.5rem;
 					position: relative;
 
 					polyline,

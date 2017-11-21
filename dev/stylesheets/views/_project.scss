@@ -41,14 +41,14 @@
     &__number {
     	position: absolute;
     	top: -300px;
-    	font-size: 5rem;
+    	font-size: 50px;
     	left: 5px;
     }
 
     &__more {
     	left: 0px;
     	padding-left: 0px;
-    	font-size: 4.2rem;
+    	font-size: 42px; // in px because resize relative to the scene
     	letter-spacing: 4px;
     	font-family: 'Theinhardt';
 	    font-weight: normal;
@@ -83,7 +83,7 @@
         opacity: 0;
         text-transform: uppercase;
 
-    	font-size: 4.2rem;
+    	font-size: 42px;
     	letter-spacing: 4px;
     	font-family: 'Theinhardt';
         // &.transi {
