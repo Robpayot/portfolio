@@ -657,13 +657,8 @@ body {
     transform-origin: 50% 50%; }
   .cursor text {
     position: absolute;
-    top: 50%;
-    left: 50%;
     color: white;
     fill: white;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
     text-transform: uppercase;
     font-family: 'Theinhardt-light';
     font-weight: 300;
