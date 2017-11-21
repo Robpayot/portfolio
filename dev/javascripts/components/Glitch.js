@@ -297,18 +297,12 @@ export default class Glitch {
 		this.last = 0;
 
 		if (this.obj.type === 'intro') {
-			this.introTxt = new Image();
-			this.introTxt.onload = () => {
-				this.init();
-			};
-			this.introTxt.src = `${global.BASE}/images/name.png`;
+			this.introTxt = PreloadManager.getResult('introTxt');
 		} else {
-			this.ui.img = new Image();
-			this.ui.img.onload = () => {
-				this.init();
-			};
-			this.ui.img.src = `${global.BASE}/images/textures/glitch-1.png`;
+			this.ui.img = PreloadManager.getResult('glitchTex');
 		}
+
+		this.init();
 
 		// console.log(PreloadManager.getResult('svg'));
 	}
