@@ -10247,7 +10247,7 @@ var IntroView = function (_AbstractView) {
 
 			if (_Device.Device.touch === false) {
 				// move camera
-				document[evListener]('mousemove', this.onMouseMove, false);
+				_EmitterManager2.default.on('mousemove', this.onMouseMove);
 			} else {
 				document[evListener]('touchstart', this.onDocumentTouchStart, false);
 				document[evListener]('touchmove', this.onDocumentTouchMove, false);
@@ -10700,15 +10700,12 @@ var IntroView = function (_AbstractView) {
 		}
 	}, {
 		key: 'onMouseMove',
-		value: function onMouseMove(e) {
-
-			var eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
-			var eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
+		value: function onMouseMove(x, y) {
 
 			// calculate mouse position in normalized device coordinates
 			// (-1 to +1) for both components
-			this.mouse.x = eventX / window.innerWidth * 2 - 1;
-			this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
+			this.mouse.x = x / window.innerWidth * 2 - 1;
+			this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 		}
 	}, {
 		key: 'onHoverStart',
