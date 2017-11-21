@@ -297,18 +297,12 @@ export default class Glitch {
 		this.last = 0;
 
 		if (this.obj.type === 'intro') {
-			this.introTxt = new Image();
-			this.introTxt.onload = () => {
-				this.init();
-			};
-			this.introTxt.src = `${global.BASE}/images/name.png`;
+			this.introTxt = PreloadManager.getResult('introTxt');
 		} else {
-			this.ui.img = new Image();
-			this.ui.img.onload = () => {
-				this.init();
-			};
-			this.ui.img.src = `${global.BASE}/images/textures/glitch-1.png`;
+			this.ui.img = PreloadManager.getResult('glitchTex');
 		}
+
+		this.init();
 
 		// console.log(PreloadManager.getResult('svg'));
 	}
@@ -317,7 +311,7 @@ export default class Glitch {
 
 		this.video = document.createElement('video');
 		this.video.id = 'video2';
-		this.video.src = 'videos/glitch-text.mp4';
+		this.video.src = 'videos/glitch-text2-slow.mp4';
 		this.video.autoplay = true;
 		this.video.loop = true;
 		this.video.muted = true;
@@ -488,7 +482,7 @@ export default class Glitch {
 				alphaData = this.ctxAlphaBuffer.getImageData(0, this.videoHeight / 2, this.videoWidth, this.videoHeight / 2).data; // --> bottom part 50/50
 			// r.p : We select the second half
 			// we apply alpha
-			for (let i = 3; i < imageData.length; i += 4) { // why 3 and 4 ?
+			for (let i = 3; i < imageData.length; i += 4) { // why 3 and 4 ? RGB ?
 				imageData[i] = alphaData[i - 1];
 			}
 			// this.ctxAlphaBuffer.restore();
