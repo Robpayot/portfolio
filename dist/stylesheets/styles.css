@@ -857,7 +857,7 @@ body {
       display: block; }
     .ui .menu__button {
       position: absolute;
-      top: calc(50% - 5.0rem);
+      top: calc(50% - 2.5rem);
       left: 7vw;
       pointer-events: auto; }
       .ui .menu__button svg polyline,
@@ -1013,8 +1013,8 @@ body {
         z-index: 1; }
       .ui-content.is-intro .start {
         position: absolute;
-        top: calc(50% - 5.0rem);
-        left: calc(50% - 5.0rem);
+        top: calc(50% - 2.5rem);
+        left: calc(50% - 2.5rem);
         color: black;
         font-size: 2rem;
         pointer-events: auto;
