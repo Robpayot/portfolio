@@ -113,7 +113,7 @@ export default class AboutView extends AbstractView {
 
 		if (Device.touch === false) {
 			// move camera
-			document[evListener]( 'mousemove', this.onMouseMove, false );
+			EmitterManager.on('mousemove', this.onMouseMove);
 
 			for (let i = 0; i < this.ui.links.length; i++) {
 				this.ui.links[i][evListener]( 'mouseenter', this.onHoverLink, false );
@@ -493,17 +493,14 @@ export default class AboutView extends AbstractView {
 
 	}
 
-	onMouseMove( e ) {
+	onMouseMove( x, y ) {
 
-		const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
-		const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
-
-		this.setMouseCoords( e.clientX, e.clientY );
+		this.setMouseCoords( x, y );
 
 		// calculate mouse position in normalized device coordinates
 		// (-1 to +1) for both components
-		this.mouse.x = eventX / window.innerWidth * 2 - 1;
-		this.mouse.y = -(eventY / window.innerHeight) * 2 + 1;
+		this.mouse.x = x / window.innerWidth * 2 - 1;
+		this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 
 	}
 

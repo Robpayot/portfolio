@@ -227,10 +227,6 @@ export default class Stars extends ProjectView {
 
 		}
 
-		// const blobLightShader = new BrightnessShader();
-		// console.log(shaderPoint);
-
-
 		for (let i = 0; i < this.nbAst; i++) {
 
 			// const range = getRandom(3, 8);
@@ -242,21 +238,6 @@ export default class Stars extends ProjectView {
 			};
 
 			const random = Math.round(getRandom(0,this.nbMat - 1));
-
-			// const asteroid = new Points(geometry, /* material || */ new ShaderMaterial({
-			// 	uniforms: this.uniforms[random],
-			// 	defines: {
-			// 		USE_MAP: '',
-			// 		USE_SIZEATTENUATION: ''
-			// 	},
-			// 	transparent: true,
-			// 	// alphaTest: .4,
-			// 	depthWrite: false,
-			// 	// depthTest: false,
-			// 	blending: AdditiveBlending,
-			// 	vertexShader: shaderPoint.vertexShader,
-			// 	fragmentShader: shaderPoint.fragmentShader
-			// }));
 
 			const asteroid = new Sprite( this.materials[random] );
 			asteroid.progress = 0;

@@ -1,14 +1,9 @@
 import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
 import { getRandom, toRadian, clamp, round, toDegree } from '../helpers/utils';
-import { loadJSON } from '../helpers/utils-three';
-import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
 import { Mesh, Group, PlaneGeometry, DirectionalLight, MeshLambertMaterial, PointLight, Object3D } from 'three';
-
-// POSTPROCESSING
-// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 
 
 export default class Circular extends ProjectView {

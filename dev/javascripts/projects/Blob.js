@@ -1,20 +1,11 @@
 import ProjectView from '../views/ProjectView';
 import PreloadManager from '../managers/PreloadManager';
 import { getRandom, toRadian, clamp, round, oscillate } from '../helpers/utils';
-import { loadJSON } from '../helpers/utils-three';
 import Asteroid from '../shapes/Asteroid';
 
 // THREE JS
-import { ShaderMaterial, VideoTexture, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry, WebGLRenderTarget, Raycaster, PerspectiveCamera, Scene, Mesh, Texture, TorusGeometry, PlaneGeometry, SphereGeometry, MeshLambertMaterial, PointLight, Color, MeshBasicMaterial, MeshPhongMaterial, Vector3, BoxGeometry, Object3D } from 'three';
-import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
-import OrbitControls from '../vendors/OrbitControls';
-import { CameraDolly } from '../vendors/three-camera-dolly-custom';
-import { BrightnessShader } from '../shaders/BrightnessShader'; // VerticalTiltShiftShader shader
+import { ShaderMaterial, VideoTexture, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry, MeshLambertMaterial, PointLight } from 'three';
 import { BlobLightShader } from '../shaders/BlobLightShader';
-
-
-// POSTPROCESSING
-// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
 
 
 export default class Blob extends ProjectView {

@@ -34,50 +34,61 @@ export default class Cursor {
 		this.cursorSmooth = { x: 0, y: 0};
 
 		EmitterManager.on('mousemove', this.onMouseMove);
-		EmitterManager.on('raf', this.render);
+		// EmitterManager.on('raf', this.render);
 
 	}
 
 
 	onMouseMove(x,y) {
 
+
 		this.mouse.x = x;
 		this.mouse.y = y;
+		TweenMax.set(this.el, {left: x});
+		TweenMax.set(this.el, {top: y});
 	}
 
 	render() {
 
-		if (this.hasDelay === true) {
+		// no need
+		// if (this.hasDelay === true) {
 
-			// Specify target we want
-			// à faire dans un raf
-			this.cursorTarget.x = this.mouse.x;
-			this.cursorTarget.y = this.mouse.y;
+		// 	// Specify target we want
+		// 	// à faire dans un raf
+		// 	this.cursorTarget.x = this.mouse.x;
+		// 	this.cursorTarget.y = this.mouse.y;
 
-			// Smooth it with deceleration
-			if (this.cursorTarget.x !== undefined && this.cursorTarget.y !== undefined) {
-				this.cursorSmooth.x += (this.cursorTarget.x - this.cursorSmooth.x) * 0.3;
-				this.cursorSmooth.y += (this.cursorTarget.y - this.cursorSmooth.y) * 0.3;
-			}
-
-
-			this.el.style.left = Math.round(this.cursorSmooth.x);
-			this.el.style.top = Math.round(this.cursorSmooth.y);
+		// 	// Smooth it with deceleration
+		// 	if (this.cursorTarget.x !== undefined && this.cursorTarget.y !== undefined) {
+		// 		this.cursorSmooth.x += (this.cursorTarget.x - this.cursorSmooth.x) * 0.3;
+		// 		this.cursorSmooth.y += (this.cursorTarget.y - this.cursorSmooth.y) * 0.3;
+		// 	}
 
 
-			if (this.cursorTarget.x === Math.round(this.cursorSmooth.x) && this.cursorTarget.y === Math.round(this.cursorSmooth.y)) {
-				if (this.isHover !== true) {
-					this.hasDelay = false;
-				}
+		// 	this.cursorSmooth.x = this.mouse.x;
+		// 	this.cursorSmooth.y = this.mouse.y;
+		// 	// TweenMax.set(this.el, {left: Math.round(this.cursorSmooth.x)});
+		// 	// TweenMax.set(this.el, {top: Math.round(this.cursorSmooth.y)});
 
-			}
 
-		} else {
-			if (this.stopFollow !== true) {
-				this.el.style.left = this.cursorSmooth.x = this.mouse.x;
-				this.el.style.top = this.cursorSmooth.y = this.mouse.y;
-			}
-		}
+		// 	if (this.cursorTarget.x === Math.round(this.cursorSmooth.x) && this.cursorTarget.y === Math.round(this.cursorSmooth.y)) {
+		// 		if (this.isHover !== true) {
+		// 			this.hasDelay = false;
+		// 		}
+
+		// 	}
+
+		// } else {
+		// 	if (this.stopFollow !== true) {
+		// 		// this.el.style.left = this.cursorSmooth.x = this.mouse.x; // not working on FF
+		// 		// this.el.style.top = this.cursorSmooth.y = this.mouse.y; // not working on FF
+		// 		this.cursorSmooth.x = this.mouse.x;
+		// 		this.cursorSmooth.y = this.mouse.y;
+		// 		// TweenMax.set(this.el, {left: this.cursorSmooth.x});
+		// 		// TweenMax.set(this.el, {top: this.cursorSmooth.y});
+		// 		console.log('ok', this.el.style.left, this.mouse.x);
+		// 	}
+		// }
 
 	}
 
