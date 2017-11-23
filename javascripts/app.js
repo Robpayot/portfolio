@@ -4841,7 +4841,7 @@ var Asteroid = function (_AbstractShape) {
 					shape = new _p2.default.Box({ width: obj.width, height: obj.height });
 					break;
 				case 'circle':
-					shape = new _p2.default.Circle({ radius: obj.width * obj.scale / 5 });
+					shape = new _p2.default.Circle({ radius: obj.width * obj.scale / 2 });
 					break;
 			}
 
@@ -4849,9 +4849,12 @@ var Asteroid = function (_AbstractShape) {
 			_this.body = new _p2.default.Body({
 				mass: obj.mass || 180, // mass 0 = static
 				position: [obj.pos.x, obj.pos.z],
-				angle: (0, _utils.toRadian)(obj.rot.y)
+				angle: (0, _utils.toRadian)(obj.rot.y),
+				angularVelocity: obj.angularVelocity || 0
 			});
 			_this.body.addShape(shape);
+
+			_this.angularVelocity = obj.angularVelocity || 0;
 
 			// copy positions and rotation
 			_this.mesh.position.x = _this.body.position[0];
@@ -9867,6 +9870,7 @@ var AbstractView = function () {
 	}, {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
+			console.log('resizeeee');
 
 			// this.width = window.innerWidth * window.devicePixelRatio;
 			// this.height = window.innerHeight * window.devicePixelRatio;
@@ -10045,8 +10049,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
 var _AbstractView2 = require('./AbstractView');
 
 var _AbstractView3 = _interopRequireDefault(_AbstractView2);
@@ -10147,7 +10149,7 @@ var IntroView = function (_AbstractView) {
 		_this.gravity = obj.gravity;
 		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.name = 'intro';
-		_this.isControls = true;
+		_this.isControls = false;
 
 		// bind
 
@@ -10165,7 +10167,7 @@ var IntroView = function (_AbstractView) {
 		_this.onLeaveStart = _this.onLeaveStart.bind(_this);
 
 		// preload Models
-		Promise.all([(0, _utilsThree.loadJSON)('datas/models/triangle.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y3.json')]).then(function (results) {
+		Promise.all([(0, _utilsThree.loadJSON)('datas/models/triangle.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y4.json')]).then(function (results) {
 			// when all is loaded
 			_this.models = results;
 			_this.init();
@@ -10278,6 +10280,9 @@ var IntroView = function (_AbstractView) {
 			this.setPhysicBlocks();
 			this.setAsteroids();
 
+			this.resizeHandler(); // size first time
+
+
 			global.CURSOR.el.classList.add('alt');
 		}
 	}, {
@@ -10339,7 +10344,7 @@ var IntroView = function (_AbstractView) {
 			// this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
 			// this.scene.add( this.ms_MainDirectionalLight );
 
-			var gsize = 512; // size of a square which is repeated
+			var gsize = 256; // size of a square which is repeated
 			var res = 256; // 512 :'(
 			var gres = gsize / 2;
 			// let origx = -gsize / 2;
@@ -10366,7 +10371,7 @@ var IntroView = function (_AbstractView) {
 			this.skyTex.repeat.set(1, 1);
 			this.plane = new _three.Mesh(new _three.PlaneGeometry(this.finalBounds * 2, this.finalBounds * 2), new _three.MeshBasicMaterial({ map: this.skyTex, side: _three.DoubleSide }));
 
-			this.plane.position.y = this.maxZoom;
+			this.plane.position.y = this.maxZoom - 400;
 			this.plane.rotation.x = (0, _utils.toRadian)(-90);
 
 			this.sceneMirror.add(this.plane);
@@ -10429,70 +10434,59 @@ var IntroView = function (_AbstractView) {
 
 			// Create a physics world, where bodies and constraints live
 
-			// Add a circle
-			this.circleShape = new _p2.default.Circle({ radius: 10 });
-			this.circleBody = new _p2.default.Body({ mass: 180, position: [0, 200] });
-			this.circleBody.addShape(this.circleShape);
-			this.world.addBody(this.circleBody);
+			// // Add a circle
+			// this.circleShape = new p2.Circle({ radius: 10 });
+			// this.circleBody = new p2.Body({ mass:180, position:[0,200] });
+			// this.circleBody.addShape(this.circleShape);
+			// this.world.addBody(this.circleBody);
 
-			// Add a plane
-			this.planeShape = new _p2.default.Box({ width: 100, height: 50 });
-			this.planeBody = new _p2.default.Body({
-				mass: 0, // mass 0 = static
-				angle: 0
-			});
-			this.planeBody.addShape(this.planeShape);
-			this.world.addBody(this.planeBody);
+			// // Add 2nd circle
+			// this.circleShape2 = new p2.Circle({ radius: 10 });
+			// this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
+			// this.circleBody2.addShape(this.circleShape2);
+			// this.world.addBody(this.circleBody2);
 
-			// Add 2nd circle
-			this.circleShape2 = new _p2.default.Circle({ radius: 10 });
-			this.circleBody2 = new _p2.default.Body({ mass: 180, position: [2, 250], angularVelocity: 0, velocity: [0, 0], force: [0, 0] }); // angularVelocity == accélération de rotation de départ
-			this.circleBody2.addShape(this.circleShape2);
-			this.world.addBody(this.circleBody2);
-
-			console.log(this.planeBody, this.planeShape, this.circleBody, this.circleShape);
 
 			var mat = void 0,
 			    mesh = void 0;
 
-			mat = new _three.MeshBasicMaterial({
-				color: 0xffff00,
-				transparent: true,
-				opacity: 0.8
-			});
+			// mat = new MeshBasicMaterial( {
+			// 	color: 0xffff00,
+			// 	transparent: true,
+			// 	opacity: 0.8
+			// } );
 
-			this.perimeter = 10;
+			// this.perimeter = 10;
 
-			this.circleMesh = new _three.Mesh(new _three.SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
-			this.circleMesh.position.x = this.circleBody.position[0];
-			this.circleMesh.position.z = -this.circleBody.position[1];
+			// this.circleMesh = new Mesh(new SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
+			// this.circleMesh.position.x = this.circleBody.position[0];
+			// this.circleMesh.position.z = -this.circleBody.position[1];
 
-			this.sceneTest.add(this.circleMesh);
+			// this.scene.add(this.circleMesh);
 
-			mat = new _three.MeshBasicMaterial({
-				color: 0xffff00,
-				transparent: true,
-				opacity: 0.8
-			});
+			// mat = new MeshBasicMaterial( {
+			// 	color: 0xffff00,
+			// 	transparent: true,
+			// 	opacity: 0.8
+			// } );
 
-			this.perimeter = 10;
+			// this.perimeter = 10;
 
-			this.circleMesh2 = new _three.Mesh(new _three.SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
-			this.circleMesh2.position.x = this.circleBody2.position[0];
-			this.circleMesh2.position.z = -this.circleBody2.position[1];
+			// this.circleMesh2 = new Mesh(new SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
+			// this.circleMesh2.position.x = this.circleBody2.position[0];
+			// this.circleMesh2.position.z = -this.circleBody2.position[1];
 
-			this.sceneTest.add(this.circleMesh2);
+			// this.scene.add(this.circleMesh2);
 
 			// Island
 			mat = new _three.MeshPhongMaterial({
-				color: 0xffffff,
-				flatShading: true
+				color: 0xffffff
 			});
 			mesh = new _three.Mesh(this.models[2], mat);
 			mesh.position.y = 0;
 			mesh.position.x = 0;
 			mesh.rotation.y = (0, _utils.toRadian)(-180);
-			mesh.scale.set(35, 35, 35);
+			mesh.scale.set(33, 33, 33);
 			// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
 
 
@@ -10520,24 +10514,24 @@ var IntroView = function (_AbstractView) {
 				opacity: 0.2
 			});
 
-			this.fZone = 20; // Zone where asteroids can't appear. Or physic conflicts
+			this.fZone = 25; // Zone where asteroids can't appear. Or physic conflicts
 
 			var blocksParams = [{
 				size: { w: this.fZone * 2, h: 120, d: 160 },
 				pos: { x: 0, y: 0, z: 70 },
 				rot: { x: 0, y: 0, z: 0 }
 			}, {
-				size: { w: 35, h: 100, d: 160 },
-				pos: { x: -50, y: 0, z: -65 },
+				size: { w: 42, h: 160, d: 160 },
+				pos: { x: -45, y: 0, z: -40 },
 				rot: { x: 0, y: -45, z: 0 }
 			}, {
-				size: { w: 35, h: 130, d: 160 },
-				pos: { x: 50, y: 0, z: -45 },
+				size: { w: 44, h: 95, d: 160 },
+				pos: { x: 58, y: 0, z: -73 },
 				rot: { x: 0, y: 40, z: 0 }
 			}, {
-				size: { w: 30, h: 30, d: 60 },
+				size: { w: 40, h: 40, d: 60 },
 				pos: { x: 0, y: 0, z: 130 },
-				rot: { x: 0, y: -45, z: 0 }
+				rot: { x: 0, y: -40, z: 0 }
 			}];
 
 			this.blocks = [];
@@ -10548,7 +10542,7 @@ var IntroView = function (_AbstractView) {
 				var boxShape = new _p2.default.Box({ width: el.size.w, height: el.size.h });
 				// create mesh related
 				var mesh = new _three.Mesh(new _three.BoxGeometry(boxShape.width, boxShape.width, boxShape.height), mat);
-				mesh.visible = _this2.isControls;
+				mesh.visible = false;
 
 				// Add a physic Body
 				mesh.body = new _p2.default.Body({
@@ -10568,7 +10562,7 @@ var IntroView = function (_AbstractView) {
 				mesh.position.z = -mesh.body.position[1];
 				mesh.rotation.y = mesh.body.angle;
 
-				_this2.sceneTest.add(mesh);
+				_this2.scene.add(mesh);
 
 				_this2.blocks.push(mesh);
 			});
@@ -10660,10 +10654,10 @@ var IntroView = function (_AbstractView) {
 				var force = {
 					x: 0,
 					y: 0,
-					z: (0, _utils.getRandom)(-30, -50)
+					z: (0, _utils.getRandom)(-20, -25)
 				};
 
-				var scale = (0, _utils.getRandom)(10, 17);
+				var scale = (0, _utils.getRandom)(8, 12);
 				// const speed = getRandom(500, 600); // more is slower
 				// const range = getRandom(2, 5);
 				var range = 0;
@@ -10685,7 +10679,8 @@ var IntroView = function (_AbstractView) {
 					range: range,
 					// speed,
 					timeRotate: timeRotate,
-					physics: true
+					physics: true,
+					angularVelocity: (0, _utils.getRandom)(0, 4)
 				});
 
 				asteroid.mesh.index = i;
@@ -10780,15 +10775,19 @@ var IntroView = function (_AbstractView) {
 			if (this.gravity === true) this.world.step(1 / 60);
 			// Move physics bodies forward in time
 
-			this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
-			this.circleMesh.position.x = this.circleBody.position[0];
-			this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
-			this.circleMesh.rotation.y = this.circleBody.angle;
+			// this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
+			// this.circleMesh.position.x = this.circleBody.position[0];
+			// this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
+			// this.circleMesh.rotation.y = this.circleBody.angle;
 
-			this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
-			this.circleMesh2.position.x = this.circleBody2.position[0];
-			this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
-			this.circleMesh2.rotation.y = this.circleBody2.angle;
+			// console.log(this.circleBody.force[1], this.circleBody.velocity[1]);
+
+
+			// this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
+			// this.circleMesh2.position.x = this.circleBody2.position[0];
+			// this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
+			// this.circleMesh2.rotation.y = this.circleBody2.angle;
+
 
 			// Moving Icebergs
 			this.asteroids.forEach(function (el) {
@@ -10806,8 +10805,10 @@ var IntroView = function (_AbstractView) {
 						// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
 						// el.body.linearVelocity.y = el.force.y;
 						// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
-
-						_this4.circleBody.velocity[1] = _this4.circleBody.force[1] = el.force.z; // --> garder la meme accélération pour flux constant
+						// console.log(el.body.velocity[1]);
+						// el.body.velocity[0] = clamp(el.body.velocity[0], -el.force.z, el.force.z); // x
+						el.body.velocity[1] = (0, _utils.clamp)(el.force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
+						el.body.velocity[0] = (0, _utils.clamp)(el.body.velocity[0], -20, 20);
 
 						// Clamp rotation
 
@@ -10855,6 +10856,7 @@ var IntroView = function (_AbstractView) {
 							el.mesh.position.x = el.body.position[0] = x; // copy positions
 							el.mesh.position.z = z;
 							el.body.position[1] = -z; // reverse axes
+							// el.body.angularVelocity = el.mesh.angularVelocity;
 
 							el.reappear = true;
 							el.clicked = false;
@@ -10902,17 +10904,17 @@ var IntroView = function (_AbstractView) {
 			}
 
 			// glitch title
-			// if (this.glitch) {
+			if (this.glitch) {
 
-			// 	if (this.glitch.start === true) {
-			// 		this.glitch.render();
-			// 	} else {
-			// 		if (this.glitch.stop !== true) {
-			// 			this.glitch.render();
-			// 			this.glitch.stop = true;
-			// 		}
-			// 	}
-			// }
+				if (this.glitch.start === true) {
+					this.glitch.render();
+				} else {
+					if (this.glitch.stop !== true) {
+						this.glitch.render();
+						this.glitch.stop = true;
+					}
+				}
+			}
 
 			// move sky
 			// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
@@ -10974,10 +10976,10 @@ var IntroView = function (_AbstractView) {
 					// start move Ast
 					_this5.startMove = true;
 				});
-				tl.to(this.ui.overlay, 0, { opacity: 0 }, 0); // 1.5 ,, 4
+				tl.to(this.ui.overlay, 1.5, { opacity: 0 }, 4); // 1.5 ,, 4
 				tl.add(function () {
 					_this5.moveCameraIn(fromProject);
-				}, 0); // 2
+				}, 2); // 2
 				tl.to(this.glitchEl, 1, { autoAlpha: 0, onComplete: function onComplete() {
 						_this5.glitch.start = false;
 						console.log('stop');
@@ -11032,7 +11034,7 @@ var IntroView = function (_AbstractView) {
 			if (fromProject === true) {
 				tl.fromTo(this.camera.position, 5, { y: this.maxZoom }, { y: this.minZoom, ease: window.Expo.easeOut }, 0); // 5
 			} else {
-				tl.to(this.camera.position, 0, { y: this.minZoom, ease: window.Expo.easeInOut }); // 7
+				tl.to(this.camera.position, 7, { y: this.minZoom, ease: window.Expo.easeInOut }); // 7
 			}
 
 			tl.add(function () {
@@ -11063,11 +11065,6 @@ var IntroView = function (_AbstractView) {
 			this.animating = true;
 
 			this.cameraMove = true;
-		}
-	}, {
-		key: 'resizeHandler',
-		value: function resizeHandler() {
-			_get(IntroView.prototype.__proto__ || Object.getPrototypeOf(IntroView.prototype), 'resizeHandler', this).call(this);
 		}
 	}]);
 
