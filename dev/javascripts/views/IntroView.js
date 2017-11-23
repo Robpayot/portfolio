@@ -84,6 +84,7 @@ export default class IntroView extends AbstractView {
 		});
 
 		// init
+		console.log(this.ui);
 
 		// this.onClickStart();
 
@@ -861,30 +862,29 @@ export default class IntroView extends AbstractView {
 	}
 
 	transitionOut(dest) {
-		console.log('ok');
-
-		if (this.ui.button) {
-			const tl = new TimelineMax({delay: 0});
-
-			tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
-			tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
-
-			tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 200, ease: window.Expo.easeOut}, 0);
-			tl.fromTo('.overlay', 1, {
-				opacity: 0
-			}, {
-				opacity: 1,
-				ease: window.Linear.easeNone
-			}, 0);
-			tl.add(() => {
-				EmitterManager.emit('view:transition:out');
-			},2);
 
 
-			this.animating = true;
+		const tl = new TimelineMax({delay: 0});
 
-			this.cameraMove = true;
-		}
+		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
+		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
+
+		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 200, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.overlay', 1, {
+			opacity: 0
+		}, {
+			opacity: 1,
+			ease: window.Linear.easeNone
+		}, 0);
+		tl.add(() => {
+			EmitterManager.emit('view:transition:out');
+		},2);
+
+
+		this.animating = true;
+
+		this.cameraMove = true;
+
 
 
 

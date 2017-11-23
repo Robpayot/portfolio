@@ -51,7 +51,7 @@ class AppManager {
 		this.cursor = global.CURSOR = new Cursor();
 
 		// Set up scene
-		SceneManager.start();
+		SceneManager.start(); // scene already set up ?
 
 		// Selectors we need only one time
 		this.ui = {
@@ -63,7 +63,7 @@ class AppManager {
 
 		global.OVERLAY = this.ui.overlay;
 
-		RouterManager.start();
+		RouterManager.start(); // start
 	}
 
 	events(method) {
