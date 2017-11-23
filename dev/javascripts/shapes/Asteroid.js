@@ -32,7 +32,7 @@ export default class Asteroid extends AbstractShape {
 					shape = new p2.Box({ width: obj.width, height: obj.height});
 					break;
 				case 'circle':
-					shape = new p2.Circle({ radius: obj.width });
+					shape = new p2.Circle({ radius: obj.width * obj.scale / 5});
 					break;
 			}
 
@@ -48,6 +48,8 @@ export default class Asteroid extends AbstractShape {
 			this.mesh.position.x = this.body.position[0];
 			this.mesh.position.z = -this.body.position[1];
 			this.mesh.rotation.y = this.body.angle;
+
+			this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
 
 		} else {
 			// Position mesh

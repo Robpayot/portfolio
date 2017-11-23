@@ -4841,7 +4841,7 @@ var Asteroid = function (_AbstractShape) {
 					shape = new _p2.default.Box({ width: obj.width, height: obj.height });
 					break;
 				case 'circle':
-					shape = new _p2.default.Circle({ radius: obj.width });
+					shape = new _p2.default.Circle({ radius: obj.width * obj.scale / 5 });
 					break;
 			}
 
@@ -4857,6 +4857,8 @@ var Asteroid = function (_AbstractShape) {
 			_this.mesh.position.x = _this.body.position[0];
 			_this.mesh.position.z = -_this.body.position[1];
 			_this.mesh.rotation.y = _this.body.angle;
+
+			_this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
 		} else {
 			// Position mesh
 			_this.mesh.position.copy(obj.pos);
@@ -10236,9 +10238,9 @@ var IntroView = function (_AbstractView) {
 			this.setLight();
 
 			// Set physics
-			if (this.gravity === true) this.initPhysics([0, -180]);
+			if (this.gravity === true) this.initPhysics([0, 0]);
 
-			this.nbAst = 1;
+			this.nbAst = 20;
 			this.minZoom = 400;
 			this.maxZoom = 700;
 			this.asteroids = [];
@@ -10444,7 +10446,7 @@ var IntroView = function (_AbstractView) {
 
 			// Add 2nd circle
 			this.circleShape2 = new _p2.default.Circle({ radius: 10 });
-			this.circleBody2 = new _p2.default.Body({ mass: 180, position: [2, 250], angularVelocity: 10 }); // angularVelocity == accélération de rotation de départ
+			this.circleBody2 = new _p2.default.Body({ mass: 180, position: [2, 250], angularVelocity: 0, velocity: [0, 0], force: [0, 0] }); // angularVelocity == accélération de rotation de départ
 			this.circleBody2.addShape(this.circleShape2);
 			this.world.addBody(this.circleBody2);
 
@@ -10465,7 +10467,7 @@ var IntroView = function (_AbstractView) {
 			this.circleMesh.position.x = this.circleBody.position[0];
 			this.circleMesh.position.z = -this.circleBody.position[1];
 
-			this.scene.add(this.circleMesh);
+			this.sceneTest.add(this.circleMesh);
 
 			mat = new _three.MeshBasicMaterial({
 				color: 0xffff00,
@@ -10479,7 +10481,7 @@ var IntroView = function (_AbstractView) {
 			this.circleMesh2.position.x = this.circleBody2.position[0];
 			this.circleMesh2.position.z = -this.circleBody2.position[1];
 
-			this.scene.add(this.circleMesh2);
+			this.sceneTest.add(this.circleMesh2);
 
 			// Island
 			mat = new _three.MeshPhongMaterial({
@@ -10566,7 +10568,7 @@ var IntroView = function (_AbstractView) {
 				mesh.position.z = -mesh.body.position[1];
 				mesh.rotation.y = mesh.body.angle;
 
-				_this2.scene.add(mesh);
+				_this2.sceneTest.add(mesh);
 
 				_this2.blocks.push(mesh);
 			});
@@ -10658,7 +10660,7 @@ var IntroView = function (_AbstractView) {
 				var force = {
 					x: 0,
 					y: 0,
-					z: (0, _utils.getRandom)(20, 30)
+					z: (0, _utils.getRandom)(-30, -50)
 				};
 
 				var scale = (0, _utils.getRandom)(10, 17);
@@ -10774,13 +10776,16 @@ var IntroView = function (_AbstractView) {
 			this.ms_Ocean.deltaTime = this.clock.getDelta();
 			this.ms_Ocean.render();
 
-			if (this.gravity === true && this.startMove === true) this.world.step(1 / 60);
+			// if (this.gravity === true && this.startMove === true) this.world.step( 1 / 60);
+			if (this.gravity === true) this.world.step(1 / 60);
 			// Move physics bodies forward in time
 
+			this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
 			this.circleMesh.position.x = this.circleBody.position[0];
 			this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
 			this.circleMesh.rotation.y = this.circleBody.angle;
 
+			this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
 			this.circleMesh2.position.x = this.circleBody2.position[0];
 			this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
 			this.circleMesh2.rotation.y = this.circleBody2.angle;
@@ -10800,7 +10805,9 @@ var IntroView = function (_AbstractView) {
 						// el.body.linearVelocity.x = el.force.x;
 						// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
 						// el.body.linearVelocity.y = el.force.y;
-						// el.body.linearVelocity.z = el.force.z;
+						// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
+
+						_this4.circleBody.velocity[1] = _this4.circleBody.force[1] = el.force.z; // --> garder la meme accélération pour flux constant
 
 						// Clamp rotation
 
@@ -10812,7 +10819,7 @@ var IntroView = function (_AbstractView) {
 
 					if (el.animated === false) {
 						// if no plonge, constant Y
-						el.mesh.position.y = el.body.position.y = 0; // constraint pos y
+						// el.mesh.position.y = el.body.position.y = 0; // constraint pos y
 						el.mesh.position.y = 0; // constraint pos y
 					}
 

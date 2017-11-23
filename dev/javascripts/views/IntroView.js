@@ -137,9 +137,9 @@ export default class IntroView extends AbstractView {
 		this.setLight();
 
 		// Set physics
-		if (this.gravity === true) this.initPhysics([0,-180]);
+		if (this.gravity === true) this.initPhysics([0,0]);
 
-		this.nbAst = 1;
+		this.nbAst = 20;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -347,9 +347,11 @@ export default class IntroView extends AbstractView {
 
 		// Add 2nd circle
 		this.circleShape2 = new p2.Circle({ radius: 10 });
-		this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 10 }); // angularVelocity == accélération de rotation de départ
+		this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
 		this.circleBody2.addShape(this.circleShape2);
 		this.world.addBody(this.circleBody2);
+
+
 
 		console.log(this.planeBody, this.planeShape, this.circleBody, this.circleShape);
 
@@ -367,7 +369,7 @@ export default class IntroView extends AbstractView {
 		this.circleMesh.position.x = this.circleBody.position[0];
 		this.circleMesh.position.z = -this.circleBody.position[1];
 
-		this.scene.add(this.circleMesh);
+		this.sceneTest.add(this.circleMesh);
 
 		mat = new MeshBasicMaterial( {
 			color: 0xffff00,
@@ -381,7 +383,7 @@ export default class IntroView extends AbstractView {
 		this.circleMesh2.position.x = this.circleBody2.position[0];
 		this.circleMesh2.position.z = -this.circleBody2.position[1];
 
-		this.scene.add(this.circleMesh2);
+		this.sceneTest.add(this.circleMesh2);
 
 		// Island
 		mat = new MeshPhongMaterial( {
@@ -469,7 +471,7 @@ export default class IntroView extends AbstractView {
 			mesh.position.z = -mesh.body.position[1];
 			mesh.rotation.y = mesh.body.angle;
 
-			this.scene.add(mesh);
+			this.sceneTest.add(mesh);
 
 			this.blocks.push(mesh);
 		});
@@ -562,7 +564,7 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(20, 30)
+				z: getRandom(-30, -50)
 			};
 
 			const scale = getRandom(10, 17);
@@ -674,13 +676,17 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.deltaTime = this.clock.getDelta();
 		this.ms_Ocean.render();
 
-		if (this.gravity === true && this.startMove === true) this.world.step( 1 / 60);
+		// if (this.gravity === true && this.startMove === true) this.world.step( 1 / 60);
+		if (this.gravity === true) this.world.step( 1 / 60);
 		// Move physics bodies forward in time
 
+		this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
 		this.circleMesh.position.x = this.circleBody.position[0];
 		this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
 		this.circleMesh.rotation.y = this.circleBody.angle;
 
+
+		this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
 		this.circleMesh2.position.x = this.circleBody2.position[0];
 		this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
 		this.circleMesh2.rotation.y = this.circleBody2.angle;
@@ -701,7 +707,9 @@ export default class IntroView extends AbstractView {
 					// el.body.linearVelocity.x = el.force.x;
 					// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
 					// el.body.linearVelocity.y = el.force.y;
-					// el.body.linearVelocity.z = el.force.z;
+					// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
+
+					this.circleBody.velocity[1] = this.circleBody.force[1] = el.force.z; // --> garder la meme accélération pour flux constant
 
 					// Clamp rotation
 
@@ -712,7 +720,7 @@ export default class IntroView extends AbstractView {
 				}
 
 				if (el.animated === false) { // if no plonge, constant Y
-					el.mesh.position.y = el.body.position.y = 0; // constraint pos y
+					// el.mesh.position.y = el.body.position.y = 0; // constraint pos y
 					el.mesh.position.y = 0; // constraint pos y
 				}
 
