@@ -41,6 +41,7 @@
     "hbs": "^4.0.1",
     "lodash.assign": "~4.2.0",
     "oimo": "^1.0.9",
+    "p2": "^0.7.1",
     "plugin-hbs": "^1.2.3",
     "preload-js": "^0.6.3",
     "shimify": "0.0.0",

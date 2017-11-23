@@ -1,9 +1,7 @@
 import AppManager from '../managers/AppManager';
 import SceneManager from '../managers/SceneManager';
 import { PerspectiveCamera } from 'three';
-import { World } from 'oimo';
-
-
+import p2 from 'p2';
 
 export default class AbstractView {
 
@@ -22,16 +20,9 @@ export default class AbstractView {
 
 	initPhysics(gravity) {
 
-		this.world = new World({
-			timestep: 1 / 60,
-			iterations: 8,
-			broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
-			worldscale: 1, // scale full world
-			random: true, // randomize sample
-			info: false, // calculate statistic or not
-			gravity // 0 gravity
+		this.world = new p2.World({
+			gravity
 		});
-
 	}
 
 	setCamera() {
@@ -47,6 +38,7 @@ export default class AbstractView {
 	}
 
 	resizeHandler() {
+		console.log('resizeeee');
 
 		// this.width = window.innerWidth * window.devicePixelRatio;
 		// this.height = window.innerHeight * window.devicePixelRatio;
@@ -86,7 +78,7 @@ export default class AbstractView {
 			this.scene.traverse((obj) => {
 
 				// remove physics
-				if (obj.body) obj.body.remove();
+				if (this.world && obj.body) this.world.removeBody(obj.body);
 
 				if (obj.geometry) obj.geometry.dispose();
 
@@ -119,10 +111,7 @@ export default class AbstractView {
 
 		if (this.cssScene) {
 			// Destroy css scene
-			this.cssScene.traverse((obj) => {
-
-				// remove physics
-				if (obj.body) obj.body.remove();
+			this.cssScene.traverse((obj) => { // ?
 
 				if (obj.geometry) obj.geometry.dispose();
 

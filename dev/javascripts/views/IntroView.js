@@ -20,11 +20,13 @@ import '../shaders/FFTOceanShader';
 import '../shaders/OceanShader';
 import '../vendors/MirrorRenderer';
 import Ocean from '../vendors/Ocean';
-console.log(Ocean);
+import p2 from 'p2';
 // import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
 // import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 // import WaterVertexShader from '../shaders/WaterVertexShader';
+
+console.log(p2);
 
 
 import dat from 'dat-gui';
@@ -61,13 +63,9 @@ export default class IntroView extends AbstractView {
 
 		// preload Models
 		Promise.all([
-			loadJSON('datas/models/iceberg-1.json'),
-			loadJSON('datas/models/iceberg-2.json'),
-			loadJSON('datas/models/iceberg-3.json'),
 			loadJSON('datas/models/triangle.json'),
-			loadJSON('datas/models/triangles.json'),
-			loadJSON('datas/models/triangles_circle.json'),
-			loadJSON('datas/models/triangles_y.json')
+			loadJSON('datas/models/triangles_y.json'),
+			loadJSON('datas/models/triangles_y4.json')
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
@@ -125,6 +123,9 @@ export default class IntroView extends AbstractView {
 		this.sceneMirror = new Scene(); // scene only for reflect of Ocean
 		this.sceneMirror.background = new Color(0x000000);
 
+		this.sceneTest = new Scene(); // scene only for reflect of Ocean
+		this.sceneTest.background = new Color(0x000000);
+
 		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
 		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
@@ -136,7 +137,7 @@ export default class IntroView extends AbstractView {
 		this.setLight();
 
 		// Set physics
-		if (this.gravity === true) this.initPhysics([0, 0, 0]);
+		if (this.gravity === true) this.initPhysics([0,0]);
 
 		this.nbAst = 20;
 		this.minZoom = 400;
@@ -145,6 +146,7 @@ export default class IntroView extends AbstractView {
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
 		this.maxDash = 635;
+		this.maxSubSteps = 60; // for p2
 
 		this.raycaster = new Raycaster();
 
@@ -174,6 +176,8 @@ export default class IntroView extends AbstractView {
 		this.initWater(false, false);
 		this.setPhysicBlocks();
 		this.setAsteroids();
+
+		this.resizeHandler(); // size first time
 
 
 		global.CURSOR.el.classList.add('alt');
@@ -237,7 +241,7 @@ export default class IntroView extends AbstractView {
 		// this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
 		// this.scene.add( this.ms_MainDirectionalLight );
 
-		let gsize = 512; // size of a square which is repeated
+		let gsize = 256; // size of a square which is repeated
 		let res = 256; // 512 :'(
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
@@ -267,7 +271,7 @@ export default class IntroView extends AbstractView {
 			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide})
 		);
 
-		this.plane.position.y = this.maxZoom;
+		this.plane.position.y = this.maxZoom - 400;
 		this.plane.rotation.x = toRadian(-90);
 
 		this.sceneMirror.add( this.plane );
@@ -326,18 +330,61 @@ export default class IntroView extends AbstractView {
 
 	setPhysicBlocks() {
 
+		// Create a physics world, where bodies and constraints live
+
+		// // Add a circle
+		// this.circleShape = new p2.Circle({ radius: 10 });
+		// this.circleBody = new p2.Body({ mass:180, position:[0,200] });
+		// this.circleBody.addShape(this.circleShape);
+		// this.world.addBody(this.circleBody);
+
+		// // Add 2nd circle
+		// this.circleShape2 = new p2.Circle({ radius: 10 });
+		// this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
+		// this.circleBody2.addShape(this.circleShape2);
+		// this.world.addBody(this.circleBody2);
+
+
 		let mat, mesh;
+
+		// mat = new MeshBasicMaterial( {
+		// 	color: 0xffff00,
+		// 	transparent: true,
+		// 	opacity: 0.8
+		// } );
+
+		// this.perimeter = 10;
+
+		// this.circleMesh = new Mesh(new SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
+		// this.circleMesh.position.x = this.circleBody.position[0];
+		// this.circleMesh.position.z = -this.circleBody.position[1];
+
+		// this.scene.add(this.circleMesh);
+
+		// mat = new MeshBasicMaterial( {
+		// 	color: 0xffff00,
+		// 	transparent: true,
+		// 	opacity: 0.8
+		// } );
+
+		// this.perimeter = 10;
+
+		// this.circleMesh2 = new Mesh(new SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
+		// this.circleMesh2.position.x = this.circleBody2.position[0];
+		// this.circleMesh2.position.z = -this.circleBody2.position[1];
+
+		// this.scene.add(this.circleMesh2);
 
 		// Island
 		mat = new MeshPhongMaterial( {
 			color: 0xffffff,
-			flatShading: true
+			// flatShading: true
 		} );
-		mesh = new Mesh(this.models[6], mat);
+		mesh = new Mesh(this.models[2], mat);
 		mesh.position.y = 0;
 		mesh.position.x = 0;
 		mesh.rotation.y = toRadian(-180);
-		mesh.scale.set(20, 20, 20);
+		mesh.scale.set(33, 33, 33);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
 
 
@@ -347,7 +394,7 @@ export default class IntroView extends AbstractView {
 		mat = new MeshBasicMaterial( {
 			color: 0xffff00,
 			transparent: true,
-			opacity: 0.2
+			opacity: 0.4
 		} );
 
 		this.perimeter = 220;
@@ -355,7 +402,7 @@ export default class IntroView extends AbstractView {
 		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
 		mesh.visible = this.isControls;
 
-		this.scene.add(mesh);
+		// this.scene.add(mesh);
 
 		// Invisible blocks
 
@@ -365,57 +412,56 @@ export default class IntroView extends AbstractView {
 			opacity: 0.2
 		} );
 
-		this.fZone = 40; // Zone where asteroids can't appear. Or physic conflicts
+		this.fZone = 25; // Zone where asteroids can't appear. Or physic conflicts
 
 		let blocksParams = [{
-			size: {w: this.fZone * 2, h: 100, d: 160},
-			pos: {x: 0, y: 0, z: -70},
+			size: {w: this.fZone * 2, h: 120, d: 160},
+			pos: {x: 0, y: 0, z: 70},
 			rot: {x: 0, y: 0, z: 0}
 		}, {
-			size: {w: 70, h: 100, d: 160},
-			pos: {x: -50, y: 0, z: 65},
-			rot: {x: 0, y: -35, z: 0}
-		}, {
-			size: {w: 70, h: 100, d: 160},
-			pos: {x: 50, y: 0, z: 65},
-			rot: {x: 0, y: 35, z: 0}
-		},{
-			size: {w: 60, h: 60, d: 60},
-			pos: {x: 0, y: 0, z: -155},
+			size: {w: 42, h: 160, d: 160},
+			pos: {x: -45, y: 0, z: -40},
 			rot: {x: 0, y: -45, z: 0}
+		}, {
+			size: {w: 44, h: 95, d: 160},
+			pos: {x: 58, y: 0, z: -73},
+			rot: {x: 0, y: 40, z: 0}
+		},{
+			size: {w: 40, h: 40, d: 60},
+			pos: {x: 0, y: 0, z: 130},
+			rot: {x: 0, y: -40, z: 0}
 		}];
 
 		this.blocks = [];
 
 
 		blocksParams.forEach((el) => {
-			let mesh = new Mesh(new BoxGeometry(el.size.w, el.size.h, el.size.d), mat);
-			mesh.visible = this.isControls;
 
-			this.scene.add(mesh);
+			// Add a Shape
+			let boxShape = new p2.Box({ width: el.size.w, height: el.size.h});
+			// create mesh related
+			let mesh = new Mesh(new BoxGeometry(boxShape.width, boxShape.width, boxShape.height), mat);
+			mesh.visible = false;
 
-			// physic body
-			mesh.physics = {
-				type: 'box', // type of shape : sphere, box, cylinder
-				// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-				size: [el.size.w, el.size.h, el.size.d],
-				pos: [el.pos.x, el.pos.y, el.pos.z], // start position in degree
-				rot: [el.rot.x, el.rot.y, el.rot.z], // start rotation in degree
-				move: false, // dynamic or statique
-				density: 1,
-				friction: 0.2,
-				restitution: 0.2,
-				belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-				collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-			};
+			// Add a physic Body
+			mesh.body = new p2.Body({
+				mass: 0, // mass 0 = static
+				position: [el.pos.x, el.pos.z],
+				angle: toRadian(el.rot.y)
+			});
+			mesh.body.addShape(boxShape);
 
 			if (this.gravity === true) {
 				// add physic body to world
-				mesh.body = this.world.add(mesh.physics);
+				this.world.addBody(mesh.body);
 			}
 
-			mesh.position.copy(mesh.body.getPosition());
-			mesh.quaternion.copy(mesh.body.getQuaternion());
+			// copy positions and rotation
+			mesh.position.x = mesh.body.position[0];
+			mesh.position.z = -mesh.body.position[1];
+			mesh.rotation.y = mesh.body.angle;
+
+			this.scene.add(mesh);
 
 			this.blocks.push(mesh);
 		});
@@ -468,7 +514,7 @@ export default class IntroView extends AbstractView {
 		for (let i = 0; i < this.nbAst; i++) {
 
 			// const model = Math.round(getRandom(0, 2));
-			const model = 3;
+			const model = 0;
 
 			let finalMat = new MeshPhongMaterial( {
 				color: 0xffffff,
@@ -504,15 +550,14 @@ export default class IntroView extends AbstractView {
 				}
 			}
 
-
 			//  force impulsion
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(20, 30)
+				z: getRandom(-20, -25)
 			};
 
-			const scale = getRandom(10, 17);
+			const scale = getRandom(8, 12);
 			// const speed = getRandom(500, 600); // more is slower
 			// const range = getRandom(2, 5);
 			const range = 0;
@@ -520,7 +565,7 @@ export default class IntroView extends AbstractView {
 			const offsetScale = -10;
 
 			const asteroid = new Asteroid({
-				type: 'sphere',
+				type: 'circle',
 				width: this.models[model].size.x,
 				height: this.models[model].size.y,
 				depth: this.models[model].size.z,
@@ -533,7 +578,9 @@ export default class IntroView extends AbstractView {
 				offsetScale,
 				range,
 				// speed,
-				timeRotate
+				timeRotate,
+				physics: true,
+				angularVelocity: getRandom(0,4)
 			});
 
 			asteroid.mesh.index = i;
@@ -541,11 +588,7 @@ export default class IntroView extends AbstractView {
 
 			if (this.gravity === true) {
 				// add physic body to world
-				asteroid.body = this.world.add(asteroid.physics);
-				// Set rotation impulsion
-				asteroid.body.angularVelocity.x = getRandom(-0.2, 0.2);
-				asteroid.body.angularVelocity.y = getRandom(-0.5, 0.5);
-				asteroid.body.angularVelocity.z = getRandom(-0.2, 0.2);
+				this.world.addBody(asteroid.body);
 			}
 
 			this.asteroids.push(asteroid);
@@ -553,7 +596,6 @@ export default class IntroView extends AbstractView {
 
 			// add mesh to the scene
 			this.scene.add(asteroid.mesh);
-
 
 		}
 	}
@@ -625,36 +667,61 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.deltaTime = this.clock.getDelta();
 		this.ms_Ocean.render();
 
-		if (this.gravity === true && this.startMove === true) this.world.step();
+		// if (this.gravity === true && this.startMove === true) this.world.step( 1 / 60);
+		if (this.gravity === true) this.world.step( 1 / 60);
+		// Move physics bodies forward in time
+
+		// this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
+		// this.circleMesh.position.x = this.circleBody.position[0];
+		// this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
+		// this.circleMesh.rotation.y = this.circleBody.angle;
+
+		// console.log(this.circleBody.force[1], this.circleBody.velocity[1]);
+
+
+		// this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
+		// this.circleMesh2.position.x = this.circleBody2.position[0];
+		// this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
+		// this.circleMesh2.rotation.y = this.circleBody2.angle;
+
 
 		// Moving Icebergs
 		this.asteroids.forEach((el) => {
 
 			if (el.body !== undefined ) {
-				el.mesh.position.copy(el.body.getPosition());
-				el.mesh.quaternion.copy(el.body.getQuaternion());
+				// el.mesh.position.copy(el.body.getPosition());
+				// el.mesh.quaternion.copy(el.body.getQuaternion());
+				el.mesh.position.x = el.body.position[0]; // copy positions
+				el.mesh.position.z = -el.body.position[1]; // reverse axes
+				el.mesh.rotation.y = el.body.angle;
+
 				if (this.asteroidsMove === true) {
 					// Apply IMPULSE
 					// el.body.linearVelocity.x = el.force.x;
-					el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
-					el.body.linearVelocity.y = el.force.y;
-					el.body.linearVelocity.z = el.force.z;
+					// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
+					// el.body.linearVelocity.y = el.force.y;
+					// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
+					// console.log(el.body.velocity[1]);
+					// el.body.velocity[0] = clamp(el.body.velocity[0], -el.force.z, el.force.z); // x
+					el.body.velocity[1] = clamp(el.force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
+					el.body.velocity[0] = clamp(el.body.velocity[0], -20, 20);
 
 					// Clamp rotation
 
-					el.body.angularVelocity.x = 0;
-					el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
-					// el.body.angularVelocity.y = 0;
-					el.body.angularVelocity.z = 0;
+					// el.body.angularVelocity.x = 0;
+					// el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
+					// // el.body.angularVelocity.y = 0;
+					// el.body.angularVelocity.z = 0;
 				}
 
 				if (el.animated === false) { // if no plonge, constant Y
-					el.mesh.position.y = el.body.position.y = 0; // constraint pos y
+					// el.mesh.position.y = el.body.position.y = 0; // constraint pos y
+					el.mesh.position.y = 0; // constraint pos y
 				}
 
 				if ( el.reappear === true) {
 					// refait surface
-					el.mesh.position.y = el.body.position.y = el.mesh.position.y + 1;
+					el.mesh.position.y = el.mesh.position.y + 1;
 					if (el.mesh.position.y >= el.endY) {
 						el.reappear = false;
 						el.animated = false;
@@ -667,7 +734,7 @@ export default class IntroView extends AbstractView {
 
 					el.animated = true;
 					// Plonge
-					el.mesh.position.y = el.body.position.y = el.mesh.position.y - 1;
+					el.mesh.position.y = el.mesh.position.y - 1;
 
 					if (el.mesh.position.y <= -20) {
 
@@ -678,8 +745,13 @@ export default class IntroView extends AbstractView {
 							x = el.mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
 						}
 
-						el.mesh.position.z = el.body.position.z = z;
-						el.body.position.x = el.mesh.position.x = x;
+						// el.mesh.position.z = el.body.position.z = z;
+						// el.body.position.x = el.mesh.position.x = x;
+						el.mesh.position.x = el.body.position[0] = x; // copy positions
+						el.mesh.position.z = z;
+						el.body.position[1] = -z; // reverse axes
+						// el.body.angularVelocity = el.mesh.angularVelocity;
+
 						el.reappear = true;
 						el.clicked = false;
 
@@ -742,9 +814,13 @@ export default class IntroView extends AbstractView {
 		}
 
 		// move sky
-		this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
+		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
 
+
+		// console.log(this.circleBody2.angle);
 		this.render();
+
+		// console.log(this.circleBody.position, this.planeBody.position);
 
 
 	}
@@ -793,10 +869,10 @@ export default class IntroView extends AbstractView {
 				// start move Ast
 				this.startMove = true;
 			});
-			tl.to(this.ui.overlay, 1.5, {opacity: 0}, 4);
+			tl.to(this.ui.overlay, 1.5, {opacity: 0}, 4); // 1.5 ,, 4
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 2);
+			}, 2); // 2
 			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
 				this.glitch.start = false;
 				console.log('stop');
@@ -848,9 +924,9 @@ export default class IntroView extends AbstractView {
 		});
 
 		if (fromProject === true) {
-			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0);
+			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
 		} else {
-			tl.to(this.camera.position, 7, {y: this.minZoom, ease: window.Expo.easeInOut});
+			tl.to(this.camera.position, 7, {y: this.minZoom, ease: window.Expo.easeInOut}); // 7
 		}
 
 
@@ -887,11 +963,6 @@ export default class IntroView extends AbstractView {
 
 
 
-
-	}
-
-	resizeHandler() {
-		super.resizeHandler();
 
 	}
 
