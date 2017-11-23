@@ -38,6 +38,7 @@ export default class AbstractView {
 	}
 
 	resizeHandler() {
+		console.log('resizeeee');
 
 		// this.width = window.innerWidth * window.devicePixelRatio;
 		// this.height = window.innerHeight * window.devicePixelRatio;

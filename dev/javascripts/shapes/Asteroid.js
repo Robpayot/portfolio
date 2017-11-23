@@ -22,6 +22,8 @@ export default class Asteroid extends AbstractShape {
 
 
 
+
+
 		if (obj.physics) { // Only use for Intro Ast
 			// physic body
 			// Add a Shape
@@ -32,7 +34,7 @@ export default class Asteroid extends AbstractShape {
 					shape = new p2.Box({ width: obj.width, height: obj.height});
 					break;
 				case 'circle':
-					shape = new p2.Circle({ radius: obj.width * obj.scale / 5});
+					shape = new p2.Circle({ radius: obj.width * obj.scale / 2});
 					break;
 			}
 
@@ -40,9 +42,12 @@ export default class Asteroid extends AbstractShape {
 			this.body = new p2.Body({
 				mass: obj.mass || 180, // mass 0 = static
 				position: [obj.pos.x, obj.pos.z],
-				angle: toRadian(obj.rot.y)
+				angle: toRadian(obj.rot.y),
+				angularVelocity: obj.angularVelocity || 0
 			});
 			this.body.addShape(shape);
+
+			this.angularVelocity = obj.angularVelocity || 0;
 
 			// copy positions and rotation
 			this.mesh.position.x = this.body.position[0];

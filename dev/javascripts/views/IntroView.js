@@ -44,7 +44,7 @@ export default class IntroView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 
@@ -65,7 +65,7 @@ export default class IntroView extends AbstractView {
 		Promise.all([
 			loadJSON('datas/models/triangle.json'),
 			loadJSON('datas/models/triangles_y.json'),
-			loadJSON('datas/models/triangles_y3.json')
+			loadJSON('datas/models/triangles_y4.json')
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
@@ -177,6 +177,8 @@ export default class IntroView extends AbstractView {
 		this.setPhysicBlocks();
 		this.setAsteroids();
 
+		this.resizeHandler(); // size first time
+
 
 		global.CURSOR.el.classList.add('alt');
 
@@ -239,7 +241,7 @@ export default class IntroView extends AbstractView {
 		// this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
 		// this.scene.add( this.ms_MainDirectionalLight );
 
-		let gsize = 512; // size of a square which is repeated
+		let gsize = 256; // size of a square which is repeated
 		let res = 256; // 512 :'(
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
@@ -269,7 +271,7 @@ export default class IntroView extends AbstractView {
 			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide})
 		);
 
-		this.plane.position.y = this.maxZoom;
+		this.plane.position.y = this.maxZoom - 400;
 		this.plane.rotation.x = toRadian(-90);
 
 		this.sceneMirror.add( this.plane );
@@ -330,71 +332,59 @@ export default class IntroView extends AbstractView {
 
 		// Create a physics world, where bodies and constraints live
 
-		// Add a circle
-		this.circleShape = new p2.Circle({ radius: 10 });
-		this.circleBody = new p2.Body({ mass:180, position:[0,200] });
-		this.circleBody.addShape(this.circleShape);
-		this.world.addBody(this.circleBody);
+		// // Add a circle
+		// this.circleShape = new p2.Circle({ radius: 10 });
+		// this.circleBody = new p2.Body({ mass:180, position:[0,200] });
+		// this.circleBody.addShape(this.circleShape);
+		// this.world.addBody(this.circleBody);
 
-		// Add a plane
-		this.planeShape = new p2.Box({ width: 100, height: 50});
-		this.planeBody = new p2.Body({
-			mass: 0, // mass 0 = static
-			angle: 0
-		});
-		this.planeBody.addShape(this.planeShape);
-		this.world.addBody(this.planeBody);
+		// // Add 2nd circle
+		// this.circleShape2 = new p2.Circle({ radius: 10 });
+		// this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
+		// this.circleBody2.addShape(this.circleShape2);
+		// this.world.addBody(this.circleBody2);
 
-		// Add 2nd circle
-		this.circleShape2 = new p2.Circle({ radius: 10 });
-		this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
-		this.circleBody2.addShape(this.circleShape2);
-		this.world.addBody(this.circleBody2);
-
-
-
-		console.log(this.planeBody, this.planeShape, this.circleBody, this.circleShape);
 
 		let mat, mesh;
 
-		mat = new MeshBasicMaterial( {
-			color: 0xffff00,
-			transparent: true,
-			opacity: 0.8
-		} );
+		// mat = new MeshBasicMaterial( {
+		// 	color: 0xffff00,
+		// 	transparent: true,
+		// 	opacity: 0.8
+		// } );
 
-		this.perimeter = 10;
+		// this.perimeter = 10;
 
-		this.circleMesh = new Mesh(new SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
-		this.circleMesh.position.x = this.circleBody.position[0];
-		this.circleMesh.position.z = -this.circleBody.position[1];
+		// this.circleMesh = new Mesh(new SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
+		// this.circleMesh.position.x = this.circleBody.position[0];
+		// this.circleMesh.position.z = -this.circleBody.position[1];
 
-		this.sceneTest.add(this.circleMesh);
+		// this.scene.add(this.circleMesh);
 
-		mat = new MeshBasicMaterial( {
-			color: 0xffff00,
-			transparent: true,
-			opacity: 0.8
-		} );
+		// mat = new MeshBasicMaterial( {
+		// 	color: 0xffff00,
+		// 	transparent: true,
+		// 	opacity: 0.8
+		// } );
 
-		this.perimeter = 10;
+		// this.perimeter = 10;
 
-		this.circleMesh2 = new Mesh(new SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
-		this.circleMesh2.position.x = this.circleBody2.position[0];
-		this.circleMesh2.position.z = -this.circleBody2.position[1];
+		// this.circleMesh2 = new Mesh(new SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
+		// this.circleMesh2.position.x = this.circleBody2.position[0];
+		// this.circleMesh2.position.z = -this.circleBody2.position[1];
 
-		this.sceneTest.add(this.circleMesh2);
+		// this.scene.add(this.circleMesh2);
 
 		// Island
 		mat = new MeshPhongMaterial( {
 			color: 0xffffff,
-			flatShading: true
+			// flatShading: true
 		} );
 		mesh = new Mesh(this.models[2], mat);
 		mesh.position.y = 0;
 		mesh.position.x = 0;
 		mesh.rotation.y = toRadian(-180);
-		mesh.scale.set(35, 35, 35);
+		mesh.scale.set(33, 33, 33);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
 
 
@@ -422,24 +412,24 @@ export default class IntroView extends AbstractView {
 			opacity: 0.2
 		} );
 
-		this.fZone = 20; // Zone where asteroids can't appear. Or physic conflicts
+		this.fZone = 25; // Zone where asteroids can't appear. Or physic conflicts
 
 		let blocksParams = [{
 			size: {w: this.fZone * 2, h: 120, d: 160},
 			pos: {x: 0, y: 0, z: 70},
 			rot: {x: 0, y: 0, z: 0}
 		}, {
-			size: {w: 35, h: 100, d: 160},
-			pos: {x: -50, y: 0, z: -65},
+			size: {w: 42, h: 160, d: 160},
+			pos: {x: -45, y: 0, z: -40},
 			rot: {x: 0, y: -45, z: 0}
 		}, {
-			size: {w: 35, h: 130, d: 160},
-			pos: {x: 50, y: 0, z: -45},
+			size: {w: 44, h: 95, d: 160},
+			pos: {x: 58, y: 0, z: -73},
 			rot: {x: 0, y: 40, z: 0}
 		},{
-			size: {w: 30, h: 30, d: 60},
+			size: {w: 40, h: 40, d: 60},
 			pos: {x: 0, y: 0, z: 130},
-			rot: {x: 0, y: -45, z: 0}
+			rot: {x: 0, y: -40, z: 0}
 		}];
 
 		this.blocks = [];
@@ -451,7 +441,7 @@ export default class IntroView extends AbstractView {
 			let boxShape = new p2.Box({ width: el.size.w, height: el.size.h});
 			// create mesh related
 			let mesh = new Mesh(new BoxGeometry(boxShape.width, boxShape.width, boxShape.height), mat);
-			mesh.visible = this.isControls;
+			mesh.visible = false;
 
 			// Add a physic Body
 			mesh.body = new p2.Body({
@@ -471,7 +461,7 @@ export default class IntroView extends AbstractView {
 			mesh.position.z = -mesh.body.position[1];
 			mesh.rotation.y = mesh.body.angle;
 
-			this.sceneTest.add(mesh);
+			this.scene.add(mesh);
 
 			this.blocks.push(mesh);
 		});
@@ -564,10 +554,10 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(-30, -50)
+				z: getRandom(-20, -25)
 			};
 
-			const scale = getRandom(10, 17);
+			const scale = getRandom(8, 12);
 			// const speed = getRandom(500, 600); // more is slower
 			// const range = getRandom(2, 5);
 			const range = 0;
@@ -589,7 +579,8 @@ export default class IntroView extends AbstractView {
 				range,
 				// speed,
 				timeRotate,
-				physics: true
+				physics: true,
+				angularVelocity: getRandom(0,4)
 			});
 
 			asteroid.mesh.index = i;
@@ -680,16 +671,18 @@ export default class IntroView extends AbstractView {
 		if (this.gravity === true) this.world.step( 1 / 60);
 		// Move physics bodies forward in time
 
-		this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
-		this.circleMesh.position.x = this.circleBody.position[0];
-		this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
-		this.circleMesh.rotation.y = this.circleBody.angle;
+		// this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
+		// this.circleMesh.position.x = this.circleBody.position[0];
+		// this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
+		// this.circleMesh.rotation.y = this.circleBody.angle;
+
+		// console.log(this.circleBody.force[1], this.circleBody.velocity[1]);
 
 
-		this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
-		this.circleMesh2.position.x = this.circleBody2.position[0];
-		this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
-		this.circleMesh2.rotation.y = this.circleBody2.angle;
+		// this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
+		// this.circleMesh2.position.x = this.circleBody2.position[0];
+		// this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
+		// this.circleMesh2.rotation.y = this.circleBody2.angle;
 
 
 		// Moving Icebergs
@@ -708,8 +701,10 @@ export default class IntroView extends AbstractView {
 					// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
 					// el.body.linearVelocity.y = el.force.y;
 					// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
-
-					this.circleBody.velocity[1] = this.circleBody.force[1] = el.force.z; // --> garder la meme accélération pour flux constant
+					// console.log(el.body.velocity[1]);
+					// el.body.velocity[0] = clamp(el.body.velocity[0], -el.force.z, el.force.z); // x
+					el.body.velocity[1] = clamp(el.force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
+					el.body.velocity[0] = clamp(el.body.velocity[0], -20, 20);
 
 					// Clamp rotation
 
@@ -755,6 +750,7 @@ export default class IntroView extends AbstractView {
 						el.mesh.position.x = el.body.position[0] = x; // copy positions
 						el.mesh.position.z = z;
 						el.body.position[1] = -z; // reverse axes
+						// el.body.angularVelocity = el.mesh.angularVelocity;
 
 						el.reappear = true;
 						el.clicked = false;
@@ -805,17 +801,17 @@ export default class IntroView extends AbstractView {
 		}
 
 		// glitch title
-		// if (this.glitch) {
+		if (this.glitch) {
 
-		// 	if (this.glitch.start === true) {
-		// 		this.glitch.render();
-		// 	} else {
-		// 		if (this.glitch.stop !== true) {
-		// 			this.glitch.render();
-		// 			this.glitch.stop = true;
-		// 		}
-		// 	}
-		// }
+			if (this.glitch.start === true) {
+				this.glitch.render();
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render();
+					this.glitch.stop = true;
+				}
+			}
+		}
 
 		// move sky
 		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
@@ -873,10 +869,10 @@ export default class IntroView extends AbstractView {
 				// start move Ast
 				this.startMove = true;
 			});
-			tl.to(this.ui.overlay, 0, {opacity: 0}, 0); // 1.5 ,, 4
+			tl.to(this.ui.overlay, 1.5, {opacity: 0}, 4); // 1.5 ,, 4
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 0); // 2
+			}, 2); // 2
 			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
 				this.glitch.start = false;
 				console.log('stop');
@@ -930,7 +926,7 @@ export default class IntroView extends AbstractView {
 		if (fromProject === true) {
 			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
 		} else {
-			tl.to(this.camera.position, 0, {y: this.minZoom, ease: window.Expo.easeInOut}); // 7
+			tl.to(this.camera.position, 7, {y: this.minZoom, ease: window.Expo.easeInOut}); // 7
 		}
 
 
@@ -967,11 +963,6 @@ export default class IntroView extends AbstractView {
 
 
 
-
-	}
-
-	resizeHandler() {
-		super.resizeHandler();
 
 	}
 
