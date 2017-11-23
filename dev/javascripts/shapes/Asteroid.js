@@ -1,6 +1,7 @@
 import AbstractShape from './AbstractShape';
 // import { Vector3 } from 'three';
 import { getRandom, toRadian } from '../helpers/utils';
+import p2 from 'p2';
 
 export default class Asteroid extends AbstractShape {
 
@@ -19,29 +20,44 @@ export default class Asteroid extends AbstractShape {
 
 		this.createMesh(obj.geometry, obj.material);
 
-		// Position mesh
-		this.mesh.position.copy(obj.pos);
 
-		// physic body
-		this.physics = {
-			type: obj.type, // type of shape : sphere, box, cylinder
-			// size: [geometry.parameters.radius, geometry.parameters.radius, geometry.parameters.radius], // size of shape
-			size: [obj.width * obj.scale + obj.offsetScale, obj.height * obj.scale + obj.offsetScale, obj.depth * obj.scale + obj.offsetScale],
-			pos: [obj.pos.x, obj.pos.y, obj.pos.z], // start position in degree
-			rot: [obj.rot.x, obj.rot.y, obj.rot.z], // start rotation in degree
-			move: true, // dynamic or statique
-			density: 1,
-			friction: 0.2,
-			restitution: 0.2,
-			belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-			collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-		};
 
-		// for normal asts
-		this.mesh.rotation.set(toRadian(obj.rot.x), toRadian(obj.rot.y), toRadian(obj.rot.z));
-		this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
+		if (obj.physics) { // Only use for Intro Ast
+			// physic body
+			// Add a Shape
+			let shape;
 
-		// Impulse force
+			switch (obj.type) {
+				case 'box':
+					shape = new p2.Box({ width: obj.width, height: obj.height});
+					break;
+				case 'circle':
+					shape = new p2.Circle({ radius: obj.width });
+					break;
+			}
+
+			// Add a physic Body
+			this.body = new p2.Body({
+				mass: obj.mass || 180, // mass 0 = static
+				position: [obj.pos.x, obj.pos.z],
+				angle: toRadian(obj.rot.y)
+			});
+			this.body.addShape(shape);
+
+			// copy positions and rotation
+			this.mesh.position.x = this.body.position[0];
+			this.mesh.position.z = -this.body.position[1];
+			this.mesh.rotation.y = this.body.angle;
+
+		} else {
+			// Position mesh
+			this.mesh.position.copy(obj.pos);
+			// for normal asts
+			this.mesh.rotation.set(toRadian(obj.rot.x), toRadian(obj.rot.y), toRadian(obj.rot.z));
+			this.mesh.scale.set(obj.scale, obj.scale, obj.scale);
+		}
+
+		// Impulse force --> deprecated
 		this.force = this.initForce = obj.force;
 		this.speed = obj.speed;
 		this.range = obj.range;
