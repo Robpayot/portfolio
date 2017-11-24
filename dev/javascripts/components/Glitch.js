@@ -478,12 +478,13 @@ export default class Glitch {
 
 			this.ctxAlphaBuffer.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
 			this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, this.videoWidth, this.videoHeight / 2); // --> top part of video
-			let imageData = this.imageAlpha.data,
-				alphaData = this.ctxAlphaBuffer.getImageData(0, this.videoHeight / 2, this.videoWidth, this.videoHeight / 2).data; // --> bottom part 50/50
+			this.imageData = this.imageAlpha.data;
+			this.alphaData = this.ctxAlphaBuffer.getImageData(0, this.videoHeight / 2, this.videoWidth, this.videoHeight / 2).data; // --> bottom part 50/50
 			// r.p : We select the second half
 			// we apply alpha
-			for (let i = 3; i < imageData.length; i += 4) { // why 3 and 4 ? RGB ?
-				imageData[i] = alphaData[i - 1];
+			this.imageDataLenght = this.imageData.length; // --> cached data for perf
+			for (let i = 3; i < this.imageDataLenght; i += 4) { // why 3 and 4 ? RGB ?
+				this.imageData[i] = this.alphaData[i - 1];
 			}
 			// this.ctxAlphaBuffer.restore();
 
