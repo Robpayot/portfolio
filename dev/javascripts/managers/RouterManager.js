@@ -99,10 +99,10 @@ class RouterManager {
 		if (this.currentPage !== null) {
 
 			this.lastPage = this.currentPage.name;
+			console.log(this.lastId, index);
+			let dir = this.lastId > index ? -1 : 1;
+			this.currentPage.transitionOut(dir); // animation Out
 
-			this.currentPage.transitionOut(); // animation Out
-
-			this.lastId = this.currentPage.id;
 			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
 			// When animation out, destroy scene, init new view
 
@@ -273,6 +273,7 @@ class RouterManager {
 		}
 
 		this.currentPage.uri = goToPage;
+		this.lastId = this.currentPage.id;
 
 		global.MENU.update(this.currentPage.name, this.currentPage.id);
 

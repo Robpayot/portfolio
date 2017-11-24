@@ -112,7 +112,7 @@ export default class Cursor {
 			// remplie
 			if (obj.small !== true) {
 				TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
-					if (this.hoverGoTo = true) window.location.href = obj.href;
+					// if (this.hoverGoTo = true) window.location.href = obj.href;
 				}});
 			} else {
 				TweenMax.set(this.c2, {strokeDashoffset: '0%'});

@@ -221,11 +221,6 @@ export default class AboutView extends AbstractView {
 
 	setCameraPos() {
 
-		console.log('setCamera');
-
-		// this.camera.position.set(0, 30, 0);
-		// this.camera.rotation.x = toRadian(-90);
-		// debug add this.controls
 		this.camera.position.set(0, 70, 0);
 		this.camera.rotation.x = toRadian(-90);
 

@@ -65,7 +65,7 @@ export default class IntroView extends AbstractView {
 		Promise.all([
 			loadJSON('datas/models/triangle.json'),
 			loadJSON('datas/models/triangles_y.json'),
-			loadJSON('datas/models/triangles_y4.json')
+			loadJSON('datas/models/triangles_y6.json')
 		]).then((results) => {
 			// when all is loaded
 			this.models = results;
@@ -139,7 +139,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics([0,0]);
 
-		this.nbAst = 20;
+		this.nbAst = 25;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -207,15 +207,8 @@ export default class IntroView extends AbstractView {
 
 	setCameraPos() {
 
-		console.log('setCamera');
-
-		// this.camera.position.set(0, 30, 0);
-		// this.camera.rotation.x = toRadian(-90);
-		// debug add this.controls
 		this.camera.position.set(0, 70, 0);
 		this.camera.rotation.x = toRadian(-90);
-
-
 	}
 
 	initWater() {
@@ -378,7 +371,7 @@ export default class IntroView extends AbstractView {
 		// Island
 		mat = new MeshPhongMaterial( {
 			color: 0xffffff,
-			// flatShading: true
+			flatShading: true
 		} );
 		mesh = new Mesh(this.models[2], mat);
 		mesh.position.y = 0;
@@ -441,7 +434,7 @@ export default class IntroView extends AbstractView {
 			let boxShape = new p2.Box({ width: el.size.w, height: el.size.h});
 			// create mesh related
 			let mesh = new Mesh(new BoxGeometry(boxShape.width, boxShape.width, boxShape.height), mat);
-			mesh.visible = false;
+			mesh.visible = this.isControls;
 
 			// Add a physic Body
 			mesh.body = new p2.Body({
@@ -580,7 +573,7 @@ export default class IntroView extends AbstractView {
 				// speed,
 				timeRotate,
 				physics: true,
-				angularVelocity: getRandom(0,4)
+				angularVelocity: getRandom(-1,1)
 			});
 
 			asteroid.mesh.index = i;
@@ -739,7 +732,7 @@ export default class IntroView extends AbstractView {
 					if (el.mesh.position.y <= -20) {
 
 						// reset position
-						let z = el.mesh.index % 2 === 0 ? getRandom(0, this.reappearZ) : this.reappearZ;
+						let z = el.mesh.index % 2 === 0 ? getRandom(-150, this.reappearZ) : this.reappearZ;
 						let x = getRandom(this.astXMin, this.astXMax);
 						if (x > -this.fZone && x < this.fZone ) {
 							x = el.mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
@@ -750,7 +743,7 @@ export default class IntroView extends AbstractView {
 						el.mesh.position.x = el.body.position[0] = x; // copy positions
 						el.mesh.position.z = z;
 						el.body.position[1] = -z; // reverse axes
-						// el.body.angularVelocity = el.mesh.angularVelocity;
+						el.body.angularVelocity = getRandom(-1,1);
 
 						el.reappear = true;
 						el.clicked = false;
@@ -801,17 +794,17 @@ export default class IntroView extends AbstractView {
 		}
 
 		// glitch title
-		if (this.glitch) {
+		// if (this.glitch) {
 
-			if (this.glitch.start === true) {
-				this.glitch.render();
-			} else {
-				if (this.glitch.stop !== true) {
-					this.glitch.render();
-					this.glitch.stop = true;
-				}
-			}
-		}
+		// 	if (this.glitch.start === true) {
+		// 		this.glitch.render();
+		// 	} else {
+		// 		if (this.glitch.stop !== true) {
+		// 			this.glitch.render();
+		// 			this.glitch.stop = true;
+		// 		}
+		// 	}
+		// }
 
 		// move sky
 		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
@@ -958,10 +951,7 @@ export default class IntroView extends AbstractView {
 
 
 		this.animating = true;
-
 		this.cameraMove = true;
-
-
 
 
 	}
