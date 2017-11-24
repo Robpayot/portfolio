@@ -715,12 +715,12 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	goTo(e) {
+	goTo(e, element) {
 
-		const el = e.currentTarget;
+		const el = element || e.currentTarget;
+		this.clickGoTo = true;
 		if (el.classList.contains('project__next')) this.dir = 1;
 		else this.dir = -1;
-		console.log(this.dir, 'hooooooo');
 
 	}
 
@@ -902,7 +902,7 @@ export default class ProjectView extends AbstractView {
 
 	onHoverBtn(e) {
 		const el = e.currentTarget;
-		global.CURSOR.interractHover({color: el.getAttribute('data-color'), href: el.href});
+		global.CURSOR.interractHover({color: el.getAttribute('data-color'), el });
 		if (this.hoverBtn === true) return false;
 		if (this.animLink === true) return false;
 
@@ -992,7 +992,7 @@ export default class ProjectView extends AbstractView {
 				// ScrollManager.off();
 				if (this.stopScrollZ !== true) {
 					this.stopScrollZ = true;
-					this.coefScrollZ = 0.008;
+					this.coefScrollZ = 0.006;
 					this.scrollZ = this.maxZoomZ; // final destination
 				}
 
@@ -1253,11 +1253,13 @@ export default class ProjectView extends AbstractView {
 
 		if (this.transitionOutScrolled !== true) {
 
+			if (this.clickGoTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
+			// Simulate scroll backWard/foward
 			if (dir === 1) this.scrollZ -= 1;
 			else this.scrollZ += 1;
 			this.hrefChanged = true;
 			this.animating = false;
-			// Simulate scroll backWard/foward
+
 			// tl.to(this.camera.position, 2, {z : start, ease: window.Power2.easeIn});
 
 			// tl.to('.overlay', 0.5, {

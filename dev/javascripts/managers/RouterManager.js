@@ -99,7 +99,6 @@ class RouterManager {
 		if (this.currentPage !== null) {
 
 			this.lastPage = this.currentPage.name;
-			console.log(this.lastId, index);
 			let dir = this.lastId > index ? -1 : 1;
 			this.currentPage.transitionOut(dir); // animation Out
 
