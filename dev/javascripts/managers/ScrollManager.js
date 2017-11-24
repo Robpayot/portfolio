@@ -18,11 +18,11 @@ class ScrollManager {
 	}
 
 	off() {
-		console.log('off');
 		virtualScroll.off();
 	}
 
 	destroy() {
+		alert('destroy Vs');
 		virtualScroll.destroy();
 	}
 

@@ -1,4 +1,6 @@
 import EmitterManager from '../managers/EmitterManager';
+import RouterManager from '../managers/RouterManager';
+
 
 export default class Cursor {
 
@@ -111,9 +113,14 @@ export default class Cursor {
 			this.hoverGoTo = true;
 			// remplie
 			if (obj.small !== true) {
-				TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone, onComplete:() => {
-					if (this.hoverGoTo = true) window.location.href = obj.href;
-				}});
+				TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone,
+					onComplete:() => {
+						if (this.hoverGoTo = true) {
+							RouterManager.currentPage.goTo(null, obj.el);
+							window.location.href = obj.el.href;
+						}
+					}
+				});
 			} else {
 				TweenMax.set(this.c2, {strokeDashoffset: '0%'});
 			}

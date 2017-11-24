@@ -2,6 +2,7 @@
 import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import DATA from '../../datas/data.json';
+import ScrollManager from '../managers/ScrollManager';
 
 export default class Menu {
 
@@ -70,14 +71,30 @@ export default class Menu {
 
 		if (close === true) {
 
-			TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+			// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+			// this.el.classList.remove('is-open');
+			// global.CURSOR.el.classList.remove('menu-open');
+			// this.ui.buttonSvg.classList.remove('is-open');
+			// this.ui.buttonSvg.classList.add('is-close');
+			// this.animBtn = false;
+			// this.animClicked = false;
+			TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 			this.el.classList.remove('is-open');
 			global.CURSOR.el.classList.remove('menu-open');
-			this.ui.buttonSvg.classList.remove('is-open');
-			this.ui.buttonSvg.classList.add('is-close');
-			this.animBtn = false;
-			this.animClicked = false;
-			console.log('close');
+			const tl = new TimelineMax();
+
+			// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.1 );
+			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
+			tl.add(() => {
+				this.ui.buttonSvg.classList.remove('is-open');
+				this.ui.buttonSvg.classList.add('is-close');
+				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+				this.animBtn = false;
+				this.animClicked = false;
+			});
 			return false;
 		}
 
@@ -88,7 +105,9 @@ export default class Menu {
 
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 
-		if (this.el.classList.contains('is-open') === true || close === true) {
+		if (this.el.classList.contains('is-open') === true) {
+
+			ScrollManager.on();
 
 			this.el.classList.remove('is-open');
 			global.CURSOR.el.classList.remove('menu-open');
@@ -108,6 +127,8 @@ export default class Menu {
 			});
 
 		} else {
+
+			ScrollManager.off();
 
 			this.el.classList.add('is-open');
 			global.CURSOR.el.classList.add('menu-open');

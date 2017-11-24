@@ -25,11 +25,11 @@ export default class AbstractView {
 		});
 	}
 
-	setCamera() {
+	setCamera(fov = 45) {
 		console.log('set camera abs');
 
 		this.camera = new PerspectiveCamera(
-			45, // fov
+			fov, // fov
 			window.innerWidth / window.innerHeight, // aspect
 			1, // near
 			3000 // far
