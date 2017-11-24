@@ -103,7 +103,7 @@ class RouterManager {
 			this.currentPage.transitionOut(); // animation Out
 
 			this.lastId = this.currentPage.id;
-			global.MENU.toggleOpen(true); // close Menu
+			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
 			// When animation out, destroy scene, init new view
 
 			EmitterManager.once('view:transition:out', () => {

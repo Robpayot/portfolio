@@ -139,6 +139,12 @@ export default class ProjectView extends AbstractView {
 			this.glitch.hover = false;
 			this.tlGlitch.kill();
 		}
+		console.log('event project');
+		if (method === true) {
+			ScrollManager.on();
+		} else {
+			ScrollManager.off();
+		}
 
 
 	}
@@ -365,8 +371,6 @@ export default class ProjectView extends AbstractView {
 		////////////////////
 		// EVENTS
 		////////////////////
-		console.log(ScrollManager);
-		ScrollManager.on();
 
 		this.events(true);
 
@@ -1692,7 +1696,7 @@ export default class ProjectView extends AbstractView {
 
 	destroy() {
 		console.log('destroy ?');
-		ScrollManager.off();
+		// ScrollManager.off();
 		super.destroy();
 	}
 

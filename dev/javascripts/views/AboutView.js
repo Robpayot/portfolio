@@ -33,7 +33,7 @@ export default class AboutView extends AbstractView {
 		this.gravity = obj.gravity;
 		this.UI = Ui.ui; // Global UI selector
 		this.name = 'about';
-		this.isControls = true;
+		this.isControls = false;
 
 		// bind
 
@@ -692,24 +692,24 @@ export default class AboutView extends AbstractView {
 		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
 
 		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		this.waterMesh.position.y -= 0.0014;
+		// this.waterMesh.position.y -= 0.0014;
 
 		// // deceleration
-		if (this.cameraMove === false && this.isControls === false) {
+		// if (this.cameraMove === false && this.isControls === false) {
 
-			// Specify target we want
-			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-			this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
+		// 	// Specify target we want
+		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
 
-			// Smooth it with deceleration
-			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+		// 	// Smooth it with deceleration
+		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
 
-			// Apply rotation
-			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+		// 	// Apply rotation
+		// 	this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+		// 	this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
-		}
+		// }
 
 		this.render();
 
