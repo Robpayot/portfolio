@@ -459,6 +459,7 @@ export default class ProjectView extends AbstractView {
 		this.hoverLink = false;
 		global.CURSOR.interractLeave();
 		TweenMax.fromTo('.project__link circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set('.project__link circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.project__link circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 	}
 
@@ -771,9 +772,10 @@ export default class ProjectView extends AbstractView {
 		} else {
 			if (this.stopScrollZ === true) return false;
 
-			this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
-
-			console.log( clamp(e.deltaY * 0.04, -4, 4));
+			console.log(e.deltaY);
+			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
+				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
+			}
 
 			// console.log(this.scrollZSmooth);
 			// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
@@ -871,12 +873,14 @@ export default class ProjectView extends AbstractView {
 		this.hoverBtn = false;
 		if (el.classList.contains('project__prev')) {
 			TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
+			TweenMax.set('.project__prev circle', {transformOrigin: '50% 50%'});
 			TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 			TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
 			TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
 
 		} else {
 			TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
+			TweenMax.set('.project__next circle', {transformOrigin: '50% 50%'});
 			TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 			TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
 			TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
@@ -1123,8 +1127,8 @@ export default class ProjectView extends AbstractView {
 
 			if (this.clickGoTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
 			// Simulate scroll backWard/foward
-			if (dir === 1) this.scrollZ -= 1;
-			else this.scrollZ += 1;
+			if (dir === 1) this.scrollZ -= 0.2;
+			else this.scrollZ += 0.2;
 			this.hrefChanged = true;
 			this.animating = false;
 

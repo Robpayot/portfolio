@@ -535,7 +535,7 @@ export default class AboutView extends AbstractView {
 		global.CURSOR.interractHover();
 
 		const tl = new TimelineMax();
-		tl.set(el, {clearProps: 'paddingLeft'});
+		// tl.set(el, {clearProps: 'paddingLeft'});
 		TweenMax.killTweensOf(line);
 
 		tl.to(line, 0.7, { width: 15, ease: window.Expo.easeOut }, 0);
@@ -551,7 +551,7 @@ export default class AboutView extends AbstractView {
 		global.CURSOR.interractLeave();
 
 		const tl = new TimelineMax();
-		tl.set(el, {clearProps: 'paddingLeft'});
+		// tl.set(el, {clearProps: 'paddingLeft'});
 		TweenMax.killTweensOf(line);
 
 		tl.to(line, 0.7, { width: 0, ease: window.Expo.easeOut }, 0);
@@ -616,6 +616,7 @@ export default class AboutView extends AbstractView {
 		this.hoverLink = false;
 		global.CURSOR.interractLeave();
 		TweenMax.fromTo(this.ui.worksCircle[index], 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set(this.ui.worksCircle[index], {transformOrigin: '50% 50%'});
 		TweenMax.fromTo(this.ui.worksCircle[index], 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 	}
 

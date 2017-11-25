@@ -1418,6 +1418,7 @@ var Menu = function () {
 			global.CURSOR.interractLeave();
 			this.hoverBtn = false;
 			TweenMax.fromTo('.menu__button circle', 0.2, { opacity: 0 }, { opacity: 1 });
+			TweenMax.set('.menu__button circle', { transformOrigin: '50% 50%' });
 			TweenMax.fromTo('.menu__button circle', 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 
 			TweenMax.to('.navigate', 1, { y: 20, ease: window.Expo.easeOut });
@@ -9224,7 +9225,7 @@ var AboutView = function (_AbstractView) {
 			global.CURSOR.interractHover();
 
 			var tl = new TimelineMax();
-			tl.set(el, { clearProps: 'paddingLeft' });
+			// tl.set(el, {clearProps: 'paddingLeft'});
 			TweenMax.killTweensOf(line);
 
 			tl.to(line, 0.7, { width: 15, ease: window.Expo.easeOut }, 0);
@@ -9240,7 +9241,7 @@ var AboutView = function (_AbstractView) {
 			global.CURSOR.interractLeave();
 
 			var tl = new TimelineMax();
-			tl.set(el, { clearProps: 'paddingLeft' });
+			// tl.set(el, {clearProps: 'paddingLeft'});
 			TweenMax.killTweensOf(line);
 
 			tl.to(line, 0.7, { width: 0, ease: window.Expo.easeOut }, 0);
@@ -9307,6 +9308,7 @@ var AboutView = function (_AbstractView) {
 			this.hoverLink = false;
 			global.CURSOR.interractLeave();
 			TweenMax.fromTo(this.ui.worksCircle[index], 0.2, { opacity: 0 }, { opacity: 1 });
+			TweenMax.set(this.ui.worksCircle[index], { transformOrigin: '50% 50%' });
 			TweenMax.fromTo(this.ui.worksCircle[index], 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 		}
 	}, {
@@ -11331,6 +11333,7 @@ var ProjectView = function (_AbstractView) {
 			this.hoverLink = false;
 			global.CURSOR.interractLeave();
 			TweenMax.fromTo('.project__link circle', 0.2, { opacity: 0 }, { opacity: 1 });
+			TweenMax.set('.project__link circle', { transformOrigin: '50% 50%' });
 			TweenMax.fromTo('.project__link circle', 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 		}
 	}, {
@@ -11641,9 +11644,11 @@ var ProjectView = function (_AbstractView) {
 			} else {
 				if (this.stopScrollZ === true) return false;
 
-				this.scrollZ += (0, _utils.clamp)(e.deltaY * 0.04, -6, 6); //reverse
-
-				console.log((0, _utils.clamp)(e.deltaY * 0.04, -4, 4));
+				console.log(e.deltaY);
+				if (e.deltaY > 30 || e.deltaY < -30) {
+					///!\ depend of Browsers clamp value. Have to make a real scroll
+					this.scrollZ += (0, _utils.clamp)(e.deltaY * 0.04, -6, 6); //reverse
+				}
 
 				// console.log(this.scrollZSmooth);
 				// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
@@ -11747,11 +11752,13 @@ var ProjectView = function (_AbstractView) {
 			this.hoverBtn = false;
 			if (el.classList.contains('project__prev')) {
 				TweenMax.fromTo('.project__prev circle', 0.2, { opacity: 0 }, { opacity: 1 });
+				TweenMax.set('.project__prev circle', { transformOrigin: '50% 50%' });
 				TweenMax.fromTo('.project__prev circle', 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 				TweenMax.to('.project__prev span', 1, { opacity: 0, y: '100%', ease: window.Expo.easeOut }, 0);
 				TweenMax.to('.project__prev hr', 1, { y: -120, ease: window.Expo.easeOut }, 0);
 			} else {
 				TweenMax.fromTo('.project__next circle', 0.2, { opacity: 0 }, { opacity: 1 });
+				TweenMax.set('.project__next circle', { transformOrigin: '50% 50%' });
 				TweenMax.fromTo('.project__next circle', 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 				TweenMax.to('.project__next span', 1, { opacity: 0, y: '-100%', ease: window.Expo.easeOut }, 0);
 				TweenMax.to('.project__next hr', 1, { y: -100, ease: window.Expo.easeOut }, 0);
@@ -11997,7 +12004,7 @@ var ProjectView = function (_AbstractView) {
 
 				if (this.clickGoTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
 				// Simulate scroll backWard/foward
-				if (dir === 1) this.scrollZ -= 1;else this.scrollZ += 1;
+				if (dir === 1) this.scrollZ -= 0.2;else this.scrollZ += 0.2;
 				this.hrefChanged = true;
 				this.animating = false;
 
