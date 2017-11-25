@@ -779,10 +779,6 @@ body {
     width: 200px;
     height: 200px;
     position: relative; }
-    .project__next svg circle, .project__prev svg circle {
-      -webkit-transform-origin: 75% 75%;
-      -ms-transform-origin: 75% 75%;
-      transform-origin: 75% 75%; }
     .project__next svg polyline,
     .project__next svg circle, .project__prev svg polyline,
     .project__prev svg circle {
@@ -864,10 +860,6 @@ body {
         width: 5.0rem;
         height: 5.0rem;
         position: relative; }
-        .ui .menu__button svg circle {
-          -webkit-transform-origin: 75% 75%;
-          -ms-transform-origin: 75% 75%;
-          transform-origin: 75% 75%; }
         .ui .menu__button svg.is-close .open-down,
         .ui .menu__button svg.is-close .open-up {
           stroke-dasharray: 635;
@@ -1184,10 +1176,7 @@ body {
             position: relative; }
             .ui-content.is-about .about__work a svg polyline,
             .ui-content.is-about .about__work a svg circle {
-              stroke: black;
-              -webkit-transform-origin: 75% 75%;
-              -ms-transform-origin: 75% 75%;
-              transform-origin: 75% 75%; }
+              stroke: black; }
             .ui-content.is-about .about__work a svg .open-down,
             .ui-content.is-about .about__work a svg .open-up {
               stroke-dasharray: 635;
@@ -1295,10 +1284,6 @@ body {
           width: 4.5rem;
           height: 4.5rem;
           position: relative; }
-          .ui-content.is-project .project__link a svg circle {
-            -webkit-transform-origin: 75% 75%;
-            -ms-transform-origin: 75% 75%;
-            transform-origin: 75% 75%; }
           .ui-content.is-project .project__link a svg polyline,
           .ui-content.is-project .project__link a svg circle {
             stroke: white; }
