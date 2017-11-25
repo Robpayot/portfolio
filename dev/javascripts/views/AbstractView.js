@@ -8,6 +8,7 @@ export default class AbstractView {
 	constructor() {
 
 		this.ui = AppManager.ui;
+		console.log(this.ui);
 
 		this.clock = SceneManager.clock; // time
 		this.postProc = false;

@@ -311,10 +311,11 @@ export default class Glitch {
 
 		this.video = document.createElement('video');
 		this.video.id = 'video2';
-		this.video.src = 'videos/glitch-text2-slow.mp4';
+		this.video.src = 'videos/glitch-text3.mp4';
 		this.video.autoplay = true;
 		this.video.loop = true;
 		this.video.muted = true;
+		this.video.pause();
 		this.el.appendChild(this.video);
 
 	}
@@ -322,8 +323,8 @@ export default class Glitch {
 	init() {
 
 		this.ctx = this.ui.canvas.getContext('2d');
-		this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
-		this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
+		if (this.ui.canvasBuffer) this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
+		if (this.ui.canvasAlphaBuffer) this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
 
 		this.initOptions();
 		// set up alpha video
@@ -478,12 +479,13 @@ export default class Glitch {
 
 			this.ctxAlphaBuffer.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
 			this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, this.videoWidth, this.videoHeight / 2); // --> top part of video
-			let imageData = this.imageAlpha.data,
-				alphaData = this.ctxAlphaBuffer.getImageData(0, this.videoHeight / 2, this.videoWidth, this.videoHeight / 2).data; // --> bottom part 50/50
+			this.imageData = this.imageAlpha.data;
+			this.alphaData = this.ctxAlphaBuffer.getImageData(0, this.videoHeight / 2, this.videoWidth, this.videoHeight / 2).data; // --> bottom part 50/50
 			// r.p : We select the second half
 			// we apply alpha
-			for (let i = 3; i < imageData.length; i += 4) { // why 3 and 4 ? RGB ?
-				imageData[i] = alphaData[i - 1];
+			this.imageDataLenght = this.imageData.length; // --> cached data for perf
+			for (let i = 3; i < this.imageDataLenght; i += 4) { // why 3 and 4 ? RGB ?
+				this.imageData[i] = this.alphaData[i - 1];
 			}
 			// this.ctxAlphaBuffer.restore();
 
@@ -776,16 +778,17 @@ export default class Glitch {
 
 		if (this.ui.canvas) {
 			this.ui.canvas.height = this.height;
-			this.ui.canvasBuffer.height = this.height;
+			if (this.ui.canvasBuffer) this.ui.canvasBuffer.height = this.height;
 			// this.ui.canvasAlphaBuffer.height = this.width;
 			// this.ui.canvasAlphaBuffer.style.height = this.height * 2; // retina
 
 			this.ui.canvas.width = this.width;
-			this.ui.canvasBuffer.width = this.width;
+			if (this.ui.canvasBuffer) this.ui.canvasBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
 
-			this.ctx.font = this.ctxBuffer.font = this.font;
+			this.ctx.font = this.font;
+			if (this.ctxBuffer) this.ctxBuffer.font = this.font;
 		}
 
 	}

@@ -339,24 +339,24 @@ export default class Stars extends ProjectView {
 
 		// update uniforms
 
-		this.materials.forEach( (el)=> {
-			el.opacity = Math.sin(this.clock.getElapsedTime() * el.time + el.offset) * el.range.coef + el.range.add;
-		});
+		for (let i = 0; i < this.nbMat; i++) {
+			this.materials[i].opacity = Math.sin(this.clock.getElapsedTime() * this.materials[i].time + this.materials[i].offset) * this.materials[i].range.coef + this.materials[i].range.add;
+		}
 
 		// Asteroids meshs
-		this.asteroidsM.forEach( (el)=> {
+		for (let i = 0; i < this.nbAst; i++) {
 
-			if (el.position.y < this.bottomY) {
+			if (this.asteroidsM[i].position.y < this.bottomY) {
 				// reset
-				el.progress = 0;
-				el.initPosY = getRandom(this.topY - 5, this.topY);
+				this.asteroidsM[i].progress = 0;
+				this.asteroidsM[i].initPosY = getRandom(this.topY - 5, this.topY);
 			}
-			el.progress += this.coefSpeed * 4;
-			el.position.y = el.initPosY - el.progress + this.camRotSmooth.x * 100 * el.coefX;
+			this.asteroidsM[i].progress += this.coefSpeed * 4;
+			this.asteroidsM[i].position.y = this.asteroidsM[i].initPosY - this.asteroidsM[i].progress + this.camRotSmooth.x * 100 * this.asteroidsM[i].coefX;
 
-			el.position.x = el.initPosX - this.camRotSmooth.y * 100 * el.coefX;
+			this.asteroidsM[i].position.x = this.asteroidsM[i].initPosX - this.camRotSmooth.y * 100 * this.asteroidsM[i].coefX;
 
-		});
+		}
 
 		// console.log(-this.camRotSmooth.y * 70);
 

@@ -26,8 +26,6 @@ import p2 from 'p2';
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 // import WaterVertexShader from '../shaders/WaterVertexShader';
 
-console.log(p2);
-
 
 import dat from 'dat-gui';
 
@@ -139,7 +137,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics([0,0]);
 
-		this.nbAst = 25;
+		this.nbAst = 30;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -208,7 +206,7 @@ export default class IntroView extends AbstractView {
 	setCameraPos() {
 
 		this.camera.position.set(0, 70, 0);
-		this.camera.rotation.x = toRadian(-90);
+		this.currentCameraRotX = this.camera.rotation.x = toRadian(-90);
 	}
 
 	initWater() {
@@ -274,32 +272,32 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { value: this.camera.position };
 		this.scene.add(this.ms_Ocean.oceanMesh);
 
-		let gui = new dat.GUI();
-		let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
-		c1.onChange(function(v) {
-			this.object.size = v;
-			this.object.changed = true;
-		});
-		let c2 = gui.add(this.ms_Ocean, 'choppiness', 0.1, 4);
-		c2.onChange(function(v) {
-			this.object.choppiness = v;
-			this.object.changed = true;
-		});
-		let c3 = gui.add(this.ms_Ocean, 'windX',-15, 15);
-		c3.onChange(function(v) {
-			this.object.windX = v;
-			this.object.changed = true;
-		});
-		let c4 = gui.add(this.ms_Ocean, 'windY', -15, 15);
-		c4.onChange(function(v) {
-			this.object.windY = v;
-			this.object.changed = true;
-		});
-		let c8 = gui.add(this.ms_Ocean, 'exposure', 0.0, 6);
-		c8.onChange(function(v) {
-			this.object.exposure = v;
-			this.object.changed = true;
-		});
+		// let gui = new dat.GUI();
+		// let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
+		// c1.onChange(function(v) {
+		// 	this.object.size = v;
+		// 	this.object.changed = true;
+		// });
+		// let c2 = gui.add(this.ms_Ocean, 'choppiness', 0.1, 4);
+		// c2.onChange(function(v) {
+		// 	this.object.choppiness = v;
+		// 	this.object.changed = true;
+		// });
+		// let c3 = gui.add(this.ms_Ocean, 'windX',-15, 15);
+		// c3.onChange(function(v) {
+		// 	this.object.windX = v;
+		// 	this.object.changed = true;
+		// });
+		// let c4 = gui.add(this.ms_Ocean, 'windY', -15, 15);
+		// c4.onChange(function(v) {
+		// 	this.object.windY = v;
+		// 	this.object.changed = true;
+		// });
+		// let c8 = gui.add(this.ms_Ocean, 'exposure', 0.0, 6);
+		// c8.onChange(function(v) {
+		// 	this.object.exposure = v;
+		// 	this.object.changed = true;
+		// });
 	}
 
 	setLight() {
@@ -323,50 +321,7 @@ export default class IntroView extends AbstractView {
 
 	setPhysicBlocks() {
 
-		// Create a physics world, where bodies and constraints live
-
-		// // Add a circle
-		// this.circleShape = new p2.Circle({ radius: 10 });
-		// this.circleBody = new p2.Body({ mass:180, position:[0,200] });
-		// this.circleBody.addShape(this.circleShape);
-		// this.world.addBody(this.circleBody);
-
-		// // Add 2nd circle
-		// this.circleShape2 = new p2.Circle({ radius: 10 });
-		// this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
-		// this.circleBody2.addShape(this.circleShape2);
-		// this.world.addBody(this.circleBody2);
-
-
 		let mat, mesh;
-
-		// mat = new MeshBasicMaterial( {
-		// 	color: 0xffff00,
-		// 	transparent: true,
-		// 	opacity: 0.8
-		// } );
-
-		// this.perimeter = 10;
-
-		// this.circleMesh = new Mesh(new SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
-		// this.circleMesh.position.x = this.circleBody.position[0];
-		// this.circleMesh.position.z = -this.circleBody.position[1];
-
-		// this.scene.add(this.circleMesh);
-
-		// mat = new MeshBasicMaterial( {
-		// 	color: 0xffff00,
-		// 	transparent: true,
-		// 	opacity: 0.8
-		// } );
-
-		// this.perimeter = 10;
-
-		// this.circleMesh2 = new Mesh(new SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
-		// this.circleMesh2.position.x = this.circleBody2.position[0];
-		// this.circleMesh2.position.z = -this.circleBody2.position[1];
-
-		// this.scene.add(this.circleMesh2);
 
 		// Island
 		mat = new MeshPhongMaterial( {
@@ -500,7 +455,7 @@ export default class IntroView extends AbstractView {
 		// ADD Iceberg
 		this.astXMin = -this.perimeter;
 		this.astXMax = this.perimeter;
-		this.startZ = -600;
+		this.startZ = -800;
 		this.reappearZ = -300;
 		this.endZ = 200;
 
@@ -609,12 +564,12 @@ export default class IntroView extends AbstractView {
 		if (this.animBtn === true) return false;
 
 		const tl = new TimelineMax();
-		TweenMax.killTweensOf(['.start .close-up','.start .close-down','.start .open-up','.start .open-down']);
+		TweenMax.killTweensOf(['.start .close-up','.start .close-down']);
 		TweenMax.to('.start circle', 0, {opacity: 0});
 
 		tl.to('.start .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
 		tl.to('.start .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
-		tl.set(['.start .close-up','.start .close-down','.start .open-up','.start .open-down'], {clearProps: 'all'});
+		tl.set(['.start .close-up','.start .close-down'], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animBtn = false;
 		});
@@ -627,6 +582,7 @@ export default class IntroView extends AbstractView {
 		global.CURSOR.interractLeave();
 		this.startIsHover = false;
 		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set('.start circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.start circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 
 		TweenMax.to('.start p', 1, {y: 20, ease: window.Expo.easeOut});
@@ -679,74 +635,74 @@ export default class IntroView extends AbstractView {
 
 
 		// Moving Icebergs
-		this.asteroids.forEach((el) => {
 
-			if (el.body !== undefined ) {
-				// el.mesh.position.copy(el.body.getPosition());
-				// el.mesh.quaternion.copy(el.body.getQuaternion());
-				el.mesh.position.x = el.body.position[0]; // copy positions
-				el.mesh.position.z = -el.body.position[1]; // reverse axes
-				el.mesh.rotation.y = el.body.angle;
+		for (let i = 0; i < this.nbAst; i++) {
+			if (this.asteroids[i].body !== undefined ) {
+				// this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+				// this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+				this.asteroids[i].mesh.position.x = this.asteroids[i].body.position[0]; // copy positions
+				this.asteroids[i].mesh.position.z = -this.asteroids[i].body.position[1]; // reverse axes
+				this.asteroids[i].mesh.rotation.y = this.asteroids[i].body.angle;
 
 				if (this.asteroidsMove === true) {
 					// Apply IMPULSE
-					// el.body.linearVelocity.x = el.force.x;
-					// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
-					// el.body.linearVelocity.y = el.force.y;
-					// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
-					// console.log(el.body.velocity[1]);
-					// el.body.velocity[0] = clamp(el.body.velocity[0], -el.force.z, el.force.z); // x
-					el.body.velocity[1] = clamp(el.force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
-					el.body.velocity[0] = clamp(el.body.velocity[0], -20, 20);
+					// this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+					// this.asteroids[i].body.linearVelocity.x = clamp(this.asteroids[i].body.linearVelocity.x, -this.asteroids[i].force.z, this.asteroids[i].force.z);
+					// this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+					// this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z; // --> force perpetuelle
+					// console.log(this.asteroids[i].body.velocity[1]);
+					// this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -this.asteroids[i].force.z, this.asteroids[i].force.z); // x
+					this.asteroids[i].body.velocity[1] = clamp(this.asteroids[i].force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
+					this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -20, 20);
 
 					// Clamp rotation
 
-					// el.body.angularVelocity.x = 0;
-					// el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
-					// // el.body.angularVelocity.y = 0;
-					// el.body.angularVelocity.z = 0;
+					// this.asteroids[i].body.angularVelocity.x = 0;
+					// this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -0.5, 0.5);
+					// // this.asteroids[i].body.angularVelocity.y = 0;
+					// this.asteroids[i].body.angularVelocity.z = 0;
 				}
 
-				if (el.animated === false) { // if no plonge, constant Y
-					// el.mesh.position.y = el.body.position.y = 0; // constraint pos y
-					el.mesh.position.y = 0; // constraint pos y
+				if (this.asteroids[i].animated === false) { // if no plonge, constant Y
+					// this.asteroids[i].mesh.position.y = this.asteroids[i].body.position.y = 0; // constraint pos y
+					this.asteroids[i].mesh.position.y = 0; // constraint pos y
 				}
 
-				if ( el.reappear === true) {
+				if ( this.asteroids[i].reappear === true) {
 					// refait surface
-					el.mesh.position.y = el.mesh.position.y + 1;
-					if (el.mesh.position.y >= el.endY) {
-						el.reappear = false;
-						el.animated = false;
+					this.asteroids[i].mesh.position.y = this.asteroids[i].mesh.position.y + 1;
+					if (this.asteroids[i].mesh.position.y >= this.asteroids[i].endY) {
+						this.asteroids[i].reappear = false;
+						this.asteroids[i].animated = false;
 					}
 				}
 
 				// if out of Perimeter, reset
-				if ( Math.sqrt( Math.pow(Math.abs(el.mesh.position.x), 2) + Math.pow(Math.abs(el.mesh.position.z), 2) ) > this.perimeter || el.clicked === true) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
+				if ( Math.sqrt( Math.pow(Math.abs(this.asteroids[i].mesh.position.x), 2) + Math.pow(Math.abs(this.asteroids[i].mesh.position.z), 2) ) > this.perimeter || this.asteroids[i].clicked === true) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
 
 
-					el.animated = true;
+					this.asteroids[i].animated = true;
 					// Plonge
-					el.mesh.position.y = el.mesh.position.y - 1;
+					this.asteroids[i].mesh.position.y = this.asteroids[i].mesh.position.y - 1;
 
-					if (el.mesh.position.y <= -20) {
+					if (this.asteroids[i].mesh.position.y <= -20) {
 
 						// reset position
-						let z = el.mesh.index % 2 === 0 ? getRandom(-150, this.reappearZ) : this.reappearZ;
+						let z = this.asteroids[i].mesh.index % 2 === 0 ? getRandom(-150, this.reappearZ) : this.reappearZ;
 						let x = getRandom(this.astXMin, this.astXMax);
 						if (x > -this.fZone && x < this.fZone ) {
-							x = el.mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
+							x = this.asteroids[i].mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
 						}
 
-						// el.mesh.position.z = el.body.position.z = z;
-						// el.body.position.x = el.mesh.position.x = x;
-						el.mesh.position.x = el.body.position[0] = x; // copy positions
-						el.mesh.position.z = z;
-						el.body.position[1] = -z; // reverse axes
-						el.body.angularVelocity = getRandom(-1,1);
+						// this.asteroids[i].mesh.position.z = this.asteroids[i].body.position.z = z;
+						// this.asteroids[i].body.position.x = this.asteroids[i].mesh.position.x = x;
+						this.asteroids[i].mesh.position.x = this.asteroids[i].body.position[0] = x; // copy positions
+						this.asteroids[i].mesh.position.z = z;
+						this.asteroids[i].body.position[1] = -z; // reverse axes
+						this.asteroids[i].body.angularVelocity = getRandom(-1,1);
 
-						el.reappear = true;
-						el.clicked = false;
+						this.asteroids[i].reappear = true;
+						this.asteroids[i].clicked = false;
 
 						// const dest = el.height * el.scale;
 						// console.log(el.endY);
@@ -756,7 +712,7 @@ export default class IntroView extends AbstractView {
 				}
 
 			}
-		});
+		}
 
 		// Raycaster
 		this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -777,7 +733,7 @@ export default class IntroView extends AbstractView {
 		}
 
 		// // deceleration
-		if (this.cameraMove === false && this.isControls === false) {
+		if ( this.isControls === false) {
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
@@ -792,19 +748,37 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
 		}
+		// if ( this.isControls === false) { //
 
-		// glitch title
-		// if (this.glitch) {
+		// 	// Specify target we want
+		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 8, 100));
 
-		// 	if (this.glitch.start === true) {
-		// 		this.glitch.render();
-		// 	} else {
-		// 		if (this.glitch.stop !== true) {
-		// 			this.glitch.render();
-		// 			this.glitch.stop = true;
-		// 		}
-		// 	}
+		// 	// Smooth it with deceleration
+		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+		// 	// Apply rotation
+
+		// 	if (this.camera.movingRotX && this.lastPage === 'intro') this.camera.rotation.x = this.camera.movingRotX + this.camRotSmooth.x;
+		// 	else  this.camera.rotation.x = this.camRotSmooth.x;
+		// 	this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
+		// 	// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
+		// 	// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
+
 		// }
+		// glitch title
+		if (this.glitch) {
+
+			if (this.glitch.start === true) {
+				this.glitch.render();
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render();
+					this.glitch.stop = true;
+				}
+			}
+		}
 
 		// move sky
 		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
@@ -833,49 +807,40 @@ export default class IntroView extends AbstractView {
 
 		if (fromProject === false) {
 			this.glitchEl = document.querySelector('.intro__glitch');
-
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
 				type: 'intro',
 				clock: this.clock
 			});
+			this.glitch.start = true;
 
 			const canvas = this.glitchEl.querySelector('.glitch__canvas');
 
 			const tl = new TimelineMax();
-
 			tl.set(this.ui.overlay, {opacity: 1});
-			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
-
-			tl.fromTo(canvas, 2, { // 3
-				opacity: 0
-			}, {
-				opacity: 1,
-				ease: window.Linear.easeNone
-			}, 2);
-			// tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
-			// tl.set(this.asteroidsM.material, {opacity: 0});
-			tl.add(() => {
-				this.glitch.start = true;
-			}, 0);
+			tl.set(canvas, {opacity: 0});
+			tl.fromTo( canvas, 1, {opacity: 0}, {opacity: 1}, 3);
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
 			});
-			tl.to(this.ui.overlay, 1.5, {opacity: 0}, 4); // 1.5 ,, 4
+			tl.add(() => {
+				// start move Ast
+				this.glitch.video.play();
+			}, 5);
+			// tl.to(this.ui.overlay, 1.5, {opacity: 0}, 10); // 1.5 ,, 4
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 2); // 2
+			}, 3); // 2
 			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
 				this.glitch.start = false;
-				console.log('stop');
 			}}, '+=1');
 
 			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
 			tl.to(this.ui.button, 3, {opacity: 1});
-			// tl.to('.overlay', 1, {
-			// 	opacity: 0
-			// }, 0);
+			tl.to(this.ui.overlay, 1, {
+				opacity: 0
+			}, 5);
 
 		} else {
 
@@ -911,7 +876,6 @@ export default class IntroView extends AbstractView {
 		const tl = new TimelineMax({
 			onComplete: () => {
 				this.cameraMove = false;
-				this.currentCameraRotX = this.camera.rotation.x;
 
 			}
 		});

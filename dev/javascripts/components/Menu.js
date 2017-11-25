@@ -214,6 +214,7 @@ export default class Menu {
 		global.CURSOR.interractLeave();
 		this.hoverBtn = false;
 		TweenMax.fromTo('.menu__button circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set('.menu__button circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.menu__button circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 
 		TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});

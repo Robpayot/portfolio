@@ -161,14 +161,9 @@ export default class Circular extends ProjectView {
 	raf() {
 
 		// Asteroids meshs
-		this.asteroidsM.forEach( (el)=> {
-
-			el.rotation.z = el.initRot + toRadian(this.clock.getElapsedTime() * el.speed * el.dir);
-			// el.position.x = -this.camRotSmooth.y * 400;
-
-		});
-
-		// console.log(this.camRotSmooth.y);
+		for (let i = 0; i < this.nbAst; i++) {
+			this.asteroidsM[i].rotation.z = this.asteroidsM[i].initRot + toRadian(this.clock.getElapsedTime() * this.asteroidsM[i].speed * this.asteroidsM[i].dir);
+		}
 
 		this.groupAst.rotation.y = toRadian(this.camRotSmooth.y * 50);
 		this.groupAst.rotation.x = toRadian(this.camRotSmooth.x * 50);

@@ -1,5 +1,5 @@
 import ProjectView from '../views/ProjectView';
-import { getRandom, toRadian, round } from '../helpers/utils';
+import { getRandom, toRadian } from '../helpers/utils';
 import { loadJSON } from '../helpers/utils-three';
 
 // THREE JS
@@ -121,7 +121,6 @@ export default class Levit extends ProjectView {
 		}
 		// super.setAsteroids(this.models[0].geometry);
 
-		console.log(this.asteroids);
 
 	}
 
@@ -198,7 +197,6 @@ export default class Levit extends ProjectView {
 	raf() {
 
 
-
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
 		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
@@ -213,38 +211,30 @@ export default class Levit extends ProjectView {
 
 		} else {
 			this.hoverAst = false;
-			this.asteroids.forEach( (el) => {
-				el.active = false;
-			});
+			for (let i = 0; i < this.nbAst; i++) {
+				this.asteroids[i].active = false;
+			}
 		}
 
 		this.toggle += this.clock.getDelta();
 
 		// Asteroids meshs
-		this.asteroids.forEach( (el)=> {
+		for (let i = 0; i < this.nbAst; i++) {
 
-			if (el.active === true) {
-				el.mesh.rotation.y += (el.timeRotate + 0.03) * el.dir ;
+			if (this.asteroids[i].active === true) {
+				this.asteroids[i].mesh.rotation.y += (this.asteroids[i].timeRotate + 0.03) * this.asteroids[i].dir ;
 
 			} else {
 
-				// el.time = this.clock.getElapsedTime();
-				// rotate
-				// el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.clock.getElapsedTime() * el.timeRotate + el.offset) * (360 / 2) + 360 / 2 ) * el.dir;
-				el.mesh.rotation.y += el.timeRotate * el.dir;
+				this.asteroids[i].mesh.rotation.y += this.asteroids[i].timeRotate * this.asteroids[i].dir;
 
 			}
 			// Move top and bottom --> Levit effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.endY + Math.sin( this.clock.getElapsedTime() * el.speed + el.offset) * (el.range / 2) + el.range / 2;
-			// el.mesh.rotation.x = toRadian(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-			el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.clock.getElapsedTime() * el.timeRotate + el.offset) * el.rotateRangeZ ) * el.dir; // -30 to 30 deg rotation
-
-
-			// if (el.mesh.index === 0) {
-			// 	console.log(Math.sin(this.clock.getElapsedTime() * 400) * el.rotateRangeZ, el.rotateRangeZ);
-			// }
-		});
+			this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin( this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * (this.asteroids[i].range / 2) + this.asteroids[i].range / 2;
+			// this.asteroids[i].mesh.rotation.x = toRadian(Math.sin(this.clock.getElapsedTime() * 400) * this.asteroids[i].rotateRangeX ); // -30 to 30 deg rotation
+			this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateZ + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].timeRotate + this.asteroids[i].offset) * this.asteroids[i].rotateRangeZ ) * this.asteroids[i].dir; // -30 to 30 deg rotation
+		}
 
 		super.raf();
 	}

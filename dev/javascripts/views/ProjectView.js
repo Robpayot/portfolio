@@ -1,12 +1,10 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
-import SoundManager from '../managers/SoundManager';
-import { getRandom, toRadian, clamp, round, getOffsetTop } from '../helpers/utils';
+import { toRadian, clamp, round, getOffsetTop } from '../helpers/utils';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
 import bean from 'bean';
-import ease from '../helpers/ease';
 import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
@@ -49,7 +47,6 @@ export default class ProjectView extends AbstractView {
 		this.alt = obj.alt;
 		this.fromUrl = obj.fromUrl;
 		this.dir = obj.dir;
-		this.sound = SoundManager;
 
 		this.name = `project-${this.id}`;
 
@@ -68,11 +65,6 @@ export default class ProjectView extends AbstractView {
 		this.backFromContent = this.backFromContent.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
 		this.scroll = this.scroll.bind(this);
-		this.onChangeGlow = this.onChangeGlow.bind(this);
-		this.onChangeBlur = this.onChangeBlur.bind(this);
-		this.onChangeBrightness = this.onChangeBrightness.bind(this);
-		this.onChangeDolly = this.onChangeDolly.bind(this);
-		this.onChangeCameraRot = this.onChangeCameraRot.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
 		this.setEnvelop = this.setEnvelop.bind(this);
 		this.onHoverLink = this.onHoverLink.bind(this);
@@ -180,7 +172,6 @@ export default class ProjectView extends AbstractView {
 		this.setAsteroids();
 
 		if (this.pointsLight === true) {
-			console.log('trueeee');
 			// Set envelop
 			this.setEnvelop();
 		}
@@ -209,76 +200,6 @@ export default class ProjectView extends AbstractView {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
 			this.controls.enableZoom = true;
 		}
-
-
-		/////////////////
-		// GUI
-		/////////////////
-
-		this.effectController = {
-			// blur
-			blur: 4.0,
-			horizontalBlur: 0.5,
-			enabled: false,
-			// glow
-			coeficient: 1,
-			power: 2,
-			glowColor: 0xffffff,
-			coeficientOut: 1,
-			powerOut: 2,
-			glowColorOut: 0xffffff,
-			// brightness
-			brightness: 0,
-			contrast: 0,
-			// Camera dolly
-			position: 0,
-			lookAt: 0,
-			astColor: 0xffffff,
-			rotX: 0,
-			rotY: 0,
-			rotZ: 0,
-
-		};
-
-		if (this.sound.gui.init === false) {
-			// Blur
-			const blurFolder = this.sound.gui.addFolder('Blur');
-			blurFolder.add(this.effectController, 'blur', 0.0, 20.0, 0.001).listen().onChange(this.onChangeBlur);
-			blurFolder.add(this.effectController, 'horizontalBlur', 0.0, 1.0, 0.001).listen().onChange(this.onChangeBlur);
-			blurFolder.add(this.effectController, 'enabled').onChange(this.onChangeBlur);
-			blurFolder.open();
-
-			// Glow
-			const glowFolder = this.sound.gui.addFolder('Glow');
-			glowFolder.add(this.effectController, 'coeficient', 0.0, 2).listen().onChange(this.onChangeGlow);
-			glowFolder.add(this.effectController, 'power', 0.0, 5).listen().onChange(this.onChangeGlow);
-			glowFolder.addColor(this.effectController, 'glowColor').listen().onChange(this.onChangeGlow);
-			glowFolder.add(this.effectController, 'coeficientOut', 0.0, 2).listen().onChange(this.onChangeGlow);
-			glowFolder.add(this.effectController, 'powerOut', 0.0, 20).listen().onChange(this.onChangeGlow);
-			glowFolder.addColor(this.effectController, 'glowColorOut').listen().onChange(this.onChangeGlow);
-
-			// Brightness
-			const brightnessFolder = this.sound.gui.addFolder('Brightness');
-			brightnessFolder.add(this.effectController, 'brightness', 0.0, 1).listen().onChange(this.onChangeBrightness);
-			brightnessFolder.add(this.effectController, 'contrast', 0.0, 30).listen().onChange(this.onChangeBrightness);
-			// brightnessFolder.open();
-
-			// Cam
-			this.sound.gui.add(this.effectController, 'rotX', -90, 90).listen().onChange(this.onChangeCameraRot);
-			this.sound.gui.add(this.effectController, 'rotY', -90, 90).listen().onChange(this.onChangeCameraRot);
-			this.sound.gui.add(this.effectController, 'rotZ', -90, 90).listen().onChange(this.onChangeCameraRot);
-
-			this.sound.gui.init = true;
-			this.sound.gui.addColor(this.effectController, 'astColor').listen().onChange(this.onChangeAst);
-		}
-
-
-		// Camera Dolly
-		// const dollyFolder = this.sound.gui.addFolder('Camera Dolly');
-		// dollyFolder.add(this.effectController, 'position', 0.0, 1).listen().onChange(this.onChangeDolly);
-		// dollyFolder.add(this.effectController, 'lookAt', 0.0, 1).listen().onChange(this.onChangeDolly);
-		// dollyFolder.open();
-
 
 		////////////////////
 		// POST PROCESSING
@@ -361,9 +282,10 @@ export default class ProjectView extends AbstractView {
 	setCameraPos() {
 		// this.camera.useTarget = false;
 		this.camera.lookAt(this.cameraTarget);
+		this.camera.movingRotX = 0;
 
 		this.pathRadius = this.zoomZ;
-		this.camera.position.set(-60, 170, 70);
+		this.camera.position.set(0, 0, 70);
 		if (Device.size === 'mobile') {
 			this.camera.position.set(0, 0, 200);
 		}
@@ -535,6 +457,7 @@ export default class ProjectView extends AbstractView {
 		this.hoverLink = false;
 		global.CURSOR.interractLeave();
 		TweenMax.fromTo('.project__link circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set('.project__link circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.project__link circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 	}
 
@@ -847,9 +770,10 @@ export default class ProjectView extends AbstractView {
 		} else {
 			if (this.stopScrollZ === true) return false;
 
-			this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
-
-			console.log( clamp(e.deltaY * 0.04, -4, 4));
+			console.log(e.deltaY);
+			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
+				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
+			}
 
 			// console.log(this.scrollZSmooth);
 			// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
@@ -947,12 +871,14 @@ export default class ProjectView extends AbstractView {
 		this.hoverBtn = false;
 		if (el.classList.contains('project__prev')) {
 			TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
+			TweenMax.set('.project__prev circle', {transformOrigin: '50% 50%'});
 			TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 			TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
 			TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
 
 		} else {
 			TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
+			TweenMax.set('.project__next circle', {transformOrigin: '50% 50%'});
 			TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 			TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
 			TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
@@ -978,14 +904,6 @@ export default class ProjectView extends AbstractView {
 
 			// smooth scroll
 			this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
-
-			// if (this.scrollZSmooth >= this.minZoomZ) { // end
-			// 	this.scrollZ = this.scrollZSmooth = this.minZoomZ;
-			// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
-			// } else if (this.scrollZSmooth < this.maxZoomZ) { // top
-			// 	this.scrollZ = this.scrollZSmooth = this.maxZoomZ;
-			// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
-			// }
 
 			if (this.scrollZSmooth < this.zoomZ ) { // going foward
 
@@ -1048,7 +966,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if (this.cameraMove === false && this.isControls === false) { //
+		if ( this.isControls === false) { //
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
@@ -1060,7 +978,8 @@ export default class ProjectView extends AbstractView {
 
 			// Apply rotation
 
-			if (this.cameraRotX) this.camera.rotation.x = this.camRotSmooth.x;
+			if (this.camera.movingRotX && this.lastPage === 'intro') this.camera.rotation.x = this.camera.movingRotX + this.camRotSmooth.x;
+			else  this.camera.rotation.x = this.camRotSmooth.x;
 			this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
 			// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
 			// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
@@ -1092,57 +1011,18 @@ export default class ProjectView extends AbstractView {
 	transitionIn(fromUrl = false) {
 
 
+		// this.lastPage = 'intro';
 		fromUrl = false;
 
-		let symbolY = 0;
-		let symbolZ = 160;
 		let time = 3;
-		let ease = window.Power3.easeOut;
 		let delay = 1.2;
-		let noDolly = true;
-
-		// Set camera Dolly
-		let points = {
-			'camera': [{
-				'x': 0,
-				'y': 0,
-				'z': 240
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 180
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 160
-			}],
-			'lookat': [{
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}, {
-				'x': 0,
-				'y': 0,
-				'z': 0
-			}]
-		};
 
 		if (this.lastPage === 'intro') {
 
-			noDolly = false;
-
-			symbolY = -160;
-			symbolZ = 160;
-
 			time = 5;
 			delay = 3;
-			ease = window.Expo.easeOut;
 
-			points = {
+			let points = {
 				'camera': [{
 					'x': 0,
 					'y': -240,
@@ -1170,46 +1050,42 @@ export default class ProjectView extends AbstractView {
 					'z': 0
 				}]
 			};
+
+			this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
+			// this.dolly = null;
+
+			this.dolly.cameraPosition = 0;
+			this.dolly.lookatPosition = 0;
+			this.dolly.range = [0, 1];
+			this.dolly.both = 0;
 		}
-
-		this.cameraMove = !noDolly;
-
-		this.dolly = new CameraDolly(this.camera, this.scene, points, null, false);
-		// this.dolly = null;
-
-		this.dolly.cameraPosition = 0;
-		this.dolly.lookatPosition = 0;
-		this.dolly.range = [0, 1];
-		this.dolly.both = 0;
 
 
 		const tl = new TimelineMax({
 			onComplete: () => {
 				this.camera.position.set(0, 0, this.zoomZ);
-				if (noDolly === false) this.cameraMove = false;
 				this.clicked = false;
-
 			}
 		});
 
-		if (noDolly === false) {
+		if (this.lastPage === 'intro') {
+
 			tl.to(this.dolly, time, {
 				cameraPosition: 1,
 				lookatPosition: 1,
 				ease: window.Power4.easeOut,
 				onUpdate: () => {
 					this.dolly.update();
+					this.camera.movingRotX = this.camera.rotation.x;
 				}
 			});
 
 		} else {
-			console.log(this.dir);
+
 			let start = this.dir === -1 ? 0 : 300;
 			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}); // 2
 
 		}
-
-
 
 		tl.to('.overlay', 0.8, {
 			opacity: 0
@@ -1221,7 +1097,6 @@ export default class ProjectView extends AbstractView {
 			this.transitionInComplete = true;
 		}, 0.8);
 
-		// tl.fromTo(this.symbol.mesh.position, time, { y: symbolY, z: symbolZ}, { y: 0, z: 0, ease: ease}, 0); // window.Power3.easeInOut
 
 		tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
 			opacity: 0,
@@ -1236,12 +1111,7 @@ export default class ProjectView extends AbstractView {
 			tl.to('.scroll', 1, {opacity: 1}, 5);
 		}
 
-		// tl.add( () => { // add transition hover css ????
-		// 	const title = document.querySelector('.project__title svg');
-		// 	const next = document.querySelector('.project__next');
-		// 	title.classList.add('transi');
-		// 	next.classList.add('transi');
-		// }, 0.1);
+
 	}
 
 	transitionOut(dir) {
@@ -1255,8 +1125,8 @@ export default class ProjectView extends AbstractView {
 
 			if (this.clickGoTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
 			// Simulate scroll backWard/foward
-			if (dir === 1) this.scrollZ -= 1;
-			else this.scrollZ += 1;
+			if (dir === 1) this.scrollZ -= 0.2;
+			else this.scrollZ += 0.2;
 			this.hrefChanged = true;
 			this.animating = false;
 
@@ -1319,45 +1189,6 @@ export default class ProjectView extends AbstractView {
 			opacity: 1
 		});
 
-	}
-
-	////////////////////
-	// GUI
-	////////////////////
-
-	onChangeBlur() {
-		this.hblur.uniforms['h'].value = this.effectController.blur / this.width;
-		this.vblur.uniforms['v'].value = this.effectController.blur / this.height;
-
-		this.vblur.uniforms['r'].value = this.hblur.uniforms['r'].value = this.effectController.horizontalBlur;
-	}
-
-	onChangeGlow() {
-		// this.symbol.glowMesh.insideMesh.material.uniforms['coeficient'].value = this.effectController.coeficient;
-		// this.symbol.glowMesh.insideMesh.material.uniforms['power'].value = this.effectController.power;
-		// this.symbol.glowMesh.insideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColor);
-
-		// this.symbol.glowMesh.outsideMesh.material.uniforms['coeficient'].value = this.effectController.coeficientOut;
-		// this.symbol.glowMesh.outsideMesh.material.uniforms['power'].value = this.effectController.powerOut;
-		// this.symbol.glowMesh.outsideMesh.material.uniforms.glowColor.value.set(this.effectController.glowColorOut);
-	}
-
-	onChangeBrightness() {
-		this.brightness.uniforms['brightness'].value = this.effectController.brightness;
-		this.brightness.uniforms['contrast'].value = this.effectController.contrast;
-	}
-
-	onChangeDolly() {
-		this.dolly.cameraPosition = this.effectController.position;
-		this.dolly.lookatPosition = this.effectController.lookAt;
-		this.dolly.update();
-	}
-
-	onChangeCameraRot() {
-		this.camera.rotation.x = toRadian(this.effectController.rotX);
-		this.camera.rotation.y = toRadian(this.effectController.rotY);
-		this.camera.rotation.z = toRadian(this.effectController.rotZ);
-		// this.camera.updateProjectionMatrix();
 	}
 
 	destroy() {

@@ -14,7 +14,6 @@ export default class Blob extends ProjectView {
 
 		super(obj);
 
-		this.nbAst = 6;
 		this.toggle = 0;
 		this.intersection;
 		this.inc = Date.now();
@@ -84,6 +83,8 @@ export default class Blob extends ProjectView {
 			// { x: 80, y: -30, z: 50 },
 			// { x: -40, y: -40, z: -100 },
 		];
+
+		this.nbAst = posFixed.length;
 
 
 		for (let i = 0; i < posFixed.length; i++) {
@@ -187,34 +188,34 @@ export default class Blob extends ProjectView {
 
 	setLight() {
 
-		let paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			// { x: 0, y: 0, z: -100, d: 70, it: 1 },
-			// { x: -100, y: 0, z: 0, d: 70, it: 1 },
-			// { x: 0, y: 30, z: 30 },
-			// { x: 0, y: 30, z: -30 },
-			// { x: -30, y: 30, z: 0 },
-			// { x: 0, y: -30, z: 0 }
-		];
+		// let paramsLight = [
+		// 	// { x: 70, y: 70, z: 0 },
+		// 	// { x: 0, y: 0, z: -100, d: 70, it: 1 },
+		// 	// { x: -100, y: 0, z: 0, d: 70, it: 1 },
+		// 	// { x: 0, y: 30, z: 30 },
+		// 	// { x: 0, y: 30, z: -30 },
+		// 	// { x: -30, y: 30, z: 0 },
+		// 	// { x: 0, y: -30, z: 0 }
+		// ];
 
-		// Check Ambient Light
-		// scene.add( new THREE.AmbientLight( 0x00020 ) );
+		// // Check Ambient Light
+		// // scene.add( new THREE.AmbientLight( 0x00020 ) );
 
-		for (let i = 0; i < paramsLight.length; i++) {
+		// for (let i = 0; i < paramsLight.length; i++) {
 
-			const d = paramsLight[i].d || 100;
-			const it = paramsLight[i].it || 1;
+		// 	const d = paramsLight[i].d || 100;
+		// 	const it = paramsLight[i].it || 1;
 
-			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, it, d, 1);
-			// set its position
-			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			// pointLight.power = 20;
-			pointLight.visible = true;
+		// 	// create a point light
+		// 	let pointLight = new PointLight(0xFFFFFF, it, d, 1);
+		// 	// set its position
+		// 	pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+		// 	// pointLight.power = 20;
+		// 	pointLight.visible = true;
 
-			// add to the scene
-			this.scene.add(pointLight);
-		}
+		// 	// add to the scene
+		// 	this.scene.add(pointLight);
+		// }
 
 		let light = new DirectionalLight( 0x279EDB, 2 );
 		light.position.set( 0, 0, 1 );
@@ -225,13 +226,7 @@ export default class Blob extends ProjectView {
 	}
 
 	raf() {
-		// update world
-		// if (this.gravity === true) {
-		// 	this.world.step();
 
-		// 	// Symbol body
-		// 	// this.symbol.mesh.position.copy(this.symbol.body.getPosition());
-		// 	// this.symbol.mesh.quaternion.copy(this.symbol.body.getQuaternion());
 
 		this.raycaster.setFromCamera(this.mouse, this.camera);
 
@@ -247,65 +242,30 @@ export default class Blob extends ProjectView {
 
 		} else {
 			this.hoverAst = false;
-			this.asteroids.forEach( (el) => {
-				el.active = false;
-			});
+			for (let i = 0; i < this.nbAst; i++) {
+				this.asteroids[i].active = false;
+			}
 		}
 
 		this.toggle += this.clock.getDelta();
 
-		// if (intersectsAst.length > 0) {
-		// 	this.ui.body.style.cursor = 'pointer';
-		// 	this.hoverAst = true;
-		// 	this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
-		// 	this.asteroids[intersectsAst[0].object.index].active = true;
-		// } else {
-		// 	// this.ui.body.style.cursor = 'auto';
-		// 	this.hoverAst = false;
-		// 	this.asteroids.forEach( (el) => {
-		// 		el.active = false;
-		// 	});
-		// }
-
 		// Asteroids meshs
-		this.asteroids.forEach( (el) => {
-
+		for (let i = 0; i < this.nbAst; i++) {
 			// Move top and bottom --> Levit effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
-			el.mesh.position.y = el.initY + Math.sin(this.clock.getElapsedTime() * el.speed + el.offset) * el.range.coef + el.range.add;
-			// el.mesh.position.y = el.initY;
+			this.asteroids[i].mesh.position.y = this.asteroids[i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * this.asteroids[i].range.coef + this.asteroids[i].range.add;
+			// this.asteroids[i].mesh.position.y = this.asteroids[i].initY;
 			// rotate
-			el.mesh.material.uniforms[ 'time' ].value = .00065 * ( Date.now() - this.inc ); // time for uniform
-			// el.mesh.material.uniforms[ 'weight' ].value = el.initW +  Math.sin(this.clock.getElapsedTime() * el.speedMat + el.offset) * el.rangeMat.coef + el.rangeMat.add;
-			// // el.mesh.material.uniforms[ 'weight' ].value = 2.0 * ( .5 + .5 * Math.sin( .00025 * ( Date.now() - this.inc ) ) );
-			// // console.log(el.mesh.material.uniforms[ 'weight' ].value);
-			// // el.mesh.rotation.y = toRadian(el.initRotateY + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * (360 / 2) + 360 / 2);
-			// // // el.mesh.rotation.x = toRadian(Math.sin(this.time * 2 * Math.PI / 400) * el.rotateRangeX ); // -30 to 30 deg rotation
-			// // el.mesh.rotation.z = toRadian(el.initRotateZ + Math.sin(this.time * 2 * Math.PI / el.timeRotate) * el.rotateRangeZ ); // -30 to 30 deg rotation
+			this.asteroids[i].mesh.material.uniforms[ 'time' ].value = .00065 * ( Date.now() - this.inc ); // time for uniform
 
-			// if (el.mesh.material.uniforms['contrast'].value >= 0.0) {
-			// 	if (el.active === true) {
-			// 		el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value + 0.1, 0.0 , 1);
-			// 	} else {
-			// 		el.mesh.material.uniforms['contrast'].value = clamp(el.mesh.material.uniforms['contrast'].value - 0.1, 0.0 , 1);
-			// 	}
-			// }
-
-			if (el.mesh.material.uniforms['weight'].value >= 0.0) {
-				if (el.active === true) {
-					el.mesh.material.uniforms[ 'weight' ].value = clamp(el.mesh.material.uniforms[ 'weight' ].value + 0.04, 0.0, el.initW + el.rangeMat.coef + el.rangeMat.add);
+			if (this.asteroids[i].mesh.material.uniforms['weight'].value >= 0.0) {
+				if (this.asteroids[i].active === true) {
+					this.asteroids[i].mesh.material.uniforms[ 'weight' ].value = clamp(this.asteroids[i].mesh.material.uniforms[ 'weight' ].value + 0.04, 0.0, this.asteroids[i].initW + this.asteroids[i].rangeMat.coef + this.asteroids[i].rangeMat.add);
 				} else {
-					el.mesh.material.uniforms[ 'weight' ].value = clamp(el.mesh.material.uniforms[ 'weight' ].value - 0.04, 0.0, el.initW + el.rangeMat.coef + el.rangeMat.add);
+					this.asteroids[i].mesh.material.uniforms[ 'weight' ].value = clamp(this.asteroids[i].mesh.material.uniforms[ 'weight' ].value - 0.04, 0.0, this.asteroids[i].initW + this.asteroids[i].rangeMat.coef + this.asteroids[i].rangeMat.add);
 				}
 			}
-
-		});
-
-
-		// console.log(this.symbol.glowMesh.insideMesh.material.uniforms['power'].value);
-
-
-		// this.brightness2.uniforms['contrast'].value = (Math.cos(this.time / 40) + 1.2) * 3;
+		}
 
 		super.raf();
 
