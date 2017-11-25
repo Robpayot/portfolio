@@ -198,18 +198,18 @@ export default class AboutView extends AbstractView {
 		// Set CssContainers
 		this.setUiContainer();
 
-		let gui = new dat.GUI();
+		// let gui = new dat.GUI();
 
-		gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
-		gui.add( this.effectController, 'viscosity', 0.0, 0.5, 0.001 ).onChange( this.valuesChanger );
-		this.valuesChanger();
-		let buttonSmooth = {
-			smoothWater: () => {
-				this.smoothWater();
-			}
-		};
-		gui.add( buttonSmooth, 'smoothWater' );
-		gui.close();
+		// gui.add( this.effectController, 'mouseSize', 1.0, 100.0, 1.0 ).onChange( this.valuesChanger );
+		// gui.add( this.effectController, 'viscosity', 0.0, 0.5, 0.001 ).onChange( this.valuesChanger );
+		// this.valuesChanger();
+		// let buttonSmooth = {
+		// 	smoothWater: () => {
+		// 		this.smoothWater();
+		// 	}
+		// };
+		// gui.add( buttonSmooth, 'smoothWater' );
+		// gui.close();
 
 		global.CURSOR.el.classList.add('alt');
 

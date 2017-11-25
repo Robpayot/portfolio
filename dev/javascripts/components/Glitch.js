@@ -311,10 +311,11 @@ export default class Glitch {
 
 		this.video = document.createElement('video');
 		this.video.id = 'video2';
-		this.video.src = 'videos/glitch-text2-slow.mp4';
+		this.video.src = 'videos/glitch-text3.mp4';
 		this.video.autoplay = true;
 		this.video.loop = true;
 		this.video.muted = true;
+		this.video.pause();
 		this.el.appendChild(this.video);
 
 	}

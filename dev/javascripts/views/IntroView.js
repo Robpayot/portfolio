@@ -26,8 +26,6 @@ import p2 from 'p2';
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 // import WaterVertexShader from '../shaders/WaterVertexShader';
 
-console.log(p2);
-
 
 import dat from 'dat-gui';
 
@@ -274,32 +272,32 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { value: this.camera.position };
 		this.scene.add(this.ms_Ocean.oceanMesh);
 
-		let gui = new dat.GUI();
-		let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
-		c1.onChange(function(v) {
-			this.object.size = v;
-			this.object.changed = true;
-		});
-		let c2 = gui.add(this.ms_Ocean, 'choppiness', 0.1, 4);
-		c2.onChange(function(v) {
-			this.object.choppiness = v;
-			this.object.changed = true;
-		});
-		let c3 = gui.add(this.ms_Ocean, 'windX',-15, 15);
-		c3.onChange(function(v) {
-			this.object.windX = v;
-			this.object.changed = true;
-		});
-		let c4 = gui.add(this.ms_Ocean, 'windY', -15, 15);
-		c4.onChange(function(v) {
-			this.object.windY = v;
-			this.object.changed = true;
-		});
-		let c8 = gui.add(this.ms_Ocean, 'exposure', 0.0, 6);
-		c8.onChange(function(v) {
-			this.object.exposure = v;
-			this.object.changed = true;
-		});
+		// let gui = new dat.GUI();
+		// let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
+		// c1.onChange(function(v) {
+		// 	this.object.size = v;
+		// 	this.object.changed = true;
+		// });
+		// let c2 = gui.add(this.ms_Ocean, 'choppiness', 0.1, 4);
+		// c2.onChange(function(v) {
+		// 	this.object.choppiness = v;
+		// 	this.object.changed = true;
+		// });
+		// let c3 = gui.add(this.ms_Ocean, 'windX',-15, 15);
+		// c3.onChange(function(v) {
+		// 	this.object.windX = v;
+		// 	this.object.changed = true;
+		// });
+		// let c4 = gui.add(this.ms_Ocean, 'windY', -15, 15);
+		// c4.onChange(function(v) {
+		// 	this.object.windY = v;
+		// 	this.object.changed = true;
+		// });
+		// let c8 = gui.add(this.ms_Ocean, 'exposure', 0.0, 6);
+		// c8.onChange(function(v) {
+		// 	this.object.exposure = v;
+		// 	this.object.changed = true;
+		// });
 	}
 
 	setLight() {
@@ -809,49 +807,40 @@ export default class IntroView extends AbstractView {
 
 		if (fromProject === false) {
 			this.glitchEl = document.querySelector('.intro__glitch');
-
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
 				type: 'intro',
 				clock: this.clock
 			});
+			this.glitch.start = true;
 
 			const canvas = this.glitchEl.querySelector('.glitch__canvas');
 
 			const tl = new TimelineMax();
-
 			tl.set(this.ui.overlay, {opacity: 1});
-			tl.set(canvas, {opacity: 0, visibility: 'visible', display: 'block'});
-
-			tl.fromTo(canvas, 2, { // 3
-				opacity: 0
-			}, {
-				opacity: 1,
-				ease: window.Linear.easeNone
-			}, 2);
-			// tl.set([title1Arr.chars, title2Arr.words], {opacity: 0});
-			// tl.set(this.asteroidsM.material, {opacity: 0});
-			tl.add(() => {
-				this.glitch.start = true;
-			}, 0);
+			tl.set(canvas, {opacity: 0});
+			tl.fromTo( canvas, 1, {opacity: 0}, {opacity: 1}, 3);
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
 			});
-			tl.to(this.ui.overlay, 1.5, {opacity: 0}, 4); // 1.5 ,, 4
+			tl.add(() => {
+				// start move Ast
+				this.glitch.video.play();
+			}, 5);
+			// tl.to(this.ui.overlay, 1.5, {opacity: 0}, 10); // 1.5 ,, 4
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 2); // 2
+			}, 3); // 2
 			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
 				this.glitch.start = false;
-				console.log('stop');
 			}}, '+=1');
 
 			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
 			tl.to(this.ui.button, 3, {opacity: 1});
-			// tl.to('.overlay', 1, {
-			// 	opacity: 0
-			// }, 0);
+			tl.to(this.ui.overlay, 1, {
+				opacity: 0
+			}, 5);
 
 		} else {
 

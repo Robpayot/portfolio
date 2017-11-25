@@ -1,11 +1,7 @@
-// import PreloadManager from './PreloadManager';
 import EmitterManager from './EmitterManager';
 import RouterManager from './RouterManager';
-import ScrollManager from '../managers/ScrollManager';
 import { Device } from '../helpers/Device';
 // import WebFont from 'webfontloader';
-// import SoundManager from './SoundManager';
-// import GraphicBars from '../components/GraphicBars';
 import SceneManager from './SceneManager';
 import Menu from '../components/Menu';
 import Cursor from '../components/Cursor';
@@ -31,16 +27,18 @@ class AppManager {
 	preload() {
 
 		this.startLoad = 0;
+		this.maxDash = 635;
 
 
 		PreloadManager.on('complete', () => {
 			this.start();
 			PreloadManager.off('progress');
 			const tl = new TimelineMax();
-			tl.to('.preload', 0.5, {autoAlpha: 0}, 5);
+			tl.to('.preload', 1, {autoAlpha: 0}, 2);
 			tl.add(() => {
 
 				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+
 			});
 		}, this, true);
 
@@ -90,8 +88,6 @@ class AppManager {
 		});
 
 		PreloadManager.load();
-
-		this.maxDash = 635;
 
 	}
 
@@ -170,12 +166,8 @@ class AppManager {
 	resizeHandler() {
 
 		const touch = document.querySelector('html').classList.contains('touchevents');
+		Device.touch = touch;
 
-		if (touch) {
-			Device.touch = true;
-		} else {
-			Device.touch = false;
-		}
 
 		// // Device.browser = Detect.browser();
 
