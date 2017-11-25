@@ -139,7 +139,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics([0,0]);
 
-		this.nbAst = 25;
+		this.nbAst = 30;
 		this.minZoom = 400;
 		this.maxZoom = 700;
 		this.asteroids = [];
@@ -208,7 +208,7 @@ export default class IntroView extends AbstractView {
 	setCameraPos() {
 
 		this.camera.position.set(0, 70, 0);
-		this.camera.rotation.x = toRadian(-90);
+		this.currentCameraRotX = this.camera.rotation.x = toRadian(-90);
 	}
 
 	initWater() {
@@ -323,50 +323,7 @@ export default class IntroView extends AbstractView {
 
 	setPhysicBlocks() {
 
-		// Create a physics world, where bodies and constraints live
-
-		// // Add a circle
-		// this.circleShape = new p2.Circle({ radius: 10 });
-		// this.circleBody = new p2.Body({ mass:180, position:[0,200] });
-		// this.circleBody.addShape(this.circleShape);
-		// this.world.addBody(this.circleBody);
-
-		// // Add 2nd circle
-		// this.circleShape2 = new p2.Circle({ radius: 10 });
-		// this.circleBody2 = new p2.Body({ mass:180, position:[2,250], angularVelocity: 0, velocity:[0,0], force: [0,0] }); // angularVelocity == accélération de rotation de départ
-		// this.circleBody2.addShape(this.circleShape2);
-		// this.world.addBody(this.circleBody2);
-
-
 		let mat, mesh;
-
-		// mat = new MeshBasicMaterial( {
-		// 	color: 0xffff00,
-		// 	transparent: true,
-		// 	opacity: 0.8
-		// } );
-
-		// this.perimeter = 10;
-
-		// this.circleMesh = new Mesh(new SphereGeometry(this.circleShape.radius, this.circleShape.radius, this.circleShape.radius), mat);
-		// this.circleMesh.position.x = this.circleBody.position[0];
-		// this.circleMesh.position.z = -this.circleBody.position[1];
-
-		// this.scene.add(this.circleMesh);
-
-		// mat = new MeshBasicMaterial( {
-		// 	color: 0xffff00,
-		// 	transparent: true,
-		// 	opacity: 0.8
-		// } );
-
-		// this.perimeter = 10;
-
-		// this.circleMesh2 = new Mesh(new SphereGeometry(this.circleShape2.radius, this.circleShape2.radius, this.circleShape2.radius), mat);
-		// this.circleMesh2.position.x = this.circleBody2.position[0];
-		// this.circleMesh2.position.z = -this.circleBody2.position[1];
-
-		// this.scene.add(this.circleMesh2);
 
 		// Island
 		mat = new MeshPhongMaterial( {
@@ -500,7 +457,7 @@ export default class IntroView extends AbstractView {
 		// ADD Iceberg
 		this.astXMin = -this.perimeter;
 		this.astXMax = this.perimeter;
-		this.startZ = -600;
+		this.startZ = -800;
 		this.reappearZ = -300;
 		this.endZ = 200;
 
@@ -777,7 +734,7 @@ export default class IntroView extends AbstractView {
 		}
 
 		// // deceleration
-		if (this.cameraMove === false && this.isControls === false) {
+		if ( this.isControls === false) {
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
@@ -792,7 +749,25 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
 		}
+		// if ( this.isControls === false) { //
 
+		// 	// Specify target we want
+		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 8, 100));
+
+		// 	// Smooth it with deceleration
+		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+		// 	// Apply rotation
+
+		// 	if (this.camera.movingRotX && this.lastPage === 'intro') this.camera.rotation.x = this.camera.movingRotX + this.camRotSmooth.x;
+		// 	else  this.camera.rotation.x = this.camRotSmooth.x;
+		// 	this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
+		// 	// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
+		// 	// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
+
+		// }
 		// glitch title
 		if (this.glitch) {
 
@@ -911,7 +886,6 @@ export default class IntroView extends AbstractView {
 		const tl = new TimelineMax({
 			onComplete: () => {
 				this.cameraMove = false;
-				this.currentCameraRotX = this.camera.rotation.x;
 
 			}
 		});

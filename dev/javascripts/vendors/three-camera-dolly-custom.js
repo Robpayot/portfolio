@@ -28,7 +28,7 @@ const CameraDolly = function ( camera, scene, points, gui, debug ){
 	// Camera path markers
 	this.markers = [];
 
-	if (this.gui){
+	if (this.gui) {
 
 		this.gui.addGroup({
 			label: 'cameraPointsFolder',
