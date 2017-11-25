@@ -39,44 +39,20 @@
 			position: relative;
 			transform: rotate(-90deg);
 			// cursor: pointer;
-			circle {
-				transform-origin: 75% 75%;
+			.open-down,
+			.open-up {
+				stroke-dasharray: 635;
+				stroke-dashoffset: 635;
+			}
+			.close-up {
+				stroke-dasharray: 635; // !
+				stroke-dashoffset: 0;
+			}
+			.close-down {
+				stroke-dasharray: 635; // !
+				stroke-dashoffset: 840;
 			}
 
-			&.is-close {
-				.open-down,
-				.open-up {
-					stroke-dasharray: 635;
-					stroke-dashoffset: 635;
-				}
-				.close-up {
-					stroke-dasharray: 635; // !
-					stroke-dashoffset: 0;
-				}
-				.close-down {
-					stroke-dasharray: 635; // !
-					stroke-dashoffset: 840;
-				}
-			}
-
-			&.is-open {
-
-				.open-up {
-					stroke-dasharray: 635; // !
-					stroke-dashoffset: 0;
-				}
-
-				.open-down {
-					stroke-dasharray: 635; // !
-					stroke-dashoffset: 430;
-				}
-
-				.close-up,
-				.close-down {
-					stroke-dasharray: 635;
-					stroke-dashoffset: 635;
-				}
-			}
 		}
 	}
 

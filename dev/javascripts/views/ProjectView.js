@@ -1,6 +1,5 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
-import SoundManager from '../managers/SoundManager';
 import { toRadian, clamp, round, getOffsetTop } from '../helpers/utils';
 import PreloadManager from '../managers/PreloadManager';
 import SceneManager from '../managers/SceneManager';
@@ -48,7 +47,6 @@ export default class ProjectView extends AbstractView {
 		this.alt = obj.alt;
 		this.fromUrl = obj.fromUrl;
 		this.dir = obj.dir;
-		this.sound = SoundManager;
 
 		this.name = `project-${this.id}`;
 

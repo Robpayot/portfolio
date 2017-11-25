@@ -11,6 +11,7 @@ import Menu from '../components/Menu';
 import Cursor from '../components/Cursor';
 import bean from 'bean';
 import Handlebars from 'handlebars';
+import PreloadManager from './PreloadManager';
 
 global.OVERLAY;
 
@@ -23,10 +24,79 @@ class AppManager {
 		this.resizeHandler = this.resizeHandler.bind(this);
 		this.raf = this.raf.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
+		this.preload = this.preload.bind(this);
+
+	}
+
+	preload() {
+
+		this.startLoad = 0;
+
+
+		PreloadManager.on('complete', () => {
+			this.start();
+			PreloadManager.off('progress');
+			const tl = new TimelineMax();
+			tl.to('.preload', 0.5, {autoAlpha: 0}, 5);
+			tl.add(() => {
+
+				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+			});
+		}, this, true);
+
+		PreloadManager.loadManifest([
+			{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' },
+			{ id: 'texture-star', src: 'images/textures/star-2.png' },
+			// { id: 'damier', src: 'images/textures/damier.jpg' },
+			{ id: 'tpl-project-title', src: `${global.BASE}/templates/projectTitle.hbs` },
+			{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` },
+			{ id: 'tpl-project-prev', src: `${global.BASE}/templates/projectPrev.hbs` },
+			{ id: 'tpl-project-next', src: `${global.BASE}/templates/projectNext.hbs` },
+			{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` },
+			{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
+			{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },
+			{ id: 'introTxt', src: `${global.BASE}/images/name.png` },
+			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
+			`${global.BASE}/images/textures/intro_west.jpg`,
+			`${global.BASE}/images/textures/intro_east.jpg`,
+			`${global.BASE}/images/textures/intro_up.jpg`,
+			`${global.BASE}/images/textures/intro_down.jpg`,
+			`${global.BASE}/images/textures/intro_south.jpg`,
+			`${global.BASE}/images/textures/intro_north.jpg`
+			// { id: 'template-menu', src: ''}
+		]);
+
+		PreloadManager.on('progress', (e) => {
+
+			// console.log(e.progress);
+			let percent = `${e.progress * 100}%`;
+			TweenMax.to('.preload__bar', 0.2, {width: percent});
+
+			if (this.startLoad === 0) {
+				this.startLoad = 1;
+				const tl = new TimelineMax({repeat: -1});
+				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
+
+				tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
+				tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+				tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
+
+				const tl2 = new TimelineMax({repeat: -1});
+				tl2.to('.preload__txt', 1, {opacity: 1});
+				tl2.to('.preload__txt', 1, {opacity: 0});
+			}
+			// this.progress.innerHTML = Math.round(e.progress * 100);
+
+		});
+
+		PreloadManager.load();
+
+		this.maxDash = 635;
 
 	}
 
 	start() {
+		console.log('start');
 
 		this.events(true);
 
@@ -53,8 +123,8 @@ class AppManager {
 		// Set up scene
 		SceneManager.start(); // scene already set up ?
 
-		// Selectors we need only one time
 		this.ui = {
+			preloadSymbol: document.querySelector('.preload__symbol'),
 			xp: document.querySelector('.xp'),
 			webGl: document.querySelector('.webGl'),
 			overlay: document.querySelector('.overlay'),

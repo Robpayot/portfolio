@@ -322,8 +322,8 @@ export default class Glitch {
 	init() {
 
 		this.ctx = this.ui.canvas.getContext('2d');
-		this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
-		this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
+		if (this.ui.canvasBuffer) this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
+		if (this.ui.canvasAlphaBuffer) this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
 
 		this.initOptions();
 		// set up alpha video
@@ -777,16 +777,17 @@ export default class Glitch {
 
 		if (this.ui.canvas) {
 			this.ui.canvas.height = this.height;
-			this.ui.canvasBuffer.height = this.height;
+			if (this.ui.canvasBuffer) this.ui.canvasBuffer.height = this.height;
 			// this.ui.canvasAlphaBuffer.height = this.width;
 			// this.ui.canvasAlphaBuffer.style.height = this.height * 2; // retina
 
 			this.ui.canvas.width = this.width;
-			this.ui.canvasBuffer.width = this.width;
+			if (this.ui.canvasBuffer) this.ui.canvasBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
 
-			this.ctx.font = this.ctxBuffer.font = this.font;
+			this.ctx.font = this.font;
+			if (this.ctxBuffer) this.ctxBuffer.font = this.font;
 		}
 
 	}

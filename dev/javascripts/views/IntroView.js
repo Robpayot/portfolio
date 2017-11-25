@@ -566,12 +566,12 @@ export default class IntroView extends AbstractView {
 		if (this.animBtn === true) return false;
 
 		const tl = new TimelineMax();
-		TweenMax.killTweensOf(['.start .close-up','.start .close-down','.start .open-up','.start .open-down']);
+		TweenMax.killTweensOf(['.start .close-up','.start .close-down']);
 		TweenMax.to('.start circle', 0, {opacity: 0});
 
 		tl.to('.start .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
 		tl.to('.start .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
-		tl.set(['.start .close-up','.start .close-down','.start .open-up','.start .open-down'], {clearProps: 'all'});
+		tl.set(['.start .close-up','.start .close-down'], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animBtn = false;
 		});
@@ -584,6 +584,7 @@ export default class IntroView extends AbstractView {
 		global.CURSOR.interractLeave();
 		this.startIsHover = false;
 		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set('.start circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.start circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 
 		TweenMax.to('.start p', 1, {y: 20, ease: window.Expo.easeOut});
