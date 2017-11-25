@@ -979,14 +979,6 @@ export default class ProjectView extends AbstractView {
 			// smooth scroll
 			this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
 
-			// if (this.scrollZSmooth >= this.minZoomZ) { // end
-			// 	this.scrollZ = this.scrollZSmooth = this.minZoomZ;
-			// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
-			// } else if (this.scrollZSmooth < this.maxZoomZ) { // top
-			// 	this.scrollZ = this.scrollZSmooth = this.maxZoomZ;
-			// 	// TweenMax.to(this.ui.container, 0.7, { y: -this.scrollZSmooth}); // smooth it
-			// }
-
 			if (this.scrollZSmooth < this.zoomZ ) { // going foward
 
 				// ScrollManager.off();

@@ -679,74 +679,74 @@ export default class IntroView extends AbstractView {
 
 
 		// Moving Icebergs
-		this.asteroids.forEach((el) => {
 
-			if (el.body !== undefined ) {
-				// el.mesh.position.copy(el.body.getPosition());
-				// el.mesh.quaternion.copy(el.body.getQuaternion());
-				el.mesh.position.x = el.body.position[0]; // copy positions
-				el.mesh.position.z = -el.body.position[1]; // reverse axes
-				el.mesh.rotation.y = el.body.angle;
+		for (let i = 0; i < this.nbAst; i++) {
+			if (this.asteroids[i].body !== undefined ) {
+				// this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
+				// this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+				this.asteroids[i].mesh.position.x = this.asteroids[i].body.position[0]; // copy positions
+				this.asteroids[i].mesh.position.z = -this.asteroids[i].body.position[1]; // reverse axes
+				this.asteroids[i].mesh.rotation.y = this.asteroids[i].body.angle;
 
 				if (this.asteroidsMove === true) {
 					// Apply IMPULSE
-					// el.body.linearVelocity.x = el.force.x;
-					// el.body.linearVelocity.x = clamp(el.body.linearVelocity.x, -el.force.z, el.force.z);
-					// el.body.linearVelocity.y = el.force.y;
-					// el.body.linearVelocity.z = el.force.z; // --> force perpetuelle
-					// console.log(el.body.velocity[1]);
-					// el.body.velocity[0] = clamp(el.body.velocity[0], -el.force.z, el.force.z); // x
-					el.body.velocity[1] = clamp(el.force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
-					el.body.velocity[0] = clamp(el.body.velocity[0], -20, 20);
+					// this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
+					// this.asteroids[i].body.linearVelocity.x = clamp(this.asteroids[i].body.linearVelocity.x, -this.asteroids[i].force.z, this.asteroids[i].force.z);
+					// this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
+					// this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z; // --> force perpetuelle
+					// console.log(this.asteroids[i].body.velocity[1]);
+					// this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -this.asteroids[i].force.z, this.asteroids[i].force.z); // x
+					this.asteroids[i].body.velocity[1] = clamp(this.asteroids[i].force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
+					this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -20, 20);
 
 					// Clamp rotation
 
-					// el.body.angularVelocity.x = 0;
-					// el.body.angularVelocity.y = clamp(el.body.angularVelocity.y, -0.5, 0.5);
-					// // el.body.angularVelocity.y = 0;
-					// el.body.angularVelocity.z = 0;
+					// this.asteroids[i].body.angularVelocity.x = 0;
+					// this.asteroids[i].body.angularVelocity.y = clamp(this.asteroids[i].body.angularVelocity.y, -0.5, 0.5);
+					// // this.asteroids[i].body.angularVelocity.y = 0;
+					// this.asteroids[i].body.angularVelocity.z = 0;
 				}
 
-				if (el.animated === false) { // if no plonge, constant Y
-					// el.mesh.position.y = el.body.position.y = 0; // constraint pos y
-					el.mesh.position.y = 0; // constraint pos y
+				if (this.asteroids[i].animated === false) { // if no plonge, constant Y
+					// this.asteroids[i].mesh.position.y = this.asteroids[i].body.position.y = 0; // constraint pos y
+					this.asteroids[i].mesh.position.y = 0; // constraint pos y
 				}
 
-				if ( el.reappear === true) {
+				if ( this.asteroids[i].reappear === true) {
 					// refait surface
-					el.mesh.position.y = el.mesh.position.y + 1;
-					if (el.mesh.position.y >= el.endY) {
-						el.reappear = false;
-						el.animated = false;
+					this.asteroids[i].mesh.position.y = this.asteroids[i].mesh.position.y + 1;
+					if (this.asteroids[i].mesh.position.y >= this.asteroids[i].endY) {
+						this.asteroids[i].reappear = false;
+						this.asteroids[i].animated = false;
 					}
 				}
 
 				// if out of Perimeter, reset
-				if ( Math.sqrt( Math.pow(Math.abs(el.mesh.position.x), 2) + Math.pow(Math.abs(el.mesh.position.z), 2) ) > this.perimeter || el.clicked === true) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
+				if ( Math.sqrt( Math.pow(Math.abs(this.asteroids[i].mesh.position.x), 2) + Math.pow(Math.abs(this.asteroids[i].mesh.position.z), 2) ) > this.perimeter || this.asteroids[i].clicked === true) { // Théorème de Pythagore <3 . Calcule de la distance entre le point et le centre du cercle
 
 
-					el.animated = true;
+					this.asteroids[i].animated = true;
 					// Plonge
-					el.mesh.position.y = el.mesh.position.y - 1;
+					this.asteroids[i].mesh.position.y = this.asteroids[i].mesh.position.y - 1;
 
-					if (el.mesh.position.y <= -20) {
+					if (this.asteroids[i].mesh.position.y <= -20) {
 
 						// reset position
-						let z = el.mesh.index % 2 === 0 ? getRandom(-150, this.reappearZ) : this.reappearZ;
+						let z = this.asteroids[i].mesh.index % 2 === 0 ? getRandom(-150, this.reappearZ) : this.reappearZ;
 						let x = getRandom(this.astXMin, this.astXMax);
 						if (x > -this.fZone && x < this.fZone ) {
-							x = el.mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
+							x = this.asteroids[i].mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
 						}
 
-						// el.mesh.position.z = el.body.position.z = z;
-						// el.body.position.x = el.mesh.position.x = x;
-						el.mesh.position.x = el.body.position[0] = x; // copy positions
-						el.mesh.position.z = z;
-						el.body.position[1] = -z; // reverse axes
-						el.body.angularVelocity = getRandom(-1,1);
+						// this.asteroids[i].mesh.position.z = this.asteroids[i].body.position.z = z;
+						// this.asteroids[i].body.position.x = this.asteroids[i].mesh.position.x = x;
+						this.asteroids[i].mesh.position.x = this.asteroids[i].body.position[0] = x; // copy positions
+						this.asteroids[i].mesh.position.z = z;
+						this.asteroids[i].body.position[1] = -z; // reverse axes
+						this.asteroids[i].body.angularVelocity = getRandom(-1,1);
 
-						el.reappear = true;
-						el.clicked = false;
+						this.asteroids[i].reappear = true;
+						this.asteroids[i].clicked = false;
 
 						// const dest = el.height * el.scale;
 						// console.log(el.endY);
@@ -756,7 +756,7 @@ export default class IntroView extends AbstractView {
 				}
 
 			}
-		});
+		}
 
 		// Raycaster
 		this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -794,17 +794,17 @@ export default class IntroView extends AbstractView {
 		}
 
 		// glitch title
-		// if (this.glitch) {
+		if (this.glitch) {
 
-		// 	if (this.glitch.start === true) {
-		// 		this.glitch.render();
-		// 	} else {
-		// 		if (this.glitch.stop !== true) {
-		// 			this.glitch.render();
-		// 			this.glitch.stop = true;
-		// 		}
-		// 	}
-		// }
+			if (this.glitch.start === true) {
+				this.glitch.render();
+			} else {
+				if (this.glitch.stop !== true) {
+					this.glitch.render();
+					this.glitch.stop = true;
+				}
+			}
+		}
 
 		// move sky
 		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
