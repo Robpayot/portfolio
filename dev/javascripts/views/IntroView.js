@@ -6,14 +6,14 @@ import Asteroid from '../shapes/Asteroid';
 // import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 import Ui from '../components/Ui';
-import { loadJSON } from '../helpers/utils-three';
+
 import Glitch from '../components/Glitch';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, PointLight, RepeatWrapping, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, Texture, PointLight, RepeatWrapping, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import '../shaders/ScreenSpaceShader';
 import '../shaders/FFTOceanShader';
@@ -27,7 +27,7 @@ import p2 from 'p2';
 // import WaterVertexShader from '../shaders/WaterVertexShader';
 
 
-import dat from 'dat-gui';
+// import dat from 'dat-gui';
 
 export default class IntroView extends AbstractView {
 
@@ -59,25 +59,14 @@ export default class IntroView extends AbstractView {
 		this.onHoverStart = this.onHoverStart.bind(this);
 		this.onLeaveStart = this.onLeaveStart.bind(this);
 
-		// preload Models
-		Promise.all([
-			loadJSON('datas/models/triangle.json'),
-			loadJSON('datas/models/triangles_y.json'),
-			loadJSON('datas/models/triangles_y6.json')
-		]).then((results) => {
-			// when all is loaded
-			this.models = results;
-			this.init();
 
-			this.events(true);
-			// this.ui.overlay.classList.add('black');
+		this.models = global.MODELS;
+		this.init();
 
-			this.transitionIn(!obj.fromUrl);
+		this.events(true);
+		// this.ui.overlay.classList.add('black');
 
-		}, (err) => {
-			console.log(err);
-			// error here
-		});
+		this.transitionIn(!obj.fromUrl);
 
 		// init
 		console.log(this.ui);
@@ -253,7 +242,8 @@ export default class IntroView extends AbstractView {
 		} );
 
 		// Simple top Plane for Mirror
-		this.skyTex = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
+		this.skyTex = global.skyTex;
+
 		this.skyTex.wrapS = this.skyTex.wrapT = RepeatWrapping;
 		this.skyTex.offset.x = 0.5;
 		this.skyTex.repeat.set( 1, 1 );
