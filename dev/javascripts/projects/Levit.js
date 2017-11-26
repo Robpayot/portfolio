@@ -1,6 +1,5 @@
 import ProjectView from '../views/ProjectView';
 import { getRandom, toRadian } from '../helpers/utils';
-import { loadJSON } from '../helpers/utils-three';
 
 // THREE JS
 import { MeshPhongMaterial, DirectionalLight } from 'three';
@@ -19,20 +18,10 @@ export default class Levit extends ProjectView {
 		this.nbAst = 10;
 		this.toggle = 0;
 
-		// preload Models
-		Promise.all([
-			loadJSON('datas/models/iceberg-1.json'),
-			loadJSON('datas/models/iceberg-2.json'),
-			loadJSON('datas/models/iceberg-3.json')
-		]).then((results) => {
-			// when all is loaded
-			this.models = results;
-			this.init();
+		console.log(global.MODELS);
 
-		}, (err) => {
-			console.log(err);
-			// error here
-		});
+		this.models = global.MODELS;
+		this.init();
 
 		console.log('Levit view');
 
@@ -89,7 +78,7 @@ export default class Levit extends ProjectView {
 			const range = getRandom(3, 8);
 			const timeRotate = getRandom(0.0010, 0.0013);
 
-			const model = Math.round(getRandom(0, 2));
+			const model = Math.round(getRandom(3, 5));
 
 			const asteroid = new Asteroid({
 				width: this.models[model].size.x,

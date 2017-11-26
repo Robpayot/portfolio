@@ -1,5 +1,4 @@
 import ProjectView from '../views/ProjectView';
-import PreloadManager from '../managers/PreloadManager';
 import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 

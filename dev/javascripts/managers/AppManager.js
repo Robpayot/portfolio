@@ -2,14 +2,19 @@ import EmitterManager from './EmitterManager';
 import RouterManager from './RouterManager';
 import { Device } from '../helpers/Device';
 // import WebFont from 'webfontloader';
+import DATA from '../../datas/data.json';
 import SceneManager from './SceneManager';
 import Menu from '../components/Menu';
 import Cursor from '../components/Cursor';
 import bean from 'bean';
 import Handlebars from 'handlebars';
 import PreloadManager from './PreloadManager';
+import { loadJSON } from '../helpers/utils-three';
+import { TextureLoader } from 'three';
+
 
 global.OVERLAY;
+global.MODELS;
 
 
 class AppManager {
@@ -29,65 +34,88 @@ class AppManager {
 		this.startLoad = 0;
 		this.maxDash = 635;
 
+		// Animation
+		const tl = new TimelineMax({repeat: -1});
+		TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
 
-		PreloadManager.on('complete', () => {
-			this.start();
-			PreloadManager.off('progress');
-			const tl = new TimelineMax();
-			tl.to('.preload', 1, {autoAlpha: 0}, 2);
-			tl.add(() => {
+		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
+		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+		tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 
-				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+		const tl2 = new TimelineMax({repeat: -1});
+		tl2.to('.preload__txt', 1, {opacity: 1});
+		tl2.to('.preload__txt', 1, {opacity: 0});
+
+
+		// First preload Three.js models
+		Promise.all([
+			loadJSON('datas/models/triangle.json'),
+			loadJSON('datas/models/triangles_y.json'),
+			loadJSON('datas/models/triangles_y6.json'),
+			loadJSON('datas/models/iceberg-1.json'),
+			loadJSON('datas/models/iceberg-2.json'),
+			loadJSON('datas/models/iceberg-3.json')
+		]).then(results => {
+			global.MODELS = results;
+
+			// Preload all assets
+			PreloadManager.loadManifest([
+				// template hbs
+				{ id: 'tpl-project-title', src: `${global.BASE}/templates/projectTitle.hbs` },
+				{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` },
+				{ id: 'tpl-project-prev', src: `${global.BASE}/templates/projectPrev.hbs` },
+				{ id: 'tpl-project-next', src: `${global.BASE}/templates/projectNext.hbs` },
+				{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` },
+				{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
+				{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },
+				// textures
+				{ id: 'introTxt', src: `${global.BASE}/images/textures/name.png` },
+				{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
+				{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
+			]);
+			// SkyTex
+			global.skyTex = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
+
+			// Preload all img projects
+			for (let i = 0; i < DATA.projects.length; i++) {
+
+				for (let y = 0; y < DATA.projects[i].imgs.length; y++) {
+					PreloadManager.loadFile(`${global.BASE}/images/projects/${DATA.projects[i].imgs[y]}`);
+				}
+
+			}
+
+			PreloadManager.on('progress', (e) => {
+
+				// console.log(e.progress);
+				let percent = `${e.progress * 100}%`;
+				TweenMax.to('.preload__bar', 0.2, {width: percent});
+
+				if (this.startLoad === 0) {
+					this.startLoad = 1;
+
+				}
+				// this.progress.innerHTML = Math.round(e.progress * 100);
 
 			});
-		}, this, true);
 
-		PreloadManager.loadManifest([
-			{ id: 'texture-asteroid', src: 'images/textures/asteroid-1.jpg' },
-			{ id: 'texture-star', src: 'images/textures/star-2.png' },
-			// { id: 'damier', src: 'images/textures/damier.jpg' },
-			{ id: 'tpl-project-title', src: `${global.BASE}/templates/projectTitle.hbs` },
-			{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` },
-			{ id: 'tpl-project-prev', src: `${global.BASE}/templates/projectPrev.hbs` },
-			{ id: 'tpl-project-next', src: `${global.BASE}/templates/projectNext.hbs` },
-			{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` },
-			{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
-			{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },
-			{ id: 'introTxt', src: `${global.BASE}/images/name.png` },
-			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
-			`${global.BASE}/images/textures/intro_west.jpg`,
-			`${global.BASE}/images/textures/intro_east.jpg`,
-			`${global.BASE}/images/textures/intro_up.jpg`,
-			`${global.BASE}/images/textures/intro_down.jpg`,
-			`${global.BASE}/images/textures/intro_south.jpg`,
-			`${global.BASE}/images/textures/intro_north.jpg`
-			// { id: 'template-menu', src: ''}
-		]);
+			PreloadManager.on('complete', () => {
+				console.log('complete');
+				this.start();
+				PreloadManager.off('progress');
+				const tl = new TimelineMax();
+				tl.to('.preload', 1, {autoAlpha: 0}, 2);
+				tl.add(() => {
 
-		PreloadManager.on('progress', (e) => {
+					TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 
-			// console.log(e.progress);
-			let percent = `${e.progress * 100}%`;
-			TweenMax.to('.preload__bar', 0.2, {width: percent});
+				});
+			}, this, true);
 
-			if (this.startLoad === 0) {
-				this.startLoad = 1;
-				const tl = new TimelineMax({repeat: -1});
-				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
-
-				tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
-				tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
-				tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
-
-				const tl2 = new TimelineMax({repeat: -1});
-				tl2.to('.preload__txt', 1, {opacity: 1});
-				tl2.to('.preload__txt', 1, {opacity: 0});
-			}
-			// this.progress.innerHTML = Math.round(e.progress * 100);
 
 		});
 
-		PreloadManager.load();
+
 
 	}
 
