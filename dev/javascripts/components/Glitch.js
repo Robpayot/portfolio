@@ -773,7 +773,7 @@ export default class Glitch {
 
 			// Video size
 			this.videoWidth = this.width;
-			this.videoHeight = this.width * 2; // square in that case
+			this.videoHeight = this.width; // square in that case
 			if (this.ui.canvasAlphaBuffer.width !== this.videoWidth) {
 				this.ui.canvasAlphaBuffer.width = this.videoWidth;
 				this.video.width = this.videoWidth;

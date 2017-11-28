@@ -641,9 +641,9 @@ export default class ProjectView extends AbstractView {
 	goTo(e, element) {
 
 		const el = element || e.currentTarget;
-		this.clickGoTo = true;
-		if (el.classList.contains('project__next')) this.dir = 1;
-		else this.dir = -1;
+		this.goTo = true;
+		if (el.classList.contains('project__next')) this.dir = -1;
+		else this.dir = 1;
 
 	}
 
@@ -910,36 +910,44 @@ export default class ProjectView extends AbstractView {
 				// ScrollManager.off();
 				if (this.stopScrollZ !== true) {
 					this.stopScrollZ = true;
-					this.coefScrollZ = 0.006;
-					this.scrollZ = this.maxZoomZ; // final destination
+					this.goTo = true;
+					this.dir = -1;
+					window.location.href = `#project-${this.nextId}`;
+					// this.transitionOut(-1);
+					// this.coefScrollZ = 0.006;
+					// this.scrollZ = this.maxZoomZ; // final destination
 				}
 
-				this.coefScrollZ += 0.001; // acceleration
-				this.camera.position.z = this.scrollZSmooth;
+				// this.coefScrollZ += 0.001; // acceleration
+				// this.camera.position.z = this.scrollZSmooth;
 
-				if (this.scrollZSmooth < this.maxZoomZ + 30)  {
-					this.transitionOutScrolled = true;
-					if (this.hrefChanged === true) this.transitionOut();
-					else window.location.href = `#project-${this.nextId}`; // transitionOut + change href if scrolled only
-				}
+				// if (this.scrollZSmooth < this.maxZoomZ + 30)  {
+				// 	this.transitionOutScrolled = true;
+				// 	if (this.hrefChanged === true) this.transitionOut();
+				// 	else window.location.href = `#project-${this.nextId}`; // transitionOut + change href if scrolled only
+				// }
 
 			} else if (this.scrollZSmooth > this.zoomZ) { // going backward
 				if (this.stopScrollZ !== true) {
-					this.transitionOutScrolled = true;
+					// this.transitionOutScrolled = true;
 					this.stopScrollZ = true;
-					this.scrollZ = this.minZoomZ; // final destination
-					this.coefScrollZ = 0.027;
+					this.goTo = true;
+					this.dir = 1;
+					window.location.href = `#project-${this.prevId}`;
+					// this.transitionOut(1);
+					// this.scrollZ = this.minZoomZ; // final destination
+					// this.coefScrollZ = 0.027;
 				}
 
-				this.camera.position.z = this.scrollZSmooth;
+				// this.camera.position.z = this.scrollZSmooth;
 
-				if (this.scrollZSmooth > this.minZoomZ - 30 )  {
-					this.transitionOutScrolled = true;
-					if (this.hrefChanged === true) this.transitionOut();
-					else window.location.href = `#project-${this.prevId}`; // transitionOut + change href if scrolled only
-				}
+				// if (this.scrollZSmooth > this.minZoomZ - 30 )  {
+				// 	this.transitionOutScrolled = true;
+				// 	if (this.hrefChanged === true) this.transitionOut();
+				// 	else window.location.href = `#project-${this.prevId}`; // transitionOut + change href if scrolled only
+				// }
 			} else {
-				this.camera.position.z = this.scrollZSmooth;
+				// this.camera.position.z = this.scrollZSmooth;
 			}
 
 		}
@@ -1115,6 +1123,7 @@ export default class ProjectView extends AbstractView {
 	}
 
 	transitionOut(dir) {
+		console.log('transition OUT', dir, this.dir, this.animating);
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -1123,10 +1132,28 @@ export default class ProjectView extends AbstractView {
 
 		if (this.transitionOutScrolled !== true) {
 
-			if (this.clickGoTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
+			if (this.goTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
 			// Simulate scroll backWard/foward
-			if (dir === 1) this.scrollZ -= 0.2;
-			else this.scrollZ += 0.2;
+			let delay = 0.8;
+			if (dir === 1) {
+				// this.scrollZ -= 0.2;
+				delay = 0.4;
+				tl.to(this.camera.position, 1.8, {z : this.minZoomZ , ease: window.Power2.easeOut}); // 2
+			} else {
+				// this.scrollZ += 0.2;
+				tl.to(this.camera.position, 1.2, {z : this.maxZoomZ , ease: window.Expo.ease}); // 2
+			}
+
+			tl.to('.overlay', 0.5, {
+				opacity: 1
+			}, delay);
+			tl.add(() => {
+				this.animating = false;
+
+				// TweenMax.killAll(); // venere
+				EmitterManager.emit('view:transition:out');
+			});
+
 			this.hrefChanged = true;
 			this.animating = false;
 
