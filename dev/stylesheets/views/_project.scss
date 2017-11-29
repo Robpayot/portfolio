@@ -1,7 +1,7 @@
 .project {
 
     &__title {
-        font-size: 404%;
+        font-size: 521%;
         display: inline-block;
         vertical-align: middle;
         white-space: nowrap;
@@ -41,19 +41,19 @@
     &__number {
     	position: absolute;
     	top: -300px;
-    	font-size: 50px;
+    	font-size: 60px;
     	left: 5px;
     }
 
     &__more {
     	left: 0px;
     	padding-left: 0px;
-    	font-size: 42px; // in px because resize relative to the scene
+    	font-size: 52px; // in px because resize relative to the scene
     	letter-spacing: 4px;
     	font-family: 'Theinhardt';
 	    font-weight: normal;
 	    font-style: normal;
-		top: 150px;
+		top: 170px;
 		opacity: 1;
 		transition: padding 0.8s $easeToinou;
 		&:after {
@@ -83,7 +83,7 @@
         opacity: 0;
         text-transform: uppercase;
 
-    	font-size: 42px;
+    	font-size: 57px;
     	letter-spacing: 4px;
     	font-family: 'Theinhardt';
         // &.transi {

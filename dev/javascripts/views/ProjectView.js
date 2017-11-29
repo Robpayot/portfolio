@@ -94,6 +94,8 @@ export default class ProjectView extends AbstractView {
 
 		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
 
+		this.menu = document.querySelector('.menu');
+
 
 	}
 
@@ -118,11 +120,11 @@ export default class ProjectView extends AbstractView {
 		if (method === true) {
 
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
-			bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
+			// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
 			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
-			bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
-			bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
+			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
+			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		} else {
 			bean.off(document.body, '.project');
@@ -327,7 +329,7 @@ export default class ProjectView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
-		title.position.set(20, 0, 10);
+		title.position.set(40, 0, 10);
 		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
@@ -345,19 +347,25 @@ export default class ProjectView extends AbstractView {
 
 
 		// Prev project
-		template = Handlebars.compile(PreloadManager.getResult('tpl-project-prev'));
-		html  = template({id: this.prevId, color: DATA.projects[this.prevId].color });
-		this.prevProject = new CssContainer(html, this.cssScene, this.cssObjects);
-		this.prevProject.position.set(0, -finalPosY, -distZ);
-		this.prevProject.scale.multiplyScalar(this.coefText);
+		// template = Handlebars.compile(PreloadManager.getResult('tpl-project-prev'));
+		// html  = template({id: this.prevId, color: DATA.projects[this.prevId].color });
+		// this.prevProject = new CssContainer(html, this.cssScene, this.cssObjects);
+		// this.prevProject.position.set(0, -finalPosY, -distZ);
+		// this.prevProject.scale.multiplyScalar(this.coefText);
+
+		global.CURSOR.prev.href = `#project-${this.prevId}`;
+		global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
 
 
 		// Next project
-		template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
-		html  = template({id: this.nextId, color: DATA.projects[this.nextId].color});
-		this.nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
-		this.nextProject.position.set(0, finalPosY, -distZ);
-		this.nextProject.scale.multiplyScalar(this.coefText);
+		// template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
+		// html  = template({id: this.nextId, color: DATA.projects[this.nextId].color});
+		// this.nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
+		// this.nextProject.position.set(0, finalPosY, -distZ);
+		// this.nextProject.scale.multiplyScalar(this.coefText);
+
+		global.CURSOR.next.href = `#project-${this.nextId}`;
+		global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
 
 
 		// // Gallery
@@ -564,11 +572,11 @@ export default class ProjectView extends AbstractView {
 
 		// on events related to init state
 		bean.on(document.body, 'click.project', '.project__title', this.showContent);
-		bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
+		// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
 		bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 		bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
-		bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
-		bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
+		// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
+		// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
@@ -640,9 +648,10 @@ export default class ProjectView extends AbstractView {
 
 	goTo(e, element) {
 
+
 		const el = element || e.currentTarget;
-		this.goTo = true;
-		if (el.classList.contains('project__next')) this.dir = -1;
+		this.goToNoScroll = true;
+		if (el.classList.contains('cursor__next')) this.dir = -1;
 		else this.dir = 1;
 
 	}
@@ -825,64 +834,64 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onHoverBtn(e) {
-		const el = e.currentTarget;
-		global.CURSOR.interractHover({color: el.getAttribute('data-color'), el });
-		if (this.hoverBtn === true) return false;
-		if (this.animLink === true) return false;
+		// const el = e.currentTarget;
+		// global.CURSOR.interractHover({color: el.getAttribute('data-color'), el });
+		// if (this.hoverBtn === true) return false;
+		// if (this.animLink === true) return false;
 
-		// this.animLink = true;
-		this.hoverBtn = true;
-		const tl = new TimelineMax();
-		// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
-		// TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
+		// // this.animLink = true;
+		// this.hoverBtn = true;
+		// const tl = new TimelineMax();
+		// // TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
+		// // TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 
-		if (el.classList.contains('project__prev')) {
+		// if (el.classList.contains('project__prev')) {
 
-			tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeOut }, 0);
-			tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeOut }, 0.1);
-			tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
-			tl.fromTo('.project__prev span', 1, {opacity: 0, y: '100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
-			tl.fromTo('.project__prev hr', 1, {y: -120}, {y: -220, ease: window.Expo.easeOut}, 0);
-			tl.add(()=> {
-				this.animLink = false;
-			});
+		// 	tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeOut }, 0);
+		// 	tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeOut }, 0.1);
+		// 	tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
+		// 	tl.fromTo('.project__prev span', 1, {opacity: 0, y: '100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
+		// 	tl.fromTo('.project__prev hr', 1, {y: -120}, {y: -220, ease: window.Expo.easeOut}, 0);
+		// 	tl.add(()=> {
+		// 		this.animLink = false;
+		// 	});
 
-			TweenMax.to('.project__prev circle', 0, {opacity: 0});
+		// 	TweenMax.to('.project__prev circle', 0, {opacity: 0});
 
-		} else if (el.classList.contains('project__next')) {
+		// } else if (el.classList.contains('project__next')) {
 
-			tl.to('.up-1', 0.9, {strokeDashoffset: '292%', ease: window.Expo.easeOut }, 0.1);
-			tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeOut }, 0.1);
-			tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
-			tl.fromTo('.project__next span', 1, {opacity: 0, y: '-100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
-			tl.fromTo('.project__next hr', 1, {y: -100}, {y: 0, ease: window.Expo.easeOut}, 0);
-			tl.add(()=> {
-				this.animLink = false;
-			});
+		// 	tl.to('.up-1', 0.9, {strokeDashoffset: '292%', ease: window.Expo.easeOut }, 0.1);
+		// 	tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeOut }, 0.1);
+		// 	tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
+		// 	tl.fromTo('.project__next span', 1, {opacity: 0, y: '-100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
+		// 	tl.fromTo('.project__next hr', 1, {y: -100}, {y: 0, ease: window.Expo.easeOut}, 0);
+		// 	tl.add(()=> {
+		// 		this.animLink = false;
+		// 	});
 
-			TweenMax.to('.project__next circle', 0, {opacity: 0});
-		}
+		// 	TweenMax.to('.project__next circle', 0, {opacity: 0});
+		// }
 	}
 
 	onLeaveBtn(e) {
-		const el = e.currentTarget;
+		// const el = e.currentTarget;
 
-		global.CURSOR.interractLeave({color: el.getAttribute('data-color'), href: el.href});
-		this.hoverBtn = false;
-		if (el.classList.contains('project__prev')) {
-			TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
-			TweenMax.set('.project__prev circle', {transformOrigin: '50% 50%'});
-			TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
-			TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
-			TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
+		// global.CURSOR.interractLeave({color: el.getAttribute('data-color'), href: el.href});
+		// this.hoverBtn = false;
+		// if (el.classList.contains('project__prev')) {
+		// 	TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
+		// 	TweenMax.set('.project__prev circle', {transformOrigin: '50% 50%'});
+		// 	TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+		// 	TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
+		// 	TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
 
-		} else {
-			TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
-			TweenMax.set('.project__next circle', {transformOrigin: '50% 50%'});
-			TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
-			TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
-			TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
-		}
+		// } else {
+		// 	TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
+		// 	TweenMax.set('.project__next circle', {transformOrigin: '50% 50%'});
+		// 	TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+		// 	TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
+		// 	TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
+		// }
 	}
 
 	onMouseMove(x, y) {
@@ -892,6 +901,28 @@ export default class ProjectView extends AbstractView {
 		this.mouse.x = x / window.innerWidth * 2 - 1;
 		this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 		// console.log(this.mouse);
+
+		if (this.contentOpen === true || this.menu.classList.contains('is-open') === true) return false;
+
+		// ça fait ramer
+		if (y < window.innerHeight * 0.15) {
+			this.goToNoScroll = true;
+			this.dir = -1;
+			global.CURSOR.interractHover({type: 'next', color: global.CURSOR.next.getAttribute('data-color'), el: global.CURSOR.next});
+			this.cursorActive = true;
+		} else if (y > window.innerHeight * 0.85) {
+			this.goToNoScroll = true;
+			this.dir = 1;
+			global.CURSOR.interractHover({type: 'prev', color: global.CURSOR.prev.getAttribute('data-color'), el: global.CURSOR.prev});
+			this.cursorActive = true;
+		} else {
+			if (this.cursorActive === true) {
+				this.goToNoScroll = false;
+				this.cursorActive = false;
+				global.CURSOR.interractLeave({type: 'next', color: 'reset'});
+
+			}
+		}
 
 	}
 
@@ -910,10 +941,10 @@ export default class ProjectView extends AbstractView {
 				// ScrollManager.off();
 				if (this.stopScrollZ !== true) {
 					this.stopScrollZ = true;
-					this.goTo = true;
+					// this.transitionOutScrolled = true;
+					this.goToNoScroll = true;
 					this.dir = -1;
 					window.location.href = `#project-${this.nextId}`;
-					// this.transitionOut(-1);
 					// this.coefScrollZ = 0.006;
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
@@ -931,10 +962,9 @@ export default class ProjectView extends AbstractView {
 				if (this.stopScrollZ !== true) {
 					// this.transitionOutScrolled = true;
 					this.stopScrollZ = true;
-					this.goTo = true;
+					this.goToNoScroll = true;
 					this.dir = 1;
 					window.location.href = `#project-${this.prevId}`;
-					// this.transitionOut(1);
 					// this.scrollZ = this.minZoomZ; // final destination
 					// this.coefScrollZ = 0.027;
 				}
@@ -946,9 +976,10 @@ export default class ProjectView extends AbstractView {
 				// 	if (this.hrefChanged === true) this.transitionOut();
 				// 	else window.location.href = `#project-${this.prevId}`; // transitionOut + change href if scrolled only
 				// }
-			} else {
-				// this.camera.position.z = this.scrollZSmooth;
 			}
+			// else {
+			// 	// this.camera.position.z = this.scrollZSmooth;
+			// }
 
 		}
 
@@ -1123,7 +1154,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	transitionOut(dir) {
-		console.log('transition OUT', dir, this.dir, this.animating);
 
 		if (this.animating === true) return false;
 		this.animating = true;
@@ -1132,7 +1162,7 @@ export default class ProjectView extends AbstractView {
 
 		if (this.transitionOutScrolled !== true) {
 
-			if (this.goTo) dir = this.dir; // se baser sur le dir de goTo non de l'url
+			if (this.goToNoScroll) dir = this.dir; // se baser sur le dir de goTo non de l'url
 			// Simulate scroll backWard/foward
 			let delay = 0.8;
 			if (dir === 1) {

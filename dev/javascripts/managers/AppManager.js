@@ -85,20 +85,19 @@ class AppManager {
 
 			}
 
-			// PreloadManager.on('progress', (e) => {
+			PreloadManager.on('progress', (e) => {
 
-			// 	// console.log(e.progress);
-			// 	let percent = `${e.progress * 100}%`;
-			// 	TweenMax.to('.preload__bar', 0.2, {width: percent});
+				// console.log(e.progress);
+				let percent = `${e.progress * 100}%`;
+				TweenMax.to('.preload__bar', 0.2, {width: percent});
 
-			// 	if (this.startLoad === 0) {
-			// 		this.startLoad = 1;
+				if (this.startLoad === 0) {
+					this.startLoad = 1;
 
-			// 	}
-			// 	// this.progress.innerHTML = Math.round(e.progress * 100);
+				}
 
-			// });
-			TweenMax.set('.preload', {display: 'none'});
+			});
+			// TweenMax.set('.preload', {display: 'none'});
 
 			PreloadManager.on('complete', () => {
 				console.log('complete');
