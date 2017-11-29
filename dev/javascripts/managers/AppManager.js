@@ -95,9 +95,9 @@ class AppManager {
 					this.startLoad = 1;
 
 				}
-				// this.progress.innerHTML = Math.round(e.progress * 100);
 
 			});
+			// TweenMax.set('.preload', {display: 'none'});
 
 			PreloadManager.on('complete', () => {
 				console.log('complete');

@@ -1,13 +1,42 @@
 .cursor {
-	margin: 0 auto;
-	display: block;
-	width: 5.0rem;
-	height: 5.0rem;
-	position: absolute;
-	transform: translate(-50%,-50%);
-	z-index: 9000;
-	pointer-events: none;
+	position: relative;
 	font-size: 1.6rem;
+
+	&__wrapper {
+		margin: 0 auto;
+		display: block;
+		width: 5.0rem;
+		height: 5.0rem;
+		position: absolute;
+		transform: translate(-50%,-50%);
+		z-index: 9000;
+		pointer-events: none;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		text-align: center;
+		color: white;
+		letter-spacing: 2.5px;
+	    font-family: 'Theinhardt-light';
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	&__next, &__prev {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		opacity: 0;
+	}
+	&__next {
+		top: 100%;
+		margin-top: 0.7rem;
+		margin-left: 1.5px;
+	}
+	&__prev {
+		bottom: 100%;
+		margin-bottom: 0.7rem;
+		// opacity: 1;
+	}
 
 	.c-2 {
 		stroke-dasharray: 308%; // 848;
@@ -32,12 +61,42 @@
 		opacity: 0;
 	}
 
+	.up-1,
+	.up-2,
+	.down-1,
+	.down-2 {
+		opacity: 0;
+	}
+
+	// next / prev
+	.up-1 {
+		stroke-dasharray: 100%; // 848;
+		stroke-dashoffset: 92%; // 713;
+	}
+	.up-2 {
+		// display: none;
+		stroke-dasharray: 100%; // 848;
+		stroke-dashoffset: -14%; //  -224
+	}
+	.down-1 {
+		stroke-dasharray: 100%;
+		stroke-dashoffset: 70%;
+	}
+	.down-2 {
+		stroke-dasharray: 100%;
+		stroke-dashoffset: -36%;
+	}
+	
+
 	&.is-hover {
 		circle {
 			stroke-width: 3;
 		}
 	}
 
+	polyline {
+		stroke: white;
+	}
 	circle {
 		stroke: white;
 		stroke-width: 2;

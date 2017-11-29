@@ -298,6 +298,14 @@ export default class Glitch {
 
 		if (this.obj.type === 'intro') {
 			this.introTxt = PreloadManager.getResult('introTxt');
+			this.width = clamp(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy a lot
+			this.height = this.width * this.introTxt.height / this.introTxt.width;
+
+			// Image size
+			this.introTxt.width = this.width;
+			console.log(this.introTxt.width);
+			this.introTxt.height = this.height;
+			console.log(this.introTxt.width);
 		} else {
 			this.ui.img = PreloadManager.getResult('glitchTex');
 		}
@@ -333,6 +341,8 @@ export default class Glitch {
 
 		if (this.debug === true) {
 			this.events(true);
+
+			this.video.play();
 
 		} else {
 			this.render();
@@ -752,10 +762,18 @@ export default class Glitch {
 		if (this.obj.type === 'intro') {
 			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 			// r.p : We select only the first half
-			this.width = clamp(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy a lot
-			this.height = this.width * this.introTxt.height / this.introTxt.width;
+			this.width = clamp(window.innerWidth * 0.31, 200, 600) * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
+			this.height = this.width * this.introTxt.height / this.introTxt.width; // retina;
+
+
+			// Image size
+			// this.introTxt.width = this.width * 4;
+			// console.log(this.introTxt.width);
+			// this.introTxt.height = this.height * 2;
+
+			// Video size
 			this.videoWidth = this.width;
-			this.videoHeight = this.width * 2; // square in that case
+			this.videoHeight = this.width; // square in that case
 			if (this.ui.canvasAlphaBuffer.width !== this.videoWidth) {
 				this.ui.canvasAlphaBuffer.width = this.videoWidth;
 				this.video.width = this.videoWidth;
@@ -786,6 +804,11 @@ export default class Glitch {
 			if (this.ui.canvasBuffer) this.ui.canvasBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.width = this.width;
 			// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
+
+			if (this.obj.type === 'intro') {
+				TweenMax.set(this.ui.canvas, {width: this.width / 2});
+				TweenMax.set(this.ui.canvas, {height: this.height / 2});
+			}
 
 			this.ctx.font = this.font;
 			if (this.ctxBuffer) this.ctxBuffer.font = this.font;
