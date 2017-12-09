@@ -9,7 +9,6 @@ export default class Cursor {
 
 		// bind
 		this.onMouseMove = this.onMouseMove.bind(this);
-		this.render = this.render.bind(this);
 		this.interractHover = this.interractHover.bind(this);
 		this.interractLeave = this.interractLeave.bind(this);
 
@@ -20,19 +19,6 @@ export default class Cursor {
 		this.c2 = this.svgCircle[1];
 		this.next = this.wrapper.querySelector('.cursor__next');
 		this.prev = this.wrapper.querySelector('.cursor__prev');
-		console.log(this.next);
-
-		// let viewportOffset = circle1.getBoundingClientRect();
-		// // these are relative to the viewport, i.e. the window
-		// let top = viewportOffset.top;
-		// let left = viewportOffset.left;
-		// console.log(viewportOffset);
-		// let marge = 20;
-
-		// let minPointX = viewportOffset.left - viewportOffset.width / 2;
-		// let maxPointX = viewportOffset.left + viewportOffset.width;
-		// let minPointY = viewportOffset.top - viewportOffset.height / 2;
-		// let maxPointY = viewportOffset.top + viewportOffset.height;
 
 		this.circleObj = {val : 15.9};
 		this.mouse = {};
@@ -40,7 +26,6 @@ export default class Cursor {
 		this.cursorSmooth = { x: 0, y: 0};
 
 		EmitterManager.on('mousemove', this.onMouseMove);
-		// EmitterManager.on('raf', this.render);
 
 	}
 
@@ -54,56 +39,10 @@ export default class Cursor {
 		TweenMax.set(this.wrapper, {top: y});
 	}
 
-	render() {
-
-		// no need
-		// if (this.hasDelay === true) {
-
-		// 	// Specify target we want
-		// 	// à faire dans un raf
-		// 	this.cursorTarget.x = this.mouse.x;
-		// 	this.cursorTarget.y = this.mouse.y;
-
-		// 	// Smooth it with deceleration
-		// 	if (this.cursorTarget.x !== undefined && this.cursorTarget.y !== undefined) {
-		// 		this.cursorSmooth.x += (this.cursorTarget.x - this.cursorSmooth.x) * 0.3;
-		// 		this.cursorSmooth.y += (this.cursorTarget.y - this.cursorSmooth.y) * 0.3;
-		// 	}
-
-
-		// 	this.cursorSmooth.x = this.mouse.x;
-		// 	this.cursorSmooth.y = this.mouse.y;
-		// 	// TweenMax.set(this.el, {left: Math.round(this.cursorSmooth.x)});
-		// 	// TweenMax.set(this.el, {top: Math.round(this.cursorSmooth.y)});
-
-
-		// 	if (this.cursorTarget.x === Math.round(this.cursorSmooth.x) && this.cursorTarget.y === Math.round(this.cursorSmooth.y)) {
-		// 		if (this.isHover !== true) {
-		// 			this.hasDelay = false;
-		// 		}
-
-		// 	}
-
-		// } else {
-		// 	if (this.stopFollow !== true) {
-		// 		// this.el.style.left = this.cursorSmooth.x = this.mouse.x; // not working on FF
-		// 		// this.el.style.top = this.cursorSmooth.y = this.mouse.y; // not working on FF
-		// 		this.cursorSmooth.x = this.mouse.x;
-		// 		this.cursorSmooth.y = this.mouse.y;
-		// 		// TweenMax.set(this.el, {left: this.cursorSmooth.x});
-		// 		// TweenMax.set(this.el, {top: this.cursorSmooth.y});
-		// 		console.log('ok', this.el.style.left, this.mouse.x);
-		// 	}
-		// }
-
-	}
-
 	interractHover(obj = {}) {
 
 		if (this.hoverGlobal === true) return false;
 		this.hoverGlobal = true;
-
-		// console.log('hover');
 
 		let maxVal = obj.small === true ? 35 : 49;
 

@@ -5,7 +5,6 @@ import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 // import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
-import Ui from '../components/Ui';
 
 import Glitch from '../components/Glitch';
 import Handlebars from 'handlebars';
@@ -36,7 +35,6 @@ export default class IntroView extends AbstractView {
 
 		this.el = this.ui.webGl;
 		this.gravity = obj.gravity;
-		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
 		this.isControls = false;
 
@@ -60,12 +58,10 @@ export default class IntroView extends AbstractView {
 		this.init();
 
 		this.events(true);
-		// this.ui.overlay.classList.add('black');
 
 		this.transitionIn(!obj.fromUrl);
 
 		// init
-		console.log(this.ui);
 
 		// this.onClickStart();
 
@@ -168,9 +164,9 @@ export default class IntroView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-intro-content'));
 		let html  = template(data);
 
-		this.UI.content.className = '';
-		this.UI.content.classList.add('ui-content', 'is-intro');
-		this.UI.content.innerHTML = html;
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-intro');
+		this.ui.uiContent.innerHTML = html;
 
 		this.ui.button = document.querySelector('.start');
 		this.ui.overlay = document.querySelector('.intro__overlay');
@@ -227,7 +223,7 @@ export default class IntroView extends AbstractView {
 		} );
 
 		// Simple top Plane for Mirror
-		this.skyTex = global.skyTex;
+		this.skyTex = global.SKYTEX;
 
 		this.skyTex.wrapS = this.skyTex.wrapT = RepeatWrapping;
 		this.skyTex.offset.x = 0.5;
@@ -675,10 +671,8 @@ export default class IntroView extends AbstractView {
 		this.el.classList.remove('project');
 		this.el.classList.remove('about');
 		// set ui
-		this.UI.content.style.display = 'block';
+		this.ui.uiContent.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
-
-		Ui.el.style.display = 'block';
 
 		if (fromProject === false) {
 			this.glitchEl = document.querySelector('.intro__glitch');

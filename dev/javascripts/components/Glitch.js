@@ -34,18 +34,8 @@ export default class Glitch {
 			// Preloader
 			this.preloadCb = PreloadManager.on('complete', this.start, this, true);
 
-			let prod;
-
-			if (window.location.host === 'robpayot.github.io') {
-				prod = true;
-
-			}
-
-			let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-
 			PreloadManager.loadManifest([
-				{ id: 'template-glitch', src: `${base}/templates/glitch.hbs` }
+				{ id: 'template-glitch', src: `${global.BASE}/templates/glitch.hbs` }
 			]);
 
 			PreloadManager.load();
@@ -89,19 +79,12 @@ export default class Glitch {
 
 		if (this.obj.type === 'intro') {
 			this.introTxt = PreloadManager.getResult('introTxt');
-			this.width = clamp(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy
-			this.height = this.width * this.introTxt.height / this.introTxt.width;
-
-			// Image size
-			this.introTxt.width = this.width;
-			this.introTxt.height = this.height;
 		} else {
 			this.ui.img = PreloadManager.getResult('glitchTex');
 		}
 
 		this.init();
 
-		// console.log(PreloadManager.getResult('svg'));
 	}
 
 	setAlphaVideo() {
@@ -123,7 +106,10 @@ export default class Glitch {
 		if (this.ui.canvasBuffer) this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
 		if (this.ui.canvasAlphaBuffer) this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
 
-		this.initOptions();
+		this.channel = 0; // 0 = red, 1 = green, 2 = blue
+		this.phase = 5.0;
+		this.phaseStep = 0.2; //determines how often we will change channel and amplitude
+
 		// set up alpha video
 		this.setAlphaVideo();
 		this.resizeHandler();
@@ -139,50 +125,6 @@ export default class Glitch {
 
 	}
 
-	initOptions() {
-
-		// const gui = new dat.GUI(),
-		// 	current = gui.addFolder('Current'),
-		// 	controls = gui.addFolder('Controls');
-
-
-		this.fps = 60;
-
-		this.channel = 0; // 0 = red, 1 = green, 2 = blue
-		this.compOp = 'lighter'; // CompositeOperation = lighter || darker || xor
-		this.phase = 5.0;
-		this.phaseStep = 0.2; //determines how often we will change channel and amplitude
-		this.amplitude = 0.0;
-		this.amplitudeBase = 2; //2.0;
-		this.amplitudeRange = 3; // 2.0;
-		this.alphaMin = 0.8;
-
-		this.glitchAmplitude = 20.0;
-		this.glitchThreshold = 0.9;
-		this.scanlineBase = 40;
-		this.scanlineRange = 40;
-		this.scanlineShift = 15;
-
-		// current.add(this, 'channel', 0, 2).listen();
-		// current.add(this, 'phase', 0, 1).listen();
-		// current.add(this, 'amplitude', 0, 5).listen();
-		// // comment out below to hide ability to change text string
-		// // var text = controls.add(this, 'text');
-		// // text.onChange((function (){
-		// // 	this.textWidth = (this.ctx.measureText(this.text)).width;
-		// // }).bind(this));
-		// // comment out above to hide ability to change text string
-		// controls.add(this, 'fps', 1, 60);
-		// controls.add(this, 'phaseStep', 0, 1);
-		// controls.add(this, 'alphaMin', 0, 1);
-		// controls.add(this, 'amplitudeBase', 0, 5);
-		// controls.add(this, 'amplitudeRange', 0, 5);
-		// controls.add(this, 'glitchAmplitude', 0, 100);
-		// controls.add(this, 'glitchThreshold', 0, 1);
-		// controls.open();
-		// gui.close(); // start the control panel cloased
-	}
-
 	render() {
 
 		this.phase += this.phaseStep;
@@ -192,7 +134,6 @@ export default class Glitch {
 		if (this.phase > frequency) { // time for each channel
 			this.phase = 0.0;
 			this.channel = this.channel === 2 ? 0 : this.channel + 1;
-			this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
 		}
 
 		// clear temp context
@@ -207,21 +148,19 @@ export default class Glitch {
 
 		const top = 0; // top of image
 		const centerY = this.height / 2 + this.textHeight / 2;
-		// let margeStart = this.textWidth * 0.2;
 		let startClip = (this.width - this.textWidth) / 2 ;
 
 
 		if (this.stop === true) {
-
-			if (this.obj.type === 'intro') return false;
 			// DEFAULT value
+			if (this.obj.type === 'intro') return false;
+
 			// Just text and image alpha mask, no glitch
 			// this.ctxBuffer.save();
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 			this.ctxBuffer.fillStyle = this.color;
 			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
-			// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
 
 			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
 
@@ -229,10 +168,7 @@ export default class Glitch {
 		}
 
 		if (this.ctxAlphaBuffer && this.obj.type === 'intro') {
-			// alpha video
-			// this.ctxAlphaBuffer.save();
-			// this.ctxAlphaBuffer.clearRect(0, 0, this.videoWidth, this.videoHeight);
-			this.ctxAlphaBuffer.beginPath();
+			// Alpha video effect
 
 			this.ctxAlphaBuffer.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
 			this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, this.videoWidth, this.videoHeight / 2); // --> top part of video
@@ -246,21 +182,11 @@ export default class Glitch {
 			}
 			// this.ctxAlphaBuffer.restore();
 
-			// Txt as an image --> Better perf
-			// this.ctx.save();
-			// this.ctx.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-			this.ctx.beginPath(); // avoid Drop fps
 
-			// this.ctx.fillStyle = this.color;
-			// this.ctx.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
 			this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
 			this.ctx.globalCompositeOperation = 'source-in';
 
-			// old
-			// this.ctx.font = this.ctx.font = this.font;
-			// this.ctx.fillText(this.text, (this.width - this.textWidth) / 2, centerY - 30); // First Text
 			this.ctx.drawImage(this.introTxt, 0, 0, this.width, this.height);
-			// this.ctx.restore();
 
 			return false;
 		}
@@ -275,12 +201,8 @@ export default class Glitch {
 
 
 		this.margeX2 =  this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX2);
-		// this.posX2 =  this.randomTimed(x2, x2, this.);
-		// this.posY2 =  this.randomTimed(0, 0, this.);
 		this.width2 =  this.randomTimed(this.textWidth * 0.6, this.textWidth * 0.25, this.width2);
 		this.width22 =   this.randomTimed(this.textWidth * 0.4, this.textWidth * 0.25, this.width22);
-		// this.posX22 =  this.randomTimed(x2, x2, this.);
-		// this.posY22 =  this.randomTimed(0, 0, this.);
 
 		this.margeX3 = this.randomTimed(-this.textWidth * 0.2, -this.textWidth * 0.3, this.margeX3);
 		this.posX3 =  this.randomTimed(30, -30, this.posX3);
@@ -333,7 +255,6 @@ export default class Glitch {
 		this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 		// Draw Second Comp
-		// DEFAULT
 		// Normal Text, center white, with image
 		this.ctxBuffer.save();
 		this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
@@ -483,29 +404,8 @@ export default class Glitch {
 
 	}
 
-	renderScanline() {
-
-		let y = this.height * Math.random() >> 0,
-			o = this.ctx.getImageData(0, y, this.width, 1),
-			d = o.data,
-			i = d.length,
-			s = this.scanlineBase + this.scanlineRange * Math.random() >> 0,
-			x = -this.scanlineShift + this.scanlineShift * 2 * Math.random() >> 0;
-
-		while (i-- > 0) {
-			d[i] += s;
-		}
-
-		this.ctx.putImageData(o, x, y);
-
-		// var imgData = this.ctx.getImageData(10,10,500,500);
-		// this.ctx.putImageData(imgData,10,70);
-	}
-
 	resizeHandler() {
 
-		// return false;
-		//this.height = window.innerHeight;
 
 		if (this.obj.type === 'intro') {
 			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
@@ -513,11 +413,9 @@ export default class Glitch {
 			this.width = clamp(window.innerWidth * 0.31, 200, 600) * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
 			this.height = this.width * this.introTxt.height / this.introTxt.width; // retina;
 
-
 			// Image size
-			// this.introTxt.width = this.width * 4;
-			// console.log(this.introTxt.width);
-			// this.introTxt.height = this.height * 2;
+			this.introTxt.width = this.width;
+			this.introTxt.height = this.height;
 
 			// Video size
 			this.videoWidth = this.width;
@@ -530,6 +428,8 @@ export default class Glitch {
 				this.ui.canvasAlphaBuffer.height = this.videoHeight;
 				// this.video.height = this.videoHeight;
 			}
+
+
 		} else {
 			this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
 			this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
@@ -540,27 +440,22 @@ export default class Glitch {
 			this.text = this.txt;
 			this.textWidth = Math.round((this.ctxBuffer.measureText(this.text)).width);
 			this.width = this.textWidth + this.biggestRange;
+
+			this.ui.canvasBuffer.width = this.width;
+			this.ui.canvasBuffer.height = this.height;
 		}
 
-		if (this.ui.canvas) {
-			this.ui.canvas.height = this.height;
-			if (this.ui.canvasBuffer) this.ui.canvasBuffer.height = this.height;
-			// this.ui.canvasAlphaBuffer.height = this.width;
-			// this.ui.canvasAlphaBuffer.style.height = this.height * 2; // retina
+		this.ui.canvas.width = this.width;
+		this.ui.canvas.height = this.height;
 
-			this.ui.canvas.width = this.width;
-			if (this.ui.canvasBuffer) this.ui.canvasBuffer.width = this.width;
-			// this.ui.canvasAlphaBuffer.width = this.width;
-			// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
-
-			if (this.obj.type === 'intro') {
-				TweenMax.set(this.ui.canvas, {width: this.width / 2});
-				TweenMax.set(this.ui.canvas, {height: this.height / 2});
-			}
-
-			this.ctx.font = this.font;
-			if (this.ctxBuffer) this.ctxBuffer.font = this.font;
+		if (this.obj.type === 'intro') {
+			TweenMax.set(this.ui.canvas, {width: this.width / 2}); // retina display
+			TweenMax.set(this.ui.canvas, {height: this.height / 2});
 		}
+
+		this.ctx.font = this.font;
+		if (this.ctxBuffer) this.ctxBuffer.font = this.font;
+
 
 	}
 

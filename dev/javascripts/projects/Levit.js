@@ -192,7 +192,7 @@ export default class Levit extends ProjectView {
 		this.intersection = intersectsAst.length > 0 ? intersectsAst[ 0 ] : null;
 
 		if ( this.toggle > 0.02 && this.intersection !== null) {
-			this.ui.body.style.cursor = 'pointer';
+			document.body.style.cursor = 'pointer';
 			this.hoverAst = true;
 			this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
 			const el = this.asteroids[intersectsAst[0].object.index];

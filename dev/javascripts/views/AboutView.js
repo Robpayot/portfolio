@@ -1,10 +1,9 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian, getIndex, clamp, round } from '../helpers/utils';
+import {toRadian, getIndex } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import PreloadManager from '../managers/PreloadManager';
 import { Device } from '../helpers/Device';
-import Ui from '../components/Ui';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 
@@ -18,7 +17,7 @@ import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
 
 
-import dat from 'dat-gui';
+// import dat from 'dat-gui';
 
 export default class AboutView extends AbstractView {
 
@@ -31,7 +30,6 @@ export default class AboutView extends AbstractView {
 
 		this.el = this.ui.webGl;
 		this.gravity = obj.gravity;
-		this.UI = Ui.ui; // Global UI selector
 		this.name = 'about';
 		this.isControls = false;
 
@@ -401,9 +399,9 @@ export default class AboutView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
 		let html  = template(data);
 
-		this.UI.content.className = '';
-		this.UI.content.classList.add('ui-content', 'is-about');
-		this.UI.content.innerHTML = html;
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-about');
+		this.ui.uiContent.innerHTML = html;
 
 	}
 
@@ -550,9 +548,8 @@ export default class AboutView extends AbstractView {
 
 		global.CURSOR.interractLeave();
 
-		const tl = new TimelineMax();
-		// tl.set(el, {clearProps: 'paddingLeft'});
 		TweenMax.killTweensOf(line);
+		const tl = new TimelineMax();
 
 		tl.to(line, 0.7, { width: 0, ease: window.Expo.easeOut }, 0);
 		tl.to(el, 0.7, { paddingLeft: 0, ease: window.Expo.easeOut }, 0);
@@ -611,7 +608,6 @@ export default class AboutView extends AbstractView {
 	onLeaveWork(e) {
 		const el = e.currentTarget;
 		const index = getIndex(el);
-		console.log(index);
 
 		this.hoverLink = false;
 		global.CURSOR.interractLeave();
@@ -645,12 +641,8 @@ export default class AboutView extends AbstractView {
 
 	raf() {
 
-		// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
-		// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
-
 		if ( this.clickAnim === true) {
 			this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
-			// this.clickAnim = false;
 		} else {
 			// Raycaster
 			if ( this.mouseMoved ) {
@@ -662,20 +654,10 @@ export default class AboutView extends AbstractView {
 				if ( intersects.length > 0 ) {
 					this.currentPos = intersects[ 0 ].point;
 					this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
-					// if ( this.clickAnim === true) {
-					// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPosLastX, this.currentPos.z );
-					// } else {
-					// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
-					// }
 
-				}
-				else {
-					// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
 				}
 
 				this.mouseMoved = false;
-			} else {
-				// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
 			}
 		}
 
@@ -684,28 +666,6 @@ export default class AboutView extends AbstractView {
 
 		// Get compute output in custom uniform
 		this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable ).texture;
-		// this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
-		// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
-
-		// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-		// this.waterMesh.position.y -= 0.0014;
-
-		// // deceleration
-		// if (this.cameraMove === false && this.isControls === false) {
-
-		// 	// Specify target we want
-		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
-
-		// 	// Smooth it with deceleration
-		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
-
-		// 	// Apply rotation
-		// 	this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-		// 	this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
-
-		// }
 
 		this.render();
 
@@ -717,10 +677,6 @@ export default class AboutView extends AbstractView {
 		this.el.classList.add('about');
 		this.el.classList.remove('project');
 		this.el.classList.remove('intro');
-		// set ui
-		// this.UI.intro.style.display = 'block';
-
-		// Ui.el.style.display = 'block';
 
 		const tl = new TimelineMax();
 		tl.fromTo('.overlay', 1, {

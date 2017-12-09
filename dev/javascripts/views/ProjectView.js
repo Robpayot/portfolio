@@ -8,7 +8,6 @@ import bean from 'bean';
 import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
-import Ui from '../components/Ui';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import Glitch from '../components/Glitch';
@@ -37,7 +36,6 @@ export default class ProjectView extends AbstractView {
 
 		// properties
 		this.el = this.ui.webGl;
-		this.UI = Ui.ui; // Global UI selector
 		this.id = obj.id;
 		this.data = obj.data;
 		this.bkg = obj.bkg;
@@ -342,10 +340,10 @@ export default class ProjectView extends AbstractView {
 		// Context + gallery arrows
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'));
 		html  = template(data);
-		this.UI.content.className = '';
-		this.UI.content.classList.add('ui-content', 'is-project');
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-project');
 
-		this.UI.content.innerHTML = html;
+		this.ui.uiContent.innerHTML = html;
 
 	}
 
@@ -681,17 +679,8 @@ export default class ProjectView extends AbstractView {
 
 
 		if (this.contentOpen === true) {
-			// this.topContentTargetY -= e.deltaY * 0.01;
 			// need profil for each browser
 			this.scrollY -= e.deltaY * 0.2;
-
-			// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
-			// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
-			// }
-
-			// if (this.scrollY < 0) {
-			// 	this.scrollY = this.scrollYSmooth = 0;
-			// }
 
 
 			for (let i = 1; i < this.ui.imgs.length; i++) {
@@ -746,15 +735,10 @@ export default class ProjectView extends AbstractView {
 		} else {
 			if (this.stopScrollZ === true) return false;
 
-			console.log(e.deltaY);
 			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
 				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
 			}
 
-			// console.log(this.scrollZSmooth);
-			// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
-			// console.log(this.camera.position.z);
-			// TweenMax.set(this.ui.container, { y: -this.scrollY});
 		}
 
 
@@ -1097,17 +1081,6 @@ export default class ProjectView extends AbstractView {
 
 			this.hrefChanged = true;
 
-			// tl.to(this.camera.position, 2, {z : start, ease: window.Power2.easeIn});
-
-			// tl.to('.overlay', 0.5, {
-			// 	opacity: 1
-			// }, 1.7);
-			// tl.add(() => {
-			// 	this.animating = false;
-
-			// 	// TweenMax.killAll(); // venere
-			// 	EmitterManager.emit('view:transition:out');
-			// });
 		} else {
 			// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
 			tl.to('.overlay', 0.5, {
@@ -1126,7 +1099,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	reset() {
-		console.log('reset');
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
@@ -1159,7 +1131,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	destroy() {
-		console.log('destroy ?');
 		// ScrollManager.off();
 		super.destroy();
 	}
