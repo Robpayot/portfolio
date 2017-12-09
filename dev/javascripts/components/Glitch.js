@@ -9,207 +9,6 @@ export default class Glitch {
 
 	constructor(obj) {
 
-		// test cursor
-
-		// const circle1 = document.querySelector('.circle1');
-		// const circle2 = document.querySelector('.circle2');
-
-		// let viewportOffset = circle1.getBoundingClientRect();
-		// // these are relative to the viewport, i.e. the window
-		// let top = viewportOffset.top;
-		// let left = viewportOffset.left;
-		// console.log(viewportOffset);
-		// let marge = 20;
-
-		// let minPointX = viewportOffset.left - viewportOffset.width / 2;
-		// let maxPointX = viewportOffset.left + viewportOffset.width;
-		// let minPointY = viewportOffset.top - viewportOffset.height / 2;
-		// let maxPointY = viewportOffset.top + viewportOffset.height;
-
-		// const svg = document.querySelector('.cursor');
-		// const svgCircle = svg.querySelectorAll('circle');
-		// const c1 = svgCircle[0];
-		// const c2 = svgCircle[1];
-		// this.circleObj = {val : 15.9};
-		// this.cursorTarget = { x: 0, y: 0};
-		// this.cursorSmooth = { x: 0, y: 0};
-
-		// document.addEventListener('mousemove', (e) => {
-		// 	const eventX = e.clientX || e.touches && e.touches[0].clientX || 0;
-		// 	const eventY = e.clientY || e.touches && e.touches[0].clientY || 0;
-
-		// 	if (this.hasDelay === true) {
-		// 		// Specify target we want
-		// 		// à faire dans un raf
-		// 		this.cursorTarget.x = eventX;
-		// 		this.cursorTarget.y = eventY;
-
-		// 		if (this.cursorTarget.x === this.cursorSmooth.x && this.cursorTarget.y === this.cursorSmooth.y) {
-		// 			this.hasDelay = false;
-		// 			console.log('delay false !!!')
-		// 		}
-
-		// 		// Smooth it with deceleration
-		// 		this.cursorSmooth.x += (this.cursorTarget.x - this.cursorSmooth.x) * 0.08;
-		// 		this.cursorSmooth.y += (this.cursorTarget.y - this.cursorSmooth.y) * 0.08;
-
-		// 		svg.style.left = this.cursorSmooth.x;
-		// 		svg.style.top = this.cursorSmooth.y;
-
-				
-				
-		// 	} else {
-
-		// 		if (this.stopFollow !== true) {
-		// 			svg.style.left = this.cursorSmooth.x = eventX;
-		// 			svg.style.top = this.cursorSmooth.y = eventY;
-		// 		}
-
-				
-		// 	}
-
-
-		// 	if (eventX + marge > minPointX && eventX < maxPointX + marge && eventY + marge > minPointY && eventY < maxPointY + marge) {
-		// 		if (svg.classList.contains('is-hover') === false) {
-		// 			svg.classList.add('is-hover');
-		// 			// this.hasDelay = true;
-		// 			this.stopFollow = true;
-		// 			TweenMax.to(svg, 0.5, {left: viewportOffset.left + viewportOffset.width / 2, top: viewportOffset.top + viewportOffset.height / 2});
-		// 			TweenMax.to(this.cursorSmooth, 0.5, {x: viewportOffset.left + viewportOffset.width / 2, y: viewportOffset.top + viewportOffset.height / 2});
-		// 			TweenMax.to(this.circleObj, 0.8, { val: 50, onUpdate:() => {
-		// 				console.log(this.circleObj.val);
-		// 				c1.setAttribute('r', this.circleObj.val);
-		// 				c2.setAttribute('r', this.circleObj.val);
-		// 			}});
-		// 			TweenMax.to(circle1, 0.5, {borderWidth: 0});
-		// 		}
-		// 	} else {
-		// 		if (svg.classList.contains('is-hover') === true) {
-		// 			svg.classList.remove('is-hover');
-		// 			this.stopFollow = false;
-		// 			this.hasDelay = true;
-		// 			// TweenMax.to(svg, 0.5, {left: eventX, top: eventY});
-		// 			TweenMax.to(this.circleObj, 0.8, { val: 15.9, onUpdate:() => {
-		// 				c1.setAttribute('r', this.circleObj.val);
-		// 				c2.setAttribute('r', this.circleObj.val);
-
-		// 				// this.hasDelay = false;
-		// 			}});
-		// 			TweenMax.to(circle1, 0.5, {borderWidth: 1});
-		// 		}
-		// 	}
-
-		// });
-
-		// test icon menu
-
-		// const svg = document.querySelectorAll('.test-svg');
-		// const maxDash = 635;
-		// let anim = false;
-		// let hover = false;
-		// svg.forEach((el) => {
-
-		// 	el.addEventListener('mouseover', () => {
-
-
-		// 		if (hover === true) return false;
-		// 		if (anim === true) return false;
-		// 		console.log('hover');
-		// 		anim = true;
-		// 		hover = true;
-		// 		const tl = new TimelineMax();
-		// 		if (el.classList.contains('is-close')) {
-
-		// 			tl.to('.close-up', 1, {strokeDashoffset: -maxDash * 2, ease: window.Power4.easeInOut}, 0 );
-		// 			tl.to('.close-down', 1.2, {strokeDashoffset: maxDash * 3 + 205, ease: window.Power4.easeInOut}, 0.1);
-		// 			tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 			tl.add(()=> {
-		// 				anim = false;
-		// 			});
-		// 		} else if (el.classList.contains('is-open')) {
-		// 			tl.to('.open-up', 1, {strokeDashoffset: maxDash * 2, ease: window.Power4.easeInOut}, 0 );
-		// 			tl.to('.open-down', 1.2, {strokeDashoffset: -maxDash - 205, ease: window.Power4.easeInOut}, 0.1);
-		// 			tl.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 			tl.add(()=> {
-		// 				anim = false;
-		// 			});
-		// 		} else if (el.classList.contains('is-live')) {
-
-		// 			tl.to('.close-down-2', 0.8, {strokeDashoffset: maxDash * 3 - 100, ease: window.Expo.easeInOut }, 0);
-		// 			tl.to('.close-down', 0.9, {strokeDashoffset: maxDash * 2 - 180, ease: window.Expo.easeInOut }, 0.1);
-		// 			tl.to('.close-up', 1, {strokeDashoffset: -maxDash * 3 - 205, ease: window.Expo.easeInOut }, 0.2);
-		// 			tl.set(['.close-up','.close-down','.close-down-2','.open-up','.open-down'], {clearProps: 'all'});
-		// 			tl.add(()=> {
-		// 				anim = false;
-		// 			});
-
-		// 		} else if (el.classList.contains('is-down')) {
-
-		// 			tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeInOut }, 0);
-		// 			tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeInOut }, 0.1);
-		// 			tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
-		// 			tl.add(()=> {
-		// 				anim = false;
-		// 			});
-		// 		} else if (el.classList.contains('is-up')) {
-
-		// 			tl.to('.up-1', 1.2, {strokeDashoffset: '292%', ease: window.Expo.easeInOut }, 0);
-		// 			tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeInOut }, 0.1);
-		// 			tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
-		// 			tl.add(()=> {
-		// 				anim = false;
-		// 			});
-		// 		}
-
-		// 	});
-
-		// 	el.addEventListener('mouseleave', () => {
-		// 		console.log('leave');
-		// 		hover = false;
-		// 		TweenMax.set(['.close-up','.close-down','.close-down-2','.open-down', '.down-1', '.down-2', '.up-1', '.up-2'], {clearProps: 'all'});
-		// 	});
-
-		// 	el.addEventListener('click', () => {
-
-		// 		if (anim === true) return false;
-		// 		console.log('click');
-		// 		anim = true;
-		// 		const tl = new TimelineMax();
-
-		// 		if (el.classList.contains('is-close')) {
-
-		// 			tl.to('.close-up', 0.5, {strokeDashoffset: -maxDash, ease: window.Expo.easeInOut });
-		// 			tl.to('.close-down', 0.75, {strokeDashoffset: maxDash * 3, ease: window.Expo.easeInOut }, 0);
-		// 			tl.to('.open-down', 0.75, {strokeDashoffset: maxDash * 3 - 205, ease: window.Expo.easeInOut}, 0.1 );
-		// 			tl.to('.open-up', 0.5, {strokeDashoffset: 0, ease: window.Expo.easeInOut}, 0.45);
-		// 			tl.add(()=> {
-		// 				el.classList.add('is-open');
-		// 				el.classList.remove('is-close');
-		// 				TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 				anim = false;
-		// 			});
-
-		// 		} else {
-
-		// 			tl.to('.open-up', 0.4, {strokeDashoffset: maxDash, ease: window.Expo.easeInOut });
-		// 			tl.to('.open-down', 0.65, {strokeDashoffset: -maxDash, ease: window.Expo.easeInOut }, 0);
-		// 			tl.to('.close-up', 0.65, {strokeDashoffset: maxDash * 2, ease: window.Expo.easeInOut}, 0.1 );
-		// 			tl.to('.close-down', 0.9, {strokeDashoffset: -maxDash + 205, ease: window.Expo.easeInOut}, 0.1);
-		// 			tl.add(()=> {
-		// 				el.classList.remove('is-open');
-		// 				el.classList.add('is-close');
-		// 				TweenMax.set(['.close-up','.close-down','.open-up','.open-down'], {clearProps: 'all'});
-		// 				anim = false;
-		// 			});
-		// 		}
-
-
-		// 	});
-
-		// });
-
-		// return false;
-
 		// Load data
 		this.obj = obj;
 		this.el = obj.el;
@@ -230,6 +29,8 @@ export default class Glitch {
 		if (this.debug !== true) {
 			this.start();
 		} else {
+
+			// DEBUG ONLY
 			// Preloader
 			this.preloadCb = PreloadManager.on('complete', this.start, this, true);
 
@@ -241,8 +42,6 @@ export default class Glitch {
 			}
 
 			let base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-			console.log(`${base}/templates/glitch.hbs`, Handlebars);
 
 
 			PreloadManager.loadManifest([
@@ -264,8 +63,6 @@ export default class Glitch {
 		EmitterManager[onListener]('resize', this.resizeHandler);
 		EmitterManager[onListener]('raf', this.render);
 
-
-
 	}
 
 	start() {
@@ -273,7 +70,6 @@ export default class Glitch {
 		if (this.debug === true) {
 			let template = Handlebars.compile(PreloadManager.getResult('template-glitch'));
 			let html  = template();
-			// console.log(html);
 
 			this.el.innerHTML = html;
 		}
@@ -287,25 +83,18 @@ export default class Glitch {
 			canvasBuffer: this.el.querySelector('.glitch__canvas-buffer'),
 			canvasAlphaBuffer: this.el.querySelector('.glitch__canvas-alpha-buffer'),
 		};
-		// From Nathan Gordon (y)
-		// //Create a canvas that is to become our reference image
-		// const baseCanvas = document.createElement('canvas');
-		// baseCanvas.width = 600;
-		// baseCanvas.height = 200;
-		// const basectx = baseCanvas.getctx('2d');
+
 		this.textHeight = this.textSize; // need a real calcul
 		this.last = 0;
 
 		if (this.obj.type === 'intro') {
 			this.introTxt = PreloadManager.getResult('introTxt');
-			this.width = clamp(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy a lot
+			this.width = clamp(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy
 			this.height = this.width * this.introTxt.height / this.introTxt.width;
 
 			// Image size
 			this.introTxt.width = this.width;
-			console.log(this.introTxt.width);
 			this.introTxt.height = this.height;
-			console.log(this.introTxt.width);
 		} else {
 			this.ui.img = PreloadManager.getResult('glitchTex');
 		}
@@ -319,9 +108,9 @@ export default class Glitch {
 
 		this.video = document.createElement('video');
 		this.video.id = 'video2';
-		this.video.src = 'videos/glitch-text3.mp4';
-		this.video.autoplay = true;
-		this.video.loop = true;
+		this.video.src = 'videos/destr-reverse.mp4';
+		// this.video.autoplay = true;
+		// this.video.loop = true;
 		this.video.muted = true;
 		this.video.pause();
 		this.el.appendChild(this.video);
@@ -396,9 +185,6 @@ export default class Glitch {
 
 	render() {
 
-		// console.log('render');
-
-
 		this.phase += this.phaseStep;
 
 		const frequency = getRandom(3.2, 4);
@@ -412,26 +198,8 @@ export default class Glitch {
 		// clear temp context
 		this.ctx.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
-		switch (this.channel) {
-			case 0:
-				this.renderChannels();
-				break;
-			case 1:
-				this.renderChannels();
-				break;
-			case 2:
-				this.renderChannels();
-				break;
-		}
+		this.renderChannels();
 
-
-		// if (calm === true) {
-		// 	this.renderScanline();
-		// 	if (Math.floor(Math.random() * 2) > 1) {
-		// 		this.renderScanline();
-		// 		// renders a second scanline 50% of the time
-		// 	}
-		// }
 	}
 
 
@@ -442,24 +210,6 @@ export default class Glitch {
 		// let margeStart = this.textWidth * 0.2;
 		let startClip = (this.width - this.textWidth) / 2 ;
 
-		// const arr = [{
-		// 	channel:[{
-		// 		margeX: getRandom(350, 400),
-		// 		posX: getRandom(30, 80), // 50
-		// 		posY: getRandom(-10, -30),
-		// 		width: 0
-		// 	}, {
-		// 		margeX: getRandom(350, 450),
-		// 		posX: getRandom(0, -20), // 50
-		// 		posY: getRandom(0, 20),
-		// 		width: 0
-		// 	}, {
-		// 		margeX: getRandom(350, 400),
-		// 		posX: getRandom(30, 80), // 50
-		// 		posY: getRandom(-10, -30),
-		// 		width: 0
-		// 	}]
-		// }];
 
 		if (this.stop === true) {
 
@@ -470,9 +220,6 @@ export default class Glitch {
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 			this.ctxBuffer.fillStyle = this.color;
-			// this.ctxBuffer.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
-			// this.ctxBuffer.putImageData(this.imageAlpha, (this.width - this.textWidth) / 2, top, 0, 0, this.textWidth + 30, this.height);
-			// this.ctxBuffer.globalCompositeOperation = 'destination-atop';
 			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
 			// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
 
@@ -706,6 +453,7 @@ export default class Glitch {
 		} else {
 			this.breakTime = false;
 		}
+
 
 
 	}
