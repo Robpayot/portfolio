@@ -496,7 +496,8 @@ body {
 
 .webGl {
   position: relative;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+  display: none; }
   .webGl .css-container {
     font-size: 28px;
     -webkit-user-select: none;
@@ -577,59 +578,65 @@ body {
     .jauge .frequencies .low .circle {
       background-color: Steelblue; }
 
-.glitch {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
+body {
+  font-family: Lato;
+  margin: 0; }
+
+.container {
   width: 100%;
-  height: 100%;
-  z-index: 900;
+  height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center; }
+
+.canvas {
+  z-index: 9000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); }
+
+.canvas-alpha-buffer {
+  display: none; }
+
+.github {
+  position: absolute;
+  bottom: 10vh;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
   text-align: center;
-  font-family: 'Theinhardt';
-  background-color: white; }
-  .glitch__canvas {
-    box-sizing: border-box;
-    text-align: center;
-    z-index: 9000;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    border: 1px solid red; }
-    .glitch__canvas-buffer {
-      display: none; }
-    .glitch__canvas-alpha-buffer {
-      display: none; }
-  .glitch__img {
-    height: 100px;
-    width: auto; }
-  .glitch img {
-    display: none; }
-  .project__title .glitch {
-    background: none;
-    opacity: 0; }
-    .project__title .glitch__canvas {
-      height: 450px;
-      top: 3%; }
+  width: 100%; }
 
-@-webkit-keyframes rainbow {
-  0% {
-    background-position: 0% 82%; }
-  50% {
-    background-position: 100% 19%; }
-  100% {
-    background-position: 0% 82%; } }
+.github__content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  text-transform: uppercase; }
 
-@keyframes rainbow {
-  0% {
-    background-position: 0% 82%; }
-  50% {
-    background-position: 100% 19%; }
-  100% {
-    background-position: 0% 82%; } }
+.github svg {
+  width: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 5px; }
+
+.github a {
+  color: inherit; }
+
+.github span:last-child {
+  text-transform: none; }
 
 .cursor {
   position: relative;
