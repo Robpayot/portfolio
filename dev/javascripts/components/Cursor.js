@@ -115,13 +115,14 @@ export default class Cursor {
 		if (obj.color !== undefined) {
 			this.c2.style.stroke = obj.color;
 			this.hoverGoTo = true;
+			this.currentEl = obj.el;
 			// remplie
 			if (obj.small !== true) {
 				TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone,
 					onComplete:() => {
 						if (this.hoverGoTo = true) {
-							RouterManager.currentPage.goTo(null, obj.el);
-							window.location.href = obj.el.href;
+							RouterManager.currentPage.goTo(null, this.currentEl);
+							window.location.href = this.currentEl.href;
 						}
 					}
 				});
@@ -178,6 +179,7 @@ export default class Cursor {
 	interractLeave(obj = {}) {
 		if (this.hoverGlobal === false) return false;
 		this.hoverGlobal = false;
+		this.currentEl = null;
 		// console.log('leave');
 		// remplie
 
