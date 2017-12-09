@@ -27,7 +27,7 @@ export default class Stars extends ProjectView {
 
 		this.setTerrain();
 
-		console.log('Stars view', CanvasTexture);
+		console.log('Stars view');
 
 	}
 
@@ -82,23 +82,9 @@ export default class Stars extends ProjectView {
 			scale:  { value: new Vector2( 0.7, 0.7 ) },
 			offset: { value: new Vector2( 0, 0 ) }
 
-		}; /// HeightMap noise ????
-
-		// All uniforms for this normal map
-
-		// TEXTURES
-
-		// Gestion of texture for Grass, ground, terrain/ combi normal map
-
-		// Dont know what it is. It does nothing
-		// let specularMap = new WebGLRenderTarget( 10, 2048, pars );
-		// specularMap.texture.generateMipmaps = false;
-
-		// specularMap.texture.wrapS = specularMap.texture.wrapT = RepeatWrapping;
+		};
 
 		// TERRAIN SHADER
-
-		// A lot is here....
 
 		const terrainShader = TerrainShader[ 'terrain' ];
 
@@ -285,9 +271,6 @@ export default class Stars extends ProjectView {
 			// { x: 0, y: -30, z: 0 }
 		];
 
-		// Check Ambient Light
-		// scene.add( new THREE.AmbientLight( 0x00020 ) );
-
 		for (let i = 0; i < paramsLight.length; i++) {
 
 			const d = paramsLight[i].d || 100;
@@ -299,8 +282,6 @@ export default class Stars extends ProjectView {
 			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
 			pointLight.range = 60;
 			pointLight.offset = -40;
-			// pointLight.power = 20;
-			// pointLight.visible = true;
 
 			// add to the scene
 			this.scene.add(pointLight);
@@ -308,12 +289,11 @@ export default class Stars extends ProjectView {
 				this.lights.push(pointLight);
 			}
 		}
+
+
 		let light = new DirectionalLight( 0xBF1812, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
-		// let light2 = new DirectionalLight( 0xffffff, 1 );
-		// light2.position.set( 1, 0, 0 );
-		// this.scene.add( light2 );
 
 		// test
 
@@ -321,8 +301,8 @@ export default class Stars extends ProjectView {
 
 		const material = new MeshBasicMaterial({color: 0x00FFFFF});
 
-		this.test = new Points(geometry, material);
-		// this.scene.add(this.test);
+		this.movingLight = new Points(geometry, material);
+		// this.scene.add(this.movingLight);
 
 
 	}
@@ -385,8 +365,8 @@ export default class Stars extends ProjectView {
 				this.quadTarget.material = this.mlib[ 'heightmap' ];
 				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.test.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
-				// this.test.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+				this.movingLight.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
+				// this.movingLight.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 			}
 

@@ -207,8 +207,6 @@ export default class Menu {
 
 	update(view, index) {
 
-		console.log(view);
-
 		this.ui.links.forEach((el) => {
 			el.classList.remove('is-active');
 		});

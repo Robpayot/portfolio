@@ -18,8 +18,6 @@ export default class Levit extends ProjectView {
 		this.nbAst = 10;
 		this.toggle = 0;
 
-		console.log(global.MODELS);
-
 		this.models = global.MODELS;
 		this.init();
 
@@ -66,13 +64,6 @@ export default class Levit extends ProjectView {
 
 			pos = posFixed[i];
 
-			// //  force impulsion
-			// const force = {
-			// 	x: getRandom(-10, 10),
-			// 	y: getRandom(-10, 10),
-			// 	z: getRandom(-10, 10)
-			// };
-
 			const scale = getRandom(0.025, 0.035);
 			const speed = getRandom(0.5,0.72);
 			const range = getRandom(3, 8);
@@ -108,7 +99,6 @@ export default class Levit extends ProjectView {
 			this.scene.add(asteroid.mesh);
 
 		}
-		// super.setAsteroids(this.models[0].geometry);
 
 
 	}
@@ -126,7 +116,7 @@ export default class Levit extends ProjectView {
 		// 	// { x: 0, y: -30, z: 0 }
 		// ];
 
-		// // Check Ambient Light
+		// // Test Ambient Light
 		// // scene.add( new THREE.AmbientLight( 0x00020 ) );
 
 		// for (let i = 0; i < paramsLight.length; i++) {
@@ -144,38 +134,11 @@ export default class Levit extends ProjectView {
 		// 	// add to the scene
 		// 	this.scene.add(pointLight);
 		// }
+
 		let light = new DirectionalLight( 0x125714, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
-		// let light2 = new DirectionalLight( 0xffffff, 1 );
-		// light2.position.set( 1, 0, 0 );
-		// this.scene.add( light2 );
-		// white spotlight shining from the side, casting a shadow
 
-		// const spotLight = new SpotLight(0xffffff);
-		// spotLight.position.set(0, 0, -100);
-		// spotLight.angle = toRadian(180);
-
-		// spotLight.castShadow = false;
-
-		// spotLight.shadow.mapSize.width = 1024;
-		// spotLight.shadow.mapSize.height = 1024;
-
-		// spotLight.shadow.camera.near = 500;
-		// spotLight.shadow.camera.far = 4;
-		// spotLight.shadow.camera.fov = 120;
-
-		// this.scene.add(spotLight);
-
-		// let directionalLight = new DirectionalLight(0xffffff, 0.7);
-		// directionalLight.position.set(-1, 0, 0);
-		// // directionalLight.rotation.set(toRadian(90), toRadian(90), toRadian(90));
-		// // this.scene.add(directionalLight);
-
-		// directionalLight = new DirectionalLight(0xffffff, 0.7);
-		// directionalLight.position.set(0, 1, 1);
-		// // directionalLight.rotation.set(toRadian(90), toRadian(90), toRadian(90));
-		// this.scene.add(directionalLight);
 	}
 
 	onChangeAst() {
@@ -221,7 +184,6 @@ export default class Levit extends ProjectView {
 			// Move top and bottom --> Levit effect
 			// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
 			this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin( this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * (this.asteroids[i].range / 2) + this.asteroids[i].range / 2;
-			// this.asteroids[i].mesh.rotation.x = toRadian(Math.sin(this.clock.getElapsedTime() * 400) * this.asteroids[i].rotateRangeX ); // -30 to 30 deg rotation
 			this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateZ + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].timeRotate + this.asteroids[i].offset) * this.asteroids[i].rotateRangeZ ) * this.asteroids[i].dir; // -30 to 30 deg rotation
 		}
 

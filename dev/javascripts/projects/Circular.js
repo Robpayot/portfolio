@@ -1,6 +1,5 @@
 import ProjectView from '../views/ProjectView';
-import PreloadManager from '../managers/PreloadManager';
-import { getRandom, toRadian, clamp, round, toDegree } from '../helpers/utils';
+import { getRandom, toRadian } from '../helpers/utils';
 
 // THREE JS
 import { Mesh, Group, PlaneGeometry, DirectionalLight, MeshLambertMaterial, PointLight, Object3D } from 'three';
@@ -20,7 +19,7 @@ export default class Circular extends ProjectView {
 		this.init();
 
 
-		console.log('Blob view');
+		console.log('Circular view');
 
 	}
 
@@ -63,13 +62,6 @@ export default class Circular extends ProjectView {
 				palm.position.x = 0;
 				palm.position.y = radius - pivotY;
 
-				// create point
-				// const geometryp = new Geometry();
-				// geometryp.vertices.push(
-				// 	new Vector3( 0, 0, 0 )
-				// );
-
-				// const pivotPalm = new Points(geometryp, material);
 				const pivotPalm = new Object3D();
 				pivotPalm.position.y = -pivotY;
 
@@ -101,7 +93,6 @@ export default class Circular extends ProjectView {
 				pivotPalm.add(palm);
 
 				asteroid.add(pivotPalm);
-				// this.pivotPalm.push(pivotPalm);
 
 			}
 
@@ -122,40 +113,38 @@ export default class Circular extends ProjectView {
 
 	setLight() {
 
-		// this.envelop.visible = false;
 
-		let paramsLight = [
-			// { x: 70, y: 70, z: 0 },
-			// { x: -100, y: 0, z: 0 },
-			// { x: 100, y: 0, z: 0 },
-			// { x: 0, y: 0, z: 170 },
-			// { x: 0, y: -0, z: 0 },
-			// { x: 0, y: 20, z: -100, l: 480 },
-		];
+		// let paramsLight = [
+		// 	// { x: 70, y: 70, z: 0 },
+		// 	// { x: -100, y: 0, z: 0 },
+		// 	// { x: 100, y: 0, z: 0 },
+		// 	// { x: 0, y: 0, z: 170 },
+		// 	// { x: 0, y: -0, z: 0 },
+		// 	// { x: 0, y: 20, z: -100, l: 480 },
+		// ];
 
-		// Check Ambient Light
+		// Test Ambient Light
 		// scene.add( new THREE.AmbientLight( 0x00020 ) );
 
-		for (let i = 0; i < paramsLight.length; i++) {
+		// for (let i = 0; i < paramsLight.length; i++) {
 
-			const l = paramsLight[i].l || 480;
+		// 	const l = paramsLight[i].l || 480;
 
-			// create a point light
-			let pointLight = new PointLight(0xFFFFFF, 0.8, l, 2);
-			// set its position
-			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			// pointLight.power = 20;
-			pointLight.visible = true;
+		// 	// create a point light
+		// 	let pointLight = new PointLight(0xFFFFFF, 0.8, l, 2);
+		// 	// set its position
+		// 	pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
+		// 	// pointLight.power = 20;
+		// 	pointLight.visible = true;
 
-			// add to the scene
-			this.scene.add(pointLight);
-		}
+		// 	// add to the scene
+		// 	this.scene.add(pointLight);
+		// }
+
 		let light = new DirectionalLight( 0xB72ABF, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
-		// let light2 = new DirectionalLight( 0xffffff, 1 );
-		// light2.position.set( 1, 0, 0 );
-		// this.scene.add( light2 );
+
 	}
 
 	raf() {
@@ -167,8 +156,6 @@ export default class Circular extends ProjectView {
 
 		this.groupAst.rotation.y = toRadian(this.camRotSmooth.y * 50);
 		this.groupAst.rotation.x = toRadian(this.camRotSmooth.x * 50);
-
-		// this.groupAst.rotateOnAxis(new Vector3(0,1,0),toRadian(this.camRotSmooth.y * 1));
 
 		super.raf();
 
