@@ -65,12 +65,10 @@ var _AppManager2 = _interopRequireDefault(_AppManager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import PreloadManager from './managers/PreloadManager';
-
 global.MENU;
-
-// console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; color: #FFF');
-
+global.OVERLAY;
+global.MODELS;
+global.SKYTEX;
 global.PROD = false;
 global.BASE = '';
 global.SCROLLED = false;
@@ -143,7 +141,6 @@ var Cursor = function () {
 
 		// bind
 		this.onMouseMove = this.onMouseMove.bind(this);
-		this.render = this.render.bind(this);
 		this.interractHover = this.interractHover.bind(this);
 		this.interractLeave = this.interractLeave.bind(this);
 
@@ -154,19 +151,6 @@ var Cursor = function () {
 		this.c2 = this.svgCircle[1];
 		this.next = this.wrapper.querySelector('.cursor__next');
 		this.prev = this.wrapper.querySelector('.cursor__prev');
-		console.log(this.next);
-
-		// let viewportOffset = circle1.getBoundingClientRect();
-		// // these are relative to the viewport, i.e. the window
-		// let top = viewportOffset.top;
-		// let left = viewportOffset.left;
-		// console.log(viewportOffset);
-		// let marge = 20;
-
-		// let minPointX = viewportOffset.left - viewportOffset.width / 2;
-		// let maxPointX = viewportOffset.left + viewportOffset.width;
-		// let minPointY = viewportOffset.top - viewportOffset.height / 2;
-		// let maxPointY = viewportOffset.top + viewportOffset.height;
 
 		this.circleObj = { val: 15.9 };
 		this.mouse = {};
@@ -174,7 +158,6 @@ var Cursor = function () {
 		this.cursorSmooth = { x: 0, y: 0 };
 
 		_EmitterManager2.default.on('mousemove', this.onMouseMove);
-		// EmitterManager.on('raf', this.render);
 	}
 
 	_createClass(Cursor, [{
@@ -187,51 +170,6 @@ var Cursor = function () {
 			TweenMax.set(this.wrapper, { top: y });
 		}
 	}, {
-		key: 'render',
-		value: function render() {
-
-			// no need
-			// if (this.hasDelay === true) {
-
-			// 	// Specify target we want
-			// 	// à faire dans un raf
-			// 	this.cursorTarget.x = this.mouse.x;
-			// 	this.cursorTarget.y = this.mouse.y;
-
-			// 	// Smooth it with deceleration
-			// 	if (this.cursorTarget.x !== undefined && this.cursorTarget.y !== undefined) {
-			// 		this.cursorSmooth.x += (this.cursorTarget.x - this.cursorSmooth.x) * 0.3;
-			// 		this.cursorSmooth.y += (this.cursorTarget.y - this.cursorSmooth.y) * 0.3;
-			// 	}
-
-
-			// 	this.cursorSmooth.x = this.mouse.x;
-			// 	this.cursorSmooth.y = this.mouse.y;
-			// 	// TweenMax.set(this.el, {left: Math.round(this.cursorSmooth.x)});
-			// 	// TweenMax.set(this.el, {top: Math.round(this.cursorSmooth.y)});
-
-
-			// 	if (this.cursorTarget.x === Math.round(this.cursorSmooth.x) && this.cursorTarget.y === Math.round(this.cursorSmooth.y)) {
-			// 		if (this.isHover !== true) {
-			// 			this.hasDelay = false;
-			// 		}
-
-			// 	}
-
-			// } else {
-			// 	if (this.stopFollow !== true) {
-			// 		// this.el.style.left = this.cursorSmooth.x = this.mouse.x; // not working on FF
-			// 		// this.el.style.top = this.cursorSmooth.y = this.mouse.y; // not working on FF
-			// 		this.cursorSmooth.x = this.mouse.x;
-			// 		this.cursorSmooth.y = this.mouse.y;
-			// 		// TweenMax.set(this.el, {left: this.cursorSmooth.x});
-			// 		// TweenMax.set(this.el, {top: this.cursorSmooth.y});
-			// 		console.log('ok', this.el.style.left, this.mouse.x);
-			// 	}
-			// }
-
-		}
-	}, {
 		key: 'interractHover',
 		value: function interractHover() {
 			var _this = this;
@@ -241,8 +179,6 @@ var Cursor = function () {
 
 			if (this.hoverGlobal === true) return false;
 			this.hoverGlobal = true;
-
-			// console.log('hover');
 
 			var maxVal = obj.small === true ? 35 : 49;
 
@@ -370,6 +306,7 @@ var Cursor = function () {
 exports.default = Cursor;
 
 },{"../managers/EmitterManager":12,"../managers/RouterManager":14}],5:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -430,15 +367,7 @@ var Glitch = function () {
 			// Preloader
 			this.preloadCb = _PreloadManager2.default.on('complete', this.start, this, true);
 
-			var prod = void 0;
-
-			if (window.location.host === 'robpayot.github.io') {
-				prod = true;
-			}
-
-			var base = prod === true ? 'https://robpayot.github.io/xp-son/dist' : '';
-
-			_PreloadManager2.default.loadManifest([{ id: 'template-glitch', src: base + '/templates/glitch.hbs' }]);
+			_PreloadManager2.default.loadManifest([{ id: 'template-glitch', src: global.BASE + '/templates/glitch.hbs' }]);
 
 			_PreloadManager2.default.load();
 		}
@@ -480,19 +409,11 @@ var Glitch = function () {
 
 			if (this.obj.type === 'intro') {
 				this.introTxt = _PreloadManager2.default.getResult('introTxt');
-				this.width = (0, _utils.clamp)(window.innerWidth * 0.31, 200, 600); // Higher than 600 its getting laggy
-				this.height = this.width * this.introTxt.height / this.introTxt.width;
-
-				// Image size
-				this.introTxt.width = this.width;
-				this.introTxt.height = this.height;
 			} else {
 				this.ui.img = _PreloadManager2.default.getResult('glitchTex');
 			}
 
 			this.init();
-
-			// console.log(PreloadManager.getResult('svg'));
 		}
 	}, {
 		key: 'setAlphaVideo',
@@ -515,7 +436,10 @@ var Glitch = function () {
 			if (this.ui.canvasBuffer) this.ctxBuffer = this.ui.canvasBuffer.getContext('2d');
 			if (this.ui.canvasAlphaBuffer) this.ctxAlphaBuffer = this.ui.canvasAlphaBuffer.getContext('2d');
 
-			this.initOptions();
+			this.channel = 0; // 0 = red, 1 = green, 2 = blue
+			this.phase = 5.0;
+			this.phaseStep = 0.2; //determines how often we will change channel and amplitude
+
 			// set up alpha video
 			this.setAlphaVideo();
 			this.resizeHandler();
@@ -529,51 +453,6 @@ var Glitch = function () {
 			}
 		}
 	}, {
-		key: 'initOptions',
-		value: function initOptions() {
-
-			// const gui = new dat.GUI(),
-			// 	current = gui.addFolder('Current'),
-			// 	controls = gui.addFolder('Controls');
-
-
-			this.fps = 60;
-
-			this.channel = 0; // 0 = red, 1 = green, 2 = blue
-			this.compOp = 'lighter'; // CompositeOperation = lighter || darker || xor
-			this.phase = 5.0;
-			this.phaseStep = 0.2; //determines how often we will change channel and amplitude
-			this.amplitude = 0.0;
-			this.amplitudeBase = 2; //2.0;
-			this.amplitudeRange = 3; // 2.0;
-			this.alphaMin = 0.8;
-
-			this.glitchAmplitude = 20.0;
-			this.glitchThreshold = 0.9;
-			this.scanlineBase = 40;
-			this.scanlineRange = 40;
-			this.scanlineShift = 15;
-
-			// current.add(this, 'channel', 0, 2).listen();
-			// current.add(this, 'phase', 0, 1).listen();
-			// current.add(this, 'amplitude', 0, 5).listen();
-			// // comment out below to hide ability to change text string
-			// // var text = controls.add(this, 'text');
-			// // text.onChange((function (){
-			// // 	this.textWidth = (this.ctx.measureText(this.text)).width;
-			// // }).bind(this));
-			// // comment out above to hide ability to change text string
-			// controls.add(this, 'fps', 1, 60);
-			// controls.add(this, 'phaseStep', 0, 1);
-			// controls.add(this, 'alphaMin', 0, 1);
-			// controls.add(this, 'amplitudeBase', 0, 5);
-			// controls.add(this, 'amplitudeRange', 0, 5);
-			// controls.add(this, 'glitchAmplitude', 0, 100);
-			// controls.add(this, 'glitchThreshold', 0, 1);
-			// controls.open();
-			// gui.close(); // start the control panel cloased
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 
@@ -585,7 +464,6 @@ var Glitch = function () {
 				// time for each channel
 				this.phase = 0.0;
 				this.channel = this.channel === 2 ? 0 : this.channel + 1;
-				this.amplitude = this.amplitudeBase + this.amplitudeRange * Math.random();
 			}
 
 			// clear temp context
@@ -599,20 +477,18 @@ var Glitch = function () {
 
 			var top = 0; // top of image
 			var centerY = this.height / 2 + this.textHeight / 2;
-			// let margeStart = this.textWidth * 0.2;
 			var startClip = (this.width - this.textWidth) / 2;
 
 			if (this.stop === true) {
-
-				if (this.obj.type === 'intro') return false;
 				// DEFAULT value
+				if (this.obj.type === 'intro') return false;
+
 				// Just text and image alpha mask, no glitch
 				// this.ctxBuffer.save();
 				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 				this.ctxBuffer.fillStyle = this.color;
 				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
-				// this.ctxBuffer.fillStyle = 'rgba(255, 0, 0, 0.1)';
 
 				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
 
@@ -620,10 +496,7 @@ var Glitch = function () {
 			}
 
 			if (this.ctxAlphaBuffer && this.obj.type === 'intro') {
-				// alpha video
-				// this.ctxAlphaBuffer.save();
-				// this.ctxAlphaBuffer.clearRect(0, 0, this.videoWidth, this.videoHeight);
-				this.ctxAlphaBuffer.beginPath();
+				// Alpha video effect
 
 				this.ctxAlphaBuffer.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight);
 				this.imageAlpha = this.ctxAlphaBuffer.getImageData(0, 0, this.videoWidth, this.videoHeight / 2); // --> top part of video
@@ -638,21 +511,11 @@ var Glitch = function () {
 				}
 				// this.ctxAlphaBuffer.restore();
 
-				// Txt as an image --> Better perf
-				// this.ctx.save();
-				// this.ctx.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height); // Need to clear react before each New COMP
-				this.ctx.beginPath(); // avoid Drop fps
 
-				// this.ctx.fillStyle = this.color;
-				// this.ctx.drawImage(this.imageAlpha, (this.width - this.textWidth) / 2, top, this.textWidth + 30, this.height);
 				this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
 				this.ctx.globalCompositeOperation = 'source-in';
 
-				// old
-				// this.ctx.font = this.ctx.font = this.font;
-				// this.ctx.fillText(this.text, (this.width - this.textWidth) / 2, centerY - 30); // First Text
 				this.ctx.drawImage(this.introTxt, 0, 0, this.width, this.height);
-				// this.ctx.restore();
 
 				return false;
 			}
@@ -667,12 +530,8 @@ var Glitch = function () {
 
 
 			this.margeX2 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX2);
-			// this.posX2 =  this.randomTimed(x2, x2, this.);
-			// this.posY2 =  this.randomTimed(0, 0, this.);
 			this.width2 = this.randomTimed(this.textWidth * 0.6, this.textWidth * 0.25, this.width2);
 			this.width22 = this.randomTimed(this.textWidth * 0.4, this.textWidth * 0.25, this.width22);
-			// this.posX22 =  this.randomTimed(x2, x2, this.);
-			// this.posY22 =  this.randomTimed(0, 0, this.);
 
 			this.margeX3 = this.randomTimed(-this.textWidth * 0.2, -this.textWidth * 0.3, this.margeX3);
 			this.posX3 = this.randomTimed(30, -30, this.posX3);
@@ -724,7 +583,6 @@ var Glitch = function () {
 			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0);
 
 			// Draw Second Comp
-			// DEFAULT
 			// Normal Text, center white, with image
 			this.ctxBuffer.save();
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
@@ -869,31 +727,8 @@ var Glitch = function () {
 			};
 		}
 	}, {
-		key: 'renderScanline',
-		value: function renderScanline() {
-
-			var y = this.height * Math.random() >> 0,
-			    o = this.ctx.getImageData(0, y, this.width, 1),
-			    d = o.data,
-			    i = d.length,
-			    s = this.scanlineBase + this.scanlineRange * Math.random() >> 0,
-			    x = -this.scanlineShift + this.scanlineShift * 2 * Math.random() >> 0;
-
-			while (i-- > 0) {
-				d[i] += s;
-			}
-
-			this.ctx.putImageData(o, x, y);
-
-			// var imgData = this.ctx.getImageData(10,10,500,500);
-			// this.ctx.putImageData(imgData,10,70);
-		}
-	}, {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
-
-			// return false;
-			//this.height = window.innerHeight;
 
 			if (this.obj.type === 'intro') {
 				// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
@@ -901,11 +736,9 @@ var Glitch = function () {
 				this.width = (0, _utils.clamp)(window.innerWidth * 0.31, 200, 600) * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
 				this.height = this.width * this.introTxt.height / this.introTxt.width; // retina;
 
-
 				// Image size
-				// this.introTxt.width = this.width * 4;
-				// console.log(this.introTxt.width);
-				// this.introTxt.height = this.height * 2;
+				this.introTxt.width = this.width;
+				this.introTxt.height = this.height;
 
 				// Video size
 				this.videoWidth = this.width;
@@ -928,27 +761,21 @@ var Glitch = function () {
 				this.text = this.txt;
 				this.textWidth = Math.round(this.ctxBuffer.measureText(this.text).width);
 				this.width = this.textWidth + this.biggestRange;
+
+				this.ui.canvasBuffer.width = this.width;
+				this.ui.canvasBuffer.height = this.height;
 			}
 
-			if (this.ui.canvas) {
-				this.ui.canvas.height = this.height;
-				if (this.ui.canvasBuffer) this.ui.canvasBuffer.height = this.height;
-				// this.ui.canvasAlphaBuffer.height = this.width;
-				// this.ui.canvasAlphaBuffer.style.height = this.height * 2; // retina
+			this.ui.canvas.width = this.width;
+			this.ui.canvas.height = this.height;
 
-				this.ui.canvas.width = this.width;
-				if (this.ui.canvasBuffer) this.ui.canvasBuffer.width = this.width;
-				// this.ui.canvasAlphaBuffer.width = this.width;
-				// this.ui.canvasAlphaBuffer.style.width = this.width * 2; // retina
-
-				if (this.obj.type === 'intro') {
-					TweenMax.set(this.ui.canvas, { width: this.width / 2 });
-					TweenMax.set(this.ui.canvas, { height: this.height / 2 });
-				}
-
-				this.ctx.font = this.font;
-				if (this.ctxBuffer) this.ctxBuffer.font = this.font;
+			if (this.obj.type === 'intro') {
+				TweenMax.set(this.ui.canvas, { width: this.width / 2 }); // retina display
+				TweenMax.set(this.ui.canvas, { height: this.height / 2 });
 			}
+
+			this.ctx.font = this.font;
+			if (this.ctxBuffer) this.ctxBuffer.font = this.font;
 		}
 	}, {
 		key: 'isHover',
@@ -962,6 +789,8 @@ var Glitch = function () {
 }();
 
 exports.default = Glitch;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"dat-gui":55,"handlebars":88}],6:[function(require,module,exports){
 (function (global){
@@ -1022,7 +851,6 @@ var Menu = function () {
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.update = this.update.bind(this);
-		this.goTo = this.goTo.bind(this);
 
 		this.events(true);
 	}
@@ -1030,16 +858,9 @@ var Menu = function () {
 	_createClass(Menu, [{
 		key: 'events',
 		value: function events(method) {
-			var _this = this;
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			// let onListener = method === false ? 'off' : 'on';
-
-			// EmitterManager[onListener]('resize', this.resizeHandler);
-			this.ui.links.forEach(function (el) {
-
-				el[evListener]('click', _this.goTo);
-			});
 
 			this.ui.button[evListener]('click', this.toggleOpen);
 			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
@@ -1053,28 +874,17 @@ var Menu = function () {
 				this.ui.subLinksTitles[_i][evListener]('mouseenter', this.onHoverLink);
 				this.ui.subLinksTitles[_i][evListener]('mouseleave', this.onLeaveLink);
 			}
-			// svg.addEventListener('mouseleave', () => {
-			// 	console.log('leave');
-			// 	hover = false;
-			// });
 		}
 	}, {
 		key: 'toggleOpen',
 		value: function toggleOpen() {
-			var _this2 = this;
+			var _this = this;
 
 			var close = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
 			if (close === true) {
 
-				// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
-				// this.el.classList.remove('is-open');
-				// global.CURSOR.el.classList.remove('menu-open');
-				// this.ui.buttonSvg.classList.remove('is-open');
-				// this.ui.buttonSvg.classList.add('is-close');
-				// this.animBtn = false;
-				// this.animClicked = false;
 				TweenMax.killTweensOf(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down']);
 				this.el.classList.remove('is-open');
 				global.CURSOR.el.classList.remove('menu-open');
@@ -1086,11 +896,11 @@ var Menu = function () {
 				tl.to('.menu__button .close-up', 0.65, { strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut }, 0.1);
 				tl.to('.menu__button .close-down', 0.9, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut }, 0.3);
 				tl.add(function () {
-					_this2.ui.buttonSvg.classList.remove('is-open');
-					_this2.ui.buttonSvg.classList.add('is-close');
+					_this.ui.buttonSvg.classList.remove('is-open');
+					_this.ui.buttonSvg.classList.add('is-close');
 					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
-					_this2.animBtn = false;
-					_this2.animClicked = false;
+					_this.animBtn = false;
+					_this.animClicked = false;
 				});
 				return false;
 			}
@@ -1116,11 +926,11 @@ var Menu = function () {
 				_tl.to('.menu__button .close-up', 0.65, { strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut }, 0.1);
 				_tl.to('.menu__button .close-down', 0.9, { strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut }, 0.3);
 				_tl.add(function () {
-					_this2.ui.buttonSvg.classList.remove('is-open');
-					_this2.ui.buttonSvg.classList.add('is-close');
+					_this.ui.buttonSvg.classList.remove('is-open');
+					_this.ui.buttonSvg.classList.add('is-close');
 					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
-					_this2.animBtn = false;
-					_this2.animClicked = false;
+					_this.animBtn = false;
+					_this.animClicked = false;
 				});
 			} else {
 
@@ -1142,11 +952,11 @@ var Menu = function () {
 				_tl2.to('.menu__button .open-down', 0.65, { strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.1);
 				_tl2.to('.menu__button .open-up', 0.9, { strokeDashoffset: 0, ease: window.Expo.easeOut }, 0.3);
 				_tl2.add(function () {
-					_this2.ui.buttonSvg.classList.add('is-open');
-					_this2.ui.buttonSvg.classList.remove('is-close');
+					_this.ui.buttonSvg.classList.add('is-open');
+					_this.ui.buttonSvg.classList.remove('is-close');
 					TweenMax.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
-					_this2.animBtn = false;
-					_this2.animClicked = false;
+					_this.animBtn = false;
+					_this.animClicked = false;
 				});
 
 				TweenMax.to('.navigate', 1, { y: 20, ease: window.Expo.easeOut });
@@ -1175,7 +985,7 @@ var Menu = function () {
 	}, {
 		key: 'onHoverBtn',
 		value: function onHoverBtn(e) {
-			var _this3 = this;
+			var _this2 = this;
 
 			if (this.hoverBtn === true) return false;
 			global.CURSOR.interractHover();
@@ -1195,7 +1005,7 @@ var Menu = function () {
 				tl.to('.menu__button .close-down', 1.2, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut }, 0);
 				tl.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 				tl.add(function () {
-					_this3.animBtn = false;
+					_this2.animBtn = false;
 				});
 
 				tl.fromTo('.navigate', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 0);
@@ -1205,7 +1015,7 @@ var Menu = function () {
 				tl.to('.menu__button .open-down', 1.2, { strokeDashoffset: -this.maxDash - 205, ease: window.Expo.easeOut }, 0);
 				tl.set(['.menu__button .close-up', '.menu__button .close-down', '.menu__button .open-up', '.menu__button .open-down'], { clearProps: 'all' });
 				tl.add(function () {
-					_this3.animBtn = false;
+					_this2.animBtn = false;
 				});
 			}
 		}
@@ -1259,19 +1069,6 @@ var Menu = function () {
 					break;
 			}
 		}
-	}, {
-		key: 'goTo',
-		value: function goTo(e) {
-			// const el = e.currentTarget;
-
-			// switch (getIndex(el)) {
-			// 	case 0:
-			// 		EmitterManager.emit('router:switch', '/intro', 0);
-			// 		EmitterManager.emit('view:transition:out');
-			// 		break;
-			// }
-
-		}
 	}]);
 
 	return Menu;
@@ -1287,35 +1084,35 @@ exports.default = Menu;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Ui = function Ui() {
-	_classCallCheck(this, Ui);
-
-	this.el = document.querySelector('.ui');
-
-	this.ui = {
-		intro: this.el.querySelector('.ui-intro'),
-		content: this.el.querySelector('.ui-content')
-	};
-};
-
-exports.default = new Ui();
-
-},{}],8:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
 var Device = exports.Device = {
 	size: 'mobile',
 	touch: false,
 	browser: null
 };
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
+'use strict';
+
+var _handlebars = require('handlebars');
+
+var _handlebars2 = _interopRequireDefault(_handlebars);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_handlebars2.default.registerHelper('math', function (lvalue, operator, rvalue, options) {
+	lvalue = parseFloat(lvalue);
+	rvalue = parseFloat(rvalue);
+
+	return {
+		'+': lvalue + rvalue,
+		'-': lvalue - rvalue,
+		'*': lvalue * rvalue,
+		'/': lvalue / rvalue,
+		'%': lvalue % rvalue
+	}[operator];
+});
+
+},{"handlebars":88}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1505,13 +1302,11 @@ var _bean = require('bean');
 
 var _bean2 = _interopRequireDefault(_bean);
 
-var _handlebars = require('handlebars');
-
-var _handlebars2 = _interopRequireDefault(_handlebars);
-
 var _PreloadManager = require('./PreloadManager');
 
 var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
+
+require('../helpers/handlebarsRegister');
 
 var _utilsThree = require('../helpers/utils-three');
 
@@ -1520,9 +1315,6 @@ var _three = require('three');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-global.OVERLAY;
-global.MODELS;
 
 var AppManager = function () {
 	function AppManager() {
@@ -1538,7 +1330,6 @@ var AppManager = function () {
 	_createClass(AppManager, [{
 		key: 'preload',
 		value: function preload() {
-			var _this = this;
 
 			this.startLoad = 0;
 			this.maxDash = 635;
@@ -1555,112 +1346,107 @@ var AppManager = function () {
 			tl2.to('.preload__txt', 1, { opacity: 1 });
 			tl2.to('.preload__txt', 1, { opacity: 0 });
 
+			this.preloadModels();
+		}
+	}, {
+		key: 'preloadModels',
+		value: function preloadModels() {
+			var _this = this;
+
 			// First preload Three.js models
 			Promise.all([(0, _utilsThree.loadJSON)('datas/models/triangle.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y6.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
+
 				global.MODELS = results;
-
-				// Preload all assets
-				_PreloadManager2.default.loadManifest([
-				// template hbs
-				{ id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-project-prev', src: global.BASE + '/templates/projectPrev.hbs' }, { id: 'tpl-project-next', src: global.BASE + '/templates/projectNext.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }, { id: 'tpl-intro-content', src: global.BASE + '/templates/introContent.hbs' },
-				// textures
-				{ id: 'introTxt', src: global.BASE + '/images/textures/name.png' }, { id: 'glitchTex', src: global.BASE + '/images/textures/glitch-1.png' }, { id: 'skyTex', src: global.BASE + '/images/textures/intro2_up.jpg' }]);
-				// SkyTex
-				global.skyTex = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
-
-				// Preload all img projects
-				for (var i = 0; i < _data2.default.projects.length; i++) {
-
-					for (var y = 0; y < _data2.default.projects[i].imgs.length; y++) {
-						_PreloadManager2.default.loadFile(global.BASE + '/images/projects/' + _data2.default.projects[i].imgs[y]);
-					}
-				}
-
-				_PreloadManager2.default.on('progress', function (e) {
-
-					// console.log(e.progress);
-					var percent = e.progress * 100 + '%';
-					TweenMax.to('.preload__bar', 0.2, { width: percent });
-
-					if (_this.startLoad === 0) {
-						_this.startLoad = 1;
-					}
-				});
-				// TweenMax.set('.preload', {display: 'none'});
-
-				_PreloadManager2.default.on('complete', function () {
-					console.log('complete');
-					_this.start();
-					_PreloadManager2.default.off('progress');
-					var tl = new TimelineMax();
-					tl.to('.preload', 1, { autoAlpha: 0 }, 2);
-					tl.add(function () {
-
-						TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
-					});
-				}, _this, true);
+				_this.preloadTextures();
 			});
+		}
+	}, {
+		key: 'preloadTextures',
+		value: function preloadTextures() {
+			var _this2 = this;
+
+			// Preload all assets
+			_PreloadManager2.default.loadManifest([
+			// template hbs
+			{ id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-project-prev', src: global.BASE + '/templates/projectPrev.hbs' }, { id: 'tpl-project-next', src: global.BASE + '/templates/projectNext.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }, { id: 'tpl-intro-content', src: global.BASE + '/templates/introContent.hbs' },
+			// textures
+			{ id: 'introTxt', src: global.BASE + '/images/textures/name.png' }, { id: 'glitchTex', src: global.BASE + '/images/textures/glitch-1.png' }, { id: 'skyTex', src: global.BASE + '/images/textures/intro2_up.jpg' }]);
+
+			// SkyTex
+			global.SKYTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
+
+			// Preload all img projects
+			for (var i = 0; i < _data2.default.projects.length; i++) {
+
+				for (var y = 0; y < _data2.default.projects[i].imgs.length; y++) {
+					_PreloadManager2.default.loadFile(global.BASE + '/images/projects/' + _data2.default.projects[i].imgs[y]);
+				}
+			}
+
+			_PreloadManager2.default.on('progress', function (e) {
+
+				// console.log(e.progress);
+				var percent = e.progress * 100 + '%';
+				TweenMax.to('.preload__bar', 0.2, { width: percent });
+
+				if (_this2.startLoad === 0) {
+					_this2.startLoad = 1;
+				}
+			});
+			// TweenMax.set('.preload', {display: 'none'});
+
+			_PreloadManager2.default.on('complete', function () {
+				_this2.start();
+				_PreloadManager2.default.off('progress');
+				var tl = new TimelineMax();
+				tl.to('.preload', 1, { autoAlpha: 0 }, 2);
+				tl.add(function () {
+
+					TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
+				});
+			}, this, true);
 		}
 	}, {
 		key: 'start',
 		value: function start() {
-			console.log('start');
 
 			this.events(true);
 
-			// HandlebarRegisters
-			_handlebars2.default.registerHelper('math', function (lvalue, operator, rvalue, options) {
-				lvalue = parseFloat(lvalue);
-				rvalue = parseFloat(rvalue);
+			global.MENU = new _Menu2.default();
+			global.CURSOR = new _Cursor2.default();
 
-				return {
-					'+': lvalue + rvalue,
-					'-': lvalue - rvalue,
-					'*': lvalue * rvalue,
-					'/': lvalue / rvalue,
-					'%': lvalue % rvalue
-				}[operator];
-			});
-
-			// SoundManager
-
-			// this.graphicBars = new GraphicBars();
-			this.menu = global.MENU = new _Menu2.default();
-			this.cursor = global.CURSOR = new _Cursor2.default();
-
-			// Set up scene
-			_SceneManager2.default.start(); // scene already set up ?
+			// Set up Three.js scene
+			_SceneManager2.default.start();
 
 			this.ui = {
 				preloadSymbol: document.querySelector('.preload__symbol'),
 				xp: document.querySelector('.xp'),
 				webGl: document.querySelector('.webGl'),
 				overlay: document.querySelector('.overlay'),
-				body: document.getElementsByTagName('body')[0] // not sure needed
+				uiContent: document.querySelector('.ui-content')
 			};
 
 			global.OVERLAY = this.ui.overlay;
 
-			_RouterManager2.default.start(); // start
+			_RouterManager2.default.start(); // Init Router and views
 		}
 	}, {
 		key: 'events',
 		value: function events(method) {
 
-			this.resizeHandler();
+			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
+			var onListener = method === false ? 'off' : 'on';
 
-			var listen = method === false ? 'removeEventListener' : 'addEventListener';
-
+			// Global events
 			// raf
-			TweenMax.ticker[listen]('tick', this.raf);
+			TweenMax.ticker[evListener]('tick', this.raf);
 			if (_Device.Device.touch === false) {
-				// move camera
-				document[listen]('mousemove', this.onMouseMove, false);
+				document[evListener]('mousemove', this.onMouseMove, false);
 			}
 
-			listen = method === false ? 'off' : 'on';
+			_bean2.default[onListener](window, 'resize', this.resizeHandler);
 
-			_bean2.default[listen](window, 'resize', this.resizeHandler);
+			this.resizeHandler(); // resize once
 		}
 	}, {
 		key: 'raf',
@@ -1680,16 +1466,15 @@ var AppManager = function () {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
 
-			var touch = document.querySelector('html').classList.contains('touchevents');
+			var touch = document.documentElement.classList.contains('touchevents');
 			_Device.Device.touch = touch;
 
-			// // Device.browser = Detect.browser();
+			// Device.browser = Detect.browser();
 
-			// // if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {
+			// if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {
 
-			// //     document.body.classList.add('ie');
-			// // }
-
+			//     document.body.classList.add('ie');
+			// }
 
 			_Device.Device.size = 'mobile';
 
@@ -1712,7 +1497,7 @@ exports.default = new AppManager();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Cursor":4,"../components/Menu":6,"../helpers/Device":8,"../helpers/utils-three":9,"./EmitterManager":12,"./PreloadManager":13,"./RouterManager":14,"./SceneManager":15,"bean":50,"handlebars":88,"three":169}],12:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Cursor":4,"../components/Menu":6,"../helpers/Device":7,"../helpers/handlebarsRegister":8,"../helpers/utils-three":9,"./EmitterManager":12,"./PreloadManager":13,"./RouterManager":14,"./SceneManager":15,"bean":50,"three":169}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2085,9 +1870,8 @@ var SceneManager = function () {
 	_createClass(SceneManager, [{
 		key: 'start',
 		value: function start() {
-			// Set unique Renderer
 
-			// if (/\/#intro/.test(window.location.href) === true) return false;
+			// Set unique Renderer
 
 			this.xp = document.querySelector('.xp');
 
@@ -2126,9 +1910,8 @@ var SceneManager = function () {
 
 			// Render different scene throught opts. (ex: render scene Project 1 if opts.scene come from Project 1 etc...)
 			if (opts.composer !== undefined && opts.postProc === true) {
+
 				// Render scene composer
-				// console.log('comp');
-				// opts.composer.render(opts.scene, opts.camera);
 				var delta = this.clock.getDelta();
 				opts.composer.render(delta);
 			} else {
@@ -2590,7 +2373,7 @@ var Blob = function (_ProjectView) {
 			this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
 
 			if (this.toggle > 0.02 && this.intersection !== null) {
-				this.ui.body.style.cursor = 'pointer';
+				document.body.style.cursor = 'pointer';
 				this.hoverAst = true;
 				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
 				var el = this.asteroids[intersectsAst[0].object.index];
@@ -3056,7 +2839,7 @@ var Levit = function (_ProjectView) {
 			this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
 
 			if (this.toggle > 0.02 && this.intersection !== null) {
-				this.ui.body.style.cursor = 'pointer';
+				document.body.style.cursor = 'pointer';
 				this.hoverAst = true;
 				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
 				var el = this.asteroids[intersectsAst[0].object.index];
@@ -8290,10 +8073,6 @@ var _PreloadManager2 = _interopRequireDefault(_PreloadManager);
 
 var _Device = require('../helpers/Device');
 
-var _Ui = require('../components/Ui');
-
-var _Ui2 = _interopRequireDefault(_Ui);
-
 var _handlebars = require('handlebars');
 
 var _handlebars2 = _interopRequireDefault(_handlebars);
@@ -8324,10 +8103,6 @@ var _WaterVertexShader = require('../shaders/WaterVertexShader');
 
 var _WaterVertexShader2 = _interopRequireDefault(_WaterVertexShader);
 
-var _datGui = require('dat-gui');
-
-var _datGui2 = _interopRequireDefault(_datGui);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8337,6 +8112,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 
+
+// import dat from 'dat-gui';
 
 var AboutView = function (_AbstractView) {
 	_inherits(AboutView, _AbstractView);
@@ -8351,7 +8128,6 @@ var AboutView = function (_AbstractView) {
 
 		_this.el = _this.ui.webGl;
 		_this.gravity = obj.gravity;
-		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.name = 'about';
 		_this.isControls = false;
 
@@ -8725,9 +8501,9 @@ var AboutView = function (_AbstractView) {
 			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-about-content'));
 			var html = template(data);
 
-			this.UI.content.className = '';
-			this.UI.content.classList.add('ui-content', 'is-about');
-			this.UI.content.innerHTML = html;
+			this.ui.uiContent.className = '';
+			this.ui.uiContent.classList.add('ui-content', 'is-about');
+			this.ui.uiContent.innerHTML = html;
 		}
 	}, {
 		key: 'valuesChanger',
@@ -8918,9 +8694,8 @@ var AboutView = function (_AbstractView) {
 
 			global.CURSOR.interractLeave();
 
-			var tl = new TimelineMax();
-			// tl.set(el, {clearProps: 'paddingLeft'});
 			TweenMax.killTweensOf(line);
+			var tl = new TimelineMax();
 
 			tl.to(line, 0.7, { width: 0, ease: window.Expo.easeOut }, 0);
 			tl.to(el, 0.7, { paddingLeft: 0, ease: window.Expo.easeOut }, 0);
@@ -8981,7 +8756,6 @@ var AboutView = function (_AbstractView) {
 		value: function onLeaveWork(e) {
 			var el = e.currentTarget;
 			var index = (0, _utils.getIndex)(el);
-			console.log(index);
 
 			this.hoverLink = false;
 			global.CURSOR.interractLeave();
@@ -9018,12 +8792,8 @@ var AboutView = function (_AbstractView) {
 		key: 'raf',
 		value: function raf() {
 
-			// let pointX = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.x : Math.sin(this.clock.getElapsedTime() * 7 ) * (this.BOUNDS - this.BOUNDSSUP) / 4;
-			// let pointZ = this.onAsteroidAnim === true ? this.currentAstClicked.mesh.position.z : -(this.BOUNDS - this.BOUNDSSUP) / 2;
-
 			if (this.clickAnim === true) {
 				this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
-				// this.clickAnim = false;
 			} else {
 				// Raycaster
 				if (this.mouseMoved) {
@@ -9035,18 +8805,9 @@ var AboutView = function (_AbstractView) {
 					if (intersects.length > 0) {
 						this.currentPos = intersects[0].point;
 						this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
-						// if ( this.clickAnim === true) {
-						// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPosLastX, this.currentPos.z );
-						// } else {
-						// 	this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
-						// }
-					} else {
-							// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
-						}
+					}
 
 					this.mouseMoved = false;
-				} else {
-					// if (this.heightmapVariable.material.mousePos) this.heightmapVariable.material.mousePos.value.set( 10000, 10000 );
 				}
 			}
 
@@ -9055,28 +8816,6 @@ var AboutView = function (_AbstractView) {
 
 			// Get compute output in custom uniform
 			this.waterUniforms.heightmap.value = this.gpuCompute.getCurrentRenderTarget(this.heightmapVariable).texture;
-			// this.waterUniforms.heightmap.value = this.heightmapVariable.initialValueTexture; // get aperçu of init HeightMap stade 1
-			// this.waterUniforms.heightmap.value = this.heightmapVariable.renderTargets[1];  --> equivalent to gpu value
-
-			// issue of heightmap y increase, because of waves, dont know why, try to compense the gpuCompute but the value is exponentiel
-			// this.waterMesh.position.y -= 0.0014;
-
-			// // deceleration
-			// if (this.cameraMove === false && this.isControls === false) {
-
-			// 	// Specify target we want
-			// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-			// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
-
-			// 	// Smooth it with deceleration
-			// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-			// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
-
-			// 	// Apply rotation
-			// 	this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-			// 	this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
-
-			// }
 
 			this.render();
 		}
@@ -9088,10 +8827,6 @@ var AboutView = function (_AbstractView) {
 			this.el.classList.add('about');
 			this.el.classList.remove('project');
 			this.el.classList.remove('intro');
-			// set ui
-			// this.UI.intro.style.display = 'block';
-
-			// Ui.el.style.display = 'block';
 
 			var tl = new TimelineMax();
 			tl.fromTo('.overlay', 1, {
@@ -9249,7 +8984,7 @@ exports.default = AboutView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/HeightmapFragmentShader":26,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":41,"../vendors/SimplexNoise":43,"./AbstractView":47,"dat-gui":55,"handlebars":88,"three":169}],47:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/HeightmapFragmentShader":26,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":41,"../vendors/SimplexNoise":43,"./AbstractView":47,"handlebars":88,"three":169}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9280,14 +9015,10 @@ var AbstractView = function () {
 	function AbstractView() {
 		_classCallCheck(this, AbstractView);
 
-		this.ui = _AppManager2.default.ui;
-		console.log(this.ui);
+		this.ui = _AppManager2.default.ui; // global ui for each view
 
 		this.clock = _SceneManager2.default.clock; // time
 		this.postProc = false;
-
-		// console.log('abstract viewww');
-		// clean menu
 	}
 
 	_createClass(AbstractView, [{
@@ -9303,7 +9034,6 @@ var AbstractView = function () {
 		value: function setCamera() {
 			var fov = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 45;
 
-			console.log('set camera abs');
 
 			this.camera = new _three.PerspectiveCamera(fov, // fov
 			window.innerWidth / window.innerHeight, // aspect
@@ -9314,13 +9044,11 @@ var AbstractView = function () {
 	}, {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
-			console.log('resizeeee');
 
-			// this.width = window.innerWidth * window.devicePixelRatio;
-			// this.height = window.innerHeight * window.devicePixelRatio;
 			this.width = window.innerWidth;
 			this.height = window.innerHeight;
 
+			// Resize Scene
 			_SceneManager2.default.resizeHandler({
 				camera: this.camera,
 				cssScene: this.cssScene
@@ -9330,7 +9058,7 @@ var AbstractView = function () {
 		key: 'render',
 		value: function render() {
 
-			// Render Scenes
+			// Render Scene
 			_SceneManager2.default.render({
 				camera: this.camera,
 				scene: this.scene,
@@ -9471,10 +9199,8 @@ var AbstractView = function () {
 				this.cssObjects = [];
 			}
 
-			// Wait destroy scene before stop js events
-			// setTimeout(() => {
+			// Wait destroy scene before stop js events ?
 			this.events(false);
-			// }, 500);
 		}
 	}]);
 
@@ -9512,10 +9238,6 @@ var _Asteroid = require('../shapes/Asteroid');
 var _Asteroid2 = _interopRequireDefault(_Asteroid);
 
 var _Device = require('../helpers/Device');
-
-var _Ui = require('../components/Ui');
-
-var _Ui2 = _interopRequireDefault(_Ui);
 
 var _Glitch = require('../components/Glitch');
 
@@ -9580,7 +9302,6 @@ var IntroView = function (_AbstractView) {
 
 		_this.el = _this.ui.webGl;
 		_this.gravity = obj.gravity;
-		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.name = 'intro';
 		_this.isControls = false;
 
@@ -9603,12 +9324,10 @@ var IntroView = function (_AbstractView) {
 		_this.init();
 
 		_this.events(true);
-		// this.ui.overlay.classList.add('black');
 
 		_this.transitionIn(!obj.fromUrl);
 
 		// init
-		console.log(_this.ui);
 
 		// this.onClickStart();
 
@@ -9714,9 +9433,9 @@ var IntroView = function (_AbstractView) {
 			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-intro-content'));
 			var html = template(data);
 
-			this.UI.content.className = '';
-			this.UI.content.classList.add('ui-content', 'is-intro');
-			this.UI.content.innerHTML = html;
+			this.ui.uiContent.className = '';
+			this.ui.uiContent.classList.add('ui-content', 'is-intro');
+			this.ui.uiContent.innerHTML = html;
 
 			this.ui.button = document.querySelector('.start');
 			this.ui.overlay = document.querySelector('.intro__overlay');
@@ -9775,7 +9494,7 @@ var IntroView = function (_AbstractView) {
 			});
 
 			// Simple top Plane for Mirror
-			this.skyTex = global.skyTex;
+			this.skyTex = global.SKYTEX;
 
 			this.skyTex.wrapS = this.skyTex.wrapT = _three.RepeatWrapping;
 			this.skyTex.offset.x = 0.5;
@@ -10226,10 +9945,8 @@ var IntroView = function (_AbstractView) {
 			this.el.classList.remove('project');
 			this.el.classList.remove('about');
 			// set ui
-			this.UI.content.style.display = 'block';
+			this.ui.uiContent.style.display = 'block';
 			global.MENU.el.classList.remove('is-active');
-
-			_Ui2.default.el.style.display = 'block';
 
 			if (fromProject === false) {
 				this.glitchEl = document.querySelector('.intro__glitch');
@@ -10348,7 +10065,7 @@ exports.default = IntroView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Glitch":5,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/FFTOceanShader":24,"../shaders/OceanShader":28,"../shaders/ScreenSpaceShader":29,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":88,"p2":136,"three":169}],49:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/FFTOceanShader":24,"../shaders/OceanShader":28,"../shaders/ScreenSpaceShader":29,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":88,"p2":136,"three":169}],49:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -10395,10 +10112,6 @@ var _ScrollManager2 = _interopRequireDefault(_ScrollManager);
 var _RouterManager = require('../managers/RouterManager');
 
 var _RouterManager2 = _interopRequireDefault(_RouterManager);
-
-var _Ui = require('../components/Ui');
-
-var _Ui2 = _interopRequireDefault(_Ui);
 
 var _handlebars = require('handlebars');
 
@@ -10456,7 +10169,6 @@ var ProjectView = function (_AbstractView) {
 		var _this = _possibleConstructorReturn(this, (ProjectView.__proto__ || Object.getPrototypeOf(ProjectView)).call(this));
 
 		_this.el = _this.ui.webGl;
-		_this.UI = _Ui2.default.ui; // Global UI selector
 		_this.id = obj.id;
 		_this.data = obj.data;
 		_this.bkg = obj.bkg;
@@ -10752,10 +10464,10 @@ var ProjectView = function (_AbstractView) {
 			// Context + gallery arrows
 			template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-content'));
 			html = template(data);
-			this.UI.content.className = '';
-			this.UI.content.classList.add('ui-content', 'is-project');
+			this.ui.uiContent.className = '';
+			this.ui.uiContent.classList.add('ui-content', 'is-project');
 
-			this.UI.content.innerHTML = html;
+			this.ui.uiContent.innerHTML = html;
 		}
 	}, {
 		key: 'checkCssContainer',
@@ -11096,18 +10808,8 @@ var ProjectView = function (_AbstractView) {
 			}
 
 			if (this.contentOpen === true) {
-				// this.topContentTargetY -= e.deltaY * 0.01;
 				// need profil for each browser
 				this.scrollY -= e.deltaY * 0.2;
-
-				// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
-				// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
-				// }
-
-				// if (this.scrollY < 0) {
-				// 	this.scrollY = this.scrollYSmooth = 0;
-				// }
-
 
 				for (var i = 1; i < this.ui.imgs.length; i++) {
 
@@ -11157,16 +10859,10 @@ var ProjectView = function (_AbstractView) {
 			} else {
 				if (this.stopScrollZ === true) return false;
 
-				console.log(e.deltaY);
 				if (e.deltaY > 30 || e.deltaY < -30) {
 					///!\ depend of Browsers clamp value. Have to make a real scroll
 					this.scrollZ += (0, _utils.clamp)(e.deltaY * 0.04, -6, 6); //reverse
 				}
-
-				// console.log(this.scrollZSmooth);
-				// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
-				// console.log(this.camera.position.z);
-				// TweenMax.set(this.ui.container, { y: -this.scrollY});
 			}
 		}
 	}, {
@@ -11510,18 +11206,6 @@ var ProjectView = function (_AbstractView) {
 				});
 
 				this.hrefChanged = true;
-
-				// tl.to(this.camera.position, 2, {z : start, ease: window.Power2.easeIn});
-
-				// tl.to('.overlay', 0.5, {
-				// 	opacity: 1
-				// }, 1.7);
-				// tl.add(() => {
-				// 	this.animating = false;
-
-				// 	// TweenMax.killAll(); // venere
-				// 	EmitterManager.emit('view:transition:out');
-				// });
 			} else {
 				// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
 				tl.to('.overlay', 0.5, {
@@ -11539,8 +11223,6 @@ var ProjectView = function (_AbstractView) {
 		key: 'reset',
 		value: function reset() {
 			var _this10 = this;
-
-			console.log('reset');
 
 			this.cameraRotX = true;
 			this.glitch.stop = false;
@@ -11573,7 +11255,6 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'destroy',
 		value: function destroy() {
-			console.log('destroy ?');
 			// ScrollManager.off();
 			_get(ProjectView.prototype.__proto__ || Object.getPrototypeOf(ProjectView.prototype), 'destroy', this).call(this);
 		}
@@ -11586,7 +11267,7 @@ exports.default = ProjectView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":5,"../components/Ui":7,"../helpers/Device":8,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/RouterManager":14,"../managers/SceneManager":15,"../managers/ScrollManager":16,"../postprocessing/FilmPass":17,"../postprocessing/Pass":18,"../shaders/VignetteShader":31,"../vendors/OrbitControls":41,"../vendors/three-camera-dolly-custom":45,"./AbstractView":47,"bean":50,"handlebars":88,"three":169,"three-effectcomposer-es6":163}],50:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/RouterManager":14,"../managers/SceneManager":15,"../managers/ScrollManager":16,"../postprocessing/FilmPass":17,"../postprocessing/Pass":18,"../shaders/VignetteShader":31,"../vendors/OrbitControls":41,"../vendors/three-camera-dolly-custom":45,"./AbstractView":47,"bean":50,"handlebars":88,"three":169,"three-effectcomposer-es6":163}],50:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
