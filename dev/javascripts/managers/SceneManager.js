@@ -7,13 +7,11 @@ class SceneManager {
 	constructor() {
 
 
-
 	}
 
 	start() {
-		// Set unique Renderer
 
-		// if (/\/#intro/.test(window.location.href) === true) return false;
+		// Set unique Renderer
 
 		this.xp = document.querySelector('.xp');
 
@@ -53,9 +51,8 @@ class SceneManager {
 
 		// Render different scene throught opts. (ex: render scene Project 1 if opts.scene come from Project 1 etc...)
 		if (opts.composer !== undefined && opts.postProc === true) {
+
 			// Render scene composer
-			// console.log('comp');
-			// opts.composer.render(opts.scene, opts.camera);
 			let delta = this.clock.getDelta();
 			opts.composer.render(delta);
 		} else {

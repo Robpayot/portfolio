@@ -32,7 +32,6 @@ export default class Menu {
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.update = this.update.bind(this);
-		this.goTo = this.goTo.bind(this);
 
 		this.events(true);
 
@@ -42,12 +41,6 @@ export default class Menu {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		// let onListener = method === false ? 'off' : 'on';
-
-		// EmitterManager[onListener]('resize', this.resizeHandler);
-		this.ui.links.forEach((el) => {
-
-			el[evListener]('click', this.goTo);
-		});
 
 		this.ui.button[evListener]('click', this.toggleOpen);
 		this.ui.button[evListener]('mouseenter', this.onHoverBtn);
@@ -61,23 +54,14 @@ export default class Menu {
 			this.ui.subLinksTitles[i][evListener]('mouseenter', this.onHoverLink);
 			this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 		}
-		// svg.addEventListener('mouseleave', () => {
-		// 	console.log('leave');
-		// 	hover = false;
-		// });
+
 	}
 
 	toggleOpen(close = false) {
 
 		if (close === true) {
 
-			// TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
-			// this.el.classList.remove('is-open');
-			// global.CURSOR.el.classList.remove('menu-open');
-			// this.ui.buttonSvg.classList.remove('is-open');
-			// this.ui.buttonSvg.classList.add('is-close');
-			// this.animBtn = false;
-			// this.animClicked = false;
+
 			TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 			this.el.classList.remove('is-open');
 			global.CURSOR.el.classList.remove('menu-open');
@@ -223,8 +207,6 @@ export default class Menu {
 
 	update(view, index) {
 
-		console.log(view);
-
 		this.ui.links.forEach((el) => {
 			el.classList.remove('is-active');
 		});
@@ -259,15 +241,4 @@ export default class Menu {
 
 	}
 
-	goTo(e) {
-		// const el = e.currentTarget;
-
-		// switch (getIndex(el)) {
-		// 	case 0:
-		// 		EmitterManager.emit('router:switch', '/intro', 0);
-		// 		EmitterManager.emit('view:transition:out');
-		// 		break;
-		// }
-
-	}
 }

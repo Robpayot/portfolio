@@ -5,7 +5,6 @@ import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 // import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
-import Ui from '../components/Ui';
 
 import Glitch from '../components/Glitch';
 import Handlebars from 'handlebars';
@@ -21,10 +20,6 @@ import '../shaders/OceanShader';
 import '../vendors/MirrorRenderer';
 import Ocean from '../vendors/Ocean';
 import p2 from 'p2';
-// import GPUComputationRenderer from '../vendors/GPUComputationRenderer';
-// import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
-// import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
-// import WaterVertexShader from '../shaders/WaterVertexShader';
 
 
 // import dat from 'dat-gui';
@@ -40,7 +35,6 @@ export default class IntroView extends AbstractView {
 
 		this.el = this.ui.webGl;
 		this.gravity = obj.gravity;
-		this.UI = Ui.ui; // Global UI selector
 		this.name = 'intro';
 		this.isControls = false;
 
@@ -64,12 +58,10 @@ export default class IntroView extends AbstractView {
 		this.init();
 
 		this.events(true);
-		// this.ui.overlay.classList.add('black');
 
 		this.transitionIn(!obj.fromUrl);
 
 		// init
-		console.log(this.ui);
 
 		// this.onClickStart();
 
@@ -102,19 +94,12 @@ export default class IntroView extends AbstractView {
 	init() {
 
 		this.setUiContainer();
-		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
 
 		this.sceneMirror = new Scene(); // scene only for reflect of Ocean
 		this.sceneMirror.background = new Color(0x000000);
-
-		this.sceneTest = new Scene(); // scene only for reflect of Ocean
-		this.sceneTest.background = new Color(0x000000);
-
-		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
-		// console.log(clamp(window.devicePixelRatio, 1, 1.5));
 
 		// set Camera
 		this.setCamera();
@@ -179,9 +164,9 @@ export default class IntroView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-intro-content'));
 		let html  = template(data);
 
-		this.UI.content.className = '';
-		this.UI.content.classList.add('ui-content', 'is-intro');
-		this.UI.content.innerHTML = html;
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-intro');
+		this.ui.uiContent.innerHTML = html;
 
 		this.ui.button = document.querySelector('.start');
 		this.ui.overlay = document.querySelector('.intro__overlay');
@@ -217,10 +202,6 @@ export default class IntroView extends AbstractView {
 			this.finalBounds = this.heightCamera;
 		}
 
-		// this.ms_MainDirectionalLight = new DirectionalLight( 0xffffff, 1.5 );
-		// this.ms_MainDirectionalLight.position.set( -0.2, -0.5, 1 );
-		// this.scene.add( this.ms_MainDirectionalLight );
-
 		let gsize = 256; // size of a square which is repeated
 		let res = 256; // 512 :'(
 		let gres = gsize / 2;
@@ -242,7 +223,7 @@ export default class IntroView extends AbstractView {
 		} );
 
 		// Simple top Plane for Mirror
-		this.skyTex = global.skyTex;
+		this.skyTex = global.SKYTEX;
 
 		this.skyTex.wrapS = this.skyTex.wrapT = RepeatWrapping;
 		this.skyTex.offset.x = 0.5;
@@ -262,32 +243,6 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.materialOcean.uniforms.u_cameraPosition = { value: this.camera.position };
 		this.scene.add(this.ms_Ocean.oceanMesh);
 
-		// let gui = new dat.GUI();
-		// let c1 = gui.add(this.ms_Ocean, 'size',100, 5000);
-		// c1.onChange(function(v) {
-		// 	this.object.size = v;
-		// 	this.object.changed = true;
-		// });
-		// let c2 = gui.add(this.ms_Ocean, 'choppiness', 0.1, 4);
-		// c2.onChange(function(v) {
-		// 	this.object.choppiness = v;
-		// 	this.object.changed = true;
-		// });
-		// let c3 = gui.add(this.ms_Ocean, 'windX',-15, 15);
-		// c3.onChange(function(v) {
-		// 	this.object.windX = v;
-		// 	this.object.changed = true;
-		// });
-		// let c4 = gui.add(this.ms_Ocean, 'windY', -15, 15);
-		// c4.onChange(function(v) {
-		// 	this.object.windY = v;
-		// 	this.object.changed = true;
-		// });
-		// let c8 = gui.add(this.ms_Ocean, 'exposure', 0.0, 6);
-		// c8.onChange(function(v) {
-		// 	this.object.exposure = v;
-		// 	this.object.changed = true;
-		// });
 	}
 
 	setLight() {
@@ -298,14 +253,6 @@ export default class IntroView extends AbstractView {
 		let sun2 = new DirectionalLight( 0xFFFFFF, 1 );
 		sun.position.set( -300, 1000, 100 );
 		this.scene.add( sun2 );
-
-		// let light = new PointLight( 0xFFFFFF, 0.5, 1000 );
-		// light.position.set( 0, 100, 0 );
-		// this.scene.add( light );
-
-		// light = new PointLight( 0xFFFFFF, 0.5, 1000 );
-		// light.position.set( -40, 100, 0 );
-		// this.scene.add( light );
 
 	}
 
@@ -586,17 +533,6 @@ export default class IntroView extends AbstractView {
 
 			this.currentAstClicked = this.currentAstHover;
 			this.currentAstClicked.clicked = true;
-			// this.onAsteroidAnim = true;
-			// const dest = this.currentAstClicked.height * this.currentAstClicked.scale * 2;
-
-			// const tl = new TimelineMax();
-
-			// tl.to([this.currentAstClicked.mesh.position, this.currentAstClicked.body.position], 2.5, {y: -dest, ease: window.Expo.easeOut});
-
-			// tl.add(()=> {
-			// 	this.onAsteroidAnim = false;
-			// }, 0.5);
-
 		}
 	}
 
@@ -606,42 +542,21 @@ export default class IntroView extends AbstractView {
 		this.ms_Ocean.deltaTime = this.clock.getDelta();
 		this.ms_Ocean.render();
 
-		// if (this.gravity === true && this.startMove === true) this.world.step( 1 / 60);
-		if (this.gravity === true) this.world.step( 1 / 60);
-		// Move physics bodies forward in time
-
-		// this.circleBody.velocity[1] = -50; // --> garder la meme accélération pour flux constant
-		// this.circleMesh.position.x = this.circleBody.position[0];
-		// this.circleMesh.position.z = -this.circleBody.position[1]; // reverse axes
-		// this.circleMesh.rotation.y = this.circleBody.angle;
-
-		// console.log(this.circleBody.force[1], this.circleBody.velocity[1]);
-
-
-		// this.circleBody2.velocity[1] = -50; // --> garder la meme accélération pour flux constant
-		// this.circleMesh2.position.x = this.circleBody2.position[0];
-		// this.circleMesh2.position.z = -this.circleBody2.position[1]; // reverse axes
-		// this.circleMesh2.rotation.y = this.circleBody2.angle;
+		if (this.gravity === true) this.world.step( 1 / 60); // p2.js gravity
 
 
 		// Moving Icebergs
 
 		for (let i = 0; i < this.nbAst; i++) {
 			if (this.asteroids[i].body !== undefined ) {
-				// this.asteroids[i].mesh.position.copy(this.asteroids[i].body.getPosition());
-				// this.asteroids[i].mesh.quaternion.copy(this.asteroids[i].body.getQuaternion());
+
 				this.asteroids[i].mesh.position.x = this.asteroids[i].body.position[0]; // copy positions
 				this.asteroids[i].mesh.position.z = -this.asteroids[i].body.position[1]; // reverse axes
 				this.asteroids[i].mesh.rotation.y = this.asteroids[i].body.angle;
 
 				if (this.asteroidsMove === true) {
 					// Apply IMPULSE
-					// this.asteroids[i].body.linearVelocity.x = this.asteroids[i].force.x;
-					// this.asteroids[i].body.linearVelocity.x = clamp(this.asteroids[i].body.linearVelocity.x, -this.asteroids[i].force.z, this.asteroids[i].force.z);
-					// this.asteroids[i].body.linearVelocity.y = this.asteroids[i].force.y;
-					// this.asteroids[i].body.linearVelocity.z = this.asteroids[i].force.z; // --> force perpetuelle
-					// console.log(this.asteroids[i].body.velocity[1]);
-					// this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -this.asteroids[i].force.z, this.asteroids[i].force.z); // x
+
 					this.asteroids[i].body.velocity[1] = clamp(this.asteroids[i].force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
 					this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -20, 20);
 
@@ -653,8 +568,7 @@ export default class IntroView extends AbstractView {
 					// this.asteroids[i].body.angularVelocity.z = 0;
 				}
 
-				if (this.asteroids[i].animated === false) { // if no plonge, constant Y
-					// this.asteroids[i].mesh.position.y = this.asteroids[i].body.position.y = 0; // constraint pos y
+				if (this.asteroids[i].animated === false) { // if no under water, constant Y
 					this.asteroids[i].mesh.position.y = 0; // constraint pos y
 				}
 
@@ -684,8 +598,6 @@ export default class IntroView extends AbstractView {
 							x = this.asteroids[i].mesh.index % 2 === 0 ? x + this.fZone * 2 : x - this.fZone * 2;
 						}
 
-						// this.asteroids[i].mesh.position.z = this.asteroids[i].body.position.z = z;
-						// this.asteroids[i].body.position.x = this.asteroids[i].mesh.position.x = x;
 						this.asteroids[i].mesh.position.x = this.asteroids[i].body.position[0] = x; // copy positions
 						this.asteroids[i].mesh.position.z = z;
 						this.asteroids[i].body.position[1] = -z; // reverse axes
@@ -694,8 +606,6 @@ export default class IntroView extends AbstractView {
 						this.asteroids[i].reappear = true;
 						this.asteroids[i].clicked = false;
 
-						// const dest = el.height * el.scale;
-						// console.log(el.endY);
 					}
 
 					// reboot
@@ -738,35 +648,12 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
 		}
-		// if ( this.isControls === false) { //
 
-		// 	// Specify target we want
-		// 	this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-		// 	this.camRotTarget.y = -toRadian(round(this.mouse.x * 8, 100));
-
-		// 	// Smooth it with deceleration
-		// 	this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-		// 	this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
-
-		// 	// Apply rotation
-
-		// 	if (this.camera.movingRotX && this.lastPage === 'intro') this.camera.rotation.x = this.camera.movingRotX + this.camRotSmooth.x;
-		// 	else  this.camera.rotation.x = this.camRotSmooth.x;
-		// 	this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
-		// 	// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
-		// 	// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
-
-		// }
 		// glitch title
 		if (this.glitch) {
 
-			if (this.glitch.start === true) {
+			if (this.glitch.ready === true) {
 				this.glitch.render();
-			} else {
-				if (this.glitch.stop !== true) {
-					this.glitch.render();
-					this.glitch.stop = true;
-				}
 			}
 		}
 
@@ -774,11 +661,7 @@ export default class IntroView extends AbstractView {
 		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
 
 
-		// console.log(this.circleBody2.angle);
 		this.render();
-
-		// console.log(this.circleBody.position, this.planeBody.position);
-
 
 	}
 
@@ -788,55 +671,48 @@ export default class IntroView extends AbstractView {
 		this.el.classList.remove('project');
 		this.el.classList.remove('about');
 		// set ui
-		this.UI.content.style.display = 'block';
+		this.ui.uiContent.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
-
-		Ui.el.style.display = 'block';
-		// const title1Arr = new SplitText(this.UI.title1, { type: 'chars' });
-		// const title2Arr = new SplitText(this.UI.title2, { type: 'words' });
 
 		if (fromProject === false) {
 			this.glitchEl = document.querySelector('.intro__glitch');
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
-				type: 'intro',
-				clock: this.clock
+				type: 'intro'
 			});
-			this.glitch.start = true;
 
 			const canvas = this.glitchEl.querySelector('.glitch__canvas');
 
 			const tl = new TimelineMax();
-			tl.set(this.ui.overlay, {opacity: 1});
-			tl.set(canvas, {opacity: 0});
-			tl.fromTo( canvas, 1, {opacity: 0}, {opacity: 1}, 3);
+			// canvas title
+			tl.set( canvas, {opacity: 1}, 2.3); // Display Glitch Title
+			tl.add(() => {
+				// start glitch title
+				this.glitch.ready = true;
+				this.glitch.video.play(); // play it
+			});
+			tl.fromTo(this.ui.overlay, 2, { // Fade white
+				opacity: 1
+			},{
+				opacity: 0
+			}, 3.5);
+			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:() => { // fadeOUt/stop Glitch
+				this.glitch.ready = false;
+			}}, 6);
+			tl.add(() => {
+
+				this.moveCameraIn(fromProject);
+			}, 1);
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
-			});
-			tl.add(() => {
-				// start move Ast
-				this.glitch.video.play();
-			}, 5);
-			// tl.to(this.ui.overlay, 1.5, {opacity: 0}, 10); // 1.5 ,, 4
-			tl.add(() => {
-				this.moveCameraIn(fromProject);
-			}, 3); // 2
-			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:()=> {
-				this.glitch.start = false;
-			}}, '+=1');
+			}, 4);
 
-			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
-			tl.to(this.ui.button, 3, {opacity: 1});
-			tl.to(this.ui.overlay, 1, {
-				opacity: 0
-			}, 5);
+			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}); // display buttons
 
 		} else {
 
 			const tl = new TimelineMax();
-			// this.UI.title1.style.display = 'none';
-			// this.UI.title2.style.display = 'none';
 
 			this.camera.position.set(0, this.maxZoom, 0);
 			this.camera.rotation.x = toRadian(-90);
@@ -901,7 +777,7 @@ export default class IntroView extends AbstractView {
 		}, 0);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');
-		},2);
+		}, 2);
 
 
 		this.animating = true;

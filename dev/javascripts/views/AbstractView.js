@@ -7,15 +7,10 @@ export default class AbstractView {
 
 	constructor() {
 
-		this.ui = AppManager.ui;
-		console.log(this.ui);
+		this.ui = AppManager.ui; // global ui for each view
 
 		this.clock = SceneManager.clock; // time
 		this.postProc = false;
-
-
-		// console.log('abstract viewww');
-		// clean menu
 
 	}
 
@@ -27,7 +22,6 @@ export default class AbstractView {
 	}
 
 	setCamera(fov = 45) {
-		console.log('set camera abs');
 
 		this.camera = new PerspectiveCamera(
 			fov, // fov
@@ -39,13 +33,11 @@ export default class AbstractView {
 	}
 
 	resizeHandler() {
-		console.log('resizeeee');
 
-		// this.width = window.innerWidth * window.devicePixelRatio;
-		// this.height = window.innerHeight * window.devicePixelRatio;
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
 
+		// Resize Scene
 		SceneManager.resizeHandler({
 			camera: this.camera,
 			cssScene: this.cssScene
@@ -55,7 +47,7 @@ export default class AbstractView {
 
 	render() {
 
-		// Render Scenes
+		// Render Scene
 		SceneManager.render({
 			camera: this.camera,
 			scene: this.scene,
@@ -152,10 +144,8 @@ export default class AbstractView {
 		}
 
 
-		// Wait destroy scene before stop js events
-		// setTimeout(() => {
+		// Wait destroy scene before stop js events ?
 		this.events(false);
-		// }, 500);
 
 	}
 

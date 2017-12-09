@@ -8,7 +8,6 @@ import bean from 'bean';
 import CssContainer from '../components/CssContainer';
 import ScrollManager from '../managers/ScrollManager';
 import RouterManager from '../managers/RouterManager';
-import Ui from '../components/Ui';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import Glitch from '../components/Glitch';
@@ -37,7 +36,6 @@ export default class ProjectView extends AbstractView {
 
 		// properties
 		this.el = this.ui.webGl;
-		this.UI = Ui.ui; // Global UI selector
 		this.id = obj.id;
 		this.data = obj.data;
 		this.bkg = obj.bkg;
@@ -69,8 +67,6 @@ export default class ProjectView extends AbstractView {
 		this.setEnvelop = this.setEnvelop.bind(this);
 		this.onHoverLink = this.onHoverLink.bind(this);
 		this.onLeaveLink = this.onLeaveLink.bind(this);
-		this.onHoverBtn = this.onHoverBtn.bind(this);
-		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.onClickContainer = this.onClickContainer.bind(this);
 		this.killGlitch = this.killGlitch.bind(this);
 		this.onHoverTitle = this.onHoverTitle.bind(this);
@@ -89,7 +85,6 @@ export default class ProjectView extends AbstractView {
 		this.zoomZ = 160;
 		this.minZoomZ = 210;
 		this.maxZoomZ = 0;
-		console.log('mon id', this.id);
 		// this.stopScrollZ = true;
 
 		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
@@ -191,8 +186,6 @@ export default class ProjectView extends AbstractView {
 
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
-
-		// this.camera.lookAt(this.cameraTarget);
 
 
 
@@ -310,15 +303,6 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	setAsteroids() {
-
-	}
-
-	setLight() {
-
-
-	}
-
 	setCssContainers() {
 
 		const data = this.data;
@@ -341,44 +325,25 @@ export default class ProjectView extends AbstractView {
 		const wHeight = 2 * Math.tan( vFOV / 2 ) * (this.zoomZ - distZ); // visible height dist = 60 (160 - 100)
 		const margePosY = 7;
 		const finalPosY = wHeight / 2 - margePosY;
-		// console.log(finalPosY);
-		// wHeight === window.innerHeight in Units equivalent
-		// let aspect = window.width / window.height;
-
-
-		// Prev project
-		// template = Handlebars.compile(PreloadManager.getResult('tpl-project-prev'));
-		// html  = template({id: this.prevId, color: DATA.projects[this.prevId].color });
-		// this.prevProject = new CssContainer(html, this.cssScene, this.cssObjects);
-		// this.prevProject.position.set(0, -finalPosY, -distZ);
-		// this.prevProject.scale.multiplyScalar(this.coefText);
 
 		global.CURSOR.prev.href = `#project-${this.prevId}`;
 		global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
-
-
-		// Next project
-		// template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
-		// html  = template({id: this.nextId, color: DATA.projects[this.nextId].color});
-		// this.nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
-		// this.nextProject.position.set(0, finalPosY, -distZ);
-		// this.nextProject.scale.multiplyScalar(this.coefText);
 
 		global.CURSOR.next.href = `#project-${this.nextId}`;
 		global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
 
 
-		// // Gallery
+		// Gallery
 
 		// arrows
 
 		// Context + gallery arrows
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'));
 		html  = template(data);
-		this.UI.content.className = '';
-		this.UI.content.classList.add('ui-content', 'is-project');
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-project');
 
-		this.UI.content.innerHTML = html;
+		this.ui.uiContent.innerHTML = html;
 
 	}
 
@@ -714,17 +679,8 @@ export default class ProjectView extends AbstractView {
 
 
 		if (this.contentOpen === true) {
-			// this.topContentTargetY -= e.deltaY * 0.01;
 			// need profil for each browser
 			this.scrollY -= e.deltaY * 0.2;
-
-			// if (this.scrollY >= this.ui.container.offsetHeight - window.innerHeight / 3) {
-			// 	this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 3;
-			// }
-
-			// if (this.scrollY < 0) {
-			// 	this.scrollY = this.scrollYSmooth = 0;
-			// }
 
 
 			for (let i = 1; i < this.ui.imgs.length; i++) {
@@ -779,15 +735,10 @@ export default class ProjectView extends AbstractView {
 		} else {
 			if (this.stopScrollZ === true) return false;
 
-			console.log(e.deltaY);
 			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
 				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
 			}
 
-			// console.log(this.scrollZSmooth);
-			// TweenMax.set(this.camera.position, {z: this.scrollZSmooth});
-			// console.log(this.camera.position.z);
-			// TweenMax.set(this.ui.container, { y: -this.scrollY});
 		}
 
 
@@ -797,6 +748,12 @@ export default class ProjectView extends AbstractView {
 
 		if (this.contentOpen === true) {
 			this.backFromContent();
+		}
+
+		if (global.CURSOR.hoverGoTo === true) {
+
+			RouterManager.currentPage.goTo(null, global.CURSOR.currentEl);
+			window.location.href = global.CURSOR.currentEl.href;
 		}
 	}
 
@@ -810,7 +767,6 @@ export default class ProjectView extends AbstractView {
 
 	onHoverTitle() {
 
-		console.log('hover glitch');
 		this.tlGlitch.restart();
 		// this.tlGlitch.play();
 		this.tlGlitch.repeatDelay(1.3);
@@ -833,67 +789,6 @@ export default class ProjectView extends AbstractView {
 		global.CURSOR.interractLeave();
 	}
 
-	onHoverBtn(e) {
-		// const el = e.currentTarget;
-		// global.CURSOR.interractHover({color: el.getAttribute('data-color'), el });
-		// if (this.hoverBtn === true) return false;
-		// if (this.animLink === true) return false;
-
-		// // this.animLink = true;
-		// this.hoverBtn = true;
-		// const tl = new TimelineMax();
-		// // TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
-		// // TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
-
-		// if (el.classList.contains('project__prev')) {
-
-		// 	tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeOut }, 0);
-		// 	tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeOut }, 0.1);
-		// 	tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
-		// 	tl.fromTo('.project__prev span', 1, {opacity: 0, y: '100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
-		// 	tl.fromTo('.project__prev hr', 1, {y: -120}, {y: -220, ease: window.Expo.easeOut}, 0);
-		// 	tl.add(()=> {
-		// 		this.animLink = false;
-		// 	});
-
-		// 	TweenMax.to('.project__prev circle', 0, {opacity: 0});
-
-		// } else if (el.classList.contains('project__next')) {
-
-		// 	tl.to('.up-1', 0.9, {strokeDashoffset: '292%', ease: window.Expo.easeOut }, 0.1);
-		// 	tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeOut }, 0.1);
-		// 	tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
-		// 	tl.fromTo('.project__next span', 1, {opacity: 0, y: '-100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
-		// 	tl.fromTo('.project__next hr', 1, {y: -100}, {y: 0, ease: window.Expo.easeOut}, 0);
-		// 	tl.add(()=> {
-		// 		this.animLink = false;
-		// 	});
-
-		// 	TweenMax.to('.project__next circle', 0, {opacity: 0});
-		// }
-	}
-
-	onLeaveBtn(e) {
-		// const el = e.currentTarget;
-
-		// global.CURSOR.interractLeave({color: el.getAttribute('data-color'), href: el.href});
-		// this.hoverBtn = false;
-		// if (el.classList.contains('project__prev')) {
-		// 	TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
-		// 	TweenMax.set('.project__prev circle', {transformOrigin: '50% 50%'});
-		// 	TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
-		// 	TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
-		// 	TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
-
-		// } else {
-		// 	TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
-		// 	TweenMax.set('.project__next circle', {transformOrigin: '50% 50%'});
-		// 	TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
-		// 	TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
-		// 	TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
-		// }
-	}
-
 	onMouseMove(x, y) {
 
 		// calculate mouse position in normalized device coordinates
@@ -902,9 +797,9 @@ export default class ProjectView extends AbstractView {
 		this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 		// console.log(this.mouse);
 
-		if (this.contentOpen === true || this.menu.classList.contains('is-open') === true) return false;
+		if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
 
-		// ça fait ramer
+
 		if (y < window.innerHeight * 0.15) {
 			this.goToNoScroll = true;
 			this.dir = -1;
@@ -1185,19 +1080,7 @@ export default class ProjectView extends AbstractView {
 			});
 
 			this.hrefChanged = true;
-			this.animating = false;
 
-			// tl.to(this.camera.position, 2, {z : start, ease: window.Power2.easeIn});
-
-			// tl.to('.overlay', 0.5, {
-			// 	opacity: 1
-			// }, 1.7);
-			// tl.add(() => {
-			// 	this.animating = false;
-
-			// 	// TweenMax.killAll(); // venere
-			// 	EmitterManager.emit('view:transition:out');
-			// });
 		} else {
 			// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
 			tl.to('.overlay', 0.5, {
@@ -1216,7 +1099,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	reset() {
-		console.log('reset');
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
@@ -1249,7 +1131,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	destroy() {
-		console.log('destroy ?');
 		// ScrollManager.off();
 		super.destroy();
 	}

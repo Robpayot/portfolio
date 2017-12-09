@@ -6,12 +6,12 @@
 import './vendors/modernizr-custom';
 import 'gsap';
 
-// console.log('%c 84.Boilerplate ===== Your app is ready.', 'background: #000; color: #FFF');
-
 import AppManager from './managers/AppManager';
-// import PreloadManager from './managers/PreloadManager';
 
 global.MENU;
+global.OVERLAY;
+global.MODELS;
+global.SKYTEX;
 global.PROD = false;
 global.BASE = '';
 global.SCROLLED = false;
@@ -19,14 +19,12 @@ global.SCROLLED = false;
 if (window.location.host === 'robpayot.github.io') {
 	global.PROD = true;
 	global.BASE = 'https://robpayot.github.io/xp-son/dist';
-
 }
 
 (() => {
 
 	// preload stuff
 	AppManager.preload();
-
 
 
 })();
