@@ -254,13 +254,14 @@ var Cursor = function () {
 			if (obj.color !== undefined) {
 				this.c2.style.stroke = obj.color;
 				this.hoverGoTo = true;
+				this.currentEl = obj.el;
 				// remplie
 				if (obj.small !== true) {
 					TweenMax.to(this.c2, 3, { strokeDashoffset: '0%', ease: window.Linear.easeNone,
 						onComplete: function onComplete() {
 							if (_this.hoverGoTo = true) {
-								_RouterManager2.default.currentPage.goTo(null, obj.el);
-								window.location.href = obj.el.href;
+								_RouterManager2.default.currentPage.goTo(null, _this.currentEl);
+								window.location.href = _this.currentEl.href;
 							}
 						}
 					});
@@ -318,6 +319,7 @@ var Cursor = function () {
 
 			if (this.hoverGlobal === false) return false;
 			this.hoverGlobal = false;
+			this.currentEl = null;
 			// console.log('leave');
 			// remplie
 
@@ -10486,8 +10488,6 @@ var ProjectView = function (_AbstractView) {
 		_this.setEnvelop = _this.setEnvelop.bind(_this);
 		_this.onHoverLink = _this.onHoverLink.bind(_this);
 		_this.onLeaveLink = _this.onLeaveLink.bind(_this);
-		_this.onHoverBtn = _this.onHoverBtn.bind(_this);
-		_this.onLeaveBtn = _this.onLeaveBtn.bind(_this);
 		_this.onClickContainer = _this.onClickContainer.bind(_this);
 		_this.killGlitch = _this.killGlitch.bind(_this);
 		_this.onHoverTitle = _this.onHoverTitle.bind(_this);
@@ -10506,7 +10506,6 @@ var ProjectView = function (_AbstractView) {
 		_this.zoomZ = 160;
 		_this.minZoomZ = 210;
 		_this.maxZoomZ = 0;
-		console.log('mon id', _this.id);
 		// this.stopScrollZ = true;
 
 		_this.tlGlitch = new TimelineMax({ repeat: -1, repeatDelay: 1.5, paused: true });
@@ -10606,9 +10605,6 @@ var ProjectView = function (_AbstractView) {
 
 			this.camRotTarget = new _three.Vector3(0, 0, 0);
 			this.camRotSmooth = new _three.Vector3(0, 0, 0);
-
-			// this.camera.lookAt(this.cameraTarget);
-
 
 			// Camera controls
 			if (this.isControls === true) {
@@ -10719,12 +10715,6 @@ var ProjectView = function (_AbstractView) {
 			this.scene.add(this.envelop);
 		}
 	}, {
-		key: 'setAsteroids',
-		value: function setAsteroids() {}
-	}, {
-		key: 'setLight',
-		value: function setLight() {}
-	}, {
 		key: 'setCssContainers',
 		value: function setCssContainers() {
 
@@ -10748,32 +10738,14 @@ var ProjectView = function (_AbstractView) {
 			var wHeight = 2 * Math.tan(vFOV / 2) * (this.zoomZ - distZ); // visible height dist = 60 (160 - 100)
 			var margePosY = 7;
 			var finalPosY = wHeight / 2 - margePosY;
-			// console.log(finalPosY);
-			// wHeight === window.innerHeight in Units equivalent
-			// let aspect = window.width / window.height;
-
-
-			// Prev project
-			// template = Handlebars.compile(PreloadManager.getResult('tpl-project-prev'));
-			// html  = template({id: this.prevId, color: DATA.projects[this.prevId].color });
-			// this.prevProject = new CssContainer(html, this.cssScene, this.cssObjects);
-			// this.prevProject.position.set(0, -finalPosY, -distZ);
-			// this.prevProject.scale.multiplyScalar(this.coefText);
 
 			global.CURSOR.prev.href = '#project-' + this.prevId;
 			global.CURSOR.prev.setAttribute('data-color', _data2.default.projects[this.prevId].color);
 
-			// Next project
-			// template = Handlebars.compile(PreloadManager.getResult('tpl-project-next'));
-			// html  = template({id: this.nextId, color: DATA.projects[this.nextId].color});
-			// this.nextProject = new CssContainer(html, this.cssScene, this.cssObjects);
-			// this.nextProject.position.set(0, finalPosY, -distZ);
-			// this.nextProject.scale.multiplyScalar(this.coefText);
-
 			global.CURSOR.next.href = '#project-' + this.nextId;
 			global.CURSOR.next.setAttribute('data-color', _data2.default.projects[this.nextId].color);
 
-			// // Gallery
+			// Gallery
 
 			// arrows
 
@@ -11204,6 +11176,12 @@ var ProjectView = function (_AbstractView) {
 			if (this.contentOpen === true) {
 				this.backFromContent();
 			}
+
+			if (global.CURSOR.hoverGoTo === true) {
+
+				_RouterManager2.default.currentPage.goTo(null, global.CURSOR.currentEl);
+				window.location.href = global.CURSOR.currentEl.href;
+			}
 		}
 	}, {
 		key: 'onHoverContainer',
@@ -11220,7 +11198,6 @@ var ProjectView = function (_AbstractView) {
 		value: function onHoverTitle() {
 			var _this7 = this;
 
-			console.log('hover glitch');
 			this.tlGlitch.restart();
 			// this.tlGlitch.play();
 			this.tlGlitch.repeatDelay(1.3);
@@ -11243,69 +11220,6 @@ var ProjectView = function (_AbstractView) {
 			global.CURSOR.interractLeave();
 		}
 	}, {
-		key: 'onHoverBtn',
-		value: function onHoverBtn(e) {
-			// const el = e.currentTarget;
-			// global.CURSOR.interractHover({color: el.getAttribute('data-color'), el });
-			// if (this.hoverBtn === true) return false;
-			// if (this.animLink === true) return false;
-
-			// // this.animLink = true;
-			// this.hoverBtn = true;
-			// const tl = new TimelineMax();
-			// // TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
-			// // TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
-
-			// if (el.classList.contains('project__prev')) {
-
-			// 	tl.to('.down-2', 1.15, {strokeDashoffset: '-236%', ease: window.Expo.easeOut }, 0);
-			// 	tl.to('.down-1', 1, {strokeDashoffset: '-130%', ease: window.Expo.easeOut }, 0.1);
-			// 	tl.set(['.down-1', '.down-2'], {clearProps: 'all'});
-			// 	tl.fromTo('.project__prev span', 1, {opacity: 0, y: '100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
-			// 	tl.fromTo('.project__prev hr', 1, {y: -120}, {y: -220, ease: window.Expo.easeOut}, 0);
-			// 	tl.add(()=> {
-			// 		this.animLink = false;
-			// 	});
-
-			// 	TweenMax.to('.project__prev circle', 0, {opacity: 0});
-
-			// } else if (el.classList.contains('project__next')) {
-
-			// 	tl.to('.up-1', 0.9, {strokeDashoffset: '292%', ease: window.Expo.easeOut }, 0.1);
-			// 	tl.to('.up-2', 1, {strokeDashoffset: '186%', ease: window.Expo.easeOut }, 0.1);
-			// 	tl.set(['.up-1', '.up-2'], {clearProps: 'all'});
-			// 	tl.fromTo('.project__next span', 1, {opacity: 0, y: '-100%'}, {opacity: 1, y: '0%', ease: window.Expo.easeOut}, 0);
-			// 	tl.fromTo('.project__next hr', 1, {y: -100}, {y: 0, ease: window.Expo.easeOut}, 0);
-			// 	tl.add(()=> {
-			// 		this.animLink = false;
-			// 	});
-
-			// 	TweenMax.to('.project__next circle', 0, {opacity: 0});
-			// }
-		}
-	}, {
-		key: 'onLeaveBtn',
-		value: function onLeaveBtn(e) {
-			// const el = e.currentTarget;
-
-			// global.CURSOR.interractLeave({color: el.getAttribute('data-color'), href: el.href});
-			// this.hoverBtn = false;
-			// if (el.classList.contains('project__prev')) {
-			// 	TweenMax.fromTo('.project__prev circle', 0.2, {opacity: 0}, {opacity: 1});
-			// 	TweenMax.set('.project__prev circle', {transformOrigin: '50% 50%'});
-			// 	TweenMax.fromTo('.project__prev circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
-			// 	TweenMax.to('.project__prev span', 1, {opacity: 0, y: '100%', ease: window.Expo.easeOut}, 0);
-			// 	TweenMax.to('.project__prev hr', 1, {y: -120, ease: window.Expo.easeOut}, 0);
-
-			// } else {
-			// 	TweenMax.fromTo('.project__next circle', 0.2, {opacity: 0}, {opacity: 1});
-			// 	TweenMax.set('.project__next circle', {transformOrigin: '50% 50%'});
-			// 	TweenMax.fromTo('.project__next circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
-			// 	TweenMax.to('.project__next span', 1, {opacity: 0, y: '-100%', ease: window.Expo.easeOut}, 0);
-			// 	TweenMax.to('.project__next hr', 1, {y: -100, ease: window.Expo.easeOut}, 0);
-			// }
-		}
-	}, {
 		key: 'onMouseMove',
 		value: function onMouseMove(x, y) {
 
@@ -11315,9 +11229,8 @@ var ProjectView = function (_AbstractView) {
 			this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 			// console.log(this.mouse);
 
-			if (this.contentOpen === true || this.menu.classList.contains('is-open') === true) return false;
+			if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
 
-			// ça fait ramer
 			if (y < window.innerHeight * 0.15) {
 				this.goToNoScroll = true;
 				this.dir = -1;
@@ -11597,7 +11510,6 @@ var ProjectView = function (_AbstractView) {
 				});
 
 				this.hrefChanged = true;
-				this.animating = false;
 
 				// tl.to(this.camera.position, 2, {z : start, ease: window.Power2.easeIn});
 
