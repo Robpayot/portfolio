@@ -71,8 +71,6 @@ class AppManager {
 			// template hbs
 			{ id: 'tpl-project-title', src: `${global.BASE}/templates/projectTitle.hbs` },
 			{ id: 'tpl-project-content', src: `${global.BASE}/templates/projectContent.hbs` },
-			{ id: 'tpl-project-prev', src: `${global.BASE}/templates/projectPrev.hbs` },
-			{ id: 'tpl-project-next', src: `${global.BASE}/templates/projectNext.hbs` },
 			{ id: 'tpl-menu', src: `${global.BASE}/templates/menu.hbs` },
 			{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
 			{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },

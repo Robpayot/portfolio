@@ -7,11 +7,6 @@ $project3D-w : 1075px;
 	text-align: left;
 	user-select: none;
 	font-size: 1.4rem;
-	width: calc(100vw - 36vw);
-	// height: 100%;
-	left: 50%;
-	transform: translateX(-50%);
-	max-width: 1300px;
 
 	.project {
 
@@ -37,6 +32,11 @@ $project3D-w : 1075px;
 	        user-select: none;
 	        opacity: 0;
 	        display: none;
+			width: calc(100vw - 36vw);
+			// height: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			max-width: 1300px;
 	    }
 
 	    &__header {
@@ -186,6 +186,7 @@ $project3D-w : 1075px;
 			}
 		}
 
+
 	    .link {
 	        img {
 	            width: 4.0rem;
@@ -220,38 +221,37 @@ $project3D-w : 1075px;
 	        }
 	    }
 
-	    // .details {
-	    //     &__back {
-	    //         display: inline-block;
-	    //         vertical-align: middle;
-	    //         font-size: 20px;
-	    //         text-transform: uppercase;
-	    //         cursor: pointer;
-	    //         visibility: hidden;
-	            
-	    //         .icon {
-	    //             display: inline-block;
-	    //             vertical-align: middle;
-	    //             margin-right: 10px;
-	    //             width: 20px;
-	    //             transform: rotate(180deg);
-	    //             transition: transform 0.5s $easeToinou;
-	    //         }
-	    //         &:hover {
-	    //             .icon {
-	    //                 transform: scale(1.05) translateX(-10px)  rotate(180deg) !important;
-	    //             }
-	    //         }
-	    //     }
-	    // }
 
+	    &__socials {
+	    	position: absolute;
+	    	right: 5rem;
+	    	bottom: 5rem;
+	    	ul li {
+	    		display: inline-block;
+	    		vertical-align: middle;
+	    		opacity: 0.5;
+	    		pointer-events: auto;
+	    		margin: 0 0.5rem;
+	    		transition: opacity 0.5s ease;
+
+	    		svg {
+	    			width: 1.6rem;
+	    			fill: white;
+
+	    		}
+
+	    		&:hover {
+	    			opacity: 1;
+	    		}
+	    	}
+	    }
 
 	}
 
 	.scroll {
 		position: fixed;
 		color: white;
-		bottom: 20vh;
+		bottom: 5rem;
 		left: 50%;
 		transform: translateX(-50%);
     	letter-spacing: 2.5px;
