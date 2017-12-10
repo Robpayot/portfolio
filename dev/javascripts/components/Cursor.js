@@ -119,6 +119,7 @@ export default class Cursor {
 		if (this.hoverGlobal === false) return false;
 		this.hoverGlobal = false;
 		this.currentEl = null;
+		this.hoverGoTo = false;
 		// console.log('leave');
 		// remplie
 
@@ -136,7 +137,6 @@ export default class Cursor {
 
 		if (obj.color !== undefined) {
 			TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
-			this.hoverGoTo = false;
 		}
 
 		if (obj.small === true) {
