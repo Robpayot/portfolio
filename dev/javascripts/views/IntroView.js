@@ -12,7 +12,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, Texture, PointLight, RepeatWrapping, TextureLoader, PlaneGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Vector2, Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, PointLight, RepeatWrapping, PlaneGeometry, Mesh, MeshBasicMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import '../shaders/ScreenSpaceShader';
 import '../shaders/FFTOceanShader';
@@ -64,6 +64,7 @@ export default class IntroView extends AbstractView {
 		// init
 
 		// this.onClickStart();
+
 
 	}
 
@@ -230,7 +231,7 @@ export default class IntroView extends AbstractView {
 		this.skyTex.repeat.set( 1, 1 );
 		this.plane = new Mesh(
 			new PlaneGeometry(this.finalBounds * 2, this.finalBounds * 2),
-			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide})
+			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide}) // map: this.skyTex, color: white
 		);
 
 		this.plane.position.y = this.maxZoom - 400;
@@ -246,11 +247,11 @@ export default class IntroView extends AbstractView {
 	}
 
 	setLight() {
-		let sun = new DirectionalLight( 0xFFFFFF, 1.2 );
+		let sun = new DirectionalLight( 0xFFFFFF, 0.9 );
 		sun.position.set( 600, 1000, 0 );
 		this.scene.add( sun );
 
-		let sun2 = new DirectionalLight( 0xFFFFFF, 1 );
+		let sun2 = new DirectionalLight( 0xFFFFFF, 1.4 );
 		sun.position.set( -300, 1000, 100 );
 		this.scene.add( sun2 );
 
@@ -266,10 +267,10 @@ export default class IntroView extends AbstractView {
 			flatShading: true
 		} );
 		mesh = new Mesh(this.models[2], mat);
-		mesh.position.y = 0;
+		mesh.position.y = 5;
 		mesh.position.x = 0;
 		mesh.rotation.y = toRadian(-180);
-		mesh.scale.set(33, 33, 33);
+		mesh.scale.set(27, 27, 27);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
 
 
@@ -282,7 +283,7 @@ export default class IntroView extends AbstractView {
 			opacity: 0.4
 		} );
 
-		this.perimeter = 220;
+		this.perimeter = 190;
 
 		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
 		mesh.visible = this.isControls;
@@ -297,23 +298,23 @@ export default class IntroView extends AbstractView {
 			opacity: 0.2
 		} );
 
-		this.fZone = 25; // Zone where asteroids can't appear. Or physic conflicts
+		this.fZone = 22; // Zone where asteroids can't appear. Or physic conflicts
 
 		let blocksParams = [{
-			size: {w: this.fZone * 2, h: 120, d: 160},
-			pos: {x: 0, y: 0, z: 70},
+			size: {w: this.fZone * 2, h: 110, d: 160},
+			pos: {x: 0, y: 0, z: 50},
 			rot: {x: 0, y: 0, z: 0}
 		}, {
-			size: {w: 42, h: 160, d: 160},
-			pos: {x: -45, y: 0, z: -40},
+			size: {w: 40, h: 110, d: 160},
+			pos: {x: -38, y: 0, z: -33},
 			rot: {x: 0, y: -45, z: 0}
 		}, {
-			size: {w: 44, h: 95, d: 160},
-			pos: {x: 58, y: 0, z: -73},
+			size: {w: 34, h: 75, d: 160},
+			pos: {x: 48, y: 0, z: -61},
 			rot: {x: 0, y: 40, z: 0}
 		},{
-			size: {w: 40, h: 40, d: 60},
-			pos: {x: 0, y: 0, z: 130},
+			size: {w: 35, h: 35, d: 60},
+			pos: {x: 0, y: 0, z: 107},
 			rot: {x: 0, y: -40, z: 0}
 		}];
 
@@ -392,9 +393,9 @@ export default class IntroView extends AbstractView {
 		// ADD Iceberg
 		this.astXMin = -this.perimeter;
 		this.astXMax = this.perimeter;
-		this.startZ = -800;
+		this.startZ = -this.perimeter;
 		this.reappearZ = -300;
-		this.endZ = 200;
+		this.endZ = this.perimeter;
 
 		for (let i = 0; i < this.nbAst; i++) {
 
@@ -442,7 +443,7 @@ export default class IntroView extends AbstractView {
 				z: getRandom(-20, -25)
 			};
 
-			const scale = getRandom(8, 12);
+			const scale = getRandom(8, 10);
 			// const speed = getRandom(500, 600); // more is slower
 			// const range = getRandom(2, 5);
 			const range = 0;
