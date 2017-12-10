@@ -706,8 +706,6 @@ body {
   .cursor .down-2 {
     stroke-dasharray: 100%;
     stroke-dashoffset: -36%; }
-  .cursor.is-hover circle {
-    stroke-width: 3; }
   .cursor polyline {
     stroke: white; }
   .cursor circle {

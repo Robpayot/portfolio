@@ -170,6 +170,7 @@ export default class IntroView extends AbstractView {
 		this.ui.uiContent.innerHTML = html;
 
 		this.ui.button = document.querySelector('.start');
+		this.ui.buttonSvg = document.querySelector('.start svg');
 		this.ui.overlay = document.querySelector('.intro__overlay');
 
 	}
@@ -498,8 +499,8 @@ export default class IntroView extends AbstractView {
 	onHoverStart() {
 
 		this.startIsHover = true;
-		global.CURSOR.interractHover();
 		if (this.animBtn === true) return false;
+		global.CURSOR.interractHover({magnet: true, el: this.ui.buttonSvg});
 
 		const tl = new TimelineMax();
 		TweenMax.killTweensOf(['.start .close-up','.start .close-down']);
@@ -517,7 +518,7 @@ export default class IntroView extends AbstractView {
 	}
 
 	onLeaveStart() {
-		global.CURSOR.interractLeave();
+		global.CURSOR.interractLeave({magnet: true, el: this.ui.buttonSvg});
 		this.startIsHover = false;
 		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
 		TweenMax.set('.start circle', {transformOrigin: '50% 50%'});

@@ -154,7 +154,6 @@ var Cursor = function () {
 		this.circleObj = { val: 15.9 };
 		this.mouse = {};
 		this.cursorTarget = { x: 0, y: 0 };
-		this.cursorSmooth = { x: 0, y: 0 };
 
 		_EmitterManager2.default.on('mousemove', this.onMouseMove);
 		_EmitterManager2.default.on('resize', this.resizeHandler);
@@ -168,6 +167,8 @@ var Cursor = function () {
 
 			this.mouse.x = x;
 			this.mouse.y = y;
+
+			if (this.stopFollow === true) return false;
 			TweenMax.set(this.wrapper, { left: x });
 			TweenMax.set(this.wrapper, { top: y });
 		}
@@ -226,27 +227,19 @@ var Cursor = function () {
 				_tl.fromTo(this.prev, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0);
 			}
 
-			if (obj.magnet === true) {
-				this.isHover = true;
-				this.hasDelay = false;
-				if (this.el.classList.contains('is-hover') === false) {
-					this.el.classList.add('is-hover');
+			var time = 0.7;
 
-					var vpOffset = obj.el.getBoundingClientRect();
-					this.stopFollow = true;
-					TweenMax.to(this.el, 0.3, { left: vpOffset.left + vpOffset.width / 2, top: vpOffset.top + vpOffset.height / 2 });
-					TweenMax.to(this.cursorSmooth, 0.3, { x: vpOffset.left + vpOffset.width / 2, y: vpOffset.top + vpOffset.height / 2 });
-					TweenMax.to(this.circleObj, 1.5, { val: maxVal, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
-							_this.c1.setAttribute('r', _this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-							_this.c2.setAttribute('r', _this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-						} });
-				}
-			} else {
-				TweenMax.to(this.circleObj, 0.7, { val: maxVal, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
-						_this.c1.setAttribute('r', _this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-						_this.c2.setAttribute('r', _this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-					} });
+			if (obj.magnet === true) {
+				var vpOffset = obj.el.getBoundingClientRect();
+				this.stopFollow = true;
+				TweenMax.to(this.wrapper, 0.3, { left: vpOffset.left + vpOffset.width / 2, top: vpOffset.top + vpOffset.height / 2 });
+				time = 1.2;
 			}
+
+			TweenMax.to(this.circleObj, time, { val: maxVal, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
+					_this.c1.setAttribute('r', _this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+					_this.c2.setAttribute('r', _this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+				} });
 		}
 	}, {
 		key: 'interractLeave',
@@ -259,6 +252,7 @@ var Cursor = function () {
 			this.hoverGlobal = false;
 			this.currentEl = null;
 			this.hoverGoTo = false;
+			this.stopFollow = false;
 			// console.log('leave');
 			// remplie
 
@@ -282,23 +276,10 @@ var Cursor = function () {
 				TweenMax.to(this.c2, 0, { strokeDashoffset: '308%', ease: window.Expo.easeOut });
 			}
 
-			if (obj.magnet === true) {
-				this.isHover = false;
-				if (this.el.classList.contains('is-hover') === true) {
-					this.el.classList.remove('is-hover');
-					this.stopFollow = false;
-					this.hasDelay = true;
-					TweenMax.to(this.circleObj, 1.5, { val: 15.9, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
-							_this2.c1.setAttribute('r', _this2.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-							_this2.c2.setAttribute('r', _this2.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-						} });
-				}
-			} else {
-				TweenMax.to(this.circleObj, 0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
-						_this2.c1.setAttribute('r', _this2.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-						_this2.c2.setAttribute('r', _this2.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-					} });
-			}
+			TweenMax.to(this.circleObj, 0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate: function onUpdate() {
+					_this2.c1.setAttribute('r', _this2.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+					_this2.c2.setAttribute('r', _this2.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+				} });
 		}
 	}, {
 		key: 'resizeHandler',
@@ -1009,7 +990,7 @@ var Menu = function () {
 			var _this2 = this;
 
 			if (this.hoverBtn === true) return false;
-			global.CURSOR.interractHover();
+			global.CURSOR.interractHover({ magnet: true, el: this.ui.button });
 
 			if (this.animBtn === true) return false;
 			if (this.animClicked === true) return false;
@@ -1043,7 +1024,7 @@ var Menu = function () {
 	}, {
 		key: 'onLeaveBtn',
 		value: function onLeaveBtn() {
-			global.CURSOR.interractLeave();
+			global.CURSOR.interractLeave({ magnet: true, el: this.ui.button });
 			this.hoverBtn = false;
 			TweenMax.fromTo('.menu__button circle', 0.2, { opacity: 0 }, { opacity: 1 });
 			TweenMax.set('.menu__button circle', { transformOrigin: '50% 50%' });
@@ -9309,6 +9290,7 @@ var IntroView = function (_AbstractView) {
 			this.ui.uiContent.innerHTML = html;
 
 			this.ui.button = document.querySelector('.start');
+			this.ui.buttonSvg = document.querySelector('.start svg');
 			this.ui.overlay = document.querySelector('.intro__overlay');
 		}
 
@@ -9638,8 +9620,8 @@ var IntroView = function (_AbstractView) {
 			var _this3 = this;
 
 			this.startIsHover = true;
-			global.CURSOR.interractHover();
 			if (this.animBtn === true) return false;
+			global.CURSOR.interractHover({ magnet: true, el: this.ui.buttonSvg });
 
 			var tl = new TimelineMax();
 			TweenMax.killTweensOf(['.start .close-up', '.start .close-down']);
@@ -9658,7 +9640,7 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'onLeaveStart',
 		value: function onLeaveStart() {
-			global.CURSOR.interractLeave();
+			global.CURSOR.interractLeave({ magnet: true, el: this.ui.buttonSvg });
 			this.startIsHover = false;
 			TweenMax.fromTo('.start circle', 0.2, { opacity: 0 }, { opacity: 1 });
 			TweenMax.set('.start circle', { transformOrigin: '50% 50%' });
