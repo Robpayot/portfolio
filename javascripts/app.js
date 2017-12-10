@@ -193,11 +193,11 @@ var Cursor = function () {
 				this.currentEl = obj.el;
 				// remplie
 				if (obj.small !== true) {
-					TweenMax.to(this.c2, 3, { strokeDashoffset: '0%', ease: window.Linear.easeNone,
+					TweenMax.to(this.c2, 4, { strokeDashoffset: '0%', ease: window.Linear.easeNone,
 						onComplete: function onComplete() {
 							if (_this.hoverGoTo = true) {
-								_RouterManager2.default.currentPage.goTo(null, _this.currentEl);
-								window.location.href = _this.currentEl.href;
+								// RouterManager.currentPage.goTo(null, this.currentEl);
+								// window.location.href = this.currentEl.href;
 							}
 						}
 					});
@@ -10579,7 +10579,7 @@ var ProjectView = function (_AbstractView) {
 		key: 'goTo',
 		value: function goTo(e, element) {
 
-			var el = element || e.currentTarget;
+			var el = e !== null ? e.currentTarget : element;
 			this.goToNoScroll = true;
 			if (el.classList.contains('cursor__next')) this.dir = -1;else this.dir = 1;
 		}
@@ -10911,7 +10911,7 @@ var ProjectView = function (_AbstractView) {
 			var fromUrl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-			// this.lastPage = 'intro';
+			this.lastPage = 'intro';
 			fromUrl = false;
 
 			var time = 3;
@@ -10919,18 +10919,18 @@ var ProjectView = function (_AbstractView) {
 
 			if (this.lastPage === 'intro') {
 
-				time = 5;
+				time = 4;
 				delay = 3;
 
 				var points = {
 					'camera': [{
 						'x': 0,
-						'y': -240,
-						'z': 240
+						'y': -115,
+						'z': 300
 					}, {
 						'x': 0,
-						'y': -160,
-						'z': 160
+						'y': -65,
+						'z': 240
 					}, {
 						'x': 0,
 						'y': 0,
@@ -10972,7 +10972,7 @@ var ProjectView = function (_AbstractView) {
 				tl.to(this.dolly, time, {
 					cameraPosition: 1,
 					lookatPosition: 1,
-					ease: window.Power4.easeOut,
+					ease: window.Expo.easeOut,
 					onUpdate: function onUpdate() {
 						_this8.dolly.update();
 						_this8.camera.movingRotX = _this8.camera.rotation.x;
