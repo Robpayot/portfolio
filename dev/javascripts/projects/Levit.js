@@ -182,7 +182,7 @@ export default class Levit extends ProjectView {
 
 			} else {
 				if (this.asteroids[i].velocity !== 0) {
-					this.asteroids[i].velocity -= 0.0005;
+					this.asteroids[i].velocity -= 0.0004;
 					this.asteroids[i].velocity = Math.max(0, this.asteroids[i].velocity);
 				}
 
