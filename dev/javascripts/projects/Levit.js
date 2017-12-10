@@ -67,7 +67,7 @@ export default class Levit extends ProjectView {
 			const scale = getRandom(0.025, 0.035);
 			const speed = getRandom(0.5,0.72);
 			const range = getRandom(3, 8);
-			const timeRotate = getRandom(0.0010, 0.0013);
+			const timeRotate = getRandom(0.0013, 0.0016);
 
 			const model = Math.round(getRandom(3, 5));
 
@@ -91,6 +91,7 @@ export default class Levit extends ProjectView {
 			asteroid.rotateRangeZ = getRandom(-15,15);
 			asteroid.rotateRangeX = getRandom(-30,30);
 			asteroid.offset = getRandom(0,10);
+			asteroid.velocity = 0;
 
 			this.asteroids.push(asteroid);
 			this.asteroidsM.push(asteroid.mesh);
@@ -174,11 +175,18 @@ export default class Levit extends ProjectView {
 		for (let i = 0; i < this.nbAst; i++) {
 
 			if (this.asteroids[i].active === true) {
-				this.asteroids[i].mesh.rotation.y += (this.asteroids[i].timeRotate + 0.03) * this.asteroids[i].dir ;
+
+				this.asteroids[i].velocity += 0.01;
+				this.asteroids[i].velocity = Math.min(0.04, this.asteroids[i].velocity);
+				this.asteroids[i].mesh.rotation.y += (this.asteroids[i].timeRotate + this.asteroids[i].velocity) * this.asteroids[i].dir ;
 
 			} else {
+				if (this.asteroids[i].velocity !== 0) {
+					this.asteroids[i].velocity -= 0.0005;
+					this.asteroids[i].velocity = Math.max(0, this.asteroids[i].velocity);
+				}
 
-				this.asteroids[i].mesh.rotation.y += this.asteroids[i].timeRotate * this.asteroids[i].dir;
+				this.asteroids[i].mesh.rotation.y += (this.asteroids[i].timeRotate + this.asteroids[i].velocity) * this.asteroids[i].dir;
 
 			}
 			// Move top and bottom --> Levit effect

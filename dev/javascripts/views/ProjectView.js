@@ -945,7 +945,7 @@ export default class ProjectView extends AbstractView {
 	transitionIn(fromUrl = false) {
 
 
-		this.lastPage = 'intro';
+		// this.lastPage = 'intro';
 		fromUrl = false;
 
 		let time = 3;

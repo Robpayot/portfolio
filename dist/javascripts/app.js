@@ -2303,17 +2303,17 @@ var Blob = function (_ProjectView) {
 
 			// Asteroids meshs
 			for (var _i = 0; _i < this.nbAst; _i++) {
-				// Move top and bottom --> Levit effect
 
+				// Move top and bottom --> Levit effect
 				this.asteroids[_i].mesh.position.y = this.asteroids[_i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[_i].speed + this.asteroids[_i].offset) * this.asteroids[_i].range.coef + this.asteroids[_i].range.add;
 				// rotate
 				this.asteroids[_i].mesh.material.uniforms['time'].value = .00065 * (Date.now() - this.inc); // use getDelta??
 
 				if (this.asteroids[_i].mesh.material.uniforms['weight'].value >= 0.0) {
 					if (this.asteroids[_i].active === true) {
-						this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value + 0.04, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
+						this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value + 0.035, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
 					} else {
-						this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value - 0.04, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
+						this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value - 0.03, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
 					}
 				}
 			}
@@ -2609,7 +2609,7 @@ var Levit = function (_ProjectView) {
 				var scale = (0, _utils.getRandom)(0.025, 0.035);
 				var speed = (0, _utils.getRandom)(0.5, 0.72);
 				var range = (0, _utils.getRandom)(3, 8);
-				var timeRotate = (0, _utils.getRandom)(0.0010, 0.0013);
+				var timeRotate = (0, _utils.getRandom)(0.0013, 0.0016);
 
 				var model = Math.round((0, _utils.getRandom)(3, 5));
 
@@ -2633,6 +2633,7 @@ var Levit = function (_ProjectView) {
 				asteroid.rotateRangeZ = (0, _utils.getRandom)(-15, 15);
 				asteroid.rotateRangeX = (0, _utils.getRandom)(-30, 30);
 				asteroid.offset = (0, _utils.getRandom)(0, 10);
+				asteroid.velocity = 0;
 
 				this.asteroids.push(asteroid);
 				this.asteroidsM.push(asteroid.mesh);
@@ -2713,10 +2714,17 @@ var Levit = function (_ProjectView) {
 			for (var _i = 0; _i < this.nbAst; _i++) {
 
 				if (this.asteroids[_i].active === true) {
-					this.asteroids[_i].mesh.rotation.y += (this.asteroids[_i].timeRotate + 0.03) * this.asteroids[_i].dir;
-				} else {
 
-					this.asteroids[_i].mesh.rotation.y += this.asteroids[_i].timeRotate * this.asteroids[_i].dir;
+					this.asteroids[_i].velocity += 0.01;
+					this.asteroids[_i].velocity = Math.min(0.04, this.asteroids[_i].velocity);
+					this.asteroids[_i].mesh.rotation.y += (this.asteroids[_i].timeRotate + this.asteroids[_i].velocity) * this.asteroids[_i].dir;
+				} else {
+					if (this.asteroids[_i].velocity !== 0) {
+						this.asteroids[_i].velocity -= 0.0005;
+						this.asteroids[_i].velocity = Math.max(0, this.asteroids[_i].velocity);
+					}
+
+					this.asteroids[_i].mesh.rotation.y += (this.asteroids[_i].timeRotate + this.asteroids[_i].velocity) * this.asteroids[_i].dir;
 				}
 				// Move top and bottom --> Levit effect
 				// Start Number + Math.sin(this.time*2*Math.PI/PERIOD)*(SCALE/2) + (SCALE/2)
@@ -10911,7 +10919,7 @@ var ProjectView = function (_AbstractView) {
 			var fromUrl = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
-			this.lastPage = 'intro';
+			// this.lastPage = 'intro';
 			fromUrl = false;
 
 			var time = 3;
