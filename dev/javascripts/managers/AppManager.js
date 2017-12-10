@@ -193,6 +193,10 @@ class AppManager {
 		}
 
 		if (window.innerWidth > 1024) {
+			Device.size = 'small-desktop';
+		}
+
+		if (window.innerWidth > 1440) {
 			Device.size = 'desktop';
 		}
 

@@ -797,12 +797,12 @@ export default class ProjectView extends AbstractView {
 		if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
 
 
-		if (y < window.innerHeight * 0.15) {
+		if (y < window.innerHeight * 0.2) {
 			this.goToNoScroll = true;
 			this.dir = -1;
 			global.CURSOR.interractHover({type: 'next', color: global.CURSOR.next.getAttribute('data-color'), el: global.CURSOR.next});
 			this.cursorActive = true;
-		} else if (y > window.innerHeight * 0.85) {
+		} else if (y > window.innerHeight * 0.80) {
 			this.goToNoScroll = true;
 			this.dir = 1;
 			global.CURSOR.interractHover({type: 'prev', color: global.CURSOR.prev.getAttribute('data-color'), el: global.CURSOR.prev});
@@ -1039,7 +1039,7 @@ export default class ProjectView extends AbstractView {
 		}, 0.1, delay);
 
 		if (global.SCROLLED === false) {
-			tl.to('.scroll', 1, {opacity: 1}, 5);
+			TweenMax.to('.scroll', 1, {opacity: 1, delay: 3.5});
 		}
 
 

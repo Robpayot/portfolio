@@ -615,7 +615,7 @@ body {
     background: none;
     opacity: 0; }
     .project__title .glitch__canvas {
-      height: 450px;
+      height: 420px;
       top: 3%; }
 
 @-webkit-keyframes rainbow {
@@ -687,7 +687,7 @@ body {
     font-family: 'Theinhardt-light';
     font-weight: 300;
     font-style: normal;
-    letter-spacing: 3px;
+    letter-spacing: 3rem;
     opacity: 0; }
   .cursor .up-1,
   .cursor .up-2,
@@ -796,7 +796,7 @@ body {
         stroke-dashoffset: 840; }
 
 .project__title {
-  font-size: 521%;
+  font-size: 488%;
   display: inline-block;
   vertical-align: middle;
   white-space: nowrap;
@@ -831,13 +831,13 @@ body {
 .project__number {
   position: absolute;
   top: -300px;
-  font-size: 60px;
+  font-size: 55px;
   left: 5px; }
 
 .project__more {
   left: 0px;
   padding-left: 0px;
-  font-size: 52px;
+  font-size: 44px;
   letter-spacing: 4px;
   font-family: 'Theinhardt';
   font-weight: normal;
@@ -857,61 +857,6 @@ body {
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     transition: width 0.8s cubic-bezier(0.16, 0.29, 0, 1); }
-
-.project__next, .project__prev {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-  white-space: nowrap;
-  opacity: 0;
-  text-transform: uppercase;
-  font-size: 57px;
-  letter-spacing: 4px;
-  font-family: 'Theinhardt'; }
-  .project__next hr, .project__prev hr {
-    position: absolute;
-    width: 3px;
-    height: 120px;
-    background-color: white;
-    left: 50%;
-    top: calc(100% + 40px);
-    -webkit-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%); }
-  .project__next span, .project__prev span {
-    opacity: 0;
-    display: block; }
-  .project__next svg, .project__prev svg {
-    display: block;
-    margin: 0 auto;
-    width: 200px;
-    height: 200px;
-    position: relative; }
-    .project__next svg polyline,
-    .project__next svg circle, .project__prev svg polyline,
-    .project__prev svg circle {
-      stroke: white; }
-    .project__next svg.is-up .up-1, .project__prev svg.is-up .up-1 {
-      stroke-dasharray: 100%;
-      stroke-dashoffset: 92%; }
-    .project__next svg.is-up .up-2, .project__prev svg.is-up .up-2 {
-      stroke-dasharray: 100%;
-      stroke-dashoffset: -14%; }
-    .project__next svg.is-down .down-1, .project__prev svg.is-down .down-1 {
-      stroke-dasharray: 100%;
-      stroke-dashoffset: 70%; }
-    .project__next svg.is-down .down-2, .project__prev svg.is-down .down-2 {
-      stroke-dasharray: 100%;
-      stroke-dashoffset: -36%; }
-
-.project__prev hr {
-  top: calc(0% - 40px); }
-
-.project__prev svg {
-  margin-top: 60px; }
-
-.project__next svg {
-  margin-bottom: 60px; }
 
 .ui {
   display: block;

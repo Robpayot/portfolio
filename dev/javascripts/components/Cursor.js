@@ -1,5 +1,5 @@
 import EmitterManager from '../managers/EmitterManager';
-import RouterManager from '../managers/RouterManager';
+import { Device } from '../helpers/Device';
 
 
 export default class Cursor {
@@ -19,6 +19,7 @@ export default class Cursor {
 		this.c2 = this.svgCircle[1];
 		this.next = this.wrapper.querySelector('.cursor__next');
 		this.prev = this.wrapper.querySelector('.cursor__prev');
+		this.text = this.el.querySelector('text');
 
 		this.circleObj = {val : 15.9};
 		this.mouse = {};
@@ -26,6 +27,9 @@ export default class Cursor {
 		this.cursorSmooth = { x: 0, y: 0};
 
 		EmitterManager.on('mousemove', this.onMouseMove);
+		EmitterManager.on('resize', this.resizeHandler);
+
+		this.resizeHandler();
 
 	}
 
@@ -160,6 +164,24 @@ export default class Cursor {
 				this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
 			}});
 		}
+	}
+
+	resizeHandler() {
+		let textLength;
+
+		switch (Device.size) {
+			case 'desktop':
+				textLength = 54;
+				break;
+			case 'small-desktop':
+				textLength = 46;
+				break;
+			default:
+				textLength = 43;
+				break;
+		}
+
+		this.text.setAttribute('textLength', textLength);
 	}
 
 }
