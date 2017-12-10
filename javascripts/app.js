@@ -2720,7 +2720,7 @@ var Levit = function (_ProjectView) {
 					this.asteroids[_i].mesh.rotation.y += (this.asteroids[_i].timeRotate + this.asteroids[_i].velocity) * this.asteroids[_i].dir;
 				} else {
 					if (this.asteroids[_i].velocity !== 0) {
-						this.asteroids[_i].velocity -= 0.0005;
+						this.asteroids[_i].velocity -= 0.0004;
 						this.asteroids[_i].velocity = Math.max(0, this.asteroids[_i].velocity);
 					}
 
@@ -8126,7 +8126,7 @@ var AboutView = function (_AbstractView) {
 			}
 
 			this.effectController = {
-				mouseSize: 30.0,
+				mouseSize: 34.0,
 				viscosity: 0.15
 			};
 
