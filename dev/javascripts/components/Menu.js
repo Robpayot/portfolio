@@ -162,7 +162,7 @@ export default class Menu {
 	onHoverBtn(e) {
 
 		if (this.hoverBtn === true) return false;
-		global.CURSOR.interractHover();
+		global.CURSOR.interractHover({magnet: true, el: this.ui.buttonSvg});
 
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
@@ -195,7 +195,7 @@ export default class Menu {
 	}
 
 	onLeaveBtn() {
-		global.CURSOR.interractLeave();
+		global.CURSOR.interractLeave({magnet: true, el: this.ui.buttonSvg});
 		this.hoverBtn = false;
 		TweenMax.fromTo('.menu__button circle', 0.2, {opacity: 0}, {opacity: 1});
 		TweenMax.set('.menu__button circle', {transformOrigin: '50% 50%'});

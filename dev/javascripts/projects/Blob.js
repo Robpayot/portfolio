@@ -176,17 +176,17 @@ export default class Blob extends ProjectView {
 
 		// Asteroids meshs
 		for (let i = 0; i < this.nbAst; i++) {
-			// Move top and bottom --> Levit effect
 
+			// Move top and bottom --> Levit effect
 			this.asteroids[i].mesh.position.y = this.asteroids[i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * this.asteroids[i].range.coef + this.asteroids[i].range.add;
 			// rotate
 			this.asteroids[i].mesh.material.uniforms[ 'time' ].value = .00065 * ( Date.now() - this.inc ); // use getDelta??
 
 			if (this.asteroids[i].mesh.material.uniforms['weight'].value >= 0.0) {
 				if (this.asteroids[i].active === true) {
-					this.asteroids[i].mesh.material.uniforms[ 'weight' ].value = clamp(this.asteroids[i].mesh.material.uniforms[ 'weight' ].value + 0.04, 0.0, this.asteroids[i].initW + this.asteroids[i].rangeMat.coef + this.asteroids[i].rangeMat.add);
+					this.asteroids[i].mesh.material.uniforms[ 'weight' ].value = clamp(this.asteroids[i].mesh.material.uniforms[ 'weight' ].value + 0.035, 0.0, this.asteroids[i].initW + this.asteroids[i].rangeMat.coef + this.asteroids[i].rangeMat.add);
 				} else {
-					this.asteroids[i].mesh.material.uniforms[ 'weight' ].value = clamp(this.asteroids[i].mesh.material.uniforms[ 'weight' ].value - 0.04, 0.0, this.asteroids[i].initW + this.asteroids[i].rangeMat.coef + this.asteroids[i].rangeMat.add);
+					this.asteroids[i].mesh.material.uniforms[ 'weight' ].value = clamp(this.asteroids[i].mesh.material.uniforms[ 'weight' ].value - 0.03, 0.0, this.asteroids[i].initW + this.asteroids[i].rangeMat.coef + this.asteroids[i].rangeMat.add);
 				}
 			}
 		}

@@ -380,8 +380,8 @@ export default class ProjectView extends AbstractView {
 
 			this.initGalleryY = 0;
 
-			TweenMax.set('.project__next hr', {y: -100});
-			TweenMax.set('.project__prev hr', {y: -120});
+			// TweenMax.set('.project__next hr', {y: -100});
+			// TweenMax.set('.project__prev hr', {y: -120});
 		}
 
 	}
@@ -457,7 +457,7 @@ export default class ProjectView extends AbstractView {
 
 		TweenMax.to(global.MENU.ui.button, 1, { opacity: 0});
 		TweenMax.set(global.MENU.ui.button, { display: 'none', delay: 1});
-
+		TweenMax.to('.project__title', 1, { opacity: 0 });
 		// Turn around the perimeter of a circle
 		const trigo = { angle: 1 };
 		this.currentRotateY = { angle: 0};
@@ -474,8 +474,8 @@ export default class ProjectView extends AbstractView {
 			ease: Power2.easeOut
 		});
 
-		tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 2.4);  // ,2.4
-		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 2.4);
+		tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 1.7);  // ,1.7
+		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
 
 		tl.staggerFromTo(['.project__top', this.ui.imgs[0]], 1.2, { // 1.2
 			opacity: 0,
@@ -484,27 +484,22 @@ export default class ProjectView extends AbstractView {
 			opacity: 0.9,
 			y: 0,
 			ease: window.Expo.easeOut
-		}, 0.2, 2.4);
+		}, 0.2, 1.7);
 
 		tl.fromTo(this.ui.imgs[0], 1.2, {
 			scaleY: 2
 		}, {
 			scaleY: 1,
 			ease: window.Expo.easeOut
-		}, 2.4);
+		}, 1.7);
 
 		this.ui.imgs[0].classList.add('is-visible');
 
-		tl.staggerTo(['.project__prev','.project__next','.project__title'], 0.6, { // 0.6
-			opacity: 0,
-			ease: window.Power4.easeOut
-		},0.2,1.6);
-
 		// angle
 
-		tl.to(trigo, 3, { // 3
+		tl.to(trigo, 2.1, { // 3
 			angle: 0,
-			ease: window.Power3.easeInOut,
+			ease: window.Power2.easeInOut,
 			onUpdate: () => {
 				// Math.PI / 2 start rotation at 90deg
 				this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
@@ -513,9 +508,9 @@ export default class ProjectView extends AbstractView {
 			}
 		}, 0);
 
-		tl.to(this.currentRotateY, 3, {
+		tl.to(this.currentRotateY, 2.1, {
 			angle: toRadian(90),
-			ease: window.Power3.easeInOut
+			ease: window.Power2.easeInOut
 		}, 0);
 
 		tl.add(() => {
@@ -548,9 +543,7 @@ export default class ProjectView extends AbstractView {
 		// ScrollManager.off(); // stop scrollmanager
 		this.contentOpen = false;
 		global.CURSOR.interractLeave({back: true});
-
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
-		TweenMax.to(global.MENU.ui.button, 1, { opacity: 1});
 
 		for (let i = 0; i < this.ui.imgs.length; i++) {
 			this.ui.imgs[i].classList.remove('is-visible');
@@ -592,7 +585,7 @@ export default class ProjectView extends AbstractView {
 			ease: window.Power3.easeInOut
 		}, 0.5);
 
-		tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
+		tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 			opacity: 0,
 			y: 80
 		}, {
@@ -605,6 +598,10 @@ export default class ProjectView extends AbstractView {
 			opacity: 1
 		}, 2.6);
 
+		tl.to(global.MENU.ui.button, 2, {
+			opacity: 1
+		}, 2.6);
+
 		if (global.SCROLLED === false) {
 			tl.to('.scroll', 1, {opacity: 1}, 2.6);
 		}
@@ -614,7 +611,7 @@ export default class ProjectView extends AbstractView {
 	goTo(e, element) {
 
 
-		const el = element || e.currentTarget;
+		const el = e !== null ? e.currentTarget : element;
 		this.goToNoScroll = true;
 		if (el.classList.contains('cursor__next')) this.dir = -1;
 		else this.dir = 1;
@@ -799,13 +796,12 @@ export default class ProjectView extends AbstractView {
 
 		if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
 
-
-		if (y < window.innerHeight * 0.15) {
+		if (y < window.innerHeight * 0.2 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8 ) {
 			this.goToNoScroll = true;
 			this.dir = -1;
 			global.CURSOR.interractHover({type: 'next', color: global.CURSOR.next.getAttribute('data-color'), el: global.CURSOR.next});
 			this.cursorActive = true;
-		} else if (y > window.innerHeight * 0.85) {
+		} else if (y > window.innerHeight * 0.80 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8) {
 			this.goToNoScroll = true;
 			this.dir = 1;
 			global.CURSOR.interractHover({type: 'prev', color: global.CURSOR.prev.getAttribute('data-color'), el: global.CURSOR.prev});
@@ -953,18 +949,18 @@ export default class ProjectView extends AbstractView {
 
 		if (this.lastPage === 'intro') {
 
-			time = 5;
-			delay = 3;
+			time = 4;
+			delay = 1.5;
 
 			let points = {
 				'camera': [{
 					'x': 0,
-					'y': -240,
-					'z': 240
+					'y': -115,
+					'z': 300
 				}, {
 					'x': 0,
-					'y': -160,
-					'z': 160
+					'y': -65,
+					'z': 240
 				}, {
 					'x': 0,
 					'y': 0,
@@ -1007,7 +1003,7 @@ export default class ProjectView extends AbstractView {
 			tl.to(this.dolly, time, {
 				cameraPosition: 1,
 				lookatPosition: 1,
-				ease: window.Power4.easeOut,
+				ease: window.Expo.easeOut,
 				onUpdate: () => {
 					this.dolly.update();
 					this.camera.movingRotX = this.camera.rotation.x;
@@ -1032,7 +1028,7 @@ export default class ProjectView extends AbstractView {
 		}, 0.8);
 
 
-		tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
+		tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 			opacity: 0,
 			y: 80
 		}, {
@@ -1042,7 +1038,7 @@ export default class ProjectView extends AbstractView {
 		}, 0.1, delay);
 
 		if (global.SCROLLED === false) {
-			tl.to('.scroll', 1, {opacity: 1}, 5);
+			TweenMax.to('.scroll', 1, {opacity: 1, delay: 3.5});
 		}
 
 
@@ -1124,7 +1120,7 @@ export default class ProjectView extends AbstractView {
 			angle: toRadian(0)
 		});
 
-		tl.set(['.project__next','.project__prev','.project__title'], {
+		tl.set(['.project__next'], {
 			opacity: 1
 		});
 

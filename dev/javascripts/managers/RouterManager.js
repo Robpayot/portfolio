@@ -97,6 +97,9 @@ class RouterManager {
 
 			this.lastPage = this.currentPage.name;
 			let dir = this.lastId > index ? -1 : 1;
+			if (goToPage === '/about') dir = -1;
+			if (goToPage === '/intro') dir = 1;
+			console.log(goToPage);
 			this.currentPage.transitionOut(dir); // animation Out
 
 			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu

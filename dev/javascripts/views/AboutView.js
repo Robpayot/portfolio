@@ -185,7 +185,7 @@ export default class AboutView extends AbstractView {
 		}
 
 		this.effectController = {
-			mouseSize: 30.0,
+			mouseSize: 34.0,
 			viscosity: 0.15
 		};
 

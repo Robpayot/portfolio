@@ -1,5 +1,5 @@
 import EmitterManager from '../managers/EmitterManager';
-import RouterManager from '../managers/RouterManager';
+import { Device } from '../helpers/Device';
 
 
 export default class Cursor {
@@ -19,13 +19,16 @@ export default class Cursor {
 		this.c2 = this.svgCircle[1];
 		this.next = this.wrapper.querySelector('.cursor__next');
 		this.prev = this.wrapper.querySelector('.cursor__prev');
+		this.text = this.el.querySelector('text');
 
 		this.circleObj = {val : 15.9};
 		this.mouse = {};
 		this.cursorTarget = { x: 0, y: 0};
-		this.cursorSmooth = { x: 0, y: 0};
 
 		EmitterManager.on('mousemove', this.onMouseMove);
+		EmitterManager.on('resize', this.resizeHandler);
+
+		this.resizeHandler();
 
 	}
 
@@ -35,6 +38,8 @@ export default class Cursor {
 
 		this.mouse.x = x;
 		this.mouse.y = y;
+
+		if (this.stopFollow === true) return false;
 		TweenMax.set(this.wrapper, {left: x});
 		TweenMax.set(this.wrapper, {top: y});
 	}
@@ -57,7 +62,7 @@ export default class Cursor {
 			this.currentEl = obj.el;
 			// remplie
 			if (obj.small !== true) {
-				TweenMax.to(this.c2, 3, {strokeDashoffset: '0%', ease: window.Linear.easeNone,
+				TweenMax.to(this.c2, 4, {strokeDashoffset: '0%', ease: window.Linear.easeNone,
 					onComplete:() => {
 						if (this.hoverGoTo = true) {
 							RouterManager.currentPage.goTo(null, this.currentEl);
@@ -91,27 +96,20 @@ export default class Cursor {
 		}
 
 
-		if (obj.magnet === true) {
-			this.isHover = true;
-			this.hasDelay = false;
-			if (this.el.classList.contains('is-hover') === false) {
-				this.el.classList.add('is-hover');
+		let time = 0.7;
 
-				const vpOffset = obj.el.getBoundingClientRect();
-				this.stopFollow = true;
-				TweenMax.to(this.el, 0.3, {left: vpOffset.left + vpOffset.width / 2, top: vpOffset.top + vpOffset.height / 2});
-				TweenMax.to(this.cursorSmooth, 0.3, {x: vpOffset.left + vpOffset.width / 2, y: vpOffset.top + vpOffset.height / 2});
-				TweenMax.to(this.circleObj,1.5, { val: maxVal, ease: window.Expo.easeOut, onUpdate:() => {
-					this.c1.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-					this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-				}});
-			}
-		} else {
-			TweenMax.to(this.circleObj,0.7, { val: maxVal, ease: window.Expo.easeOut, onUpdate:() => {
-				this.c1.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-				this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-			}});
+		if (obj.magnet === true) {
+			const vpOffset = obj.el.getBoundingClientRect();
+			this.stopFollow = true;
+			TweenMax.to(this.wrapper, 0.3, {left: vpOffset.left + vpOffset.width / 2, top: vpOffset.top + vpOffset.height / 2});
+			time = 1.2;
+
 		}
+
+		TweenMax.to(this.circleObj, time, { val: maxVal, ease: window.Expo.easeOut, onUpdate:() => {
+			this.c1.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+			this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+		}});
 
 	}
 
@@ -119,6 +117,8 @@ export default class Cursor {
 		if (this.hoverGlobal === false) return false;
 		this.hoverGlobal = false;
 		this.currentEl = null;
+		this.hoverGoTo = false;
+		this.stopFollow = false;
 		// console.log('leave');
 		// remplie
 
@@ -136,30 +136,35 @@ export default class Cursor {
 
 		if (obj.color !== undefined) {
 			TweenMax.to(this.c2, 0.5, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
-			this.hoverGoTo = false;
 		}
 
 		if (obj.small === true) {
 			TweenMax.to(this.c2, 0, {strokeDashoffset: '308%', ease: window.Expo.easeOut});
 		}
 
-		if (obj.magnet === true) {
-			this.isHover = false;
-			if (this.el.classList.contains('is-hover') === true) {
-				this.el.classList.remove('is-hover');
-				this.stopFollow = false;
-				this.hasDelay = true;
-				TweenMax.to(this.circleObj,1.5, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
-					this.c1.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-					this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-				}});
-			}
-		} else {
-			TweenMax.to(this.circleObj,0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
-				this.c1.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-				this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
-			}});
+		TweenMax.to(this.circleObj,0.7, { val: 15.9, ease: window.Expo.easeOut, onUpdate:() => {
+			this.c1.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+			this.c2.setAttribute('r', this.circleObj.val - 0.9); // 0.9 fix issue on Chrome
+		}});
+
+	}
+
+	resizeHandler() {
+		let textLength;
+
+		switch (Device.size) {
+			case 'desktop':
+				textLength = 54;
+				break;
+			case 'small-desktop':
+				textLength = 46;
+				break;
+			default:
+				textLength = 43;
+				break;
 		}
+
+		this.text.setAttribute('textLength', textLength);
 	}
 
 }
