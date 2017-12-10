@@ -127,9 +127,7 @@ var _EmitterManager = require('../managers/EmitterManager');
 
 var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 
-var _RouterManager = require('../managers/RouterManager');
-
-var _RouterManager2 = _interopRequireDefault(_RouterManager);
+var _Device = require('../helpers/Device');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -151,6 +149,7 @@ var Cursor = function () {
 		this.c2 = this.svgCircle[1];
 		this.next = this.wrapper.querySelector('.cursor__next');
 		this.prev = this.wrapper.querySelector('.cursor__prev');
+		this.text = this.el.querySelector('text');
 
 		this.circleObj = { val: 15.9 };
 		this.mouse = {};
@@ -158,6 +157,9 @@ var Cursor = function () {
 		this.cursorSmooth = { x: 0, y: 0 };
 
 		_EmitterManager2.default.on('mousemove', this.onMouseMove);
+		_EmitterManager2.default.on('resize', this.resizeHandler);
+
+		this.resizeHandler();
 	}
 
 	_createClass(Cursor, [{
@@ -298,6 +300,25 @@ var Cursor = function () {
 					} });
 			}
 		}
+	}, {
+		key: 'resizeHandler',
+		value: function resizeHandler() {
+			var textLength = void 0;
+
+			switch (_Device.Device.size) {
+				case 'desktop':
+					textLength = 54;
+					break;
+				case 'small-desktop':
+					textLength = 46;
+					break;
+				default:
+					textLength = 43;
+					break;
+			}
+
+			this.text.setAttribute('textLength', textLength);
+		}
 	}]);
 
 	return Cursor;
@@ -305,7 +326,7 @@ var Cursor = function () {
 
 exports.default = Cursor;
 
-},{"../managers/EmitterManager":12,"../managers/RouterManager":14}],5:[function(require,module,exports){
+},{"../helpers/Device":7,"../managers/EmitterManager":12}],5:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1481,6 +1502,10 @@ var AppManager = function () {
 			}
 
 			if (window.innerWidth > 1024) {
+				_Device.Device.size = 'small-desktop';
+			}
+
+			if (window.innerWidth > 1440) {
 				_Device.Device.size = 'desktop';
 			}
 
@@ -10771,12 +10796,12 @@ var ProjectView = function (_AbstractView) {
 
 			if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
 
-			if (y < window.innerHeight * 0.15) {
+			if (y < window.innerHeight * 0.2) {
 				this.goToNoScroll = true;
 				this.dir = -1;
 				global.CURSOR.interractHover({ type: 'next', color: global.CURSOR.next.getAttribute('data-color'), el: global.CURSOR.next });
 				this.cursorActive = true;
-			} else if (y > window.innerHeight * 0.85) {
+			} else if (y > window.innerHeight * 0.80) {
 				this.goToNoScroll = true;
 				this.dir = 1;
 				global.CURSOR.interractHover({ type: 'prev', color: global.CURSOR.prev.getAttribute('data-color'), el: global.CURSOR.prev });
@@ -11012,7 +11037,7 @@ var ProjectView = function (_AbstractView) {
 			}, 0.1, delay);
 
 			if (global.SCROLLED === false) {
-				tl.to('.scroll', 1, { opacity: 1 }, 5);
+				TweenMax.to('.scroll', 1, { opacity: 1, delay: 3.5 });
 			}
 		}
 	}, {
