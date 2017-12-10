@@ -256,6 +256,7 @@ var Cursor = function () {
 			if (this.hoverGlobal === false) return false;
 			this.hoverGlobal = false;
 			this.currentEl = null;
+			this.hoverGoTo = false;
 			// console.log('leave');
 			// remplie
 
@@ -273,7 +274,6 @@ var Cursor = function () {
 
 			if (obj.color !== undefined) {
 				TweenMax.to(this.c2, 0.5, { strokeDashoffset: '308%', ease: window.Expo.easeOut });
-				this.hoverGoTo = false;
 			}
 
 			if (obj.small === true) {
@@ -1684,6 +1684,9 @@ var RouterManager = function () {
 
 				this.lastPage = this.currentPage.name;
 				var dir = this.lastId > index ? -1 : 1;
+				if (goToPage === '/about') dir = -1;
+				if (goToPage === '/intro') dir = 1;
+				console.log(goToPage);
 				this.currentPage.transitionOut(dir); // animation Out
 
 				if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
@@ -10348,8 +10351,8 @@ var ProjectView = function (_AbstractView) {
 
 				this.initGalleryY = 0;
 
-				TweenMax.set('.project__next hr', { y: -100 });
-				TweenMax.set('.project__prev hr', { y: -120 });
+				// TweenMax.set('.project__next hr', {y: -100});
+				// TweenMax.set('.project__prev hr', {y: -120});
 			}
 		}
 
@@ -10432,7 +10435,7 @@ var ProjectView = function (_AbstractView) {
 
 			TweenMax.to(global.MENU.ui.button, 1, { opacity: 0 });
 			TweenMax.set(global.MENU.ui.button, { display: 'none', delay: 1 });
-
+			TweenMax.to('.project__title', 1, { opacity: 0 });
 			// Turn around the perimeter of a circle
 			var trigo = { angle: 1 };
 			this.currentRotateY = { angle: 0 };
@@ -10449,8 +10452,8 @@ var ProjectView = function (_AbstractView) {
 				ease: Power2.easeOut
 			});
 
-			tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 2.4); // ,2.4
-			tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 2.4);
+			tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 1.7); // ,1.7
+			tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
 
 			tl.staggerFromTo(['.project__top', this.ui.imgs[0]], 1.2, { // 1.2
 				opacity: 0,
@@ -10459,27 +10462,22 @@ var ProjectView = function (_AbstractView) {
 				opacity: 0.9,
 				y: 0,
 				ease: window.Expo.easeOut
-			}, 0.2, 2.4);
+			}, 0.2, 1.7);
 
 			tl.fromTo(this.ui.imgs[0], 1.2, {
 				scaleY: 2
 			}, {
 				scaleY: 1,
 				ease: window.Expo.easeOut
-			}, 2.4);
+			}, 1.7);
 
 			this.ui.imgs[0].classList.add('is-visible');
 
-			tl.staggerTo(['.project__prev', '.project__next', '.project__title'], 0.6, { // 0.6
-				opacity: 0,
-				ease: window.Power4.easeOut
-			}, 0.2, 1.6);
-
 			// angle
 
-			tl.to(trigo, 3, { // 3
+			tl.to(trigo, 2.1, { // 3
 				angle: 0,
-				ease: window.Power3.easeInOut,
+				ease: window.Power2.easeInOut,
 				onUpdate: function onUpdate() {
 					// Math.PI / 2 start rotation at 90deg
 					_this3.camera.position.x = _this3.pathRadius * Math.cos(Math.PI / 2 * trigo.angle);
@@ -10487,9 +10485,9 @@ var ProjectView = function (_AbstractView) {
 				}
 			}, 0);
 
-			tl.to(this.currentRotateY, 3, {
+			tl.to(this.currentRotateY, 2.1, {
 				angle: (0, _utils.toRadian)(90),
-				ease: window.Power3.easeInOut
+				ease: window.Power2.easeInOut
 			}, 0);
 
 			tl.add(function () {
@@ -10523,9 +10521,7 @@ var ProjectView = function (_AbstractView) {
 			// ScrollManager.off(); // stop scrollmanager
 			this.contentOpen = false;
 			global.CURSOR.interractLeave({ back: true });
-
 			TweenMax.set(global.MENU.ui.button, { display: 'block' });
-			TweenMax.to(global.MENU.ui.button, 1, { opacity: 1 });
 
 			for (var i = 0; i < this.ui.imgs.length; i++) {
 				this.ui.imgs[i].classList.remove('is-visible');
@@ -10566,7 +10562,7 @@ var ProjectView = function (_AbstractView) {
 				ease: window.Power3.easeInOut
 			}, 0.5);
 
-			tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
+			tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 				opacity: 0,
 				y: 80
 			}, {
@@ -10576,6 +10572,10 @@ var ProjectView = function (_AbstractView) {
 			}, 0.1, 2.6);
 
 			tl.set(['.project__title'], {
+				opacity: 1
+			}, 2.6);
+
+			tl.to(global.MENU.ui.button, 2, {
 				opacity: 1
 			}, 2.6);
 
@@ -10928,7 +10928,7 @@ var ProjectView = function (_AbstractView) {
 			if (this.lastPage === 'intro') {
 
 				time = 4;
-				delay = 3;
+				delay = 1.5;
 
 				var points = {
 					'camera': [{
@@ -11002,7 +11002,7 @@ var ProjectView = function (_AbstractView) {
 				_this8.transitionInComplete = true;
 			}, 0.8);
 
-			tl.staggerFromTo(['.project__number', '.glitch', '.project__more', '.project__prev', '.project__next'], 2, { // 1.2
+			tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 				opacity: 0,
 				y: 80
 			}, {
@@ -11092,7 +11092,7 @@ var ProjectView = function (_AbstractView) {
 				angle: (0, _utils.toRadian)(0)
 			});
 
-			tl.set(['.project__next', '.project__prev', '.project__title'], {
+			tl.set(['.project__next'], {
 				opacity: 1
 			});
 		}
