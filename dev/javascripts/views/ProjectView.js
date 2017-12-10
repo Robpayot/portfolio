@@ -614,7 +614,7 @@ export default class ProjectView extends AbstractView {
 	goTo(e, element) {
 
 
-		const el = element || e.currentTarget;
+		const el = e !== null ? e.currentTarget : element;
 		this.goToNoScroll = true;
 		if (el.classList.contains('cursor__next')) this.dir = -1;
 		else this.dir = 1;
@@ -945,7 +945,7 @@ export default class ProjectView extends AbstractView {
 	transitionIn(fromUrl = false) {
 
 
-		// this.lastPage = 'intro';
+		this.lastPage = 'intro';
 		fromUrl = false;
 
 		let time = 3;
@@ -953,18 +953,18 @@ export default class ProjectView extends AbstractView {
 
 		if (this.lastPage === 'intro') {
 
-			time = 5;
+			time = 4;
 			delay = 3;
 
 			let points = {
 				'camera': [{
 					'x': 0,
-					'y': -240,
-					'z': 240
+					'y': -115,
+					'z': 300
 				}, {
 					'x': 0,
-					'y': -160,
-					'z': 160
+					'y': -65,
+					'z': 240
 				}, {
 					'x': 0,
 					'y': 0,
@@ -1007,7 +1007,7 @@ export default class ProjectView extends AbstractView {
 			tl.to(this.dolly, time, {
 				cameraPosition: 1,
 				lookatPosition: 1,
-				ease: window.Power4.easeOut,
+				ease: window.Expo.easeOut,
 				onUpdate: () => {
 					this.dolly.update();
 					this.camera.movingRotX = this.camera.rotation.x;
