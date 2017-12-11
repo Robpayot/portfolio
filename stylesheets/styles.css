@@ -503,6 +503,9 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none; }
+  .webGl__canvas {
+    background: url(../images/textures/project-1.png);
+    background-size: cover; }
 
 .graphicBars {
   background-color: transparent;
