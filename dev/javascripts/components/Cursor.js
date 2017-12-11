@@ -1,4 +1,5 @@
 import EmitterManager from '../managers/EmitterManager';
+import RouterManager from '../managers/RouterManager';
 import { Device } from '../helpers/Device';
 
 
