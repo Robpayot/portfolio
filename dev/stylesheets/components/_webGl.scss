@@ -9,8 +9,20 @@
     }
 
     &__canvas {
-    	background: url(../images/textures/project-3.png); 
     	background-size: cover;
+
+    	&[data-index="0"]{
+    		background: url(../images/textures/project-0.jpg); 
+    	}
+       	&[data-index="1"] {
+    		background: url(../images/textures/project-1.jpg); 
+    	}
+    	&[data-index="2"] {
+    		background: url(../images/textures/project-2.jpg); 
+    	}
+    	&[data-index="3"] {
+    		background: url(../images/textures/project-3.jpg); 
+    	}
     }
 }
 
