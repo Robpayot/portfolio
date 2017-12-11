@@ -82,6 +82,7 @@ class AppManager {
 
 		// SkyTex
 		global.SKYTEX = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
+		global.PROJECTTEX = new TextureLoader().load( `${global.BASE}/images/textures/project-1.png` );
 
 		// Preload all img projects
 		for (let i = 0; i < DATA.projects.length; i++) {

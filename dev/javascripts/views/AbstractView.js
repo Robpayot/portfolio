@@ -143,7 +143,7 @@ export default class AbstractView {
 			this.cssObjects = [];
 		}
 
-
+		SceneManager.destroy();
 		// Wait destroy scene before stop js events ?
 		this.events(false);
 

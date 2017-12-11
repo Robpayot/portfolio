@@ -1150,7 +1150,7 @@ function loadJSON(source) {
 	});
 }
 
-},{"three":172}],10:[function(require,module,exports){
+},{"three":169}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1381,6 +1381,7 @@ var AppManager = function () {
 
 			// SkyTex
 			global.SKYTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
+			global.PROJECTTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/project-1.png');
 
 			// Preload all img projects
 			for (var i = 0; i < _data2.default.projects.length; i++) {
@@ -1508,7 +1509,7 @@ exports.default = new AppManager();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Cursor":4,"../components/Menu":6,"../helpers/Device":7,"../helpers/handlebarsRegister":8,"../helpers/utils-three":9,"./EmitterManager":12,"./PreloadManager":13,"./RouterManager":14,"./SceneManager":15,"bean":51,"three":172}],12:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Cursor":4,"../components/Menu":6,"../helpers/Device":7,"../helpers/handlebarsRegister":8,"../helpers/utils-three":9,"./EmitterManager":12,"./PreloadManager":13,"./RouterManager":14,"./SceneManager":15,"bean":50,"three":169}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1546,7 +1547,7 @@ queue.maintainScriptOrder = false;
 
 exports.default = queue;
 
-},{"preload-js":164}],14:[function(require,module,exports){
+},{"preload-js":162}],14:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1872,6 +1873,8 @@ var _CSS3DRendererIE = require('../vendors/CSS3DRendererIE');
 
 var _CSS3DRendererIE2 = _interopRequireDefault(_CSS3DRendererIE);
 
+var _Device = require('../helpers/Device');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1899,20 +1902,26 @@ var SceneManager = function () {
 			this.cssRenderer.domElement.style.zIndex = 1;
 			this.cssRenderer.domElement.classList.add('webGl');
 
-			this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: false });
-			this.renderer.setClearColor(0xffffff, 1);
+			this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: true });
+			// this.renderer.setClearColor(0xffffff, 1);
 			// this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1); //--> 1.5 au lieu de 2 ?
 			// setScissor ??
 
 			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			this.renderer.setClearColor(0x000000, 0);
 
 			this.renderer.domElement.style.position = 'absolute';
 			this.renderer.domElement.style.top = 0;
 			this.renderer.domElement.style.left = 0;
+			this.renderer.domElement.style.backgroundColor = 'red';
+
 			this.renderer.domElement.classList.add('webGl__canvas');
 			this.cssRenderer.domElement.appendChild(this.renderer.domElement);
 
 			this.xp.appendChild(this.cssRenderer.domElement);
+
+			// this.resizeHandler(); // size first time
+
 
 			this.el = this.renderer.domElement;
 
@@ -1930,7 +1939,6 @@ var SceneManager = function () {
 				opts.composer.render(delta);
 			} else {
 				// Render scene
-				// this.renderer.clear();
 				this.renderer.render(opts.scene, opts.camera); // { antialias: true } ???
 			}
 
@@ -1945,13 +1953,17 @@ var SceneManager = function () {
 			opts.camera.aspect = window.innerWidth / window.innerHeight;
 			opts.camera.updateProjectionMatrix();
 
-			var coef = 0.6;
+			var coef = window.innerWidth > 1920 ? 0.6 : 0.8;
 
 			// Update canvas size
 			this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
-			if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
-			console.log(this.el);
-			TweenMax.set(this.el, { width: window.innerWidth, height: window.innerHeight });
+			if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+			TweenMax.set([this.el, this.cssRenderer.domElement], { width: window.innerWidth, height: window.innerHeight });
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			this.renderer.clear();
 		}
 	}]);
 
@@ -1960,7 +1972,7 @@ var SceneManager = function () {
 
 exports.default = new SceneManager();
 
-},{"../vendors/CSS3DRendererIE":37,"three":172}],16:[function(require,module,exports){
+},{"../helpers/Device":7,"../vendors/CSS3DRendererIE":37,"three":169}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2095,7 +2107,7 @@ FilmPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
 
 exports.FilmPass = FilmPass;
 
-},{"../shaders/FilmShader":25,"three":172}],18:[function(require,module,exports){
+},{"../shaders/FilmShader":25,"three":169}],18:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -2130,7 +2142,7 @@ Object.assign(THREE.Pass.prototype, {
 
 });
 
-},{"three":172}],19:[function(require,module,exports){
+},{"three":169}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2353,7 +2365,7 @@ var Blob = function (_ProjectView) {
 
 exports.default = Blob;
 
-},{"../helpers/utils":10,"../shaders/BlobLightShader":23,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":172}],20:[function(require,module,exports){
+},{"../helpers/utils":10,"../shaders/BlobLightShader":23,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":169}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2539,7 +2551,7 @@ var Circular = function (_ProjectView) {
 
 exports.default = Circular;
 
-},{"../helpers/utils":10,"../views/ProjectView":49,"three":172}],21:[function(require,module,exports){
+},{"../helpers/utils":10,"../views/ProjectView":49,"three":169}],21:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2763,7 +2775,7 @@ exports.default = Levit;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/utils":10,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":172}],22:[function(require,module,exports){
+},{"../helpers/utils":10,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":169}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2869,8 +2881,8 @@ var Stars = function (_ProjectView) {
 			// var normalShader = NormalMapShader;
 
 			// NormalMap shader
-			this.size = 150;
-			this.scaleHeight = 30;
+			this.size = 250;
+			this.scaleHeight = 40;
 			this.tPosY = -20 - this.scaleHeight;
 
 			this.nbVertices = 150; /// ???
@@ -3168,7 +3180,7 @@ var Stars = function (_ProjectView) {
 
 exports.default = Stars;
 
-},{"../helpers/utils":10,"../managers/SceneManager":15,"../shaders/NoiseShader":27,"../shaders/TerrainShader":30,"../vendors/BufferGeometryUtils":35,"../views/ProjectView":49,"three":172}],23:[function(require,module,exports){
+},{"../helpers/utils":10,"../managers/SceneManager":15,"../shaders/NoiseShader":27,"../shaders/TerrainShader":30,"../vendors/BufferGeometryUtils":35,"../views/ProjectView":49,"three":169}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3363,7 +3375,7 @@ THREE.ShaderChunk["oceanfft_pars_fragment"] = [].join('\n');
 
 THREE.ShaderChunk["oceanfft_fragment"] = [].join('\n');
 
-},{"three":172}],25:[function(require,module,exports){
+},{"three":169}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3599,7 +3611,7 @@ THREE.ShaderLib['ocean_main'] = {
     * @author jbouny / https://github.com/fft-ocean
     */
 
-},{"three":172}],29:[function(require,module,exports){
+},{"three":169}],29:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -3646,7 +3658,7 @@ THREE.ShaderChunk["screenplane_vertex"] = ['vec4 screenPlaneWorldPosition = vec4
 
 THREE.ShaderChunk["screenplane_pars_fragment"] = ['varying vec3 vCamPosition;'].join('\n');
 
-},{"three":172}],30:[function(require,module,exports){
+},{"three":169}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3754,7 +3766,7 @@ var TerrainShader = {
 
 exports.default = TerrainShader;
 
-},{"three":172}],31:[function(require,module,exports){
+},{"three":169}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3872,7 +3884,7 @@ var AbstractShape = function () {
 
 exports.default = AbstractShape;
 
-},{"three":172}],34:[function(require,module,exports){
+},{"three":169}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3979,7 +3991,7 @@ var Asteroid = function (_AbstractShape) {
 
 exports.default = Asteroid;
 
-},{"../helpers/utils":10,"./AbstractShape":33,"p2":132}],35:[function(require,module,exports){
+},{"../helpers/utils":10,"./AbstractShape":33,"p2":136}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4155,7 +4167,7 @@ var BufferGeometryUtils = {
 
 exports.default = BufferGeometryUtils;
 
-},{"three":172}],36:[function(require,module,exports){
+},{"three":169}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4368,7 +4380,7 @@ THREE.CSS3DRenderer = function () {
 exports.CSS3DObject = CSS3DObject;
 exports.CSS3DSprite = CSS3DSprite;
 
-},{"three":172}],37:[function(require,module,exports){
+},{"three":169}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4583,7 +4595,7 @@ var CSS3DRendererIE = function () {
 exports.default = CSS3DRendererIE;
 ;
 
-},{"./CSS3DRenderer":36,"./Projector":42,"three":172}],38:[function(require,module,exports){
+},{"./CSS3DRenderer":36,"./Projector":42,"three":169}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4932,7 +4944,7 @@ function GPUComputationRenderer(sizeX, sizeY, renderer) {
 	}
 }
 
-},{"three":172}],39:[function(require,module,exports){
+},{"three":169}],39:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -5111,7 +5123,7 @@ THREE.MirrorRenderer.prototype.render = function (isTempTexture) {
 	}
 };
 
-},{"three":172}],40:[function(require,module,exports){
+},{"three":169}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5134,7 +5146,7 @@ var Ocean = function Ocean(renderer, camera, scene, options) {
 	this.oceanCamera = new THREE.OrthographicCamera(); //camera.clone();
 	this.oceanCamera.position.z = 1;
 	this.renderer = renderer;
-	this.renderer.clearColor(0xffffff);
+	// this.renderer.clearColor( 0xffffff );
 
 	this.scene = new THREE.Scene();
 
@@ -5488,7 +5500,7 @@ Ocean.prototype.renderNormalMap = function () {
 
 exports.default = Ocean;
 
-},{"three":172}],41:[function(require,module,exports){
+},{"three":169}],41:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6440,7 +6452,7 @@ Object.defineProperties(OrbitControls.prototype, {
 
 exports.default = OrbitControls;
 
-},{"three":172}],42:[function(require,module,exports){
+},{"three":169}],42:[function(require,module,exports){
 'use strict';
 
 var _three = require('three');
@@ -7271,7 +7283,7 @@ THREE.Projector = function () {
 	}
 };
 
-},{"three":172}],43:[function(require,module,exports){
+},{"three":169}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7903,7 +7915,7 @@ CameraDolly.prototype.exportPositions = function () {
 
 exports.CameraDolly = CameraDolly;
 
-},{"three":172}],46:[function(require,module,exports){
+},{"three":169}],46:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -8846,7 +8858,7 @@ exports.default = AboutView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/HeightmapFragmentShader":26,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":41,"../vendors/SimplexNoise":43,"./AbstractView":47,"handlebars":88,"three":172}],47:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/HeightmapFragmentShader":26,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":41,"../vendors/SimplexNoise":43,"./AbstractView":47,"handlebars":88,"three":169}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9061,6 +9073,7 @@ var AbstractView = function () {
 				this.cssObjects = [];
 			}
 
+			_SceneManager2.default.destroy();
 			// Wait destroy scene before stop js events ?
 			this.events(false);
 		}
@@ -9071,7 +9084,7 @@ var AbstractView = function () {
 
 exports.default = AbstractView;
 
-},{"../managers/AppManager":11,"../managers/SceneManager":15,"p2":132,"three":172}],48:[function(require,module,exports){
+},{"../managers/AppManager":11,"../managers/SceneManager":15,"p2":136,"three":169}],48:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -9281,7 +9294,7 @@ var IntroView = function (_AbstractView) {
 			this.setPhysicBlocks();
 			this.setAsteroids();
 
-			this.resizeHandler(); // size first time
+			// this.resizeHandler(); // size first time
 
 
 			global.CURSOR.el.classList.add('alt');
@@ -9930,7 +9943,7 @@ exports.default = IntroView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/FFTOceanShader":24,"../shaders/OceanShader":28,"../shaders/ScreenSpaceShader":29,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":88,"p2":132,"three":172}],49:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/SceneManager":15,"../shaders/FFTOceanShader":24,"../shaders/OceanShader":28,"../shaders/ScreenSpaceShader":29,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":88,"p2":136,"three":169}],49:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -10149,7 +10162,7 @@ var ProjectView = function (_AbstractView) {
 
 			// Set scenes
 			this.scene = new _three.Scene();
-			this.scene.background = new _three.Color(0x000000);
+			this.scene.background = null;
 			this.cssScene = new _three.Scene();
 			this.cameraTarget = new _three.Vector3(0, 0, 0);
 
@@ -10209,7 +10222,7 @@ var ProjectView = function (_AbstractView) {
 			// this.effectVignette.renderToScreen = true;
 			this.effectFilm.renderToScreen = true;
 
-			var renderTargetParameters = { minFilter: _three.LinearFilter, magFilter: _three.LinearFilter, format: _three.RGBFormat, stencilBuffer: true };
+			var renderTargetParameters = { minFilter: _three.LinearFilter, magFilter: _three.LinearFilter, format: _three.RGBAFormat, stencilBuffer: true };
 			this.renderTarget = new _three.WebGLRenderTarget(this.width, this.height, renderTargetParameters);
 
 			var renderModel = new _threeEffectcomposerEs.RenderPass(this.scene, this.camera);
@@ -10285,11 +10298,12 @@ var ProjectView = function (_AbstractView) {
 			var width = this.bounceArea;
 
 			var geo = new _three.SphereGeometry(width, 10, 10);
-			var mat = new _three.MeshPhongMaterial({ color: this.bkg, side: _three.BackSide });
+			var mat = new _three.MeshPhongMaterial({ side: _three.BackSide, map: global.PROJECTTEX });
 			this.envelop = new _three.Mesh(geo, mat);
 
 			// this.envelops.push(mesh);
-			this.scene.add(this.envelop);
+			// this.scene.add(this.envelop);
+
 		}
 	}, {
 		key: 'setCssContainers',
@@ -10605,7 +10619,14 @@ var ProjectView = function (_AbstractView) {
 		key: 'goTo',
 		value: function goTo(e, element) {
 
-			var el = e !== null ? e.currentTarget : element;
+			var el = void 0;
+
+			if (e === null && element) {
+				el = element;
+			} else {
+				el = e.currentTarget;
+			}
+
 			this.goToNoScroll = true;
 			if (el.classList.contains('cursor__next')) this.dir = -1;else this.dir = 1;
 		}
@@ -11047,17 +11068,19 @@ var ProjectView = function (_AbstractView) {
 
 				if (this.goToNoScroll) dir = this.dir; // se baser sur le dir de goTo non de l'url
 				// Simulate scroll backWard/foward
-				var delay = 0.8;
+				var delay = 0.4;
+				var time = 0.5;
 				if (dir === 1) {
 					// this.scrollZ -= 0.2;
 					delay = 0.4;
 					tl.to(this.camera.position, 1.8, { z: this.minZoomZ, ease: window.Power2.easeOut }); // 2
 				} else {
-					// this.scrollZ += 0.2;
-					tl.to(this.camera.position, 1.2, { z: this.maxZoomZ, ease: window.Expo.ease }); // 2
+					delay = 0.5;
+					time = 0.7;
+					tl.to(this.camera.position, 1, { z: this.maxZoomZ, ease: window.Expo.ease }); // 2
 				}
 
-				tl.to('.overlay', 0.5, {
+				tl.to('.overlay', time, {
 					opacity: 1
 				}, delay);
 				tl.add(function () {
@@ -11129,313 +11152,7 @@ exports.default = ProjectView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/RouterManager":14,"../managers/SceneManager":15,"../managers/ScrollManager":16,"../postprocessing/FilmPass":17,"../postprocessing/Pass":18,"../shaders/VignetteShader":31,"../vendors/OrbitControls":41,"../vendors/three-camera-dolly-custom":45,"./AbstractView":47,"bean":51,"handlebars":88,"three":172,"three-effectcomposer-es6":166}],50:[function(require,module,exports){
-(function (process,__filename){
-/** vim: et:ts=4:sw=4:sts=4
- * @license amdefine 1.0.1 Copyright (c) 2011-2016, The Dojo Foundation All Rights Reserved.
- * Available via the MIT or new BSD license.
- * see: http://github.com/jrburke/amdefine for details
- */
-
-/*jslint node: true */
-/*global module, process */
-'use strict';
-
-/**
- * Creates a define for node.
- * @param {Object} module the "module" object that is defined by Node for the
- * current module.
- * @param {Function} [requireFn]. Node's require function for the current module.
- * It only needs to be passed in Node versions before 0.5, when module.require
- * did not exist.
- * @returns {Function} a define function that is usable for the current node
- * module.
- */
-function amdefine(module, requireFn) {
-    'use strict';
-    var defineCache = {},
-        loaderCache = {},
-        alreadyCalled = false,
-        path = require('path'),
-        makeRequire, stringRequire;
-
-    /**
-     * Trims the . and .. from an array of path segments.
-     * It will keep a leading path segment if a .. will become
-     * the first path segment, to help with module name lookups,
-     * which act like paths, but can be remapped. But the end result,
-     * all paths that use this function should look normalized.
-     * NOTE: this method MODIFIES the input array.
-     * @param {Array} ary the array of path segments.
-     */
-    function trimDots(ary) {
-        var i, part;
-        for (i = 0; ary[i]; i+= 1) {
-            part = ary[i];
-            if (part === '.') {
-                ary.splice(i, 1);
-                i -= 1;
-            } else if (part === '..') {
-                if (i === 1 && (ary[2] === '..' || ary[0] === '..')) {
-                    //End of the line. Keep at least one non-dot
-                    //path segment at the front so it can be mapped
-                    //correctly to disk. Otherwise, there is likely
-                    //no path mapping for a path starting with '..'.
-                    //This can still fail, but catches the most reasonable
-                    //uses of ..
-                    break;
-                } else if (i > 0) {
-                    ary.splice(i - 1, 2);
-                    i -= 2;
-                }
-            }
-        }
-    }
-
-    function normalize(name, baseName) {
-        var baseParts;
-
-        //Adjust any relative paths.
-        if (name && name.charAt(0) === '.') {
-            //If have a base name, try to normalize against it,
-            //otherwise, assume it is a top-level require that will
-            //be relative to baseUrl in the end.
-            if (baseName) {
-                baseParts = baseName.split('/');
-                baseParts = baseParts.slice(0, baseParts.length - 1);
-                baseParts = baseParts.concat(name.split('/'));
-                trimDots(baseParts);
-                name = baseParts.join('/');
-            }
-        }
-
-        return name;
-    }
-
-    /**
-     * Create the normalize() function passed to a loader plugin's
-     * normalize method.
-     */
-    function makeNormalize(relName) {
-        return function (name) {
-            return normalize(name, relName);
-        };
-    }
-
-    function makeLoad(id) {
-        function load(value) {
-            loaderCache[id] = value;
-        }
-
-        load.fromText = function (id, text) {
-            //This one is difficult because the text can/probably uses
-            //define, and any relative paths and requires should be relative
-            //to that id was it would be found on disk. But this would require
-            //bootstrapping a module/require fairly deeply from node core.
-            //Not sure how best to go about that yet.
-            throw new Error('amdefine does not implement load.fromText');
-        };
-
-        return load;
-    }
-
-    makeRequire = function (systemRequire, exports, module, relId) {
-        function amdRequire(deps, callback) {
-            if (typeof deps === 'string') {
-                //Synchronous, single module require('')
-                return stringRequire(systemRequire, exports, module, deps, relId);
-            } else {
-                //Array of dependencies with a callback.
-
-                //Convert the dependencies to modules.
-                deps = deps.map(function (depName) {
-                    return stringRequire(systemRequire, exports, module, depName, relId);
-                });
-
-                //Wait for next tick to call back the require call.
-                if (callback) {
-                    process.nextTick(function () {
-                        callback.apply(null, deps);
-                    });
-                }
-            }
-        }
-
-        amdRequire.toUrl = function (filePath) {
-            if (filePath.indexOf('.') === 0) {
-                return normalize(filePath, path.dirname(module.filename));
-            } else {
-                return filePath;
-            }
-        };
-
-        return amdRequire;
-    };
-
-    //Favor explicit value, passed in if the module wants to support Node 0.4.
-    requireFn = requireFn || function req() {
-        return module.require.apply(module, arguments);
-    };
-
-    function runFactory(id, deps, factory) {
-        var r, e, m, result;
-
-        if (id) {
-            e = loaderCache[id] = {};
-            m = {
-                id: id,
-                uri: __filename,
-                exports: e
-            };
-            r = makeRequire(requireFn, e, m, id);
-        } else {
-            //Only support one define call per file
-            if (alreadyCalled) {
-                throw new Error('amdefine with no module ID cannot be called more than once per file.');
-            }
-            alreadyCalled = true;
-
-            //Use the real variables from node
-            //Use module.exports for exports, since
-            //the exports in here is amdefine exports.
-            e = module.exports;
-            m = module;
-            r = makeRequire(requireFn, e, m, module.id);
-        }
-
-        //If there are dependencies, they are strings, so need
-        //to convert them to dependency values.
-        if (deps) {
-            deps = deps.map(function (depName) {
-                return r(depName);
-            });
-        }
-
-        //Call the factory with the right dependencies.
-        if (typeof factory === 'function') {
-            result = factory.apply(m.exports, deps);
-        } else {
-            result = factory;
-        }
-
-        if (result !== undefined) {
-            m.exports = result;
-            if (id) {
-                loaderCache[id] = m.exports;
-            }
-        }
-    }
-
-    stringRequire = function (systemRequire, exports, module, id, relId) {
-        //Split the ID by a ! so that
-        var index = id.indexOf('!'),
-            originalId = id,
-            prefix, plugin;
-
-        if (index === -1) {
-            id = normalize(id, relId);
-
-            //Straight module lookup. If it is one of the special dependencies,
-            //deal with it, otherwise, delegate to node.
-            if (id === 'require') {
-                return makeRequire(systemRequire, exports, module, relId);
-            } else if (id === 'exports') {
-                return exports;
-            } else if (id === 'module') {
-                return module;
-            } else if (loaderCache.hasOwnProperty(id)) {
-                return loaderCache[id];
-            } else if (defineCache[id]) {
-                runFactory.apply(null, defineCache[id]);
-                return loaderCache[id];
-            } else {
-                if(systemRequire) {
-                    return systemRequire(originalId);
-                } else {
-                    throw new Error('No module with ID: ' + id);
-                }
-            }
-        } else {
-            //There is a plugin in play.
-            prefix = id.substring(0, index);
-            id = id.substring(index + 1, id.length);
-
-            plugin = stringRequire(systemRequire, exports, module, prefix, relId);
-
-            if (plugin.normalize) {
-                id = plugin.normalize(id, makeNormalize(relId));
-            } else {
-                //Normalize the ID normally.
-                id = normalize(id, relId);
-            }
-
-            if (loaderCache[id]) {
-                return loaderCache[id];
-            } else {
-                plugin.load(id, makeRequire(systemRequire, exports, module, relId), makeLoad(id), {});
-
-                return loaderCache[id];
-            }
-        }
-    };
-
-    //Create a define function specific to the module asking for amdefine.
-    function define(id, deps, factory) {
-        if (Array.isArray(id)) {
-            factory = deps;
-            deps = id;
-            id = undefined;
-        } else if (typeof id !== 'string') {
-            factory = id;
-            id = deps = undefined;
-        }
-
-        if (deps && !Array.isArray(deps)) {
-            factory = deps;
-            deps = undefined;
-        }
-
-        if (!deps) {
-            deps = ['require', 'exports', 'module'];
-        }
-
-        //Set up properties for this module. If an ID, then use
-        //internal cache. If no ID, then use the external variables
-        //for this node module.
-        if (id) {
-            //Put the module in deep freeze until there is a
-            //require call for it.
-            defineCache[id] = [id, deps, factory];
-        } else {
-            runFactory(id, deps, factory);
-        }
-    }
-
-    //define.require, which has access to all the values in the
-    //cache. Useful for AMD modules that all have IDs in the file,
-    //but need to finally export a value to node based on one of those
-    //IDs.
-    define.require = function (id) {
-        if (loaderCache[id]) {
-            return loaderCache[id];
-        }
-
-        if (defineCache[id]) {
-            runFactory.apply(null, defineCache[id]);
-            return loaderCache[id];
-        }
-    };
-
-    define.amd = {};
-
-    return define;
-}
-
-module.exports = amdefine;
-
-}).call(this,require('_process'),"/node_modules/amdefine/amdefine.js")
-
-},{"_process":165,"path":158}],51:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/CssContainer":3,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"../managers/RouterManager":14,"../managers/SceneManager":15,"../managers/ScrollManager":16,"../postprocessing/FilmPass":17,"../postprocessing/Pass":18,"../shaders/VignetteShader":31,"../vendors/OrbitControls":41,"../vendors/three-camera-dolly-custom":45,"./AbstractView":47,"bean":50,"handlebars":88,"three":169,"three-effectcomposer-es6":163}],50:[function(require,module,exports){
 /*!
   * Bean - copyright (c) Jacob Thornton 2011-2012
   * https://github.com/fat/bean
@@ -12178,45 +11895,422 @@ module.exports = amdefine;
   return bean
 });
 
+},{}],51:[function(require,module,exports){
+
 },{}],52:[function(require,module,exports){
-'use strict';
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var toString = Object.prototype.toString,
-    hasOwnProperty = Object.prototype.hasOwnProperty;
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
 
-module.exports = function(object) {
-    if(!object) return console.warn('bindAll requires at least one argument.');
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
 
-    var functions = Array.prototype.slice.call(arguments, 1);
+  return parts;
+}
 
-    if (functions.length === 0) {
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
 
-        for (var method in object) {
-            if(hasOwnProperty.call(object, method)) {
-                if(typeof object[method] == 'function' && toString.call(object[method]) == "[object Function]") {
-                    functions.push(method);
-                }
-            }
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require('_process'))
+
+},{"_process":53}],53:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
         }
     }
 
-    for(var i = 0; i < functions.length; i++) {
-        var f = functions[i];
-        object[f] = bind(object[f], object);
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
     }
 };
 
-/*
-    Faster bind without specific-case checking. (see https://coderwall.com/p/oi3j3w).
-    bindAll is only needed for events binding so no need to make slow fixes for constructor
-    or partial application.
-*/
-function bind(func, context) {
-  return function() {
-    return func.apply(context, arguments);
-  };
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
 }
-},{}],53:[function(require,module,exports){
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 },{}],54:[function(require,module,exports){
 
@@ -29365,7 +29459,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions['.hbs'] = extension;
 }
 
-},{"../dist/cjs/handlebars":59,"../dist/cjs/handlebars/compiler/printer":69,"fs":53}],89:[function(require,module,exports){
+},{"../dist/cjs/handlebars":59,"../dist/cjs/handlebars/compiler/printer":69,"fs":51}],89:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -29484,7 +29578,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":99,"amdefine":50}],91:[function(require,module,exports){
+},{"./util":99,"amdefine":100}],91:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -29632,7 +29726,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":92,"amdefine":50}],92:[function(require,module,exports){
+},{"./base64":92,"amdefine":100}],92:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -29707,7 +29801,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":50}],93:[function(require,module,exports){
+},{"amdefine":100}],93:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -29826,7 +29920,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":50}],94:[function(require,module,exports){
+},{"amdefine":100}],94:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -29914,7 +30008,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":99,"amdefine":50}],95:[function(require,module,exports){
+},{"./util":99,"amdefine":100}],95:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -30036,7 +30130,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":50}],96:[function(require,module,exports){
+},{"amdefine":100}],96:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -31115,7 +31209,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":90,"./base64-vlq":91,"./binary-search":93,"./quick-sort":95,"./util":99,"amdefine":50}],97:[function(require,module,exports){
+},{"./array-set":90,"./base64-vlq":91,"./binary-search":93,"./quick-sort":95,"./util":99,"amdefine":100}],97:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -31516,7 +31610,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":90,"./base64-vlq":91,"./mapping-list":94,"./util":99,"amdefine":50}],98:[function(require,module,exports){
+},{"./array-set":90,"./base64-vlq":91,"./mapping-list":94,"./util":99,"amdefine":100}],98:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -31932,7 +32026,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":97,"./util":99,"amdefine":50}],99:[function(require,module,exports){
+},{"./source-map-generator":97,"./util":99,"amdefine":100}],99:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -32304,253 +32398,987 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":50}],100:[function(require,module,exports){
-// Generated by CoffeeScript 1.9.2
-(function() {
-  var root;
+},{"amdefine":100}],100:[function(require,module,exports){
+(function (process,__filename){
+/** vim: et:ts=4:sw=4:sts=4
+ * @license amdefine 1.0.1 Copyright (c) 2011-2016, The Dojo Foundation All Rights Reserved.
+ * Available via the MIT or new BSD license.
+ * see: http://github.com/jrburke/amdefine for details
+ */
 
-  root = typeof exports !== "undefined" && exports !== null ? exports : this;
+/*jslint node: true */
+/*global module, process */
+'use strict';
 
-  root.Lethargy = (function() {
-    function Lethargy(stability, sensitivity, tolerance, delay) {
-      this.stability = stability != null ? Math.abs(stability) : 8;
-      this.sensitivity = sensitivity != null ? 1 + Math.abs(sensitivity) : 100;
-      this.tolerance = tolerance != null ? 1 + Math.abs(tolerance) : 1.1;
-      this.delay = delay != null ? delay : 150;
-      this.lastUpDeltas = (function() {
-        var i, ref, results;
-        results = [];
-        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
-          results.push(null);
+/**
+ * Creates a define for node.
+ * @param {Object} module the "module" object that is defined by Node for the
+ * current module.
+ * @param {Function} [requireFn]. Node's require function for the current module.
+ * It only needs to be passed in Node versions before 0.5, when module.require
+ * did not exist.
+ * @returns {Function} a define function that is usable for the current node
+ * module.
+ */
+function amdefine(module, requireFn) {
+    'use strict';
+    var defineCache = {},
+        loaderCache = {},
+        alreadyCalled = false,
+        path = require('path'),
+        makeRequire, stringRequire;
+
+    /**
+     * Trims the . and .. from an array of path segments.
+     * It will keep a leading path segment if a .. will become
+     * the first path segment, to help with module name lookups,
+     * which act like paths, but can be remapped. But the end result,
+     * all paths that use this function should look normalized.
+     * NOTE: this method MODIFIES the input array.
+     * @param {Array} ary the array of path segments.
+     */
+    function trimDots(ary) {
+        var i, part;
+        for (i = 0; ary[i]; i+= 1) {
+            part = ary[i];
+            if (part === '.') {
+                ary.splice(i, 1);
+                i -= 1;
+            } else if (part === '..') {
+                if (i === 1 && (ary[2] === '..' || ary[0] === '..')) {
+                    //End of the line. Keep at least one non-dot
+                    //path segment at the front so it can be mapped
+                    //correctly to disk. Otherwise, there is likely
+                    //no path mapping for a path starting with '..'.
+                    //This can still fail, but catches the most reasonable
+                    //uses of ..
+                    break;
+                } else if (i > 0) {
+                    ary.splice(i - 1, 2);
+                    i -= 2;
+                }
+            }
         }
-        return results;
-      }).call(this);
-      this.lastDownDeltas = (function() {
-        var i, ref, results;
-        results = [];
-        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
-          results.push(null);
-        }
-        return results;
-      }).call(this);
-      this.deltasTimestamp = (function() {
-        var i, ref, results;
-        results = [];
-        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
-          results.push(null);
-        }
-        return results;
-      }).call(this);
     }
 
-    Lethargy.prototype.check = function(e) {
-      var lastDelta;
-      e = e.originalEvent || e;
-      if (e.wheelDelta != null) {
-        lastDelta = e.wheelDelta;
-      } else if (e.deltaY != null) {
-        lastDelta = e.deltaY * -40;
-      } else if ((e.detail != null) || e.detail === 0) {
-        lastDelta = e.detail * -40;
-      }
-      this.deltasTimestamp.push(Date.now());
-      this.deltasTimestamp.shift();
-      if (lastDelta > 0) {
-        this.lastUpDeltas.push(lastDelta);
-        this.lastUpDeltas.shift();
-        return this.isInertia(1);
-      } else {
-        this.lastDownDeltas.push(lastDelta);
-        this.lastDownDeltas.shift();
-        return this.isInertia(-1);
-      }
-      return false;
+    function normalize(name, baseName) {
+        var baseParts;
+
+        //Adjust any relative paths.
+        if (name && name.charAt(0) === '.') {
+            //If have a base name, try to normalize against it,
+            //otherwise, assume it is a top-level require that will
+            //be relative to baseUrl in the end.
+            if (baseName) {
+                baseParts = baseName.split('/');
+                baseParts = baseParts.slice(0, baseParts.length - 1);
+                baseParts = baseParts.concat(name.split('/'));
+                trimDots(baseParts);
+                name = baseParts.join('/');
+            }
+        }
+
+        return name;
+    }
+
+    /**
+     * Create the normalize() function passed to a loader plugin's
+     * normalize method.
+     */
+    function makeNormalize(relName) {
+        return function (name) {
+            return normalize(name, relName);
+        };
+    }
+
+    function makeLoad(id) {
+        function load(value) {
+            loaderCache[id] = value;
+        }
+
+        load.fromText = function (id, text) {
+            //This one is difficult because the text can/probably uses
+            //define, and any relative paths and requires should be relative
+            //to that id was it would be found on disk. But this would require
+            //bootstrapping a module/require fairly deeply from node core.
+            //Not sure how best to go about that yet.
+            throw new Error('amdefine does not implement load.fromText');
+        };
+
+        return load;
+    }
+
+    makeRequire = function (systemRequire, exports, module, relId) {
+        function amdRequire(deps, callback) {
+            if (typeof deps === 'string') {
+                //Synchronous, single module require('')
+                return stringRequire(systemRequire, exports, module, deps, relId);
+            } else {
+                //Array of dependencies with a callback.
+
+                //Convert the dependencies to modules.
+                deps = deps.map(function (depName) {
+                    return stringRequire(systemRequire, exports, module, depName, relId);
+                });
+
+                //Wait for next tick to call back the require call.
+                if (callback) {
+                    process.nextTick(function () {
+                        callback.apply(null, deps);
+                    });
+                }
+            }
+        }
+
+        amdRequire.toUrl = function (filePath) {
+            if (filePath.indexOf('.') === 0) {
+                return normalize(filePath, path.dirname(module.filename));
+            } else {
+                return filePath;
+            }
+        };
+
+        return amdRequire;
     };
 
-    Lethargy.prototype.isInertia = function(direction) {
-      var lastDeltas, lastDeltasNew, lastDeltasOld, newAverage, newSum, oldAverage, oldSum;
-      lastDeltas = direction === -1 ? this.lastDownDeltas : this.lastUpDeltas;
-      if (lastDeltas[0] === null) {
-        return direction;
-      }
-      if (this.deltasTimestamp[(this.stability * 2) - 2] + this.delay > Date.now() && lastDeltas[0] === lastDeltas[(this.stability * 2) - 1]) {
-        return false;
-      }
-      lastDeltasOld = lastDeltas.slice(0, this.stability);
-      lastDeltasNew = lastDeltas.slice(this.stability, this.stability * 2);
-      oldSum = lastDeltasOld.reduce(function(t, s) {
-        return t + s;
-      });
-      newSum = lastDeltasNew.reduce(function(t, s) {
-        return t + s;
-      });
-      oldAverage = oldSum / lastDeltasOld.length;
-      newAverage = newSum / lastDeltasNew.length;
-      if (Math.abs(oldAverage) < Math.abs(newAverage * this.tolerance) && (this.sensitivity < Math.abs(newAverage))) {
-        return direction;
-      } else {
-        return false;
-      }
+    //Favor explicit value, passed in if the module wants to support Node 0.4.
+    requireFn = requireFn || function req() {
+        return module.require.apply(module, arguments);
     };
 
-    Lethargy.prototype.showLastUpDeltas = function() {
-      return this.lastUpDeltas;
+    function runFactory(id, deps, factory) {
+        var r, e, m, result;
+
+        if (id) {
+            e = loaderCache[id] = {};
+            m = {
+                id: id,
+                uri: __filename,
+                exports: e
+            };
+            r = makeRequire(requireFn, e, m, id);
+        } else {
+            //Only support one define call per file
+            if (alreadyCalled) {
+                throw new Error('amdefine with no module ID cannot be called more than once per file.');
+            }
+            alreadyCalled = true;
+
+            //Use the real variables from node
+            //Use module.exports for exports, since
+            //the exports in here is amdefine exports.
+            e = module.exports;
+            m = module;
+            r = makeRequire(requireFn, e, m, module.id);
+        }
+
+        //If there are dependencies, they are strings, so need
+        //to convert them to dependency values.
+        if (deps) {
+            deps = deps.map(function (depName) {
+                return r(depName);
+            });
+        }
+
+        //Call the factory with the right dependencies.
+        if (typeof factory === 'function') {
+            result = factory.apply(m.exports, deps);
+        } else {
+            result = factory;
+        }
+
+        if (result !== undefined) {
+            m.exports = result;
+            if (id) {
+                loaderCache[id] = m.exports;
+            }
+        }
+    }
+
+    stringRequire = function (systemRequire, exports, module, id, relId) {
+        //Split the ID by a ! so that
+        var index = id.indexOf('!'),
+            originalId = id,
+            prefix, plugin;
+
+        if (index === -1) {
+            id = normalize(id, relId);
+
+            //Straight module lookup. If it is one of the special dependencies,
+            //deal with it, otherwise, delegate to node.
+            if (id === 'require') {
+                return makeRequire(systemRequire, exports, module, relId);
+            } else if (id === 'exports') {
+                return exports;
+            } else if (id === 'module') {
+                return module;
+            } else if (loaderCache.hasOwnProperty(id)) {
+                return loaderCache[id];
+            } else if (defineCache[id]) {
+                runFactory.apply(null, defineCache[id]);
+                return loaderCache[id];
+            } else {
+                if(systemRequire) {
+                    return systemRequire(originalId);
+                } else {
+                    throw new Error('No module with ID: ' + id);
+                }
+            }
+        } else {
+            //There is a plugin in play.
+            prefix = id.substring(0, index);
+            id = id.substring(index + 1, id.length);
+
+            plugin = stringRequire(systemRequire, exports, module, prefix, relId);
+
+            if (plugin.normalize) {
+                id = plugin.normalize(id, makeNormalize(relId));
+            } else {
+                //Normalize the ID normally.
+                id = normalize(id, relId);
+            }
+
+            if (loaderCache[id]) {
+                return loaderCache[id];
+            } else {
+                plugin.load(id, makeRequire(systemRequire, exports, module, relId), makeLoad(id), {});
+
+                return loaderCache[id];
+            }
+        }
     };
 
-    Lethargy.prototype.showLastDownDeltas = function() {
-      return this.lastDownDeltas;
+    //Create a define function specific to the module asking for amdefine.
+    function define(id, deps, factory) {
+        if (Array.isArray(id)) {
+            factory = deps;
+            deps = id;
+            id = undefined;
+        } else if (typeof id !== 'string') {
+            factory = id;
+            id = deps = undefined;
+        }
+
+        if (deps && !Array.isArray(deps)) {
+            factory = deps;
+            deps = undefined;
+        }
+
+        if (!deps) {
+            deps = ['require', 'exports', 'module'];
+        }
+
+        //Set up properties for this module. If an ID, then use
+        //internal cache. If no ID, then use the external variables
+        //for this node module.
+        if (id) {
+            //Put the module in deep freeze until there is a
+            //require call for it.
+            defineCache[id] = [id, deps, factory];
+        } else {
+            runFactory(id, deps, factory);
+        }
+    }
+
+    //define.require, which has access to all the values in the
+    //cache. Useful for AMD modules that all have IDs in the file,
+    //but need to finally export a value to node based on one of those
+    //IDs.
+    define.require = function (id) {
+        if (loaderCache[id]) {
+            return loaderCache[id];
+        }
+
+        if (defineCache[id]) {
+            runFactory.apply(null, defineCache[id]);
+            return loaderCache[id];
+        }
     };
 
-    return Lethargy;
+    define.amd = {};
 
-  })();
-
-}).call(this);
-
-},{}],101:[function(require,module,exports){
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/
-
-'use strict';
-/* eslint-disable no-unused-vars */
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
+    return define;
 }
 
-function shouldUseNative() {
-	try {
-		if (!Object.assign) {
-			return false;
-		}
+module.exports = amdefine;
 
-		// Detect buggy property enumeration order in older V8 versions.
+}).call(this,require('_process'),"/node_modules/handlebars/node_modules/source-map/node_modules/amdefine/amdefine.js")
 
-		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
-		test1[5] = 'de';
-		if (Object.getOwnPropertyNames(test1)[0] === '5') {
-			return false;
-		}
+},{"_process":53,"path":52}],101:[function(require,module,exports){
+var Scalar = require('./Scalar');
 
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test2 = {};
-		for (var i = 0; i < 10; i++) {
-			test2['_' + String.fromCharCode(i)] = i;
-		}
-		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-			return test2[n];
-		});
-		if (order2.join('') !== '0123456789') {
-			return false;
-		}
+module.exports = Line;
 
-		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-		var test3 = {};
-		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-			test3[letter] = letter;
-		});
-		if (Object.keys(Object.assign({}, test3)).join('') !==
-				'abcdefghijklmnopqrst') {
-			return false;
-		}
+/**
+ * Container for line-related functions
+ * @class Line
+ */
+function Line(){};
 
-		return true;
-	} catch (err) {
-		// We don't expect any of the above to throw, but better to be safe.
-		return false;
-	}
-}
-
-module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (getOwnPropertySymbols) {
-			symbols = getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
+/**
+ * Compute the intersection between two lines.
+ * @static
+ * @method lineInt
+ * @param  {Array}  l1          Line vector 1
+ * @param  {Array}  l2          Line vector 2
+ * @param  {Number} precision   Precision to use when checking if the lines are parallel
+ * @return {Array}              The intersection point.
+ */
+Line.lineInt = function(l1,l2,precision){
+    precision = precision || 0;
+    var i = [0,0]; // point
+    var a1, b1, c1, a2, b2, c2, det; // scalars
+    a1 = l1[1][1] - l1[0][1];
+    b1 = l1[0][0] - l1[1][0];
+    c1 = a1 * l1[0][0] + b1 * l1[0][1];
+    a2 = l2[1][1] - l2[0][1];
+    b2 = l2[0][0] - l2[1][0];
+    c2 = a2 * l2[0][0] + b2 * l2[0][1];
+    det = a1 * b2 - a2*b1;
+    if (!Scalar.eq(det, 0, precision)) { // lines are not parallel
+        i[0] = (b2 * c1 - b1 * c2) / det;
+        i[1] = (a1 * c2 - a2 * c1) / det;
+    }
+    return i;
 };
 
-},{}],102:[function(require,module,exports){
+/**
+ * Checks if two line segments intersects.
+ * @method segmentsIntersect
+ * @param {Array} p1 The start vertex of the first line segment.
+ * @param {Array} p2 The end vertex of the first line segment.
+ * @param {Array} q1 The start vertex of the second line segment.
+ * @param {Array} q2 The end vertex of the second line segment.
+ * @return {Boolean} True if the two line segments intersect
+ */
+Line.segmentsIntersect = function(p1, p2, q1, q2){
+   var dx = p2[0] - p1[0];
+   var dy = p2[1] - p1[1];
+   var da = q2[0] - q1[0];
+   var db = q2[1] - q1[1];
+
+   // segments are parallel
+   if(da*dy - db*dx == 0)
+      return false;
+
+   var s = (dx * (q1[1] - p1[1]) + dy * (p1[0] - q1[0])) / (da * dy - db * dx)
+   var t = (da * (p1[1] - q1[1]) + db * (q1[0] - p1[0])) / (db * dx - da * dy)
+
+   return (s>=0 && s<=1 && t>=0 && t<=1);
+};
+
+
+},{"./Scalar":104}],102:[function(require,module,exports){
+module.exports = Point;
+
+/**
+ * Point related functions
+ * @class Point
+ */
+function Point(){};
+
+/**
+ * Get the area of a triangle spanned by the three given points. Note that the area will be negative if the points are not given in counter-clockwise order.
+ * @static
+ * @method area
+ * @param  {Array} a
+ * @param  {Array} b
+ * @param  {Array} c
+ * @return {Number}
+ */
+Point.area = function(a,b,c){
+    return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1])));
+};
+
+Point.left = function(a,b,c){
+    return Point.area(a,b,c) > 0;
+};
+
+Point.leftOn = function(a,b,c) {
+    return Point.area(a, b, c) >= 0;
+};
+
+Point.right = function(a,b,c) {
+    return Point.area(a, b, c) < 0;
+};
+
+Point.rightOn = function(a,b,c) {
+    return Point.area(a, b, c) <= 0;
+};
+
+var tmpPoint1 = [],
+    tmpPoint2 = [];
+
+/**
+ * Check if three points are collinear
+ * @method collinear
+ * @param  {Array} a
+ * @param  {Array} b
+ * @param  {Array} c
+ * @param  {Number} [thresholdAngle=0] Threshold angle to use when comparing the vectors. The function will return true if the angle between the resulting vectors is less than this value. Use zero for max precision.
+ * @return {Boolean}
+ */
+Point.collinear = function(a,b,c,thresholdAngle) {
+    if(!thresholdAngle)
+        return Point.area(a, b, c) == 0;
+    else {
+        var ab = tmpPoint1,
+            bc = tmpPoint2;
+
+        ab[0] = b[0]-a[0];
+        ab[1] = b[1]-a[1];
+        bc[0] = c[0]-b[0];
+        bc[1] = c[1]-b[1];
+
+        var dot = ab[0]*bc[0] + ab[1]*bc[1],
+            magA = Math.sqrt(ab[0]*ab[0] + ab[1]*ab[1]),
+            magB = Math.sqrt(bc[0]*bc[0] + bc[1]*bc[1]),
+            angle = Math.acos(dot/(magA*magB));
+        return angle < thresholdAngle;
+    }
+};
+
+Point.sqdist = function(a,b){
+    var dx = b[0] - a[0];
+    var dy = b[1] - a[1];
+    return dx * dx + dy * dy;
+};
+
+},{}],103:[function(require,module,exports){
+var Line = require("./Line")
+,   Point = require("./Point")
+,   Scalar = require("./Scalar")
+
+module.exports = Polygon;
+
+/**
+ * Polygon class.
+ * @class Polygon
+ * @constructor
+ */
+function Polygon(){
+
+    /**
+     * Vertices that this polygon consists of. An array of array of numbers, example: [[0,0],[1,0],..]
+     * @property vertices
+     * @type {Array}
+     */
+    this.vertices = [];
+}
+
+/**
+ * Get a vertex at position i. It does not matter if i is out of bounds, this function will just cycle.
+ * @method at
+ * @param  {Number} i
+ * @return {Array}
+ */
+Polygon.prototype.at = function(i){
+    var v = this.vertices,
+        s = v.length;
+    return v[i < 0 ? i % s + s : i % s];
+};
+
+/**
+ * Get first vertex
+ * @method first
+ * @return {Array}
+ */
+Polygon.prototype.first = function(){
+    return this.vertices[0];
+};
+
+/**
+ * Get last vertex
+ * @method last
+ * @return {Array}
+ */
+Polygon.prototype.last = function(){
+    return this.vertices[this.vertices.length-1];
+};
+
+/**
+ * Clear the polygon data
+ * @method clear
+ * @return {Array}
+ */
+Polygon.prototype.clear = function(){
+    this.vertices.length = 0;
+};
+
+/**
+ * Append points "from" to "to"-1 from an other polygon "poly" onto this one.
+ * @method append
+ * @param {Polygon} poly The polygon to get points from.
+ * @param {Number}  from The vertex index in "poly".
+ * @param {Number}  to The end vertex index in "poly". Note that this vertex is NOT included when appending.
+ * @return {Array}
+ */
+Polygon.prototype.append = function(poly,from,to){
+    if(typeof(from) == "undefined") throw new Error("From is not given!");
+    if(typeof(to) == "undefined")   throw new Error("To is not given!");
+
+    if(to-1 < from)                 throw new Error("lol1");
+    if(to > poly.vertices.length)   throw new Error("lol2");
+    if(from < 0)                    throw new Error("lol3");
+
+    for(var i=from; i<to; i++){
+        this.vertices.push(poly.vertices[i]);
+    }
+};
+
+/**
+ * Make sure that the polygon vertices are ordered counter-clockwise.
+ * @method makeCCW
+ */
+Polygon.prototype.makeCCW = function(){
+    var br = 0,
+        v = this.vertices;
+
+    // find bottom right point
+    for (var i = 1; i < this.vertices.length; ++i) {
+        if (v[i][1] < v[br][1] || (v[i][1] == v[br][1] && v[i][0] > v[br][0])) {
+            br = i;
+        }
+    }
+
+    // reverse poly if clockwise
+    if (!Point.left(this.at(br - 1), this.at(br), this.at(br + 1))) {
+        this.reverse();
+    }
+};
+
+/**
+ * Reverse the vertices in the polygon
+ * @method reverse
+ */
+Polygon.prototype.reverse = function(){
+    var tmp = [];
+    for(var i=0, N=this.vertices.length; i!==N; i++){
+        tmp.push(this.vertices.pop());
+    }
+    this.vertices = tmp;
+};
+
+/**
+ * Check if a point in the polygon is a reflex point
+ * @method isReflex
+ * @param  {Number}  i
+ * @return {Boolean}
+ */
+Polygon.prototype.isReflex = function(i){
+    return Point.right(this.at(i - 1), this.at(i), this.at(i + 1));
+};
+
+var tmpLine1=[],
+    tmpLine2=[];
+
+/**
+ * Check if two vertices in the polygon can see each other
+ * @method canSee
+ * @param  {Number} a Vertex index 1
+ * @param  {Number} b Vertex index 2
+ * @return {Boolean}
+ */
+Polygon.prototype.canSee = function(a,b) {
+    var p, dist, l1=tmpLine1, l2=tmpLine2;
+
+    if (Point.leftOn(this.at(a + 1), this.at(a), this.at(b)) && Point.rightOn(this.at(a - 1), this.at(a), this.at(b))) {
+        return false;
+    }
+    dist = Point.sqdist(this.at(a), this.at(b));
+    for (var i = 0; i !== this.vertices.length; ++i) { // for each edge
+        if ((i + 1) % this.vertices.length === a || i === a) // ignore incident edges
+            continue;
+        if (Point.leftOn(this.at(a), this.at(b), this.at(i + 1)) && Point.rightOn(this.at(a), this.at(b), this.at(i))) { // if diag intersects an edge
+            l1[0] = this.at(a);
+            l1[1] = this.at(b);
+            l2[0] = this.at(i);
+            l2[1] = this.at(i + 1);
+            p = Line.lineInt(l1,l2);
+            if (Point.sqdist(this.at(a), p) < dist) { // if edge is blocking visibility to b
+                return false;
+            }
+        }
+    }
+
+    return true;
+};
+
+/**
+ * Copy the polygon from vertex i to vertex j.
+ * @method copy
+ * @param  {Number} i
+ * @param  {Number} j
+ * @param  {Polygon} [targetPoly]   Optional target polygon to save in.
+ * @return {Polygon}                The resulting copy.
+ */
+Polygon.prototype.copy = function(i,j,targetPoly){
+    var p = targetPoly || new Polygon();
+    p.clear();
+    if (i < j) {
+        // Insert all vertices from i to j
+        for(var k=i; k<=j; k++)
+            p.vertices.push(this.vertices[k]);
+
+    } else {
+
+        // Insert vertices 0 to j
+        for(var k=0; k<=j; k++)
+            p.vertices.push(this.vertices[k]);
+
+        // Insert vertices i to end
+        for(var k=i; k<this.vertices.length; k++)
+            p.vertices.push(this.vertices[k]);
+    }
+
+    return p;
+};
+
+/**
+ * Decomposes the polygon into convex pieces. Returns a list of edges [[p1,p2],[p2,p3],...] that cuts the polygon.
+ * Note that this algorithm has complexity O(N^4) and will be very slow for polygons with many vertices.
+ * @method getCutEdges
+ * @return {Array}
+ */
+Polygon.prototype.getCutEdges = function() {
+    var min=[], tmp1=[], tmp2=[], tmpPoly = new Polygon();
+    var nDiags = Number.MAX_VALUE;
+
+    for (var i = 0; i < this.vertices.length; ++i) {
+        if (this.isReflex(i)) {
+            for (var j = 0; j < this.vertices.length; ++j) {
+                if (this.canSee(i, j)) {
+                    tmp1 = this.copy(i, j, tmpPoly).getCutEdges();
+                    tmp2 = this.copy(j, i, tmpPoly).getCutEdges();
+
+                    for(var k=0; k<tmp2.length; k++)
+                        tmp1.push(tmp2[k]);
+
+                    if (tmp1.length < nDiags) {
+                        min = tmp1;
+                        nDiags = tmp1.length;
+                        min.push([this.at(i), this.at(j)]);
+                    }
+                }
+            }
+        }
+    }
+
+    return min;
+};
+
+/**
+ * Decomposes the polygon into one or more convex sub-Polygons.
+ * @method decomp
+ * @return {Array} An array or Polygon objects.
+ */
+Polygon.prototype.decomp = function(){
+    var edges = this.getCutEdges();
+    if(edges.length > 0)
+        return this.slice(edges);
+    else
+        return [this];
+};
+
+/**
+ * Slices the polygon given one or more cut edges. If given one, this function will return two polygons (false on failure). If many, an array of polygons.
+ * @method slice
+ * @param {Array} cutEdges A list of edges, as returned by .getCutEdges()
+ * @return {Array}
+ */
+Polygon.prototype.slice = function(cutEdges){
+    if(cutEdges.length == 0) return [this];
+    if(cutEdges instanceof Array && cutEdges.length && cutEdges[0] instanceof Array && cutEdges[0].length==2 && cutEdges[0][0] instanceof Array){
+
+        var polys = [this];
+
+        for(var i=0; i<cutEdges.length; i++){
+            var cutEdge = cutEdges[i];
+            // Cut all polys
+            for(var j=0; j<polys.length; j++){
+                var poly = polys[j];
+                var result = poly.slice(cutEdge);
+                if(result){
+                    // Found poly! Cut and quit
+                    polys.splice(j,1);
+                    polys.push(result[0],result[1]);
+                    break;
+                }
+            }
+        }
+
+        return polys;
+    } else {
+
+        // Was given one edge
+        var cutEdge = cutEdges;
+        var i = this.vertices.indexOf(cutEdge[0]);
+        var j = this.vertices.indexOf(cutEdge[1]);
+
+        if(i != -1 && j != -1){
+            return [this.copy(i,j),
+                    this.copy(j,i)];
+        } else {
+            return false;
+        }
+    }
+};
+
+/**
+ * Checks that the line segments of this polygon do not intersect each other.
+ * @method isSimple
+ * @param  {Array} path An array of vertices e.g. [[0,0],[0,1],...]
+ * @return {Boolean}
+ * @todo Should it check all segments with all others?
+ */
+Polygon.prototype.isSimple = function(){
+    var path = this.vertices;
+    // Check
+    for(var i=0; i<path.length-1; i++){
+        for(var j=0; j<i-1; j++){
+            if(Line.segmentsIntersect(path[i], path[i+1], path[j], path[j+1] )){
+                return false;
+            }
+        }
+    }
+
+    // Check the segment between the last and the first point to all others
+    for(var i=1; i<path.length-2; i++){
+        if(Line.segmentsIntersect(path[0], path[path.length-1], path[i], path[i+1] )){
+            return false;
+        }
+    }
+
+    return true;
+};
+
+function getIntersectionPoint(p1, p2, q1, q2, delta){
+    delta = delta || 0;
+   var a1 = p2[1] - p1[1];
+   var b1 = p1[0] - p2[0];
+   var c1 = (a1 * p1[0]) + (b1 * p1[1]);
+   var a2 = q2[1] - q1[1];
+   var b2 = q1[0] - q2[0];
+   var c2 = (a2 * q1[0]) + (b2 * q1[1]);
+   var det = (a1 * b2) - (a2 * b1);
+
+   if(!Scalar.eq(det,0,delta))
+      return [((b2 * c1) - (b1 * c2)) / det, ((a1 * c2) - (a2 * c1)) / det]
+   else
+      return [0,0]
+}
+
+/**
+ * Quickly decompose the Polygon into convex sub-polygons.
+ * @method quickDecomp
+ * @param  {Array} result
+ * @param  {Array} [reflexVertices]
+ * @param  {Array} [steinerPoints]
+ * @param  {Number} [delta]
+ * @param  {Number} [maxlevel]
+ * @param  {Number} [level]
+ * @return {Array}
+ */
+Polygon.prototype.quickDecomp = function(result,reflexVertices,steinerPoints,delta,maxlevel,level){
+    maxlevel = maxlevel || 100;
+    level = level || 0;
+    delta = delta || 25;
+    result = typeof(result)!="undefined" ? result : [];
+    reflexVertices = reflexVertices || [];
+    steinerPoints = steinerPoints || [];
+
+    var upperInt=[0,0], lowerInt=[0,0], p=[0,0]; // Points
+    var upperDist=0, lowerDist=0, d=0, closestDist=0; // scalars
+    var upperIndex=0, lowerIndex=0, closestIndex=0; // Integers
+    var lowerPoly=new Polygon(), upperPoly=new Polygon(); // polygons
+    var poly = this,
+        v = this.vertices;
+
+    if(v.length < 3) return result;
+
+    level++;
+    if(level > maxlevel){
+        console.warn("quickDecomp: max level ("+maxlevel+") reached.");
+        return result;
+    }
+
+    for (var i = 0; i < this.vertices.length; ++i) {
+        if (poly.isReflex(i)) {
+            reflexVertices.push(poly.vertices[i]);
+            upperDist = lowerDist = Number.MAX_VALUE;
+
+
+            for (var j = 0; j < this.vertices.length; ++j) {
+                if (Point.left(poly.at(i - 1), poly.at(i), poly.at(j))
+                        && Point.rightOn(poly.at(i - 1), poly.at(i), poly.at(j - 1))) { // if line intersects with an edge
+                    p = getIntersectionPoint(poly.at(i - 1), poly.at(i), poly.at(j), poly.at(j - 1)); // find the point of intersection
+                    if (Point.right(poly.at(i + 1), poly.at(i), p)) { // make sure it's inside the poly
+                        d = Point.sqdist(poly.vertices[i], p);
+                        if (d < lowerDist) { // keep only the closest intersection
+                            lowerDist = d;
+                            lowerInt = p;
+                            lowerIndex = j;
+                        }
+                    }
+                }
+                if (Point.left(poly.at(i + 1), poly.at(i), poly.at(j + 1))
+                        && Point.rightOn(poly.at(i + 1), poly.at(i), poly.at(j))) {
+                    p = getIntersectionPoint(poly.at(i + 1), poly.at(i), poly.at(j), poly.at(j + 1));
+                    if (Point.left(poly.at(i - 1), poly.at(i), p)) {
+                        d = Point.sqdist(poly.vertices[i], p);
+                        if (d < upperDist) {
+                            upperDist = d;
+                            upperInt = p;
+                            upperIndex = j;
+                        }
+                    }
+                }
+            }
+
+            // if there are no vertices to connect to, choose a point in the middle
+            if (lowerIndex == (upperIndex + 1) % this.vertices.length) {
+                //console.log("Case 1: Vertex("+i+"), lowerIndex("+lowerIndex+"), upperIndex("+upperIndex+"), poly.size("+this.vertices.length+")");
+                p[0] = (lowerInt[0] + upperInt[0]) / 2;
+                p[1] = (lowerInt[1] + upperInt[1]) / 2;
+                steinerPoints.push(p);
+
+                if (i < upperIndex) {
+                    //lowerPoly.insert(lowerPoly.end(), poly.begin() + i, poly.begin() + upperIndex + 1);
+                    lowerPoly.append(poly, i, upperIndex+1);
+                    lowerPoly.vertices.push(p);
+                    upperPoly.vertices.push(p);
+                    if (lowerIndex != 0){
+                        //upperPoly.insert(upperPoly.end(), poly.begin() + lowerIndex, poly.end());
+                        upperPoly.append(poly,lowerIndex,poly.vertices.length);
+                    }
+                    //upperPoly.insert(upperPoly.end(), poly.begin(), poly.begin() + i + 1);
+                    upperPoly.append(poly,0,i+1);
+                } else {
+                    if (i != 0){
+                        //lowerPoly.insert(lowerPoly.end(), poly.begin() + i, poly.end());
+                        lowerPoly.append(poly,i,poly.vertices.length);
+                    }
+                    //lowerPoly.insert(lowerPoly.end(), poly.begin(), poly.begin() + upperIndex + 1);
+                    lowerPoly.append(poly,0,upperIndex+1);
+                    lowerPoly.vertices.push(p);
+                    upperPoly.vertices.push(p);
+                    //upperPoly.insert(upperPoly.end(), poly.begin() + lowerIndex, poly.begin() + i + 1);
+                    upperPoly.append(poly,lowerIndex,i+1);
+                }
+            } else {
+                // connect to the closest point within the triangle
+                //console.log("Case 2: Vertex("+i+"), closestIndex("+closestIndex+"), poly.size("+this.vertices.length+")\n");
+
+                if (lowerIndex > upperIndex) {
+                    upperIndex += this.vertices.length;
+                }
+                closestDist = Number.MAX_VALUE;
+
+                if(upperIndex < lowerIndex){
+                    return result;
+                }
+
+                for (var j = lowerIndex; j <= upperIndex; ++j) {
+                    if (Point.leftOn(poly.at(i - 1), poly.at(i), poly.at(j))
+                            && Point.rightOn(poly.at(i + 1), poly.at(i), poly.at(j))) {
+                        d = Point.sqdist(poly.at(i), poly.at(j));
+                        if (d < closestDist) {
+                            closestDist = d;
+                            closestIndex = j % this.vertices.length;
+                        }
+                    }
+                }
+
+                if (i < closestIndex) {
+                    lowerPoly.append(poly,i,closestIndex+1);
+                    if (closestIndex != 0){
+                        upperPoly.append(poly,closestIndex,v.length);
+                    }
+                    upperPoly.append(poly,0,i+1);
+                } else {
+                    if (i != 0){
+                        lowerPoly.append(poly,i,v.length);
+                    }
+                    lowerPoly.append(poly,0,closestIndex+1);
+                    upperPoly.append(poly,closestIndex,i+1);
+                }
+            }
+
+            // solve smallest poly first
+            if (lowerPoly.vertices.length < upperPoly.vertices.length) {
+                lowerPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+                upperPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+            } else {
+                upperPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+                lowerPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
+            }
+
+            return result;
+        }
+    }
+    result.push(this);
+
+    return result;
+};
+
+/**
+ * Remove collinear points in the polygon.
+ * @method removeCollinearPoints
+ * @param  {Number} [precision] The threshold angle to use when determining whether two edges are collinear. Use zero for finest precision.
+ * @return {Number}           The number of points removed
+ */
+Polygon.prototype.removeCollinearPoints = function(precision){
+    var num = 0;
+    for(var i=this.vertices.length-1; this.vertices.length>3 && i>=0; --i){
+        if(Point.collinear(this.at(i-1),this.at(i),this.at(i+1),precision)){
+            // Remove the middle point
+            this.vertices.splice(i%this.vertices.length,1);
+            i--; // Jump one point forward. Otherwise we may get a chain removal
+            num++;
+        }
+    }
+    return num;
+};
+
+},{"./Line":101,"./Point":102,"./Scalar":104}],104:[function(require,module,exports){
+module.exports = Scalar;
+
+/**
+ * Scalar functions
+ * @class Scalar
+ */
+function Scalar(){}
+
+/**
+ * Check if two scalars are equal
+ * @static
+ * @method eq
+ * @param  {Number} a
+ * @param  {Number} b
+ * @param  {Number} [precision]
+ * @return {Boolean}
+ */
+Scalar.eq = function(a,b,precision){
+    precision = precision || 0;
+    return Math.abs(a-b) < precision;
+};
+
+},{}],105:[function(require,module,exports){
+module.exports = {
+    Polygon : require("./Polygon"),
+    Point : require("./Point"),
+};
+
+},{"./Point":102,"./Polygon":103}],106:[function(require,module,exports){
 module.exports={
-  "_from": "p2@^0.7.1",
-  "_id": "p2@0.7.1",
-  "_inBundle": false,
-  "_integrity": "sha1-JfJHTZvDptMUCh2iamfJ4RislUM=",
-  "_location": "/p2",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "range",
-    "registry": true,
-    "raw": "p2@^0.7.1",
-    "name": "p2",
-    "escapedName": "p2",
-    "rawSpec": "^0.7.1",
-    "saveSpec": null,
-    "fetchSpec": "^0.7.1"
-  },
-  "_requiredBy": [
-    "#DEV:/"
-  ],
-  "_resolved": "https://registry.npmjs.org/p2/-/p2-0.7.1.tgz",
-  "_shasum": "25f2474d9bc3a6d3140a1da26a67c9e118ac9543",
-  "_spec": "p2@^0.7.1",
-  "_where": "/Users/robinpayot/Documents/projects/xp-son",
+  "name": "p2",
+  "version": "0.7.1",
+  "description": "A JavaScript 2D physics engine.",
   "author": {
     "name": "Stefan Hedman",
     "email": "schteppe@gmail.com",
     "url": "http://steffe.se"
   },
-  "bugs": {
-    "url": "https://github.com/schteppe/p2.js/issues"
-  },
-  "bundleDependencies": false,
-  "dependencies": {
-    "poly-decomp": "0.1.1"
-  },
-  "deprecated": false,
-  "description": "A JavaScript 2D physics engine.",
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-browserify": "~2.0.1",
-    "grunt-contrib-concat": "^0.4.0",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-contrib-nodeunit": "^0.4.1",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-contrib-watch": "~0.5.0"
-  },
-  "engines": {
-    "node": "*"
-  },
-  "homepage": "https://github.com/schteppe/p2.js#readme",
   "keywords": [
     "p2.js",
     "p2",
@@ -32558,21 +33386,61 @@ module.exports={
     "engine",
     "2d"
   ],
+  "main": "./src/p2.js",
+  "engines": {
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schteppe/p2.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/schteppe/p2.js/issues"
+  },
   "licenses": [
     {
       "type": "MIT"
     }
   ],
-  "main": "./src/p2.js",
-  "name": "p2",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/schteppe/p2.js.git"
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.11.2",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-watch": "~0.5.0",
+    "grunt-browserify": "~2.0.1",
+    "grunt-contrib-concat": "^0.4.0"
   },
-  "version": "0.7.1"
+  "dependencies": {
+    "poly-decomp": "0.1.1"
+  },
+  "gitHead": "d83c483f912362fd6e57c74b0634ea3f1f3e0c82",
+  "homepage": "https://github.com/schteppe/p2.js#readme",
+  "_id": "p2@0.7.1",
+  "scripts": {},
+  "_shasum": "25f2474d9bc3a6d3140a1da26a67c9e118ac9543",
+  "_from": "p2@latest",
+  "_npmVersion": "2.14.7",
+  "_nodeVersion": "4.2.2",
+  "_npmUser": {
+    "name": "schteppe",
+    "email": "schteppe@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "schteppe",
+      "email": "schteppe@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "25f2474d9bc3a6d3140a1da26a67c9e118ac9543",
+    "tarball": "https://registry.npmjs.org/p2/-/p2-0.7.1.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/p2/-/p2-0.7.1.tgz"
 }
 
-},{}],103:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Utils = require('../utils/Utils');
 
@@ -32774,7 +33642,7 @@ AABB.prototype.overlapsRay = function(ray){
 
     return tmin;
 };
-},{"../math/vec2":126,"../utils/Utils":153}],104:[function(require,module,exports){
+},{"../math/vec2":130,"../utils/Utils":157}],108:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 var Body = require('../objects/Body');
 
@@ -32936,7 +33804,7 @@ Broadphase.canCollide = function(bodyA, bodyB){
 Broadphase.NAIVE = 1;
 Broadphase.SAP = 2;
 
-},{"../math/vec2":126,"../objects/Body":127}],105:[function(require,module,exports){
+},{"../math/vec2":130,"../objects/Body":131}],109:[function(require,module,exports){
 var Circle = require('../shapes/Circle'),
     Plane = require('../shapes/Plane'),
     Shape = require('../shapes/Shape'),
@@ -33012,7 +33880,7 @@ NaiveBroadphase.prototype.aabbQuery = function(world, aabb, result){
 
     return result;
 };
-},{"../collision/Broadphase":104,"../math/vec2":126,"../shapes/Circle":135,"../shapes/Particle":139,"../shapes/Plane":140,"../shapes/Shape":141}],106:[function(require,module,exports){
+},{"../collision/Broadphase":108,"../math/vec2":130,"../shapes/Circle":139,"../shapes/Particle":143,"../shapes/Plane":144,"../shapes/Shape":145}],110:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   sub = vec2.sub
 ,   add = vec2.add
@@ -35446,7 +36314,7 @@ Narrowphase.prototype.convexHeightfield = function( convexBody,convexShape,conve
 
     return numContacts;
 };
-},{"../equations/ContactEquation":117,"../equations/Equation":118,"../equations/FrictionEquation":119,"../math/vec2":126,"../objects/Body":127,"../shapes/Box":133,"../shapes/Circle":135,"../shapes/Convex":136,"../shapes/Shape":141,"../utils/ContactEquationPool":144,"../utils/FrictionEquationPool":145,"../utils/TupleDictionary":152,"../utils/Utils":153}],107:[function(require,module,exports){
+},{"../equations/ContactEquation":121,"../equations/Equation":122,"../equations/FrictionEquation":123,"../math/vec2":130,"../objects/Body":131,"../shapes/Box":137,"../shapes/Circle":139,"../shapes/Convex":140,"../shapes/Shape":145,"../utils/ContactEquationPool":148,"../utils/FrictionEquationPool":149,"../utils/TupleDictionary":156,"../utils/Utils":157}],111:[function(require,module,exports){
 module.exports = Ray;
 
 var vec2 = require('../math/vec2');
@@ -35755,7 +36623,7 @@ function distanceFromIntersectionSquared(from, direction, position) {
 }
 
 
-},{"../collision/AABB":103,"../collision/RaycastResult":108,"../math/vec2":126,"../shapes/Shape":141}],108:[function(require,module,exports){
+},{"../collision/AABB":107,"../collision/RaycastResult":112,"../math/vec2":130,"../shapes/Shape":145}],112:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 var Ray = require('../collision/Ray');
 
@@ -35887,7 +36755,7 @@ RaycastResult.prototype.set = function(
 	this.fraction = fraction;
 	this.faceIndex = faceIndex;
 };
-},{"../collision/Ray":107,"../math/vec2":126}],109:[function(require,module,exports){
+},{"../collision/Ray":111,"../math/vec2":130}],113:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   Broadphase = require('../collision/Broadphase');
 
@@ -36068,7 +36936,7 @@ SAPBroadphase.prototype.aabbQuery = function(world, aabb, result){
 
     return result;
 };
-},{"../collision/Broadphase":104,"../utils/Utils":153}],110:[function(require,module,exports){
+},{"../collision/Broadphase":108,"../utils/Utils":157}],114:[function(require,module,exports){
 module.exports = Constraint;
 
 var Utils = require('../utils/Utils');
@@ -36205,7 +37073,7 @@ Constraint.prototype.setRelaxation = function(relaxation){
     }
 };
 
-},{"../utils/Utils":153}],111:[function(require,module,exports){
+},{"../utils/Utils":157}],115:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   vec2 = require('../math/vec2')
@@ -36475,7 +37343,7 @@ DistanceConstraint.prototype.getMaxForce = function(){
     return normal.maxForce;
 };
 
-},{"../equations/Equation":118,"../math/vec2":126,"../utils/Utils":153,"./Constraint":110}],112:[function(require,module,exports){
+},{"../equations/Equation":122,"../math/vec2":130,"../utils/Utils":157,"./Constraint":114}],116:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   AngleLockEquation = require('../equations/AngleLockEquation')
@@ -36567,7 +37435,7 @@ GearConstraint.prototype.setMaxTorque = function(torque){
 GearConstraint.prototype.getMaxTorque = function(torque){
     return this.equations[0].maxForce;
 };
-},{"../equations/AngleLockEquation":116,"../equations/Equation":118,"../math/vec2":126,"./Constraint":110}],113:[function(require,module,exports){
+},{"../equations/AngleLockEquation":120,"../equations/Equation":122,"../math/vec2":130,"./Constraint":114}],117:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   vec2 = require('../math/vec2')
 ,   Equation = require('../equations/Equation');
@@ -36744,7 +37612,7 @@ LockConstraint.prototype.update = function(){
     rot.G[5] =  vec2.crossLength(r,t);
 };
 
-},{"../equations/Equation":118,"../math/vec2":126,"./Constraint":110}],114:[function(require,module,exports){
+},{"../equations/Equation":122,"../math/vec2":130,"./Constraint":114}],118:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   ContactEquation = require('../equations/ContactEquation')
 ,   Equation = require('../equations/Equation')
@@ -37098,7 +37966,7 @@ PrismaticConstraint.prototype.setLimits = function (lower, upper) {
 };
 
 
-},{"../equations/ContactEquation":117,"../equations/Equation":118,"../equations/RotationalLockEquation":120,"../math/vec2":126,"./Constraint":110}],115:[function(require,module,exports){
+},{"../equations/ContactEquation":121,"../equations/Equation":122,"../equations/RotationalLockEquation":124,"../math/vec2":130,"./Constraint":114}],119:[function(require,module,exports){
 var Constraint = require('./Constraint')
 ,   Equation = require('../equations/Equation')
 ,   RotationalVelocityEquation = require('../equations/RotationalVelocityEquation')
@@ -37425,7 +38293,7 @@ RevoluteConstraint.prototype.getMotorSpeed = function(){
     return this.motorEquation.relativeVelocity;
 };
 
-},{"../equations/Equation":118,"../equations/RotationalLockEquation":120,"../equations/RotationalVelocityEquation":121,"../math/vec2":126,"./Constraint":110}],116:[function(require,module,exports){
+},{"../equations/Equation":122,"../equations/RotationalLockEquation":124,"../equations/RotationalVelocityEquation":125,"../math/vec2":130,"./Constraint":114}],120:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -37487,7 +38355,7 @@ AngleLockEquation.prototype.setMaxTorque = function(torque){
     this.minForce = -torque;
 };
 
-},{"../math/vec2":126,"./Equation":118}],117:[function(require,module,exports){
+},{"../math/vec2":130,"./Equation":122}],121:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -37620,7 +38488,7 @@ ContactEquation.prototype.getVelocityAlongNormal = function(){
 
     return vec2.dot(this.normalA, relVel);
 };
-},{"../math/vec2":126,"./Equation":118}],118:[function(require,module,exports){
+},{"../math/vec2":130,"./Equation":122}],122:[function(require,module,exports){
 module.exports = Equation;
 
 var vec2 = require('../math/vec2'),
@@ -37943,7 +38811,7 @@ Equation.prototype.computeInvC = function(eps){
     return 1.0 / (this.computeGiMGt() + eps);
 };
 
-},{"../math/vec2":126,"../objects/Body":127,"../utils/Utils":153}],119:[function(require,module,exports){
+},{"../math/vec2":130,"../objects/Body":131,"../utils/Utils":157}],123:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Equation = require('./Equation')
 ,   Utils = require('../utils/Utils');
@@ -38062,7 +38930,7 @@ FrictionEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/vec2":126,"../utils/Utils":153,"./Equation":118}],120:[function(require,module,exports){
+},{"../math/vec2":130,"../utils/Utils":157,"./Equation":122}],124:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -38105,7 +38973,7 @@ RotationalLockEquation.prototype.computeGq = function(){
     return vec2.dot(worldVectorA,worldVectorB);
 };
 
-},{"../math/vec2":126,"./Equation":118}],121:[function(require,module,exports){
+},{"../math/vec2":130,"./Equation":122}],125:[function(require,module,exports){
 var Equation = require("./Equation"),
     vec2 = require('../math/vec2');
 
@@ -38139,7 +39007,7 @@ RotationalVelocityEquation.prototype.computeB = function(a,b,h){
     return B;
 };
 
-},{"../math/vec2":126,"./Equation":118}],122:[function(require,module,exports){
+},{"../math/vec2":130,"./Equation":122}],126:[function(require,module,exports){
 /**
  * Base class for objects that dispatches events.
  * @class EventEmitter
@@ -38242,7 +39110,7 @@ EventEmitter.prototype = {
     }
 };
 
-},{}],123:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 var Material = require('./Material');
 var Equation = require('../equations/Equation');
 
@@ -38353,7 +39221,7 @@ function ContactMaterial(materialA, materialB, options){
 
 ContactMaterial.idCounter = 0;
 
-},{"../equations/Equation":118,"./Material":124}],124:[function(require,module,exports){
+},{"../equations/Equation":122,"./Material":128}],128:[function(require,module,exports){
 module.exports = Material;
 
 /**
@@ -38374,7 +39242,7 @@ function Material(id){
 
 Material.idCounter = 0;
 
-},{}],125:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 
     /*
         PolyK library
@@ -38853,7 +39721,7 @@ Material.idCounter = 0;
 
 module.exports = PolyK;
 
-},{}],126:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /* Copyright (c) 2013, Brandon Jones, Colin MacKenzie IV. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -39416,7 +40284,7 @@ vec2.getLineSegmentsIntersectionFraction = function(p0, p1, p2, p3) {
     return -1; // No collision
 };
 
-},{"../utils/Utils":153}],127:[function(require,module,exports){
+},{"../utils/Utils":157}],131:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   decomp = require('poly-decomp')
 ,   Convex = require('../shapes/Convex')
@@ -40634,7 +41502,7 @@ Body.SLEEPY = 1;
 Body.SLEEPING = 2;
 
 
-},{"../collision/AABB":103,"../collision/Ray":107,"../collision/RaycastResult":108,"../events/EventEmitter":122,"../math/vec2":126,"../shapes/Convex":136,"poly-decomp":163}],128:[function(require,module,exports){
+},{"../collision/AABB":107,"../collision/Ray":111,"../collision/RaycastResult":112,"../events/EventEmitter":126,"../math/vec2":130,"../shapes/Convex":140,"poly-decomp":105}],132:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 var Spring = require('./Spring');
 var Utils = require('../utils/Utils');
@@ -40804,7 +41672,7 @@ LinearSpring.prototype.applyForce = function(){
     bodyB.angularForce += rj_x_f;
 };
 
-},{"../math/vec2":126,"../utils/Utils":153,"./Spring":130}],129:[function(require,module,exports){
+},{"../math/vec2":130,"../utils/Utils":157,"./Spring":134}],133:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 var Spring = require('./Spring');
 
@@ -40859,7 +41727,7 @@ RotationalSpring.prototype.applyForce = function(){
     bodyB.angularForce += torque;
 };
 
-},{"../math/vec2":126,"./Spring":130}],130:[function(require,module,exports){
+},{"../math/vec2":130,"./Spring":134}],134:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 var Utils = require('../utils/Utils');
 
@@ -40923,7 +41791,7 @@ Spring.prototype.applyForce = function(){
     // To be implemented by subclasses
 };
 
-},{"../math/vec2":126,"../utils/Utils":153}],131:[function(require,module,exports){
+},{"../math/vec2":130,"../utils/Utils":157}],135:[function(require,module,exports){
 var vec2 = require('../math/vec2');
 var Utils = require('../utils/Utils');
 var Constraint = require('../constraints/Constraint');
@@ -41156,7 +42024,7 @@ WheelConstraint.prototype.update = function(){
 
     this.vehicle.chassisBody.applyForce(tmpVec, this.forwardEquation.contactPointA);
 };
-},{"../constraints/Constraint":110,"../equations/FrictionEquation":119,"../math/vec2":126,"../objects/Body":127,"../utils/Utils":153}],132:[function(require,module,exports){
+},{"../constraints/Constraint":114,"../equations/FrictionEquation":123,"../math/vec2":130,"../objects/Body":131,"../utils/Utils":157}],136:[function(require,module,exports){
 // Export p2 classes
 var p2 = module.exports = {
     AABB :                          require('./collision/AABB'),
@@ -41211,7 +42079,7 @@ Object.defineProperty(p2, 'Rectangle', {
         return this.Box;
     }
 });
-},{"../package.json":102,"./collision/AABB":103,"./collision/Broadphase":104,"./collision/NaiveBroadphase":105,"./collision/Narrowphase":106,"./collision/Ray":107,"./collision/RaycastResult":108,"./collision/SAPBroadphase":109,"./constraints/Constraint":110,"./constraints/DistanceConstraint":111,"./constraints/GearConstraint":112,"./constraints/LockConstraint":113,"./constraints/PrismaticConstraint":114,"./constraints/RevoluteConstraint":115,"./equations/AngleLockEquation":116,"./equations/ContactEquation":117,"./equations/Equation":118,"./equations/FrictionEquation":119,"./equations/RotationalVelocityEquation":121,"./events/EventEmitter":122,"./material/ContactMaterial":123,"./material/Material":124,"./math/vec2":126,"./objects/Body":127,"./objects/LinearSpring":128,"./objects/RotationalSpring":129,"./objects/Spring":130,"./objects/TopDownVehicle":131,"./shapes/Box":133,"./shapes/Capsule":134,"./shapes/Circle":135,"./shapes/Convex":136,"./shapes/Heightfield":137,"./shapes/Line":138,"./shapes/Particle":139,"./shapes/Plane":140,"./shapes/Shape":141,"./solver/GSSolver":142,"./solver/Solver":143,"./utils/ContactEquationPool":144,"./utils/FrictionEquationPool":145,"./utils/Pool":151,"./utils/Utils":153,"./world/World":157}],133:[function(require,module,exports){
+},{"../package.json":106,"./collision/AABB":107,"./collision/Broadphase":108,"./collision/NaiveBroadphase":109,"./collision/Narrowphase":110,"./collision/Ray":111,"./collision/RaycastResult":112,"./collision/SAPBroadphase":113,"./constraints/Constraint":114,"./constraints/DistanceConstraint":115,"./constraints/GearConstraint":116,"./constraints/LockConstraint":117,"./constraints/PrismaticConstraint":118,"./constraints/RevoluteConstraint":119,"./equations/AngleLockEquation":120,"./equations/ContactEquation":121,"./equations/Equation":122,"./equations/FrictionEquation":123,"./equations/RotationalVelocityEquation":125,"./events/EventEmitter":126,"./material/ContactMaterial":127,"./material/Material":128,"./math/vec2":130,"./objects/Body":131,"./objects/LinearSpring":132,"./objects/RotationalSpring":133,"./objects/Spring":134,"./objects/TopDownVehicle":135,"./shapes/Box":137,"./shapes/Capsule":138,"./shapes/Circle":139,"./shapes/Convex":140,"./shapes/Heightfield":141,"./shapes/Line":142,"./shapes/Particle":143,"./shapes/Plane":144,"./shapes/Shape":145,"./solver/GSSolver":146,"./solver/Solver":147,"./utils/ContactEquationPool":148,"./utils/FrictionEquationPool":149,"./utils/Pool":155,"./utils/Utils":157,"./world/World":161}],137:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Shape = require('./Shape')
 ,   Convex = require('./Convex');
@@ -41312,7 +42180,7 @@ Box.prototype.updateArea = function(){
 };
 
 
-},{"../math/vec2":126,"./Convex":136,"./Shape":141}],134:[function(require,module,exports){
+},{"../math/vec2":130,"./Convex":140,"./Shape":145}],138:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2');
 
@@ -41523,7 +42391,7 @@ Capsule.prototype.raycast = function(result, ray, position, angle){
         }
     }
 };
-},{"../math/vec2":126,"./Shape":141}],135:[function(require,module,exports){
+},{"../math/vec2":130,"./Shape":145}],139:[function(require,module,exports){
 var Shape = require('./Shape')
 ,    vec2 = require('../math/vec2');
 
@@ -41670,7 +42538,7 @@ Circle.prototype.raycast = function(result, ray, position, angle){
         }
     }
 };
-},{"../math/vec2":126,"./Shape":141}],136:[function(require,module,exports){
+},{"../math/vec2":130,"./Shape":145}],140:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2')
 ,   polyk = require('../math/polyk')
@@ -42050,7 +42918,7 @@ Convex.prototype.raycast = function(result, ray, position, angle){
     }
 };
 
-},{"../math/polyk":125,"../math/vec2":126,"./Shape":141,"poly-decomp":163}],137:[function(require,module,exports){
+},{"../math/polyk":129,"../math/vec2":130,"./Shape":145,"poly-decomp":105}],141:[function(require,module,exports){
 var Shape = require('./Shape')
 ,    vec2 = require('../math/vec2')
 ,    Utils = require('../utils/Utils');
@@ -42302,7 +43170,7 @@ Heightfield.prototype.raycast = function(result, ray, position, angle){
         }
     }
 };
-},{"../math/vec2":126,"../utils/Utils":153,"./Shape":141}],138:[function(require,module,exports){
+},{"../math/vec2":130,"../utils/Utils":157,"./Shape":145}],142:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2');
 
@@ -42395,7 +43263,7 @@ Line.prototype.raycast = function(result, ray, position, angle){
         ray.reportIntersection(result, fraction, normal, -1);
     }
 };
-},{"../math/vec2":126,"./Shape":141}],139:[function(require,module,exports){
+},{"../math/vec2":130,"./Shape":145}],143:[function(require,module,exports){
 var Shape = require('./Shape')
 ,   vec2 = require('../math/vec2');
 
@@ -42435,7 +43303,7 @@ Particle.prototype.computeAABB = function(out, position, angle){
     vec2.copy(out.upperBound, position);
 };
 
-},{"../math/vec2":126,"./Shape":141}],140:[function(require,module,exports){
+},{"../math/vec2":130,"./Shape":145}],144:[function(require,module,exports){
 var Shape =  require('./Shape')
 ,    vec2 =  require('../math/vec2')
 ,    Utils = require('../utils/Utils');
@@ -42572,7 +43440,7 @@ Plane.prototype.raycast = function(result, ray, position, angle){
 
     ray.reportIntersection(result, t, normal, -1);
 };
-},{"../math/vec2":126,"../utils/Utils":153,"./Shape":141}],141:[function(require,module,exports){
+},{"../math/vec2":130,"../utils/Utils":157,"./Shape":145}],145:[function(require,module,exports){
 module.exports = Shape;
 
 var vec2 = require('../math/vec2');
@@ -42817,7 +43685,7 @@ Shape.prototype.computeAABB = function(out, position, angle){
 Shape.prototype.raycast = function(result, ray, position, angle){
     // To be implemented in each subclass
 };
-},{"../math/vec2":126}],142:[function(require,module,exports){
+},{"../math/vec2":130}],146:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Solver = require('./Solver')
 ,   Utils = require('../utils/Utils')
@@ -43067,7 +43935,7 @@ GSSolver.iterateEquation = function(j,eq,eps,Bs,invCs,lambda,useZeroRHS,dt,iter)
     return deltalambda;
 };
 
-},{"../equations/FrictionEquation":119,"../math/vec2":126,"../utils/Utils":153,"./Solver":143}],143:[function(require,module,exports){
+},{"../equations/FrictionEquation":123,"../math/vec2":130,"../utils/Utils":157,"./Solver":147}],147:[function(require,module,exports){
 var Utils = require('../utils/Utils')
 ,   EventEmitter = require('../events/EventEmitter');
 
@@ -43202,7 +44070,7 @@ Solver.prototype.removeAllEquations = function(){
 Solver.GS = 1;
 Solver.ISLAND = 2;
 
-},{"../events/EventEmitter":122,"../utils/Utils":153}],144:[function(require,module,exports){
+},{"../events/EventEmitter":126,"../utils/Utils":157}],148:[function(require,module,exports){
 var ContactEquation = require('../equations/ContactEquation');
 var Pool = require('./Pool');
 
@@ -43235,7 +44103,7 @@ ContactEquationPool.prototype.destroy = function (equation) {
 	return this;
 };
 
-},{"../equations/ContactEquation":117,"./Pool":151}],145:[function(require,module,exports){
+},{"../equations/ContactEquation":121,"./Pool":155}],149:[function(require,module,exports){
 var FrictionEquation = require('../equations/FrictionEquation');
 var Pool = require('./Pool');
 
@@ -43268,7 +44136,7 @@ FrictionEquationPool.prototype.destroy = function (equation) {
 	return this;
 };
 
-},{"../equations/FrictionEquation":119,"./Pool":151}],146:[function(require,module,exports){
+},{"../equations/FrictionEquation":123,"./Pool":155}],150:[function(require,module,exports){
 var IslandNode = require('../world/IslandNode');
 var Pool = require('./Pool');
 
@@ -43301,7 +44169,7 @@ IslandNodePool.prototype.destroy = function (node) {
 	return this;
 };
 
-},{"../world/IslandNode":156,"./Pool":151}],147:[function(require,module,exports){
+},{"../world/IslandNode":160,"./Pool":155}],151:[function(require,module,exports){
 var Island = require('../world/Island');
 var Pool = require('./Pool');
 
@@ -43334,7 +44202,7 @@ IslandPool.prototype.destroy = function (island) {
 	return this;
 };
 
-},{"../world/Island":154,"./Pool":151}],148:[function(require,module,exports){
+},{"../world/Island":158,"./Pool":155}],152:[function(require,module,exports){
 var TupleDictionary = require('./TupleDictionary');
 var OverlapKeeperRecord = require('./OverlapKeeperRecord');
 var OverlapKeeperRecordPool = require('./OverlapKeeperRecordPool');
@@ -43505,7 +44373,7 @@ OverlapKeeper.prototype.getBodyDiff = function(overlaps, result){
     return result;
 };
 
-},{"./OverlapKeeperRecord":149,"./OverlapKeeperRecordPool":150,"./TupleDictionary":152,"./Utils":153}],149:[function(require,module,exports){
+},{"./OverlapKeeperRecord":153,"./OverlapKeeperRecordPool":154,"./TupleDictionary":156,"./Utils":157}],153:[function(require,module,exports){
 module.exports = OverlapKeeperRecord;
 
 /**
@@ -43548,7 +44416,7 @@ OverlapKeeperRecord.prototype.set = function(bodyA, shapeA, bodyB, shapeB){
     OverlapKeeperRecord.call(this, bodyA, shapeA, bodyB, shapeB);
 };
 
-},{}],150:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 var OverlapKeeperRecord = require('./OverlapKeeperRecord');
 var Pool = require('./Pool');
 
@@ -43581,7 +44449,7 @@ OverlapKeeperRecordPool.prototype.destroy = function (record) {
 	return this;
 };
 
-},{"./OverlapKeeperRecord":149,"./Pool":151}],151:[function(require,module,exports){
+},{"./OverlapKeeperRecord":153,"./Pool":155}],155:[function(require,module,exports){
 module.exports = Pool;
 
 /**
@@ -43642,7 +44510,7 @@ Pool.prototype.release = function (object) {
 	return this;
 };
 
-},{}],152:[function(require,module,exports){
+},{}],156:[function(require,module,exports){
 var Utils = require('./Utils');
 
 module.exports = TupleDictionary;
@@ -43764,7 +44632,7 @@ TupleDictionary.prototype.copy = function(dict) {
     }
 };
 
-},{"./Utils":153}],153:[function(require,module,exports){
+},{"./Utils":157}],157:[function(require,module,exports){
 /* global P2_ARRAY_TYPE */
 
 module.exports = Utils;
@@ -43859,7 +44727,7 @@ Utils.defaults = function(options, defaults){
     return options;
 };
 
-},{}],154:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 var Body = require('../objects/Body');
 
 module.exports = Island;
@@ -43946,7 +44814,7 @@ Island.prototype.sleep = function(){
     return true;
 };
 
-},{"../objects/Body":127}],155:[function(require,module,exports){
+},{"../objects/Body":131}],159:[function(require,module,exports){
 var vec2 = require('../math/vec2')
 ,   Island = require('./Island')
 ,   IslandNode = require('./IslandNode')
@@ -44145,7 +45013,7 @@ IslandManager.prototype.split = function(world){
     return islands;
 };
 
-},{"../math/vec2":126,"../objects/Body":127,"./../utils/IslandNodePool":146,"./../utils/IslandPool":147,"./Island":154,"./IslandNode":156}],156:[function(require,module,exports){
+},{"../math/vec2":130,"../objects/Body":131,"./../utils/IslandNodePool":150,"./../utils/IslandPool":151,"./Island":158,"./IslandNode":160}],160:[function(require,module,exports){
 module.exports = IslandNode;
 
 /**
@@ -44193,7 +45061,7 @@ IslandNode.prototype.reset = function(){
     this.body = null;
 };
 
-},{}],157:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 var  GSSolver = require('../solver/GSSolver')
 ,    Solver = require('../solver/Solver')
 ,    Ray = require('../collision/Ray')
@@ -45476,901 +46344,7 @@ World.prototype.raycast = function(result, ray){
     return result.hasHit();
 };
 
-},{"../../package.json":102,"../collision/AABB":103,"../collision/Broadphase":104,"../collision/Narrowphase":106,"../collision/Ray":107,"../collision/SAPBroadphase":109,"../constraints/Constraint":110,"../constraints/DistanceConstraint":111,"../constraints/GearConstraint":112,"../constraints/LockConstraint":113,"../constraints/PrismaticConstraint":114,"../constraints/RevoluteConstraint":115,"../events/EventEmitter":122,"../material/ContactMaterial":123,"../material/Material":124,"../math/vec2":126,"../objects/Body":127,"../objects/LinearSpring":128,"../objects/RotationalSpring":129,"../shapes/Capsule":134,"../shapes/Circle":135,"../shapes/Convex":136,"../shapes/Line":138,"../shapes/Particle":139,"../shapes/Plane":140,"../shapes/Shape":141,"../solver/GSSolver":142,"../solver/Solver":143,"../utils/OverlapKeeper":148,"../utils/Utils":153,"./IslandManager":155}],158:[function(require,module,exports){
-(function (process){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
-  }
-
-  return parts;
-}
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-}).call(this,require('_process'))
-
-},{"_process":165}],159:[function(require,module,exports){
-var Scalar = require('./Scalar');
-
-module.exports = Line;
-
-/**
- * Container for line-related functions
- * @class Line
- */
-function Line(){};
-
-/**
- * Compute the intersection between two lines.
- * @static
- * @method lineInt
- * @param  {Array}  l1          Line vector 1
- * @param  {Array}  l2          Line vector 2
- * @param  {Number} precision   Precision to use when checking if the lines are parallel
- * @return {Array}              The intersection point.
- */
-Line.lineInt = function(l1,l2,precision){
-    precision = precision || 0;
-    var i = [0,0]; // point
-    var a1, b1, c1, a2, b2, c2, det; // scalars
-    a1 = l1[1][1] - l1[0][1];
-    b1 = l1[0][0] - l1[1][0];
-    c1 = a1 * l1[0][0] + b1 * l1[0][1];
-    a2 = l2[1][1] - l2[0][1];
-    b2 = l2[0][0] - l2[1][0];
-    c2 = a2 * l2[0][0] + b2 * l2[0][1];
-    det = a1 * b2 - a2*b1;
-    if (!Scalar.eq(det, 0, precision)) { // lines are not parallel
-        i[0] = (b2 * c1 - b1 * c2) / det;
-        i[1] = (a1 * c2 - a2 * c1) / det;
-    }
-    return i;
-};
-
-/**
- * Checks if two line segments intersects.
- * @method segmentsIntersect
- * @param {Array} p1 The start vertex of the first line segment.
- * @param {Array} p2 The end vertex of the first line segment.
- * @param {Array} q1 The start vertex of the second line segment.
- * @param {Array} q2 The end vertex of the second line segment.
- * @return {Boolean} True if the two line segments intersect
- */
-Line.segmentsIntersect = function(p1, p2, q1, q2){
-   var dx = p2[0] - p1[0];
-   var dy = p2[1] - p1[1];
-   var da = q2[0] - q1[0];
-   var db = q2[1] - q1[1];
-
-   // segments are parallel
-   if(da*dy - db*dx == 0)
-      return false;
-
-   var s = (dx * (q1[1] - p1[1]) + dy * (p1[0] - q1[0])) / (da * dy - db * dx)
-   var t = (da * (p1[1] - q1[1]) + db * (q1[0] - p1[0])) / (db * dx - da * dy)
-
-   return (s>=0 && s<=1 && t>=0 && t<=1);
-};
-
-
-},{"./Scalar":162}],160:[function(require,module,exports){
-module.exports = Point;
-
-/**
- * Point related functions
- * @class Point
- */
-function Point(){};
-
-/**
- * Get the area of a triangle spanned by the three given points. Note that the area will be negative if the points are not given in counter-clockwise order.
- * @static
- * @method area
- * @param  {Array} a
- * @param  {Array} b
- * @param  {Array} c
- * @return {Number}
- */
-Point.area = function(a,b,c){
-    return (((b[0] - a[0])*(c[1] - a[1]))-((c[0] - a[0])*(b[1] - a[1])));
-};
-
-Point.left = function(a,b,c){
-    return Point.area(a,b,c) > 0;
-};
-
-Point.leftOn = function(a,b,c) {
-    return Point.area(a, b, c) >= 0;
-};
-
-Point.right = function(a,b,c) {
-    return Point.area(a, b, c) < 0;
-};
-
-Point.rightOn = function(a,b,c) {
-    return Point.area(a, b, c) <= 0;
-};
-
-var tmpPoint1 = [],
-    tmpPoint2 = [];
-
-/**
- * Check if three points are collinear
- * @method collinear
- * @param  {Array} a
- * @param  {Array} b
- * @param  {Array} c
- * @param  {Number} [thresholdAngle=0] Threshold angle to use when comparing the vectors. The function will return true if the angle between the resulting vectors is less than this value. Use zero for max precision.
- * @return {Boolean}
- */
-Point.collinear = function(a,b,c,thresholdAngle) {
-    if(!thresholdAngle)
-        return Point.area(a, b, c) == 0;
-    else {
-        var ab = tmpPoint1,
-            bc = tmpPoint2;
-
-        ab[0] = b[0]-a[0];
-        ab[1] = b[1]-a[1];
-        bc[0] = c[0]-b[0];
-        bc[1] = c[1]-b[1];
-
-        var dot = ab[0]*bc[0] + ab[1]*bc[1],
-            magA = Math.sqrt(ab[0]*ab[0] + ab[1]*ab[1]),
-            magB = Math.sqrt(bc[0]*bc[0] + bc[1]*bc[1]),
-            angle = Math.acos(dot/(magA*magB));
-        return angle < thresholdAngle;
-    }
-};
-
-Point.sqdist = function(a,b){
-    var dx = b[0] - a[0];
-    var dy = b[1] - a[1];
-    return dx * dx + dy * dy;
-};
-
-},{}],161:[function(require,module,exports){
-var Line = require("./Line")
-,   Point = require("./Point")
-,   Scalar = require("./Scalar")
-
-module.exports = Polygon;
-
-/**
- * Polygon class.
- * @class Polygon
- * @constructor
- */
-function Polygon(){
-
-    /**
-     * Vertices that this polygon consists of. An array of array of numbers, example: [[0,0],[1,0],..]
-     * @property vertices
-     * @type {Array}
-     */
-    this.vertices = [];
-}
-
-/**
- * Get a vertex at position i. It does not matter if i is out of bounds, this function will just cycle.
- * @method at
- * @param  {Number} i
- * @return {Array}
- */
-Polygon.prototype.at = function(i){
-    var v = this.vertices,
-        s = v.length;
-    return v[i < 0 ? i % s + s : i % s];
-};
-
-/**
- * Get first vertex
- * @method first
- * @return {Array}
- */
-Polygon.prototype.first = function(){
-    return this.vertices[0];
-};
-
-/**
- * Get last vertex
- * @method last
- * @return {Array}
- */
-Polygon.prototype.last = function(){
-    return this.vertices[this.vertices.length-1];
-};
-
-/**
- * Clear the polygon data
- * @method clear
- * @return {Array}
- */
-Polygon.prototype.clear = function(){
-    this.vertices.length = 0;
-};
-
-/**
- * Append points "from" to "to"-1 from an other polygon "poly" onto this one.
- * @method append
- * @param {Polygon} poly The polygon to get points from.
- * @param {Number}  from The vertex index in "poly".
- * @param {Number}  to The end vertex index in "poly". Note that this vertex is NOT included when appending.
- * @return {Array}
- */
-Polygon.prototype.append = function(poly,from,to){
-    if(typeof(from) == "undefined") throw new Error("From is not given!");
-    if(typeof(to) == "undefined")   throw new Error("To is not given!");
-
-    if(to-1 < from)                 throw new Error("lol1");
-    if(to > poly.vertices.length)   throw new Error("lol2");
-    if(from < 0)                    throw new Error("lol3");
-
-    for(var i=from; i<to; i++){
-        this.vertices.push(poly.vertices[i]);
-    }
-};
-
-/**
- * Make sure that the polygon vertices are ordered counter-clockwise.
- * @method makeCCW
- */
-Polygon.prototype.makeCCW = function(){
-    var br = 0,
-        v = this.vertices;
-
-    // find bottom right point
-    for (var i = 1; i < this.vertices.length; ++i) {
-        if (v[i][1] < v[br][1] || (v[i][1] == v[br][1] && v[i][0] > v[br][0])) {
-            br = i;
-        }
-    }
-
-    // reverse poly if clockwise
-    if (!Point.left(this.at(br - 1), this.at(br), this.at(br + 1))) {
-        this.reverse();
-    }
-};
-
-/**
- * Reverse the vertices in the polygon
- * @method reverse
- */
-Polygon.prototype.reverse = function(){
-    var tmp = [];
-    for(var i=0, N=this.vertices.length; i!==N; i++){
-        tmp.push(this.vertices.pop());
-    }
-    this.vertices = tmp;
-};
-
-/**
- * Check if a point in the polygon is a reflex point
- * @method isReflex
- * @param  {Number}  i
- * @return {Boolean}
- */
-Polygon.prototype.isReflex = function(i){
-    return Point.right(this.at(i - 1), this.at(i), this.at(i + 1));
-};
-
-var tmpLine1=[],
-    tmpLine2=[];
-
-/**
- * Check if two vertices in the polygon can see each other
- * @method canSee
- * @param  {Number} a Vertex index 1
- * @param  {Number} b Vertex index 2
- * @return {Boolean}
- */
-Polygon.prototype.canSee = function(a,b) {
-    var p, dist, l1=tmpLine1, l2=tmpLine2;
-
-    if (Point.leftOn(this.at(a + 1), this.at(a), this.at(b)) && Point.rightOn(this.at(a - 1), this.at(a), this.at(b))) {
-        return false;
-    }
-    dist = Point.sqdist(this.at(a), this.at(b));
-    for (var i = 0; i !== this.vertices.length; ++i) { // for each edge
-        if ((i + 1) % this.vertices.length === a || i === a) // ignore incident edges
-            continue;
-        if (Point.leftOn(this.at(a), this.at(b), this.at(i + 1)) && Point.rightOn(this.at(a), this.at(b), this.at(i))) { // if diag intersects an edge
-            l1[0] = this.at(a);
-            l1[1] = this.at(b);
-            l2[0] = this.at(i);
-            l2[1] = this.at(i + 1);
-            p = Line.lineInt(l1,l2);
-            if (Point.sqdist(this.at(a), p) < dist) { // if edge is blocking visibility to b
-                return false;
-            }
-        }
-    }
-
-    return true;
-};
-
-/**
- * Copy the polygon from vertex i to vertex j.
- * @method copy
- * @param  {Number} i
- * @param  {Number} j
- * @param  {Polygon} [targetPoly]   Optional target polygon to save in.
- * @return {Polygon}                The resulting copy.
- */
-Polygon.prototype.copy = function(i,j,targetPoly){
-    var p = targetPoly || new Polygon();
-    p.clear();
-    if (i < j) {
-        // Insert all vertices from i to j
-        for(var k=i; k<=j; k++)
-            p.vertices.push(this.vertices[k]);
-
-    } else {
-
-        // Insert vertices 0 to j
-        for(var k=0; k<=j; k++)
-            p.vertices.push(this.vertices[k]);
-
-        // Insert vertices i to end
-        for(var k=i; k<this.vertices.length; k++)
-            p.vertices.push(this.vertices[k]);
-    }
-
-    return p;
-};
-
-/**
- * Decomposes the polygon into convex pieces. Returns a list of edges [[p1,p2],[p2,p3],...] that cuts the polygon.
- * Note that this algorithm has complexity O(N^4) and will be very slow for polygons with many vertices.
- * @method getCutEdges
- * @return {Array}
- */
-Polygon.prototype.getCutEdges = function() {
-    var min=[], tmp1=[], tmp2=[], tmpPoly = new Polygon();
-    var nDiags = Number.MAX_VALUE;
-
-    for (var i = 0; i < this.vertices.length; ++i) {
-        if (this.isReflex(i)) {
-            for (var j = 0; j < this.vertices.length; ++j) {
-                if (this.canSee(i, j)) {
-                    tmp1 = this.copy(i, j, tmpPoly).getCutEdges();
-                    tmp2 = this.copy(j, i, tmpPoly).getCutEdges();
-
-                    for(var k=0; k<tmp2.length; k++)
-                        tmp1.push(tmp2[k]);
-
-                    if (tmp1.length < nDiags) {
-                        min = tmp1;
-                        nDiags = tmp1.length;
-                        min.push([this.at(i), this.at(j)]);
-                    }
-                }
-            }
-        }
-    }
-
-    return min;
-};
-
-/**
- * Decomposes the polygon into one or more convex sub-Polygons.
- * @method decomp
- * @return {Array} An array or Polygon objects.
- */
-Polygon.prototype.decomp = function(){
-    var edges = this.getCutEdges();
-    if(edges.length > 0)
-        return this.slice(edges);
-    else
-        return [this];
-};
-
-/**
- * Slices the polygon given one or more cut edges. If given one, this function will return two polygons (false on failure). If many, an array of polygons.
- * @method slice
- * @param {Array} cutEdges A list of edges, as returned by .getCutEdges()
- * @return {Array}
- */
-Polygon.prototype.slice = function(cutEdges){
-    if(cutEdges.length == 0) return [this];
-    if(cutEdges instanceof Array && cutEdges.length && cutEdges[0] instanceof Array && cutEdges[0].length==2 && cutEdges[0][0] instanceof Array){
-
-        var polys = [this];
-
-        for(var i=0; i<cutEdges.length; i++){
-            var cutEdge = cutEdges[i];
-            // Cut all polys
-            for(var j=0; j<polys.length; j++){
-                var poly = polys[j];
-                var result = poly.slice(cutEdge);
-                if(result){
-                    // Found poly! Cut and quit
-                    polys.splice(j,1);
-                    polys.push(result[0],result[1]);
-                    break;
-                }
-            }
-        }
-
-        return polys;
-    } else {
-
-        // Was given one edge
-        var cutEdge = cutEdges;
-        var i = this.vertices.indexOf(cutEdge[0]);
-        var j = this.vertices.indexOf(cutEdge[1]);
-
-        if(i != -1 && j != -1){
-            return [this.copy(i,j),
-                    this.copy(j,i)];
-        } else {
-            return false;
-        }
-    }
-};
-
-/**
- * Checks that the line segments of this polygon do not intersect each other.
- * @method isSimple
- * @param  {Array} path An array of vertices e.g. [[0,0],[0,1],...]
- * @return {Boolean}
- * @todo Should it check all segments with all others?
- */
-Polygon.prototype.isSimple = function(){
-    var path = this.vertices;
-    // Check
-    for(var i=0; i<path.length-1; i++){
-        for(var j=0; j<i-1; j++){
-            if(Line.segmentsIntersect(path[i], path[i+1], path[j], path[j+1] )){
-                return false;
-            }
-        }
-    }
-
-    // Check the segment between the last and the first point to all others
-    for(var i=1; i<path.length-2; i++){
-        if(Line.segmentsIntersect(path[0], path[path.length-1], path[i], path[i+1] )){
-            return false;
-        }
-    }
-
-    return true;
-};
-
-function getIntersectionPoint(p1, p2, q1, q2, delta){
-    delta = delta || 0;
-   var a1 = p2[1] - p1[1];
-   var b1 = p1[0] - p2[0];
-   var c1 = (a1 * p1[0]) + (b1 * p1[1]);
-   var a2 = q2[1] - q1[1];
-   var b2 = q1[0] - q2[0];
-   var c2 = (a2 * q1[0]) + (b2 * q1[1]);
-   var det = (a1 * b2) - (a2 * b1);
-
-   if(!Scalar.eq(det,0,delta))
-      return [((b2 * c1) - (b1 * c2)) / det, ((a1 * c2) - (a2 * c1)) / det]
-   else
-      return [0,0]
-}
-
-/**
- * Quickly decompose the Polygon into convex sub-polygons.
- * @method quickDecomp
- * @param  {Array} result
- * @param  {Array} [reflexVertices]
- * @param  {Array} [steinerPoints]
- * @param  {Number} [delta]
- * @param  {Number} [maxlevel]
- * @param  {Number} [level]
- * @return {Array}
- */
-Polygon.prototype.quickDecomp = function(result,reflexVertices,steinerPoints,delta,maxlevel,level){
-    maxlevel = maxlevel || 100;
-    level = level || 0;
-    delta = delta || 25;
-    result = typeof(result)!="undefined" ? result : [];
-    reflexVertices = reflexVertices || [];
-    steinerPoints = steinerPoints || [];
-
-    var upperInt=[0,0], lowerInt=[0,0], p=[0,0]; // Points
-    var upperDist=0, lowerDist=0, d=0, closestDist=0; // scalars
-    var upperIndex=0, lowerIndex=0, closestIndex=0; // Integers
-    var lowerPoly=new Polygon(), upperPoly=new Polygon(); // polygons
-    var poly = this,
-        v = this.vertices;
-
-    if(v.length < 3) return result;
-
-    level++;
-    if(level > maxlevel){
-        console.warn("quickDecomp: max level ("+maxlevel+") reached.");
-        return result;
-    }
-
-    for (var i = 0; i < this.vertices.length; ++i) {
-        if (poly.isReflex(i)) {
-            reflexVertices.push(poly.vertices[i]);
-            upperDist = lowerDist = Number.MAX_VALUE;
-
-
-            for (var j = 0; j < this.vertices.length; ++j) {
-                if (Point.left(poly.at(i - 1), poly.at(i), poly.at(j))
-                        && Point.rightOn(poly.at(i - 1), poly.at(i), poly.at(j - 1))) { // if line intersects with an edge
-                    p = getIntersectionPoint(poly.at(i - 1), poly.at(i), poly.at(j), poly.at(j - 1)); // find the point of intersection
-                    if (Point.right(poly.at(i + 1), poly.at(i), p)) { // make sure it's inside the poly
-                        d = Point.sqdist(poly.vertices[i], p);
-                        if (d < lowerDist) { // keep only the closest intersection
-                            lowerDist = d;
-                            lowerInt = p;
-                            lowerIndex = j;
-                        }
-                    }
-                }
-                if (Point.left(poly.at(i + 1), poly.at(i), poly.at(j + 1))
-                        && Point.rightOn(poly.at(i + 1), poly.at(i), poly.at(j))) {
-                    p = getIntersectionPoint(poly.at(i + 1), poly.at(i), poly.at(j), poly.at(j + 1));
-                    if (Point.left(poly.at(i - 1), poly.at(i), p)) {
-                        d = Point.sqdist(poly.vertices[i], p);
-                        if (d < upperDist) {
-                            upperDist = d;
-                            upperInt = p;
-                            upperIndex = j;
-                        }
-                    }
-                }
-            }
-
-            // if there are no vertices to connect to, choose a point in the middle
-            if (lowerIndex == (upperIndex + 1) % this.vertices.length) {
-                //console.log("Case 1: Vertex("+i+"), lowerIndex("+lowerIndex+"), upperIndex("+upperIndex+"), poly.size("+this.vertices.length+")");
-                p[0] = (lowerInt[0] + upperInt[0]) / 2;
-                p[1] = (lowerInt[1] + upperInt[1]) / 2;
-                steinerPoints.push(p);
-
-                if (i < upperIndex) {
-                    //lowerPoly.insert(lowerPoly.end(), poly.begin() + i, poly.begin() + upperIndex + 1);
-                    lowerPoly.append(poly, i, upperIndex+1);
-                    lowerPoly.vertices.push(p);
-                    upperPoly.vertices.push(p);
-                    if (lowerIndex != 0){
-                        //upperPoly.insert(upperPoly.end(), poly.begin() + lowerIndex, poly.end());
-                        upperPoly.append(poly,lowerIndex,poly.vertices.length);
-                    }
-                    //upperPoly.insert(upperPoly.end(), poly.begin(), poly.begin() + i + 1);
-                    upperPoly.append(poly,0,i+1);
-                } else {
-                    if (i != 0){
-                        //lowerPoly.insert(lowerPoly.end(), poly.begin() + i, poly.end());
-                        lowerPoly.append(poly,i,poly.vertices.length);
-                    }
-                    //lowerPoly.insert(lowerPoly.end(), poly.begin(), poly.begin() + upperIndex + 1);
-                    lowerPoly.append(poly,0,upperIndex+1);
-                    lowerPoly.vertices.push(p);
-                    upperPoly.vertices.push(p);
-                    //upperPoly.insert(upperPoly.end(), poly.begin() + lowerIndex, poly.begin() + i + 1);
-                    upperPoly.append(poly,lowerIndex,i+1);
-                }
-            } else {
-                // connect to the closest point within the triangle
-                //console.log("Case 2: Vertex("+i+"), closestIndex("+closestIndex+"), poly.size("+this.vertices.length+")\n");
-
-                if (lowerIndex > upperIndex) {
-                    upperIndex += this.vertices.length;
-                }
-                closestDist = Number.MAX_VALUE;
-
-                if(upperIndex < lowerIndex){
-                    return result;
-                }
-
-                for (var j = lowerIndex; j <= upperIndex; ++j) {
-                    if (Point.leftOn(poly.at(i - 1), poly.at(i), poly.at(j))
-                            && Point.rightOn(poly.at(i + 1), poly.at(i), poly.at(j))) {
-                        d = Point.sqdist(poly.at(i), poly.at(j));
-                        if (d < closestDist) {
-                            closestDist = d;
-                            closestIndex = j % this.vertices.length;
-                        }
-                    }
-                }
-
-                if (i < closestIndex) {
-                    lowerPoly.append(poly,i,closestIndex+1);
-                    if (closestIndex != 0){
-                        upperPoly.append(poly,closestIndex,v.length);
-                    }
-                    upperPoly.append(poly,0,i+1);
-                } else {
-                    if (i != 0){
-                        lowerPoly.append(poly,i,v.length);
-                    }
-                    lowerPoly.append(poly,0,closestIndex+1);
-                    upperPoly.append(poly,closestIndex,i+1);
-                }
-            }
-
-            // solve smallest poly first
-            if (lowerPoly.vertices.length < upperPoly.vertices.length) {
-                lowerPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
-                upperPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
-            } else {
-                upperPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
-                lowerPoly.quickDecomp(result,reflexVertices,steinerPoints,delta,maxlevel,level);
-            }
-
-            return result;
-        }
-    }
-    result.push(this);
-
-    return result;
-};
-
-/**
- * Remove collinear points in the polygon.
- * @method removeCollinearPoints
- * @param  {Number} [precision] The threshold angle to use when determining whether two edges are collinear. Use zero for finest precision.
- * @return {Number}           The number of points removed
- */
-Polygon.prototype.removeCollinearPoints = function(precision){
-    var num = 0;
-    for(var i=this.vertices.length-1; this.vertices.length>3 && i>=0; --i){
-        if(Point.collinear(this.at(i-1),this.at(i),this.at(i+1),precision)){
-            // Remove the middle point
-            this.vertices.splice(i%this.vertices.length,1);
-            i--; // Jump one point forward. Otherwise we may get a chain removal
-            num++;
-        }
-    }
-    return num;
-};
-
-},{"./Line":159,"./Point":160,"./Scalar":162}],162:[function(require,module,exports){
-module.exports = Scalar;
-
-/**
- * Scalar functions
- * @class Scalar
- */
-function Scalar(){}
-
-/**
- * Check if two scalars are equal
- * @static
- * @method eq
- * @param  {Number} a
- * @param  {Number} b
- * @param  {Number} [precision]
- * @return {Boolean}
- */
-Scalar.eq = function(a,b,precision){
-    precision = precision || 0;
-    return Math.abs(a-b) < precision;
-};
-
-},{}],163:[function(require,module,exports){
-module.exports = {
-    Polygon : require("./Polygon"),
-    Point : require("./Point"),
-};
-
-},{"./Point":160,"./Polygon":161}],164:[function(require,module,exports){
+},{"../../package.json":106,"../collision/AABB":107,"../collision/Broadphase":108,"../collision/Narrowphase":110,"../collision/Ray":111,"../collision/SAPBroadphase":113,"../constraints/Constraint":114,"../constraints/DistanceConstraint":115,"../constraints/GearConstraint":116,"../constraints/LockConstraint":117,"../constraints/PrismaticConstraint":118,"../constraints/RevoluteConstraint":119,"../events/EventEmitter":126,"../material/ContactMaterial":127,"../material/Material":128,"../math/vec2":130,"../objects/Body":131,"../objects/LinearSpring":132,"../objects/RotationalSpring":133,"../shapes/Capsule":138,"../shapes/Circle":139,"../shapes/Convex":140,"../shapes/Line":142,"../shapes/Particle":143,"../shapes/Plane":144,"../shapes/Shape":145,"../solver/GSSolver":146,"../solver/Solver":147,"../utils/OverlapKeeper":152,"../utils/Utils":157,"./IslandManager":159}],162:[function(require,module,exports){
 /*!
 * @license PreloadJS
 * Visit http://createjs.com/ for documentation, updates and examples.
@@ -46384,193 +46358,7 @@ module.exports = {
 */
 window.createjs=window.createjs||{},function(){"use strict";var a=createjs.PreloadJS=createjs.PreloadJS||{};a.version="0.4.1",a.buildDate="Thu, 12 Dec 2013 23:33:38 GMT"}(),function(){"use strict";var a=function(a,b,c){this.initialize(a,b,c)},b=a.prototype;b.type=null,b.target=null,b.currentTarget=null,b.eventPhase=0,b.bubbles=!1,b.cancelable=!1,b.timeStamp=0,b.defaultPrevented=!1,b.propagationStopped=!1,b.immediatePropagationStopped=!1,b.removed=!1,b.initialize=function(a,b,c){this.type=a,this.bubbles=b,this.cancelable=c,this.timeStamp=(new Date).getTime()},b.preventDefault=function(){this.defaultPrevented=!0},b.stopPropagation=function(){this.propagationStopped=!0},b.stopImmediatePropagation=function(){this.immediatePropagationStopped=this.propagationStopped=!0},b.remove=function(){this.removed=!0},b.clone=function(){return new a(this.type,this.bubbles,this.cancelable)},b.toString=function(){return"[Event (type="+this.type+")]"},createjs.Event=a}(),function(){"use strict";var a=function(){},b=a.prototype;a.initialize=function(a){a.addEventListener=b.addEventListener,a.on=b.on,a.removeEventListener=a.off=b.removeEventListener,a.removeAllEventListeners=b.removeAllEventListeners,a.hasEventListener=b.hasEventListener,a.dispatchEvent=b.dispatchEvent,a._dispatchEvent=b._dispatchEvent,a.willTrigger=b.willTrigger},b._listeners=null,b._captureListeners=null,b.initialize=function(){},b.addEventListener=function(a,b,c){var d;d=c?this._captureListeners=this._captureListeners||{}:this._listeners=this._listeners||{};var e=d[a];return e&&this.removeEventListener(a,b,c),e=d[a],e?e.push(b):d[a]=[b],b},b.on=function(a,b,c,d,e,f){return b.handleEvent&&(c=c||b,b=b.handleEvent),c=c||this,this.addEventListener(a,function(a){b.call(c,a,e),d&&a.remove()},f)},b.removeEventListener=function(a,b,c){var d=c?this._captureListeners:this._listeners;if(d){var e=d[a];if(e)for(var f=0,g=e.length;g>f;f++)if(e[f]==b){1==g?delete d[a]:e.splice(f,1);break}}},b.off=b.removeEventListener,b.removeAllEventListeners=function(a){a?(this._listeners&&delete this._listeners[a],this._captureListeners&&delete this._captureListeners[a]):this._listeners=this._captureListeners=null},b.dispatchEvent=function(a,b){if("string"==typeof a){var c=this._listeners;if(!c||!c[a])return!1;a=new createjs.Event(a)}if(a.target=b||this,a.bubbles&&this.parent){for(var d=this,e=[d];d.parent;)e.push(d=d.parent);var f,g=e.length;for(f=g-1;f>=0&&!a.propagationStopped;f--)e[f]._dispatchEvent(a,1+(0==f));for(f=1;g>f&&!a.propagationStopped;f++)e[f]._dispatchEvent(a,3)}else this._dispatchEvent(a,2);return a.defaultPrevented},b.hasEventListener=function(a){var b=this._listeners,c=this._captureListeners;return!!(b&&b[a]||c&&c[a])},b.willTrigger=function(a){for(var b=this;b;){if(b.hasEventListener(a))return!0;b=b.parent}return!1},b.toString=function(){return"[EventDispatcher]"},b._dispatchEvent=function(a,b){var c,d=1==b?this._captureListeners:this._listeners;if(a&&d){var e=d[a.type];if(!e||!(c=e.length))return;a.currentTarget=this,a.eventPhase=b,a.removed=!1,e=e.slice();for(var f=0;c>f&&!a.immediatePropagationStopped;f++){var g=e[f];g.handleEvent?g.handleEvent(a):g(a),a.removed&&(this.off(a.type,g,1==b),a.removed=!1)}}},createjs.EventDispatcher=a}(),function(){"use strict";createjs.indexOf=function(a,b){for(var c=0,d=a.length;d>c;c++)if(b===a[c])return c;return-1}}(),function(){"use strict";createjs.proxy=function(a,b){var c=Array.prototype.slice.call(arguments,2);return function(){return a.apply(b,Array.prototype.slice.call(arguments,0).concat(c))}}}(),function(){"use strict";var a=function(){this.init()};a.prototype=new createjs.EventDispatcher;var b=a.prototype,c=a;c.FILE_PATTERN=/^(?:(\w+:)\/{2}(\w+(?:\.\w+)*\/?)|(.{0,2}\/{1}))?([/.]*?(?:[^?]+)?\/)?((?:[^/?]+)\.(\w+))(?:\?(\S+)?)?$/,c.PATH_PATTERN=/^(?:(\w+:)\/{2})|(.{0,2}\/{1})?([/.]*?(?:[^?]+)?\/?)?$/,b.loaded=!1,b.canceled=!1,b.progress=0,b._item=null,b.getItem=function(){return this._item},b.init=function(){},b.load=function(){},b.close=function(){},b._sendLoadStart=function(){this._isCanceled()||this.dispatchEvent("loadstart")},b._sendProgress=function(a){if(!this._isCanceled()){var b=null;"number"==typeof a?(this.progress=a,b=new createjs.Event("progress"),b.loaded=this.progress,b.total=1):(b=a,this.progress=a.loaded/a.total,(isNaN(this.progress)||1/0==this.progress)&&(this.progress=0)),b.progress=this.progress,this.hasEventListener("progress")&&this.dispatchEvent(b)}},b._sendComplete=function(){this._isCanceled()||this.dispatchEvent("complete")},b._sendError=function(a){!this._isCanceled()&&this.hasEventListener("error")&&(null==a&&(a=new createjs.Event("error")),this.dispatchEvent(a))},b._isCanceled=function(){return null==window.createjs||this.canceled?!0:!1},b._parseURI=function(a){return a?a.match(c.FILE_PATTERN):null},b._parsePath=function(a){return a?a.match(c.PATH_PATTERN):null},b._formatQueryString=function(a,b){if(null==a)throw new Error("You must specify data.");var c=[];for(var d in a)c.push(d+"="+escape(a[d]));return b&&(c=c.concat(b)),c.join("&")},b.buildPath=function(a,b){if(null==b)return a;var c=[],d=a.indexOf("?");if(-1!=d){var e=a.slice(d+1);c=c.concat(e.split("&"))}return-1!=d?a.slice(0,d)+"?"+this._formatQueryString(b,c):a+"?"+this._formatQueryString(b,c)},b._isCrossDomain=function(a){var b=document.createElement("a");b.href=a.src;var c=document.createElement("a");c.href=location.href;var d=""!=b.hostname&&(b.port!=c.port||b.protocol!=c.protocol||b.hostname!=c.hostname);return d},b._isLocal=function(a){var b=document.createElement("a");return b.href=a.src,""==b.hostname&&"file:"==b.protocol},b.toString=function(){return"[PreloadJS AbstractLoader]"},createjs.AbstractLoader=a}(),function(){"use strict";var a=function(a,b,c){this.init(a,b,c)},b=a.prototype=new createjs.AbstractLoader,c=a;c.loadTimeout=8e3,c.LOAD_TIMEOUT=0,c.BINARY="binary",c.CSS="css",c.IMAGE="image",c.JAVASCRIPT="javascript",c.JSON="json",c.JSONP="jsonp",c.MANIFEST="manifest",c.SOUND="sound",c.SVG="svg",c.TEXT="text",c.XML="xml",c.POST="POST",c.GET="GET",b._basePath=null,b._crossOrigin="",b.useXHR=!0,b.stopOnError=!1,b.maintainScriptOrder=!0,b.next=null,b._typeCallbacks=null,b._extensionCallbacks=null,b._loadStartWasDispatched=!1,b._maxConnections=1,b._currentlyLoadingScript=null,b._currentLoads=null,b._loadQueue=null,b._loadQueueBackup=null,b._loadItemsById=null,b._loadItemsBySrc=null,b._loadedResults=null,b._loadedRawResults=null,b._numItems=0,b._numItemsLoaded=0,b._scriptOrder=null,b._loadedScripts=null,b.init=function(a,b,c){this._numItems=this._numItemsLoaded=0,this._paused=!1,this._loadStartWasDispatched=!1,this._currentLoads=[],this._loadQueue=[],this._loadQueueBackup=[],this._scriptOrder=[],this._loadedScripts=[],this._loadItemsById={},this._loadItemsBySrc={},this._loadedResults={},this._loadedRawResults={},this._typeCallbacks={},this._extensionCallbacks={},this._basePath=b,this.setUseXHR(a),this._crossOrigin=c===!0?"Anonymous":c===!1||null==c?"":c},b.setUseXHR=function(a){return this.useXHR=0!=a&&null!=window.XMLHttpRequest,this.useXHR},b.removeAll=function(){this.remove()},b.remove=function(a){var b=null;if(!a||a instanceof Array){if(a)b=a;else if(arguments.length>0)return}else b=[a];var c=!1;if(b){for(;b.length;){var d=b.pop(),e=this.getResult(d);for(f=this._loadQueue.length-1;f>=0;f--)if(g=this._loadQueue[f].getItem(),g.id==d||g.src==d){this._loadQueue.splice(f,1)[0].cancel();break}for(f=this._loadQueueBackup.length-1;f>=0;f--)if(g=this._loadQueueBackup[f].getItem(),g.id==d||g.src==d){this._loadQueueBackup.splice(f,1)[0].cancel();break}if(e)delete this._loadItemsById[e.id],delete this._loadItemsBySrc[e.src],this._disposeItem(e);else for(var f=this._currentLoads.length-1;f>=0;f--){var g=this._currentLoads[f].getItem();if(g.id==d||g.src==d){this._currentLoads.splice(f,1)[0].cancel(),c=!0;break}}}c&&this._loadNext()}else{this.close();for(var h in this._loadItemsById)this._disposeItem(this._loadItemsById[h]);this.init(this.useXHR)}},b.reset=function(){this.close();for(var a in this._loadItemsById)this._disposeItem(this._loadItemsById[a]);for(var b=[],c=0,d=this._loadQueueBackup.length;d>c;c++)b.push(this._loadQueueBackup[c].getItem());this.loadManifest(b,!1)},c.isBinary=function(a){switch(a){case createjs.LoadQueue.IMAGE:case createjs.LoadQueue.BINARY:return!0;default:return!1}},c.isText=function(a){switch(a){case createjs.LoadQueue.TEXT:case createjs.LoadQueue.JSON:case createjs.LoadQueue.MANIFEST:case createjs.LoadQueue.XML:case createjs.LoadQueue.HTML:case createjs.LoadQueue.CSS:case createjs.LoadQueue.SVG:case createjs.LoadQueue.JAVASCRIPT:return!0;default:return!1}},b.installPlugin=function(a){if(null!=a&&null!=a.getPreloadHandlers){var b=a.getPreloadHandlers();if(b.scope=a,null!=b.types)for(var c=0,d=b.types.length;d>c;c++)this._typeCallbacks[b.types[c]]=b;if(null!=b.extensions)for(c=0,d=b.extensions.length;d>c;c++)this._extensionCallbacks[b.extensions[c]]=b}},b.setMaxConnections=function(a){this._maxConnections=a,!this._paused&&this._loadQueue.length>0&&this._loadNext()},b.loadFile=function(a,b,c){if(null==a){var d=new createjs.Event("error");return d.text="PRELOAD_NO_FILE",this._sendError(d),void 0}this._addItem(a,null,c),b!==!1?this.setPaused(!1):this.setPaused(!0)},b.loadManifest=function(a,b,d){var e=null,f=null;if(a instanceof Array){if(0==a.length){var g=new createjs.Event("error");return g.text="PRELOAD_MANIFEST_EMPTY",this._sendError(g),void 0}e=a}else if("string"==typeof a)e=[{src:a,type:c.MANIFEST}];else{if("object"!=typeof a){var g=new createjs.Event("error");return g.text="PRELOAD_MANIFEST_NULL",this._sendError(g),void 0}if(void 0!==a.src){if(null==a.type)a.type=c.MANIFEST;else if(a.type!=c.MANIFEST){var g=new createjs.Event("error");g.text="PRELOAD_MANIFEST_ERROR",this._sendError(g)}e=[a]}else void 0!==a.manifest&&(e=a.manifest,f=a.path)}for(var h=0,i=e.length;i>h;h++)this._addItem(e[h],f,d);b!==!1?this.setPaused(!1):this.setPaused(!0)},b.load=function(){this.setPaused(!1)},b.getItem=function(a){return this._loadItemsById[a]||this._loadItemsBySrc[a]},b.getResult=function(a,b){var c=this._loadItemsById[a]||this._loadItemsBySrc[a];if(null==c)return null;var d=c.id;return b&&this._loadedRawResults[d]?this._loadedRawResults[d]:this._loadedResults[d]},b.setPaused=function(a){this._paused=a,this._paused||this._loadNext()},b.close=function(){for(;this._currentLoads.length;)this._currentLoads.pop().cancel();this._scriptOrder.length=0,this._loadedScripts.length=0,this.loadStartWasDispatched=!1},b._addItem=function(a,b,c){var d=this._createLoadItem(a,b,c);if(null!=d){var e=this._createLoader(d);null!=e&&(this._loadQueue.push(e),this._loadQueueBackup.push(e),this._numItems++,this._updateProgress(),this.maintainScriptOrder&&d.type==createjs.LoadQueue.JAVASCRIPT&&e instanceof createjs.XHRLoader&&(this._scriptOrder.push(d),this._loadedScripts.push(null)))}},b._createLoadItem=function(a,b,c){var d=null;switch(typeof a){case"string":d={src:a};break;case"object":d=window.HTMLAudioElement&&a instanceof window.HTMLAudioElement?{tag:a,src:d.tag.src,type:createjs.LoadQueue.SOUND}:a;break;default:return null}var e=this._parseURI(d.src);null!=e&&(d.ext=e[6]),null==d.type&&(d.type=this._getTypeByExtension(d.ext));var f="",g=c||this._basePath,h=d.src;if(e&&null==e[1]&&null==e[3])if(b){f=b;var i=this._parsePath(b);h=b+h,null!=g&&i&&null==i[1]&&null==i[2]&&(f=g+f)}else null!=g&&(f=g);if(d.src=f+d.src,d.path=f,(d.type==createjs.LoadQueue.JSON||d.type==createjs.LoadQueue.MANIFEST)&&(d._loadAsJSONP=null!=d.callback),d.type==createjs.LoadQueue.JSONP&&null==d.callback)throw new Error("callback is required for loading JSONP requests.");(void 0===d.tag||null===d.tag)&&(d.tag=this._createTag(d)),(void 0===d.id||null===d.id||""===d.id)&&(d.id=h);var j=this._typeCallbacks[d.type]||this._extensionCallbacks[d.ext];if(j){var k=j.callback.call(j.scope,d.src,d.type,d.id,d.data,f,this);if(k===!1)return null;k===!0||(null!=k.src&&(d.src=k.src),null!=k.id&&(d.id=k.id),null!=k.tag&&(d.tag=k.tag),null!=k.completeHandler&&(d.completeHandler=k.completeHandler),k.type&&(d.type=k.type),e=this._parseURI(d.src),null!=e&&null!=e[6]&&(d.ext=e[6].toLowerCase()))}return this._loadItemsById[d.id]=d,this._loadItemsBySrc[d.src]=d,d},b._createLoader=function(a){var b=this.useXHR;switch(a.type){case createjs.LoadQueue.JSON:case createjs.LoadQueue.MANIFEST:b=!a._loadAsJSONP;break;case createjs.LoadQueue.XML:case createjs.LoadQueue.TEXT:b=!0;break;case createjs.LoadQueue.SOUND:case createjs.LoadQueue.JSONP:b=!1;break;case null:return null}return b?new createjs.XHRLoader(a,this._crossOrigin):new createjs.TagLoader(a)},b._loadNext=function(){if(!this._paused){this._loadStartWasDispatched||(this._sendLoadStart(),this._loadStartWasDispatched=!0),this._numItems==this._numItemsLoaded?(this.loaded=!0,this._sendComplete(),this.next&&this.next.load&&this.next.load()):this.loaded=!1;for(var a=0;a<this._loadQueue.length&&!(this._currentLoads.length>=this._maxConnections);a++){var b=this._loadQueue[a];if(this.maintainScriptOrder&&b instanceof createjs.TagLoader&&b.getItem().type==createjs.LoadQueue.JAVASCRIPT){if(this._currentlyLoadingScript)continue;this._currentlyLoadingScript=!0}this._loadQueue.splice(a,1),a--,this._loadItem(b)}}},b._loadItem=function(a){a.on("progress",this._handleProgress,this),a.on("complete",this._handleFileComplete,this),a.on("error",this._handleFileError,this),this._currentLoads.push(a),this._sendFileStart(a.getItem()),a.load()},b._handleFileError=function(a){var b=a.target;this._numItemsLoaded++,this._updateProgress();var c=new createjs.Event("error");c.text="FILE_LOAD_ERROR",c.item=b.getItem(),this._sendError(c),this.stopOnError||(this._removeLoadItem(b),this._loadNext())},b._handleFileComplete=function(a){var b=a.target,c=b.getItem();if(this._loadedResults[c.id]=b.getResult(),b instanceof createjs.XHRLoader&&(this._loadedRawResults[c.id]=b.getResult(!0)),this._removeLoadItem(b),this.maintainScriptOrder&&c.type==createjs.LoadQueue.JAVASCRIPT){if(!(b instanceof createjs.TagLoader))return this._loadedScripts[createjs.indexOf(this._scriptOrder,c)]=c,this._checkScriptLoadOrder(b),void 0;this._currentlyLoadingScript=!1}if(delete c._loadAsJSONP,c.type==createjs.LoadQueue.MANIFEST){var d=b.getResult();null!=d&&void 0!==d.manifest&&this.loadManifest(d,!0)}this._processFinishedLoad(c,b)},b._processFinishedLoad=function(a,b){this._numItemsLoaded++,this._updateProgress(),this._sendFileComplete(a,b),this._loadNext()},b._checkScriptLoadOrder=function(){for(var a=this._loadedScripts.length,b=0;a>b;b++){var c=this._loadedScripts[b];if(null===c)break;if(c!==!0){var d=this._loadedResults[c.id];(document.body||document.getElementsByTagName("body")[0]).appendChild(d),this._processFinishedLoad(c),this._loadedScripts[b]=!0}}},b._removeLoadItem=function(a){for(var b=this._currentLoads.length,c=0;b>c;c++)if(this._currentLoads[c]==a){this._currentLoads.splice(c,1);break}},b._handleProgress=function(a){var b=a.target;this._sendFileProgress(b.getItem(),b.progress),this._updateProgress()},b._updateProgress=function(){var a=this._numItemsLoaded/this._numItems,b=this._numItems-this._numItemsLoaded;if(b>0){for(var c=0,d=0,e=this._currentLoads.length;e>d;d++)c+=this._currentLoads[d].progress;a+=c/b*(b/this._numItems)}this._sendProgress(a)},b._disposeItem=function(a){delete this._loadedResults[a.id],delete this._loadedRawResults[a.id],delete this._loadItemsById[a.id],delete this._loadItemsBySrc[a.src]},b._createTag=function(a){var b=null;switch(a.type){case createjs.LoadQueue.IMAGE:return b=document.createElement("img"),""==this._crossOrigin||this._isLocal(a)||(b.crossOrigin=this._crossOrigin),b;case createjs.LoadQueue.SOUND:return b=document.createElement("audio"),b.autoplay=!1,b;case createjs.LoadQueue.JSON:case createjs.LoadQueue.JSONP:case createjs.LoadQueue.JAVASCRIPT:case createjs.LoadQueue.MANIFEST:return b=document.createElement("script"),b.type="text/javascript",b;case createjs.LoadQueue.CSS:return b=this.useXHR?document.createElement("style"):document.createElement("link"),b.rel="stylesheet",b.type="text/css",b;case createjs.LoadQueue.SVG:return this.useXHR?b=document.createElement("svg"):(b=document.createElement("object"),b.type="image/svg+xml"),b}return null},b._getTypeByExtension=function(a){if(null==a)return createjs.LoadQueue.TEXT;switch(a.toLowerCase()){case"jpeg":case"jpg":case"gif":case"png":case"webp":case"bmp":return createjs.LoadQueue.IMAGE;case"ogg":case"mp3":case"wav":return createjs.LoadQueue.SOUND;case"json":return createjs.LoadQueue.JSON;case"xml":return createjs.LoadQueue.XML;case"css":return createjs.LoadQueue.CSS;case"js":return createjs.LoadQueue.JAVASCRIPT;case"svg":return createjs.LoadQueue.SVG;default:return createjs.LoadQueue.TEXT}},b._sendFileProgress=function(a,b){if(this._isCanceled())return this._cleanUp(),void 0;if(this.hasEventListener("fileprogress")){var c=new createjs.Event("fileprogress");c.progress=b,c.loaded=b,c.total=1,c.item=a,this.dispatchEvent(c)}},b._sendFileComplete=function(a,b){if(!this._isCanceled()){var c=new createjs.Event("fileload");c.loader=b,c.item=a,c.result=this._loadedResults[a.id],c.rawResult=this._loadedRawResults[a.id],a.completeHandler&&a.completeHandler(c),this.hasEventListener("fileload")&&this.dispatchEvent(c)}},b._sendFileStart=function(a){var b=new createjs.Event("filestart");b.item=a,this.hasEventListener("filestart")&&this.dispatchEvent(b)},b.toString=function(){return"[PreloadJS LoadQueue]"},createjs.LoadQueue=a;var d=function(){};d.init=function(){var a=navigator.userAgent;d.isFirefox=a.indexOf("Firefox")>-1,d.isOpera=null!=window.opera,d.isChrome=a.indexOf("Chrome")>-1,d.isIOS=a.indexOf("iPod")>-1||a.indexOf("iPhone")>-1||a.indexOf("iPad")>-1},d.init(),createjs.LoadQueue.BrowserDetect=d}(),function(){"use strict";var a=function(a){this.init(a)},b=a.prototype=new createjs.AbstractLoader;b._loadTimeout=null,b._tagCompleteProxy=null,b._isAudio=!1,b._tag=null,b._jsonResult=null,b.init=function(a){this._item=a,this._tag=a.tag,this._isAudio=window.HTMLAudioElement&&a.tag instanceof window.HTMLAudioElement,this._tagCompleteProxy=createjs.proxy(this._handleLoad,this)},b.getResult=function(){return this._item.type==createjs.LoadQueue.JSONP||this._item.type==createjs.LoadQueue.MANIFEST?this._jsonResult:this._tag},b.cancel=function(){this.canceled=!0,this._clean()},b.load=function(){var a=this._item,b=this._tag;clearTimeout(this._loadTimeout);var c=createjs.LoadQueue.LOAD_TIMEOUT;0==c&&(c=createjs.LoadQueue.loadTimeout),this._loadTimeout=setTimeout(createjs.proxy(this._handleTimeout,this),c),this._isAudio&&(b.src=null,b.preload="auto"),b.onerror=createjs.proxy(this._handleError,this),this._isAudio?(b.onstalled=createjs.proxy(this._handleStalled,this),b.addEventListener("canplaythrough",this._tagCompleteProxy,!1)):(b.onload=createjs.proxy(this._handleLoad,this),b.onreadystatechange=createjs.proxy(this._handleReadyStateChange,this));var d=this.buildPath(a.src,a.values);switch(a.type){case createjs.LoadQueue.CSS:b.href=d;break;case createjs.LoadQueue.SVG:b.data=d;break;default:b.src=d}if(a.type==createjs.LoadQueue.JSONP||a.type==createjs.LoadQueue.JSON||a.type==createjs.LoadQueue.MANIFEST){if(null==a.callback)throw new Error("callback is required for loading JSONP requests.");if(null!=window[a.callback])throw new Error('JSONP callback "'+a.callback+'" already exists on window. You need to specify a different callback. Or re-name the current one.');window[a.callback]=createjs.proxy(this._handleJSONPLoad,this)}(a.type==createjs.LoadQueue.SVG||a.type==createjs.LoadQueue.JSONP||a.type==createjs.LoadQueue.JSON||a.type==createjs.LoadQueue.MANIFEST||a.type==createjs.LoadQueue.JAVASCRIPT||a.type==createjs.LoadQueue.CSS)&&(this._startTagVisibility=b.style.visibility,b.style.visibility="hidden",(document.body||document.getElementsByTagName("body")[0]).appendChild(b)),null!=b.load&&b.load()},b._handleJSONPLoad=function(a){this._jsonResult=a},b._handleTimeout=function(){this._clean();var a=new createjs.Event("error");a.text="PRELOAD_TIMEOUT",this._sendError(a)},b._handleStalled=function(){},b._handleError=function(){this._clean();var a=new createjs.Event("error");this._sendError(a)},b._handleReadyStateChange=function(){clearTimeout(this._loadTimeout);var a=this.getItem().tag;("loaded"==a.readyState||"complete"==a.readyState)&&this._handleLoad()},b._handleLoad=function(){if(!this._isCanceled()){var a=this.getItem(),b=a.tag;if(!(this.loaded||this._isAudio&&4!==b.readyState)){switch(this.loaded=!0,a.type){case createjs.LoadQueue.SVG:case createjs.LoadQueue.JSON:case createjs.LoadQueue.JSONP:case createjs.LoadQueue.MANIFEST:case createjs.LoadQueue.CSS:b.style.visibility=this._startTagVisibility,(document.body||document.getElementsByTagName("body")[0]).removeChild(b)}this._clean(),this._sendComplete()}}},b._clean=function(){clearTimeout(this._loadTimeout);var a=this.getItem(),b=a.tag;null!=b&&(b.onload=null,b.removeEventListener&&b.removeEventListener("canplaythrough",this._tagCompleteProxy,!1),b.onstalled=null,b.onprogress=null,b.onerror=null,null!=b.parentNode&&a.type==createjs.LoadQueue.SVG&&a.type==createjs.LoadQueue.JSON&&a.type==createjs.LoadQueue.MANIFEST&&a.type==createjs.LoadQueue.CSS&&a.type==createjs.LoadQueue.JSONP&&b.parentNode.removeChild(b));var a=this.getItem();(a.type==createjs.LoadQueue.JSONP||a.type==createjs.LoadQueue.MANIFEST)&&(window[a.callback]=null)},b.toString=function(){return"[PreloadJS TagLoader]"},createjs.TagLoader=a}(),function(){"use strict";var a=function(a,b){this.init(a,b)},b=a.prototype=new createjs.AbstractLoader;b._request=null,b._loadTimeout=null,b._xhrLevel=1,b._response=null,b._rawResponse=null,b._crossOrigin="",b.init=function(a,b){this._item=a,this._crossOrigin=b,!this._createXHR(a)},b.getResult=function(a){return a&&this._rawResponse?this._rawResponse:this._response},b.cancel=function(){this.canceled=!0,this._clean(),this._request.abort()},b.load=function(){if(null==this._request)return this._handleError(),void 0;if(this._request.onloadstart=createjs.proxy(this._handleLoadStart,this),this._request.onprogress=createjs.proxy(this._handleProgress,this),this._request.onabort=createjs.proxy(this._handleAbort,this),this._request.onerror=createjs.proxy(this._handleError,this),this._request.ontimeout=createjs.proxy(this._handleTimeout,this),1==this._xhrLevel){var a=createjs.LoadQueue.LOAD_TIMEOUT;if(0==a)a=createjs.LoadQueue.loadTimeout;else try{console.warn("LoadQueue.LOAD_TIMEOUT has been deprecated in favor of LoadQueue.loadTimeout")}catch(b){}this._loadTimeout=setTimeout(createjs.proxy(this._handleTimeout,this),a)}this._request.onload=createjs.proxy(this._handleLoad,this),this._request.onreadystatechange=createjs.proxy(this._handleReadyStateChange,this);try{this._item.values&&this._item.method!=createjs.LoadQueue.GET?this._item.method==createjs.LoadQueue.POST&&this._request.send(this._formatQueryString(this._item.values)):this._request.send()}catch(c){var d=new createjs.Event("error");d.error=c,this._sendError(d)}},b.getAllResponseHeaders=function(){return this._request.getAllResponseHeaders instanceof Function?this._request.getAllResponseHeaders():null},b.getResponseHeader=function(a){return this._request.getResponseHeader instanceof Function?this._request.getResponseHeader(a):null},b._handleProgress=function(a){if(a&&!(a.loaded>0&&0==a.total)){var b=new createjs.Event("progress");b.loaded=a.loaded,b.total=a.total,this._sendProgress(b)}},b._handleLoadStart=function(){clearTimeout(this._loadTimeout),this._sendLoadStart()},b._handleAbort=function(){this._clean();var a=new createjs.Event("error");a.text="XHR_ABORTED",this._sendError(a)},b._handleError=function(){this._clean();var a=new createjs.Event("error");this._sendError(a)},b._handleReadyStateChange=function(){4==this._request.readyState&&this._handleLoad()},b._handleLoad=function(){if(!this.loaded){if(this.loaded=!0,!this._checkError())return this._handleError(),void 0;this._response=this._getResponse(),this._clean();var a=this._generateTag();a&&this._sendComplete()}},b._handleTimeout=function(a){this._clean();var b=new createjs.Event("error");b.text="PRELOAD_TIMEOUT",this._sendError(a)},b._checkError=function(){var a=parseInt(this._request.status);switch(a){case 404:case 0:return!1}return!0},b._getResponse=function(){if(null!=this._response)return this._response;if(null!=this._request.response)return this._request.response;try{if(null!=this._request.responseText)return this._request.responseText}catch(a){}try{if(null!=this._request.responseXML)return this._request.responseXML}catch(a){}return null},b._createXHR=function(a){var b=this._isCrossDomain(a),c=null;if(b&&window.XDomainRequest)c=new XDomainRequest;else if(window.XMLHttpRequest)c=new XMLHttpRequest;else try{c=new ActiveXObject("Msxml2.XMLHTTP.6.0")}catch(d){try{c=new ActiveXObject("Msxml2.XMLHTTP.3.0")}catch(d){try{c=new ActiveXObject("Msxml2.XMLHTTP")}catch(d){return!1}}}createjs.LoadQueue.isText(a.type)&&c.overrideMimeType&&c.overrideMimeType("text/plain; charset=utf-8"),this._xhrLevel="string"==typeof c.responseType?2:1;var e=null;return e=a.method==createjs.LoadQueue.GET?this.buildPath(a.src,a.values):a.src,c.open(a.method||createjs.LoadQueue.GET,e,!0),b&&c instanceof XMLHttpRequest&&1==this._xhrLevel&&c.setRequestHeader("Origin",location.origin),a.values&&a.method==createjs.LoadQueue.POST&&c.setRequestHeader("Content-Type","application/x-www-form-urlencoded"),createjs.LoadQueue.isBinary(a.type)&&(c.responseType="arraybuffer"),this._request=c,!0},b._clean=function(){clearTimeout(this._loadTimeout);var a=this._request;a.onloadstart=null,a.onprogress=null,a.onabort=null,a.onerror=null,a.onload=null,a.ontimeout=null,a.onloadend=null,a.onreadystatechange=null},b._generateTag=function(){var a=this._item.type,b=this._item.tag;switch(a){case createjs.LoadQueue.IMAGE:return b.onload=createjs.proxy(this._handleTagReady,this),""!=this._crossOrigin&&(b.crossOrigin="Anonymous"),b.src=this.buildPath(this._item.src,this._item.values),this._rawResponse=this._response,this._response=b,!1;case createjs.LoadQueue.JAVASCRIPT:return b=document.createElement("script"),b.text=this._response,this._rawResponse=this._response,this._response=b,!0;case createjs.LoadQueue.CSS:var c=document.getElementsByTagName("head")[0];if(c.appendChild(b),b.styleSheet)b.styleSheet.cssText=this._response;else{var d=document.createTextNode(this._response);b.appendChild(d)}return this._rawResponse=this._response,this._response=b,!0;case createjs.LoadQueue.XML:var e=this._parseXML(this._response,"text/xml");return this._rawResponse=this._response,this._response=e,!0;case createjs.LoadQueue.SVG:var e=this._parseXML(this._response,"image/svg+xml");return this._rawResponse=this._response,null!=e.documentElement?(b.appendChild(e.documentElement),this._response=b):this._response=e,!0;case createjs.LoadQueue.JSON:case createjs.LoadQueue.MANIFEST:var f={};try{f=JSON.parse(this._response)}catch(g){f=g}return this._rawResponse=this._response,this._response=f,!0}return!0},b._parseXML=function(a,b){var c=null;try{if(window.DOMParser){var d=new DOMParser;c=d.parseFromString(a,b)}else c=new ActiveXObject("Microsoft.XMLDOM"),c.async=!1,c.loadXML(a)}catch(e){}return c},b._handleTagReady=function(){this._sendComplete()},b.toString=function(){return"[PreloadJS XHRLoader]"},createjs.XHRLoader=a}(),"object"!=typeof JSON&&(JSON={}),function(){"use strict";function f(a){return 10>a?"0"+a:a}function quote(a){return escapable.lastIndex=0,escapable.test(a)?'"'+a.replace(escapable,function(a){var b=meta[a];return"string"==typeof b?b:"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+a+'"'}function str(a,b){var c,d,e,f,g,h=gap,i=b[a];switch(i&&"object"==typeof i&&"function"==typeof i.toJSON&&(i=i.toJSON(a)),"function"==typeof rep&&(i=rep.call(b,a,i)),typeof i){case"string":return quote(i);case"number":return isFinite(i)?String(i):"null";case"boolean":case"null":return String(i);case"object":if(!i)return"null";if(gap+=indent,g=[],"[object Array]"===Object.prototype.toString.apply(i)){for(f=i.length,c=0;f>c;c+=1)g[c]=str(c,i)||"null";return e=0===g.length?"[]":gap?"[\n"+gap+g.join(",\n"+gap)+"\n"+h+"]":"["+g.join(",")+"]",gap=h,e}if(rep&&"object"==typeof rep)for(f=rep.length,c=0;f>c;c+=1)"string"==typeof rep[c]&&(d=rep[c],e=str(d,i),e&&g.push(quote(d)+(gap?": ":":")+e));else for(d in i)Object.prototype.hasOwnProperty.call(i,d)&&(e=str(d,i),e&&g.push(quote(d)+(gap?": ":":")+e));return e=0===g.length?"{}":gap?"{\n"+gap+g.join(",\n"+gap)+"\n"+h+"}":"{"+g.join(",")+"}",gap=h,e}}"function"!=typeof Date.prototype.toJSON&&(Date.prototype.toJSON=function(){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null},String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(){return this.valueOf()});var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={"\b":"\\b","	":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},rep;"function"!=typeof JSON.stringify&&(JSON.stringify=function(a,b,c){var d;if(gap="",indent="","number"==typeof c)for(d=0;c>d;d+=1)indent+=" ";else"string"==typeof c&&(indent=c);if(rep=b,b&&"function"!=typeof b&&("object"!=typeof b||"number"!=typeof b.length))throw new Error("JSON.stringify");return str("",{"":a})}),"function"!=typeof JSON.parse&&(JSON.parse=function(text,reviver){function walk(a,b){var c,d,e=a[b];if(e&&"object"==typeof e)for(c in e)Object.prototype.hasOwnProperty.call(e,c)&&(d=walk(e,c),void 0!==d?e[c]=d:delete e[c]);return reviver.call(a,b,e)}var j;if(text=String(text),cx.lastIndex=0,cx.test(text)&&(text=text.replace(cx,function(a){return"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})),/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,"")))return j=eval("("+text+")"),"function"==typeof reviver?walk({"":j},""):j;throw new SyntaxError("JSON.parse")})}();module.exports=window.createjs;
 
-},{}],165:[function(require,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],166:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -46730,7 +46518,7 @@ EffectComposer.scene = new _three.Scene();
 EffectComposer.scene.add(EffectComposer.quad);
 
 exports.default = EffectComposer;
-},{"./lib/clearmaskpass":167,"./lib/copyshader":168,"./lib/maskpass":169,"./lib/renderpass":170,"./lib/shaderpass":171,"three":172}],167:[function(require,module,exports){
+},{"./lib/clearmaskpass":164,"./lib/copyshader":165,"./lib/maskpass":166,"./lib/renderpass":167,"./lib/shaderpass":168,"three":169}],164:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46751,7 +46539,7 @@ ClearMaskPass.prototype.render = function (renderer, writeBuffer, readBuffer, de
 };
 
 exports.ClearMaskPass = ClearMaskPass;
-},{}],168:[function(require,module,exports){
+},{}],165:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -46773,7 +46561,7 @@ var CopyShader = {
 };
 
 exports.CopyShader = CopyShader;
-},{}],169:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46838,7 +46626,7 @@ MaskPass.prototype.render = function (renderer, writeBuffer, readBuffer, delta) 
 };
 
 exports.MaskPass = MaskPass;
-},{}],170:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -46889,7 +46677,7 @@ RenderPass.prototype.render = function (renderer, writeBuffer, readBuffer, delta
 };
 
 exports.RenderPass = RenderPass;
-},{"three":172}],171:[function(require,module,exports){
+},{"three":169}],168:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -46944,7 +46732,7 @@ ShaderPass.prototype.render = function (renderer, writeBuffer, readBuffer, delta
 };
 
 exports.ShaderPass = ShaderPass;
-},{"../index":166,"three":172}],172:[function(require,module,exports){
+},{"../index":163,"three":169}],169:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -91185,6 +90973,239 @@ exports.ShaderPass = ShaderPass;
 
 })));
 
+},{}],170:[function(require,module,exports){
+'use strict';
+
+var toString = Object.prototype.toString,
+    hasOwnProperty = Object.prototype.hasOwnProperty;
+
+module.exports = function(object) {
+    if(!object) return console.warn('bindAll requires at least one argument.');
+
+    var functions = Array.prototype.slice.call(arguments, 1);
+
+    if (functions.length === 0) {
+
+        for (var method in object) {
+            if(hasOwnProperty.call(object, method)) {
+                if(typeof object[method] == 'function' && toString.call(object[method]) == "[object Function]") {
+                    functions.push(method);
+                }
+            }
+        }
+    }
+
+    for(var i = 0; i < functions.length; i++) {
+        var f = functions[i];
+        object[f] = bind(object[f], object);
+    }
+};
+
+/*
+    Faster bind without specific-case checking. (see https://coderwall.com/p/oi3j3w).
+    bindAll is only needed for events binding so no need to make slow fixes for constructor
+    or partial application.
+*/
+function bind(func, context) {
+  return function() {
+    return func.apply(context, arguments);
+  };
+}
+},{}],171:[function(require,module,exports){
+// Generated by CoffeeScript 1.9.2
+(function() {
+  var root;
+
+  root = typeof exports !== "undefined" && exports !== null ? exports : this;
+
+  root.Lethargy = (function() {
+    function Lethargy(stability, sensitivity, tolerance, delay) {
+      this.stability = stability != null ? Math.abs(stability) : 8;
+      this.sensitivity = sensitivity != null ? 1 + Math.abs(sensitivity) : 100;
+      this.tolerance = tolerance != null ? 1 + Math.abs(tolerance) : 1.1;
+      this.delay = delay != null ? delay : 150;
+      this.lastUpDeltas = (function() {
+        var i, ref, results;
+        results = [];
+        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
+          results.push(null);
+        }
+        return results;
+      }).call(this);
+      this.lastDownDeltas = (function() {
+        var i, ref, results;
+        results = [];
+        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
+          results.push(null);
+        }
+        return results;
+      }).call(this);
+      this.deltasTimestamp = (function() {
+        var i, ref, results;
+        results = [];
+        for (i = 1, ref = this.stability * 2; 1 <= ref ? i <= ref : i >= ref; 1 <= ref ? i++ : i--) {
+          results.push(null);
+        }
+        return results;
+      }).call(this);
+    }
+
+    Lethargy.prototype.check = function(e) {
+      var lastDelta;
+      e = e.originalEvent || e;
+      if (e.wheelDelta != null) {
+        lastDelta = e.wheelDelta;
+      } else if (e.deltaY != null) {
+        lastDelta = e.deltaY * -40;
+      } else if ((e.detail != null) || e.detail === 0) {
+        lastDelta = e.detail * -40;
+      }
+      this.deltasTimestamp.push(Date.now());
+      this.deltasTimestamp.shift();
+      if (lastDelta > 0) {
+        this.lastUpDeltas.push(lastDelta);
+        this.lastUpDeltas.shift();
+        return this.isInertia(1);
+      } else {
+        this.lastDownDeltas.push(lastDelta);
+        this.lastDownDeltas.shift();
+        return this.isInertia(-1);
+      }
+      return false;
+    };
+
+    Lethargy.prototype.isInertia = function(direction) {
+      var lastDeltas, lastDeltasNew, lastDeltasOld, newAverage, newSum, oldAverage, oldSum;
+      lastDeltas = direction === -1 ? this.lastDownDeltas : this.lastUpDeltas;
+      if (lastDeltas[0] === null) {
+        return direction;
+      }
+      if (this.deltasTimestamp[(this.stability * 2) - 2] + this.delay > Date.now() && lastDeltas[0] === lastDeltas[(this.stability * 2) - 1]) {
+        return false;
+      }
+      lastDeltasOld = lastDeltas.slice(0, this.stability);
+      lastDeltasNew = lastDeltas.slice(this.stability, this.stability * 2);
+      oldSum = lastDeltasOld.reduce(function(t, s) {
+        return t + s;
+      });
+      newSum = lastDeltasNew.reduce(function(t, s) {
+        return t + s;
+      });
+      oldAverage = oldSum / lastDeltasOld.length;
+      newAverage = newSum / lastDeltasNew.length;
+      if (Math.abs(oldAverage) < Math.abs(newAverage * this.tolerance) && (this.sensitivity < Math.abs(newAverage))) {
+        return direction;
+      } else {
+        return false;
+      }
+    };
+
+    Lethargy.prototype.showLastUpDeltas = function() {
+      return this.lastUpDeltas;
+    };
+
+    Lethargy.prototype.showLastDownDeltas = function() {
+      return this.lastDownDeltas;
+    };
+
+    return Lethargy;
+
+  })();
+
+}).call(this);
+
+},{}],172:[function(require,module,exports){
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+'use strict';
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
 },{}],173:[function(require,module,exports){
 function E () {
   // Keep this empty so it's easier to inherit from
@@ -91310,10 +91331,6 @@ function VirtualScroll(options) {
     this.touchStartX = null;
     this.touchStartY = null;
     this.bodyTouchAction = null;
-
-    if (this.options.passive !== undefined) {
-        this.listenerOptions = {passive: this.options.passive};
-    }
 }
 
 VirtualScroll.prototype._notify = function(e) {
@@ -91419,12 +91436,12 @@ VirtualScroll.prototype._onKeyDown = function(e) {
 };
 
 VirtualScroll.prototype._bind = function() {
-    if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel, this.listenerOptions);
-    if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel, this.listenerOptions);
+    if(support.hasWheelEvent) this.el.addEventListener('wheel', this._onWheel);
+    if(support.hasMouseWheelEvent) this.el.addEventListener('mousewheel', this._onMouseWheel);
 
     if(support.hasTouch) {
-        this.el.addEventListener('touchstart', this._onTouchStart, this.listenerOptions);
-        this.el.addEventListener('touchmove', this._onTouchMove, this.listenerOptions);
+        this.el.addEventListener('touchstart', this._onTouchStart);
+        this.el.addEventListener('touchmove', this._onTouchMove);
     }
 
     if(support.hasPointer && support.hasTouchWin) {
@@ -91480,7 +91497,7 @@ VirtualScroll.prototype.destroy = function() {
     this._unbind();
 };
 
-},{"./clone":174,"./support":176,"bindall-standalone":52,"lethargy":100,"object-assign":101,"tiny-emitter":173}],176:[function(require,module,exports){
+},{"./clone":174,"./support":176,"bindall-standalone":170,"lethargy":171,"object-assign":172,"tiny-emitter":173}],176:[function(require,module,exports){
 'use strict';
 
 module.exports = (function getSupport() {

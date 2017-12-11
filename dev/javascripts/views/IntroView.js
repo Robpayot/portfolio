@@ -150,7 +150,7 @@ export default class IntroView extends AbstractView {
 		this.setPhysicBlocks();
 		this.setAsteroids();
 
-		this.resizeHandler(); // size first time
+		// this.resizeHandler(); // size first time
 
 
 		global.CURSOR.el.classList.add('alt');

@@ -65,8 +65,8 @@ export default class Stars extends ProjectView {
 		// var normalShader = NormalMapShader;
 
 		// NormalMap shader
-		this.size = 150;
-		this.scaleHeight = 30;
+		this.size = 250;
+		this.scaleHeight = 40;
 		this.tPosY = -20 - this.scaleHeight;
 
 		this.nbVertices = 150; /// ???
