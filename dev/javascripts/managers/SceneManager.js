@@ -37,7 +37,7 @@ class SceneManager {
 		this.renderer.domElement.style.position = 'absolute';
 		this.renderer.domElement.style.top = 0;
 		this.renderer.domElement.style.left = 0;
-		this.renderer.domElement.style.backgroundColor = 'red';
+		// this.renderer.domElement.style.backgroundColor = 'red';
 
 		this.renderer.domElement.classList.add('webGl__canvas');
 		this.cssRenderer.domElement.appendChild(this.renderer.domElement);

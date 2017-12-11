@@ -149,6 +149,9 @@ export default class ProjectView extends AbstractView {
 		this.width = window.innerWidth * window.devicePixelRatio;
 		this.height = window.innerHeight * window.devicePixelRatio;
 
+		//
+		SceneManager.renderer.domElement.setAttribute('data-index', this.id);
+
 		// Set scenes
 		this.scene = new Scene();
 		this.scene.background = null;
