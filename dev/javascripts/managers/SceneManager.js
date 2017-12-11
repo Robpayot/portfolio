@@ -72,9 +72,14 @@ class SceneManager {
 		opts.camera.aspect = window.innerWidth / window.innerHeight;
 		opts.camera.updateProjectionMatrix();
 
+		let coef = 0.6;
+
 		// Update canvas size
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
-		if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
+		if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
+		console.log(this.el);
+		TweenMax.set(this.el, {width: window.innerWidth, height: window.innerHeight});
+
 	}
 
 }
