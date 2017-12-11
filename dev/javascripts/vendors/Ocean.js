@@ -17,7 +17,7 @@ let Ocean = function(renderer, camera, scene, options) {
 	this.oceanCamera = new THREE.OrthographicCamera(); //camera.clone();
 	this.oceanCamera.position.z = 1;
 	this.renderer = renderer;
-	this.renderer.clearColor( 0xffffff );
+	// this.renderer.clearColor( 0xffffff );
 
 	this.scene = new THREE.Scene();
 

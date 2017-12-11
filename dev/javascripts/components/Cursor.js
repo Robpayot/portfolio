@@ -12,6 +12,7 @@ export default class Cursor {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.interractHover = this.interractHover.bind(this);
 		this.interractLeave = this.interractLeave.bind(this);
+		this.resizeHandler = this.resizeHandler.bind(this);
 
 		this.el = document.querySelector('.cursor');
 		this.wrapper = document.querySelector('.cursor__wrapper');
@@ -21,6 +22,8 @@ export default class Cursor {
 		this.next = this.wrapper.querySelector('.cursor__next');
 		this.prev = this.wrapper.querySelector('.cursor__prev');
 		this.text = this.el.querySelector('text');
+
+		console.log(this.text);
 
 		this.circleObj = {val : 15.9};
 		this.mouse = {};

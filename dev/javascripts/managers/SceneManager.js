@@ -1,5 +1,6 @@
 import { WebGLRenderer, Clock } from 'three';
 import CSS3DRendererIE from '../vendors/CSS3DRendererIE';
+import { Device } from '../helpers/Device';
 
 
 class SceneManager {
@@ -25,20 +26,26 @@ class SceneManager {
 		this.cssRenderer.domElement.style.zIndex = 1;
 		this.cssRenderer.domElement.classList.add('webGl');
 
-		this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
-		this.renderer.setClearColor(0xffffff, 1);
+		this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
+		// this.renderer.setClearColor(0xffffff, 1);
 		// this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1); //--> 1.5 au lieu de 2 ?
 		// setScissor ??
 
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setClearColor( 0x000000, 0 );
 
 		this.renderer.domElement.style.position = 'absolute';
 		this.renderer.domElement.style.top = 0;
 		this.renderer.domElement.style.left = 0;
+		this.renderer.domElement.style.backgroundColor = 'red';
+
 		this.renderer.domElement.classList.add('webGl__canvas');
 		this.cssRenderer.domElement.appendChild(this.renderer.domElement);
 
 		this.xp.appendChild(this.cssRenderer.domElement);
+
+
+		// this.resizeHandler(); // size first time
 
 
 		this.el = this.renderer.domElement;
@@ -57,7 +64,6 @@ class SceneManager {
 			opts.composer.render(delta);
 		} else {
 			// Render scene
-			// this.renderer.clear();
 			this.renderer.render(opts.scene, opts.camera); // { antialias: true } ???
 		}
 
@@ -72,9 +78,18 @@ class SceneManager {
 		opts.camera.aspect = window.innerWidth / window.innerHeight;
 		opts.camera.updateProjectionMatrix();
 
+		let coef = window.innerWidth > 1920 ? 0.6 : 0.8;
+
 		// Update canvas size
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
 		if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+		TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
+
+
+	}
+
+	destroy() {
+		this.renderer.clear();
 	}
 
 }

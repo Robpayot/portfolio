@@ -14,7 +14,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, Color, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
+import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, Color, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -151,7 +151,7 @@ export default class ProjectView extends AbstractView {
 
 		// Set scenes
 		this.scene = new Scene();
-		this.scene.background = new Color(0x000000);
+		this.scene.background = null;
 		this.cssScene = new Scene();
 		this.cameraTarget = new Vector3(0, 0, 0);
 
@@ -216,7 +216,7 @@ export default class ProjectView extends AbstractView {
 		// this.effectVignette.renderToScreen = true;
 		this.effectFilm.renderToScreen = true;
 
-		const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat, stencilBuffer: true };
+		const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBAFormat, stencilBuffer: true };
 		this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
 
 		const renderModel = new RenderPass(this.scene, this.camera);
@@ -293,11 +293,11 @@ export default class ProjectView extends AbstractView {
 		const width = this.bounceArea;
 
 		const geo = new SphereGeometry(width, 10, 10);
-		const mat = new MeshPhongMaterial({color: this.bkg, side: BackSide});
+		const mat = new MeshPhongMaterial({side: BackSide, map: global.PROJECTTEX});
 		this.envelop = new Mesh(geo,mat);
 
 		// this.envelops.push(mesh);
-		this.scene.add(this.envelop);
+		// this.scene.add(this.envelop);
 
 
 
@@ -610,8 +610,14 @@ export default class ProjectView extends AbstractView {
 
 	goTo(e, element) {
 
+		let el;
 
-		const el = e !== null ? e.currentTarget : element;
+		if (e === null && element) {
+			el = element;
+		} else {
+			el = e.currentTarget;
+		}
+
 		this.goToNoScroll = true;
 		if (el.classList.contains('cursor__next')) this.dir = -1;
 		else this.dir = 1;
@@ -1055,17 +1061,19 @@ export default class ProjectView extends AbstractView {
 
 			if (this.goToNoScroll) dir = this.dir; // se baser sur le dir de goTo non de l'url
 			// Simulate scroll backWard/foward
-			let delay = 0.8;
+			let delay = 0.4;
+			let time = 0.5;
 			if (dir === 1) {
 				// this.scrollZ -= 0.2;
 				delay = 0.4;
 				tl.to(this.camera.position, 1.8, {z : this.minZoomZ , ease: window.Power2.easeOut}); // 2
 			} else {
-				// this.scrollZ += 0.2;
-				tl.to(this.camera.position, 1.2, {z : this.maxZoomZ , ease: window.Expo.ease}); // 2
+				delay = 0.5;
+				time = 0.7;
+				tl.to(this.camera.position, 1, {z : this.maxZoomZ , ease: window.Expo.ease}); // 2
 			}
 
-			tl.to('.overlay', 0.5, {
+			tl.to('.overlay', time, {
 				opacity: 1
 			}, delay);
 			tl.add(() => {
@@ -1129,6 +1137,7 @@ export default class ProjectView extends AbstractView {
 	destroy() {
 		// ScrollManager.off();
 		super.destroy();
+
 	}
 
 }

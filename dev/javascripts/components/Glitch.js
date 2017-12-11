@@ -430,6 +430,8 @@ export default class Glitch {
 			}
 
 
+
+
 		} else {
 			this.textSize = this.obj.textSize || this.ui.canvas.offsetHeight / 3;
 			this.biggestRange = this.obj.biggestRange || 200; // - 100 max X , +100 max X
