@@ -182,21 +182,21 @@ class AppManager {
 
 	onTouchStart(e) {
 		// e.preventDefault();
-		console.log(e);
+		// console.log(e);
 
 		EmitterManager.emit('touchstart', e);
 	}
 
 	onTouchMove(e) {
 		e.preventDefault();
-		console.log('test');
+		// console.log('test');
 
 		EmitterManager.emit('touchmove', e);
 	}
 
 	onTouchEnd(e) {
 		// e.preventDefault();
-		console.log(e);
+		// console.log(e);
 
 		EmitterManager.emit('touchend', e);
 	}

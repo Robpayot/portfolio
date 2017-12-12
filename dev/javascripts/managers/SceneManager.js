@@ -49,10 +49,7 @@ class SceneManager {
 
 		this.el = this.renderer.domElement;
 
-		let coef = window.innerWidth > 1920 ? 0.7 : 0.85;
-
-		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
-		TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
+		this.resizeHandler({});
 
 		this.clock = new Clock(); // time
 
@@ -79,14 +76,14 @@ class SceneManager {
 	resizeHandler(opts) {
 
 		// Update camera
-		opts.camera.aspect = window.innerWidth / window.innerHeight;
-		opts.camera.updateProjectionMatrix();
+		if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
+		if (opts.camera) opts.camera.updateProjectionMatrix();
 
 		let coef = window.innerWidth > 1920 ? 0.7 : 0.85;
 
-		if (Device.touch === true ) {
-			coef *= window.devicePixelRatio; // good perfs on retina mobile
-		}
+		// if (Device.touch === true ) {
+		coef *= window.devicePixelRatio; // good perfs on retina mobile
+		// }
 
 		// Update canvas size
 		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);

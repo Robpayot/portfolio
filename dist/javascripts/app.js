@@ -148,6 +148,12 @@ var Cursor = function () {
 		this.resizeHandler = this.resizeHandler.bind(this);
 
 		this.el = document.querySelector('.cursor');
+
+		if (_Device.Device.touch) {
+			this.el.style.display = 'none';
+			console.log('ouiais');
+			return false;
+		}
 		this.wrapper = document.querySelector('.cursor__wrapper');
 		this.svgCircle = this.el.querySelectorAll('circle');
 		this.c1 = this.svgCircle[0];
@@ -1507,7 +1513,7 @@ var AppManager = function () {
 		key: 'onTouchStart',
 		value: function onTouchStart(e) {
 			// e.preventDefault();
-			console.log(e);
+			// console.log(e);
 
 			_EmitterManager2.default.emit('touchstart', e);
 		}
@@ -1515,7 +1521,7 @@ var AppManager = function () {
 		key: 'onTouchMove',
 		value: function onTouchMove(e) {
 			e.preventDefault();
-			console.log('test');
+			// console.log('test');
 
 			_EmitterManager2.default.emit('touchmove', e);
 		}
@@ -1523,7 +1529,7 @@ var AppManager = function () {
 		key: 'onTouchEnd',
 		value: function onTouchEnd(e) {
 			// e.preventDefault();
-			console.log(e);
+			// console.log(e);
 
 			_EmitterManager2.default.emit('touchend', e);
 		}
@@ -1991,10 +1997,7 @@ var SceneManager = function () {
 
 			this.el = this.renderer.domElement;
 
-			var coef = window.innerWidth > 1920 ? 0.7 : 0.85;
-
-			this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
-			TweenMax.set([this.el, this.cssRenderer.domElement], { width: window.innerWidth, height: window.innerHeight });
+			this.resizeHandler({});
 
 			this.clock = new _three.Clock(); // time
 		}
@@ -2022,14 +2025,14 @@ var SceneManager = function () {
 			var _this = this;
 
 			// Update camera
-			opts.camera.aspect = window.innerWidth / window.innerHeight;
-			opts.camera.updateProjectionMatrix();
+			if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
+			if (opts.camera) opts.camera.updateProjectionMatrix();
 
 			var coef = window.innerWidth > 1920 ? 0.7 : 0.85;
 
-			if (_Device.Device.touch === true) {
-				coef *= window.devicePixelRatio; // good perfs on retina mobile
-			}
+			// if (Device.touch === true ) {
+			coef *= window.devicePixelRatio; // good perfs on retina mobile
+			// }
 
 			// Update canvas size
 			this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
@@ -9316,14 +9319,13 @@ var IntroView = function (_AbstractView) {
 				_EmitterManager2.default.on('mousemove', this.onMouseMove);
 				this.ui.button[evListener]('mouseenter', this.onHoverStart);
 				this.ui.button[evListener]('mouseleave', this.onLeaveStart);
+				document[evListener]('click', this.onClick, false);
 			} else {
+
 				this.ui.button[evListener]('click', _utils.preventLink);
 				// document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
 				// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
 			}
-
-			document[evListener]('keydown', this.onW, false);
-			document[evListener]('click', this.onClick, false);
 		}
 	}, {
 		key: 'init',
@@ -9371,16 +9373,6 @@ var IntroView = function (_AbstractView) {
 				this.controls = new _OrbitControls2.default(this.camera, _SceneManager2.default.renderer.domElement);
 				this.controls.enableZoom = true;
 			}
-
-			this.mouseSize = 40.0;
-			this.mouseSizeClick = 30.0;
-			this.viscosity = 0.015;
-			this.viscosityClick = 0.015;
-
-			this.effectController = {
-				mouseSize: this.mouseSize,
-				viscosity: this.viscosity
-			};
 
 			if (this.isOcean) {
 				this.initWater();
@@ -9869,37 +9861,39 @@ var IntroView = function (_AbstractView) {
 				}
 			}
 
-			// Raycaster
-			this.raycaster.setFromCamera(this.mouse, this.camera);
+			if (_Device.Device.touch === false) {
+				// Raycaster
+				this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			// on Click asteroids
-			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+				// on Click asteroids
+				var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
-			if (intersectsAst.length > 0) {
-				this.clickAsteroid = true;
-				this.currentAstHover = this.asteroids[intersectsAst[0].object.index];
-			} else {
-				this.clickAsteroid = false;
-			}
+				if (intersectsAst.length > 0) {
+					this.clickAsteroid = true;
+					this.currentAstHover = this.asteroids[intersectsAst[0].object.index];
+				} else {
+					this.clickAsteroid = false;
+				}
 
-			if (this.startIsHover !== true) {
-				if (this.clickAsteroid === true) global.CURSOR.interractHover();else global.CURSOR.interractLeave();
-			}
+				if (this.startIsHover !== true) {
+					if (this.clickAsteroid === true) global.CURSOR.interractHover();else global.CURSOR.interractLeave();
+				}
 
-			// // deceleration
-			if (this.debug === false) {
+				// // deceleration
+				if (this.debug === false) {
 
-				// Specify target we want
-				this.camRotTarget.x = (0, _utils.toRadian)((0, _utils.round)(this.mouse.y * 4, 100));
-				this.camRotTarget.y = -(0, _utils.toRadian)((0, _utils.round)(this.mouse.x * 4, 100));
+					// Specify target we want
+					this.camRotTarget.x = (0, _utils.toRadian)((0, _utils.round)(this.mouse.y * 4, 100));
+					this.camRotTarget.y = -(0, _utils.toRadian)((0, _utils.round)(this.mouse.x * 4, 100));
 
-				// Smooth it with deceleration
-				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-				this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+					// Smooth it with deceleration
+					this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+					this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
 
-				// Apply rotation
-				this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-				this.camera.rotation.y = (0, _utils.clamp)(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+					// Apply rotation
+					this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+					this.camera.rotation.y = (0, _utils.clamp)(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+				}
 			}
 
 			// glitch title
@@ -9930,6 +9924,10 @@ var IntroView = function (_AbstractView) {
 			// set ui
 			this.ui.uiContent.style.display = 'block';
 			global.MENU.el.classList.remove('is-active');
+			if (_Device.Device.touch === true) {
+				// let p = document.querySelector('.start p');
+				// p.innerHTML = 'touch';
+			}
 
 			if (fromProject === false) {
 				this.glitchEl = document.querySelector('.intro__glitch');
@@ -9967,6 +9965,12 @@ var IntroView = function (_AbstractView) {
 				}, 4);
 
 				tl.fromTo(this.ui.button, 3, { opacity: 0, display: 'block' }, { opacity: 1, display: 'block' }); // display buttons
+
+				if (_Device.Device.touch === true) {
+
+					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 7);
+					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 7);
+				}
 			} else {
 
 				var _tl = new TimelineMax();
@@ -9986,6 +9990,12 @@ var IntroView = function (_AbstractView) {
 					// start move Ast
 					_this4.startMove = true;
 				}, 0);
+
+				if (_Device.Device.touch === true) {
+
+					_tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 7);
+					_tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 7);
+				}
 			}
 		}
 	}, {
