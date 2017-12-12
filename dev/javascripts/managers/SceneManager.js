@@ -31,7 +31,6 @@ class SceneManager {
 		// this.renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1); //--> 1.5 au lieu de 2 ?
 		// setScissor ??
 
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setClearColor( 0x000000, 0 );
 
 		this.renderer.domElement.style.position = 'absolute';
@@ -49,6 +48,11 @@ class SceneManager {
 
 
 		this.el = this.renderer.domElement;
+
+		let coef = window.innerWidth > 1920 ? 0.7 : 0.8;
+
+		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
+		TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
 
 		this.clock = new Clock(); // time
 
@@ -78,7 +82,7 @@ class SceneManager {
 		opts.camera.aspect = window.innerWidth / window.innerHeight;
 		opts.camera.updateProjectionMatrix();
 
-		let coef = window.innerWidth > 1920 ? 0.6 : 0.8;
+		let coef = window.innerWidth > 1920 ? 0.7 : 0.8;
 
 		// Update canvas size
 		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
