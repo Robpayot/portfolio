@@ -133,7 +133,7 @@ export default class ProjectView extends AbstractView {
 	init() {
 
 
-		this.isControls = false;
+		this.debug = false;
 		this.postProc = true;
 
 		this.cssObjects = [];
@@ -144,10 +144,6 @@ export default class ProjectView extends AbstractView {
 		this.pixelToUnits = 8.1;
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
-
-		// retina screen size
-		this.width = window.innerWidth * window.devicePixelRatio;
-		this.height = window.innerHeight * window.devicePixelRatio;
 
 		//
 		SceneManager.renderer.domElement.setAttribute('data-index', this.id);
@@ -161,6 +157,9 @@ export default class ProjectView extends AbstractView {
 		// Set Camera
 		this.setCamera(50);
 		this.setCameraPos();
+
+
+		this.resizeHandler(this.scene, this.camera); // resize one time for css scene
 
 
 		// Set physics
@@ -194,7 +193,7 @@ export default class ProjectView extends AbstractView {
 
 
 		// Camera controls
-		if (this.isControls === true) {
+		if (this.debug === true) {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
 			this.controls.enableZoom = true;
 		}
@@ -220,7 +219,7 @@ export default class ProjectView extends AbstractView {
 		this.effectFilm.renderToScreen = true;
 
 		const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBAFormat, stencilBuffer: true };
-		this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
+		this.renderTarget = new WebGLRenderTarget(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio, renderTargetParameters);
 
 		const renderModel = new RenderPass(this.scene, this.camera);
 
@@ -845,6 +844,7 @@ export default class ProjectView extends AbstractView {
 					this.goToNoScroll = true;
 					this.dir = -1;
 					window.location.href = `#project-${this.nextId}`;
+					console.log('call window.loc');
 					// this.coefScrollZ = 0.006;
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
@@ -905,7 +905,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if ( this.isControls === false) { //
+		if ( this.debug === false) { //
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));

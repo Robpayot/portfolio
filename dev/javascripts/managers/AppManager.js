@@ -10,6 +10,7 @@ import bean from 'bean';
 import PreloadManager from './PreloadManager';
 import  '../helpers/handlebarsRegister';
 import { loadJSON } from '../helpers/utils-three';
+import { isTouch } from '../helpers/utils';
 import { TextureLoader } from 'three';
 
 
@@ -148,16 +149,22 @@ class AppManager {
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		let onListener = method === false ? 'off' : 'on';
 
+
+		this.resizeHandler(); // resize once
+
 		// Global events
 		// raf
 		TweenMax.ticker[evListener]('tick', this.raf);
 		if (Device.touch === false) {
 			document[evListener]( 'mousemove', this.onMouseMove, false );
+		} else {
+			// orientationchange
+			window[evListener]('touchstart', this.onTouchStart, false);
+			window[evListener]('touchmove', this.onTouchMove, false);
+			window[evListener]('touchend', this.onTouchEnd, false);
 		}
 
-		bean[onListener](window, 'resize', this.resizeHandler);
-
-		this.resizeHandler(); // resize once
+		bean[onListener](window, 'resize orientationchange', this.resizeHandler);
 
 	}
 
@@ -173,10 +180,31 @@ class AppManager {
 		EmitterManager.emit('mousemove', eventX, eventY);
 	}
 
+	onTouchStart(e) {
+		// e.preventDefault();
+		console.log(e);
+
+		EmitterManager.emit('touchstart', e);
+	}
+
+	onTouchMove(e) {
+		e.preventDefault();
+		console.log('test');
+
+		EmitterManager.emit('touchmove', e);
+	}
+
+	onTouchEnd(e) {
+		// e.preventDefault();
+		console.log(e);
+
+		EmitterManager.emit('touchend', e);
+	}
+
 	resizeHandler() {
 
-		const touch = document.documentElement.classList.contains('touchevents');
-		Device.touch = touch;
+
+		Device.touch = isTouch();
 
 		// Device.browser = Detect.browser();
 
@@ -200,6 +228,17 @@ class AppManager {
 		}
 
 		EmitterManager.emit('resize', window.innerWidth, window.innerHeight);
+
+		// Resize perfect width & height 100% for mobile :
+		TweenMax.set(document.body, {width: window.innerWidth, height: window.innerHeight});
+
+		if (navigator.userAgent.match('CriOS')) { //orientation change issue on iOs Chrome mobile
+			setTimeout(() => {
+
+				TweenMax.set(document.body, {width: window.innerWidth, height: window.innerHeight});
+			}, 100);
+		}
+
 
 	}
 }
