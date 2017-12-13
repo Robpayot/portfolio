@@ -6,6 +6,8 @@
         vertical-align: middle;
         white-space: nowrap;
         pointer-events: auto;
+	    position: relative;
+	    z-index: 9000;
         span {
             opacity: 0;
             visibility: hidden;

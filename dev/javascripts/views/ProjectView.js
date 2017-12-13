@@ -71,6 +71,10 @@ export default class ProjectView extends AbstractView {
 		this.killGlitch = this.killGlitch.bind(this);
 		this.onHoverTitle = this.onHoverTitle.bind(this);
 		this.onLeaveTitle = this.onLeaveTitle.bind(this);
+		this.onTouchMoveContainer = this.onTouchMoveContainer.bind(this);
+		this.onTouchEndContainer = this.onTouchEndContainer.bind(this);
+		this.onTouchStartContainer = this.onTouchStartContainer.bind(this);
+		this.animScrollContainer = this.animScrollContainer.bind(this);
 		this.goTo = this.goTo.bind(this);
 
 		this.bounceArea = 200; // default bounceArea
@@ -85,6 +89,9 @@ export default class ProjectView extends AbstractView {
 		this.zoomZ = 160;
 		this.minZoomZ = 210;
 		this.maxZoomZ = 0;
+		this.lastTouchY = 0;
+		this.startTouchY = 0;
+		this.coefScrollY = Device.touch === true ? 0.1 : 0.1;
 		// this.stopScrollZ = true;
 
 		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
@@ -114,11 +121,12 @@ export default class ProjectView extends AbstractView {
 
 		if (method === true) {
 
-			bean.on(document.body, 'click.project', '.project__title', this.showContent);
-			// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
 			if (Device.touch === false) {
+				bean.on(document.body, 'click.project', '.project__title', this.showContent);
 				bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 				bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			} else {
+				bean.on(document.body, 'touchstart.project', '.project__title', this.showContent);
 			}
 			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
@@ -451,12 +459,18 @@ export default class ProjectView extends AbstractView {
 		bean.off(document.body, '.project'); // off events related to init state
 
 		// on events related to projectContent state
-		bean.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
+
 		if (Device.touch === false) {
+			bean.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
 			bean.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
 			bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
 			bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
 			bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+		} else {
+
+			bean.on(document.body, 'touchstart.projectContent', '.project__container', this.onTouchStartContainer);
+			bean.on(document.body, 'touchmove.projectContent', '.project__container', this.onTouchMoveContainer);
+			bean.on(document.body, 'touchend.projectContent', '.project__container', this.onTouchEndContainer);
 		}
 
 
@@ -541,14 +555,13 @@ export default class ProjectView extends AbstractView {
 		bean.off(document.body, '.projectContent'); // off events related state projectContent
 
 		// on events related to init state
-		bean.on(document.body, 'click.project', '.project__title', this.showContent);
-		// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
 		if (Device.touch === false) {
+			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+		} else {
+			bean.on(document.body, 'touchstart.project', '.project__title', this.showContent);
 		}
-		// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
-		// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
@@ -679,6 +692,57 @@ export default class ProjectView extends AbstractView {
 		});
 	}
 
+	animScrollContainer() {
+
+		for (let i = 1; i < this.ui.imgs.length; i++) {
+
+			if (this.ui.imgs[i].classList.contains('is-visible') === false) {
+
+				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+
+					const tl = new TimelineMax();
+					tl.set(this.ui.imgs[i], {visibility: 'visible'});
+					tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+						opacity: 0,
+						y: 80
+					}, {
+						opacity: 0.9,
+						y: 0,
+						ease: window.Expo.easeOut
+					});
+
+					tl.fromTo(this.ui.imgs[i], 1.2, {
+						scaleY: 2
+					}, {
+						scaleY: 1,
+						ease: window.Expo.easeOut
+					}, 0);
+					this.ui.imgs[i].classList.add('is-visible');
+
+				}
+			}
+		}
+
+		if (this.ui.footer.classList.contains('is-visible') === false) {
+
+			if (getOffsetTop(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
+
+				const tl = new TimelineMax();
+				tl.set(this.ui.footer, {visibility: 'visible'});
+				tl.fromTo(this.ui.footer, 1.2, { // 1.2
+					opacity: 0,
+					y: 80
+				}, {
+					opacity: 0.9,
+					y: 0,
+					ease: window.Expo.easeOut
+				});
+				this.ui.footer.classList.add('is-visible');
+
+			}
+		}
+	}
+
 	scroll(e) {
 
 		if (this.transitionInComplete !== true) {
@@ -692,61 +756,15 @@ export default class ProjectView extends AbstractView {
 			}
 		}
 
-		console.log(this.contentOpen);
-
-
 		if (this.contentOpen === true) {
-			// need profil for each browser
-			this.scrollY -= e.deltaY * 0.2;
 
+			if (Device.touch === false) {
+				// need profil for each browser
+				this.scrollY -= e.deltaY * 0.2;
 
-			for (let i = 1; i < this.ui.imgs.length; i++) {
-
-				if (this.ui.imgs[i].classList.contains('is-visible') === false) {
-
-					if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
-
-						const tl = new TimelineMax();
-						tl.set(this.ui.imgs[i], {visibility: 'visible'});
-						tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
-							opacity: 0,
-							y: 80
-						}, {
-							opacity: 0.9,
-							y: 0,
-							ease: window.Expo.easeOut
-						});
-
-						tl.fromTo(this.ui.imgs[i], 1.2, {
-							scaleY: 2
-						}, {
-							scaleY: 1,
-							ease: window.Expo.easeOut
-						}, 0);
-						this.ui.imgs[i].classList.add('is-visible');
-
-					}
-				}
+				this.animScrollContainer();
 			}
 
-			if (this.ui.footer.classList.contains('is-visible') === false) {
-
-				if (getOffsetTop(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
-
-					const tl = new TimelineMax();
-					tl.set(this.ui.footer, {visibility: 'visible'});
-					tl.fromTo(this.ui.footer, 1.2, { // 1.2
-						opacity: 0,
-						y: 80
-					}, {
-						opacity: 0.9,
-						y: 0,
-						ease: window.Expo.easeOut
-					});
-					this.ui.footer.classList.add('is-visible');
-
-				}
-			}
 		} else {
 			if (this.stopScrollZ === true) return false;
 
@@ -757,6 +775,29 @@ export default class ProjectView extends AbstractView {
 		}
 
 
+	}
+
+	onTouchStartContainer(e) {
+		e.stopPropagation();
+
+		let touchobj = e.changedTouches[0];
+		this.startTouchY = parseInt(touchobj.clientY);
+	}
+
+	onTouchMoveContainer(e) {
+		let touchobj = e.changedTouches[0];// reference first touch point for this event
+		let y = parseInt(touchobj.clientY) - this.startTouchY + this.lastTouchY;
+
+		this.scrollY = -y * 1.5;
+
+		this.animScrollContainer();
+
+	}
+
+	onTouchEndContainer(e) {
+		let touchobj = e.changedTouches[0];// reference first touch point for this event
+
+		this.lastTouchY = parseInt(touchobj.clientY) - this.startTouchY + this.lastTouchY;
 	}
 
 	onClick(e) {
@@ -898,7 +939,7 @@ export default class ProjectView extends AbstractView {
 			// console.log(round(this.scrollY, 10), this.scrollYSmooth);
 
 			// smooth scroll
-			this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * 0.1; // We need a RAF for a smooth like that
+			this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
 
 			if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) { // end
 				this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;

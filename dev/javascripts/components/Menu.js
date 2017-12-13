@@ -3,6 +3,7 @@ import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import DATA from '../../datas/data.json';
 import ScrollManager from '../managers/ScrollManager';
+import RouterManager from '../managers/RouterManager';
 import { Device } from '../helpers/Device';
 import { preventLink } from '../helpers/utils';
 
@@ -45,9 +46,9 @@ export default class Menu {
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		// let onListener = method === false ? 'off' : 'on';
 
-		this.ui.button[evListener]('click', this.toggleOpen);
 
 		if (Device.touch === false) {
+			this.ui.button[evListener]('click', this.toggleOpen);
 			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
 			for (let i = 0; i < this.ui.linksTitles.length; i++) {
@@ -60,6 +61,7 @@ export default class Menu {
 				this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 			}
 		} else {
+			this.ui.button[evListener]('touchstart', this.toggleOpen);
 			for (let i = 0; i < this.ui.aLinks.length; i++) {
 				this.ui.aLinks[i][evListener]('click', preventLink);
 			}
