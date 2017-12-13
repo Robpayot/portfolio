@@ -116,8 +116,10 @@ export default class ProjectView extends AbstractView {
 
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
-			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			if (Device.touch === false) {
+				bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+				bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			}
 			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -246,8 +248,8 @@ export default class ProjectView extends AbstractView {
 		// this.UI.intro.style.display = 'none';
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.remove('is-open');
-		global.CURSOR.interractLeave();
-		global.CURSOR.el.classList.remove('alt');
+		if (!Device.touch) global.CURSOR.interractLeave();
+		if (!Device.touch) global.CURSOR.el.classList.remove('alt');
 
 		if (this.alt === true) {
 			this.el.classList.add('alt');
@@ -328,12 +330,13 @@ export default class ProjectView extends AbstractView {
 		const margePosY = 7;
 		const finalPosY = wHeight / 2 - margePosY;
 
-		global.CURSOR.prev.href = `#project-${this.prevId}`;
-		global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
+		if (!Device.touch) {
+			global.CURSOR.prev.href = `#project-${this.prevId}`;
+			global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
 
-		global.CURSOR.next.href = `#project-${this.nextId}`;
-		global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
-
+			global.CURSOR.next.href = `#project-${this.nextId}`;
+			global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
+		}
 
 		// Gallery
 
@@ -516,7 +519,7 @@ export default class ProjectView extends AbstractView {
 		}, 0);
 
 		tl.add(() => {
-			global.CURSOR.interractLeave();
+			if (!Device.touch) global.CURSOR.interractLeave();
 			this.glitch.hover = false;
 
 			// ScrollManager.on(); // start scrollmanager
@@ -544,7 +547,7 @@ export default class ProjectView extends AbstractView {
 		this.glitch.stop = false;
 		// ScrollManager.off(); // stop scrollmanager
 		this.contentOpen = false;
-		global.CURSOR.interractLeave({back: true});
+		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
 
 		for (let i = 0; i < this.ui.imgs.length; i++) {

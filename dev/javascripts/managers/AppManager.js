@@ -213,18 +213,14 @@ class AppManager {
 		//     document.body.classList.add('ie');
 		// }
 
-		Device.size = 'mobile';
+		Device.size = 'desktop';
 
-		if (window.innerWidth >= 768) {
-			Device.size = 'tablet';
-		}
-
-		if (window.innerWidth > 1024) {
+		if (window.innerWidth <= 1440) {
 			Device.size = 'small-desktop';
-		}
-
-		if (window.innerWidth > 1440) {
-			Device.size = 'desktop';
+		} else if (window.innerWidth <= 1024) {
+			Device.size = 'tablet';
+		} else if (window.innerWidth <= 768) {
+			Device.size = 'mobile';
 		}
 
 		EmitterManager.emit('resize', window.innerWidth, window.innerHeight);
@@ -238,7 +234,6 @@ class AppManager {
 				TweenMax.set(document.body, {width: window.innerWidth, height: window.innerHeight});
 			}, 100);
 		}
-
 
 	}
 }

@@ -2,6 +2,7 @@ import EmitterManager from './EmitterManager';
 import SceneManager from './SceneManager';
 // import PreloadManager from './PreloadManager';
 // import ProjectView from '../views/ProjectView';
+import { Device } from '../helpers/Device';
 import AboutView from '../views/AboutView';
 import IntroView from '../views/IntroView';
 import Glitch from '../components/Glitch';
@@ -103,7 +104,7 @@ class RouterManager {
 			this.currentPage.transitionOut(dir); // animation Out
 
 			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
-			global.CURSOR.interractLeave({color: 'reset'});
+			if (!Device.touch) global.CURSOR.interractLeave({color: 'reset'});
 			// When animation out, destroy scene, init new view
 
 			EmitterManager.once('view:transition:out', () => {

@@ -3,6 +3,8 @@ import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import DATA from '../../datas/data.json';
 import ScrollManager from '../managers/ScrollManager';
+import { Device } from '../helpers/Device';
+import { preventLink } from '../helpers/utils';
 
 export default class Menu {
 
@@ -20,7 +22,8 @@ export default class Menu {
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
 			subLinksTitles: this.el.querySelectorAll('.menu__sublink > div'),
 			links: this.el.querySelectorAll('.menu__link'),
-			linksTitles: this.el.querySelectorAll('.menu__link .title--3')
+			linksTitles: this.el.querySelectorAll('.menu__link .title--3'),
+			aLinks: this.el.querySelectorAll('.menu__link a')
 		};
 
 		this.maxDash = 635;
@@ -43,17 +46,25 @@ export default class Menu {
 		// let onListener = method === false ? 'off' : 'on';
 
 		this.ui.button[evListener]('click', this.toggleOpen);
-		this.ui.button[evListener]('mouseenter', this.onHoverBtn);
-		this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
-		for (let i = 0; i < this.ui.linksTitles.length; i++) {
-			this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
-			this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
+
+		if (Device.touch === false) {
+			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
+			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
+			for (let i = 0; i < this.ui.linksTitles.length; i++) {
+				this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
+				this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
+			}
+
+			for (let i = 0; i < this.ui.subLinksTitles.length; i++) {
+				this.ui.subLinksTitles[i][evListener]('mouseenter', this.onHoverLink);
+				this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
+			}
+		} else {
+			for (let i = 0; i < this.ui.aLinks.length; i++) {
+				this.ui.aLinks[i][evListener]('click', preventLink);
+			}
 		}
 
-		for (let i = 0; i < this.ui.subLinksTitles.length; i++) {
-			this.ui.subLinksTitles[i][evListener]('mouseenter', this.onHoverLink);
-			this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
-		}
 
 	}
 
