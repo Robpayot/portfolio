@@ -855,7 +855,9 @@ body {
   display: inline-block;
   vertical-align: middle;
   white-space: nowrap;
-  pointer-events: auto; }
+  pointer-events: auto;
+  position: relative;
+  z-index: 9000; }
   .project__title span {
     opacity: 0;
     visibility: hidden;

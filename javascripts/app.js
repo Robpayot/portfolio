@@ -834,6 +834,10 @@ var _ScrollManager = require('../managers/ScrollManager');
 
 var _ScrollManager2 = _interopRequireDefault(_ScrollManager);
 
+var _RouterManager = require('../managers/RouterManager');
+
+var _RouterManager2 = _interopRequireDefault(_RouterManager);
+
 var _Device = require('../helpers/Device');
 
 var _utils = require('../helpers/utils');
@@ -882,9 +886,9 @@ var Menu = function () {
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			// let onListener = method === false ? 'off' : 'on';
 
-			this.ui.button[evListener]('click', this.toggleOpen);
 
 			if (_Device.Device.touch === false) {
+				this.ui.button[evListener]('click', this.toggleOpen);
 				this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 				this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
 				for (var i = 0; i < this.ui.linksTitles.length; i++) {
@@ -897,6 +901,7 @@ var Menu = function () {
 					this.ui.subLinksTitles[_i][evListener]('mouseleave', this.onLeaveLink);
 				}
 			} else {
+				this.ui.button[evListener]('touchstart', this.toggleOpen);
 				for (var _i2 = 0; _i2 < this.ui.aLinks.length; _i2++) {
 					this.ui.aLinks[_i2][evListener]('click', _utils.preventLink);
 				}
@@ -1103,7 +1108,7 @@ exports.default = Menu;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":10,"../managers/PreloadManager":13,"../managers/ScrollManager":16,"handlebars":88}],7:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":10,"../managers/PreloadManager":13,"../managers/RouterManager":14,"../managers/ScrollManager":16,"handlebars":88}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10226,6 +10231,10 @@ var ProjectView = function (_AbstractView) {
 		_this.killGlitch = _this.killGlitch.bind(_this);
 		_this.onHoverTitle = _this.onHoverTitle.bind(_this);
 		_this.onLeaveTitle = _this.onLeaveTitle.bind(_this);
+		_this.onTouchMoveContainer = _this.onTouchMoveContainer.bind(_this);
+		_this.onTouchEndContainer = _this.onTouchEndContainer.bind(_this);
+		_this.onTouchStartContainer = _this.onTouchStartContainer.bind(_this);
+		_this.animScrollContainer = _this.animScrollContainer.bind(_this);
 		_this.goTo = _this.goTo.bind(_this);
 
 		_this.bounceArea = 200; // default bounceArea
@@ -10240,6 +10249,9 @@ var ProjectView = function (_AbstractView) {
 		_this.zoomZ = 160;
 		_this.minZoomZ = 210;
 		_this.maxZoomZ = 0;
+		_this.lastTouchY = 0;
+		_this.startTouchY = 0;
+		_this.coefScrollY = _Device.Device.touch === true ? 0.1 : 0.1;
 		// this.stopScrollZ = true;
 
 		_this.tlGlitch = new TimelineMax({ repeat: -1, repeatDelay: 1.5, paused: true });
@@ -10271,11 +10283,12 @@ var ProjectView = function (_AbstractView) {
 
 			if (method === true) {
 
-				_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
-				// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
 				if (_Device.Device.touch === false) {
+					_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
 					_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 					_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+				} else {
+					_bean2.default.on(document.body, 'touchstart.project', '.project__title', this.showContent);
 				}
 				// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 				// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
@@ -10604,12 +10617,18 @@ var ProjectView = function (_AbstractView) {
 			_bean2.default.off(document.body, '.project'); // off events related to init state
 
 			// on events related to projectContent state
-			_bean2.default.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
+
 			if (_Device.Device.touch === false) {
+				_bean2.default.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
 				_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
 				_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
 				_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
 				_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+			} else {
+
+				_bean2.default.on(document.body, 'touchstart.projectContent', '.project__container', this.onTouchStartContainer);
+				_bean2.default.on(document.body, 'touchmove.projectContent', '.project__container', this.onTouchMoveContainer);
+				_bean2.default.on(document.body, 'touchend.projectContent', '.project__container', this.onTouchEndContainer);
 			}
 
 			this.animating = true;
@@ -10693,14 +10712,13 @@ var ProjectView = function (_AbstractView) {
 			_bean2.default.off(document.body, '.projectContent'); // off events related state projectContent
 
 			// on events related to init state
-			_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
-			// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
 			if (_Device.Device.touch === false) {
+				_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
 				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 				_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			} else {
+				_bean2.default.on(document.body, 'touchstart.project', '.project__title', this.showContent);
 			}
-			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
-			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 			this.cameraRotX = true;
 			this.glitch.stop = false;
@@ -10830,6 +10848,56 @@ var ProjectView = function (_AbstractView) {
 			});
 		}
 	}, {
+		key: 'animScrollContainer',
+		value: function animScrollContainer() {
+
+			for (var i = 1; i < this.ui.imgs.length; i++) {
+
+				if (this.ui.imgs[i].classList.contains('is-visible') === false) {
+
+					if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+
+						var tl = new TimelineMax();
+						tl.set(this.ui.imgs[i], { visibility: 'visible' });
+						tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+							opacity: 0,
+							y: 80
+						}, {
+							opacity: 0.9,
+							y: 0,
+							ease: window.Expo.easeOut
+						});
+
+						tl.fromTo(this.ui.imgs[i], 1.2, {
+							scaleY: 2
+						}, {
+							scaleY: 1,
+							ease: window.Expo.easeOut
+						}, 0);
+						this.ui.imgs[i].classList.add('is-visible');
+					}
+				}
+			}
+
+			if (this.ui.footer.classList.contains('is-visible') === false) {
+
+				if ((0, _utils.getOffsetTop)(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
+
+					var _tl = new TimelineMax();
+					_tl.set(this.ui.footer, { visibility: 'visible' });
+					_tl.fromTo(this.ui.footer, 1.2, { // 1.2
+						opacity: 0,
+						y: 80
+					}, {
+						opacity: 0.9,
+						y: 0,
+						ease: window.Expo.easeOut
+					});
+					this.ui.footer.classList.add('is-visible');
+				}
+			}
+		}
+	}, {
 		key: 'scroll',
 		value: function scroll(e) {
 
@@ -10844,56 +10912,13 @@ var ProjectView = function (_AbstractView) {
 				}
 			}
 
-			console.log(this.contentOpen);
-
 			if (this.contentOpen === true) {
-				// need profil for each browser
-				this.scrollY -= e.deltaY * 0.2;
 
-				for (var i = 1; i < this.ui.imgs.length; i++) {
+				if (_Device.Device.touch === false) {
+					// need profil for each browser
+					this.scrollY -= e.deltaY * 0.2;
 
-					if (this.ui.imgs[i].classList.contains('is-visible') === false) {
-
-						if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
-
-							var tl = new TimelineMax();
-							tl.set(this.ui.imgs[i], { visibility: 'visible' });
-							tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
-								opacity: 0,
-								y: 80
-							}, {
-								opacity: 0.9,
-								y: 0,
-								ease: window.Expo.easeOut
-							});
-
-							tl.fromTo(this.ui.imgs[i], 1.2, {
-								scaleY: 2
-							}, {
-								scaleY: 1,
-								ease: window.Expo.easeOut
-							}, 0);
-							this.ui.imgs[i].classList.add('is-visible');
-						}
-					}
-				}
-
-				if (this.ui.footer.classList.contains('is-visible') === false) {
-
-					if ((0, _utils.getOffsetTop)(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
-
-						var _tl = new TimelineMax();
-						_tl.set(this.ui.footer, { visibility: 'visible' });
-						_tl.fromTo(this.ui.footer, 1.2, { // 1.2
-							opacity: 0,
-							y: 80
-						}, {
-							opacity: 0.9,
-							y: 0,
-							ease: window.Expo.easeOut
-						});
-						this.ui.footer.classList.add('is-visible');
-					}
+					this.animScrollContainer();
 				}
 			} else {
 				if (this.stopScrollZ === true) return false;
@@ -10903,6 +10928,31 @@ var ProjectView = function (_AbstractView) {
 					this.scrollZ += (0, _utils.clamp)(e.deltaY * 0.04, -6, 6); //reverse
 				}
 			}
+		}
+	}, {
+		key: 'onTouchStartContainer',
+		value: function onTouchStartContainer(e) {
+			e.stopPropagation();
+
+			var touchobj = e.changedTouches[0];
+			this.startTouchY = parseInt(touchobj.clientY);
+		}
+	}, {
+		key: 'onTouchMoveContainer',
+		value: function onTouchMoveContainer(e) {
+			var touchobj = e.changedTouches[0]; // reference first touch point for this event
+			var y = parseInt(touchobj.clientY) - this.startTouchY + this.lastTouchY;
+
+			this.scrollY = -y * 1.5;
+
+			this.animScrollContainer();
+		}
+	}, {
+		key: 'onTouchEndContainer',
+		value: function onTouchEndContainer(e) {
+			var touchobj = e.changedTouches[0]; // reference first touch point for this event
+
+			this.lastTouchY = parseInt(touchobj.clientY) - this.startTouchY + this.lastTouchY;
 		}
 	}, {
 		key: 'onClick',
@@ -11049,7 +11099,7 @@ var ProjectView = function (_AbstractView) {
 				// console.log(round(this.scrollY, 10), this.scrollYSmooth);
 
 				// smooth scroll
-				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * 0.1; // We need a RAF for a smooth like that
+				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
 
 				if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) {
 					// end
