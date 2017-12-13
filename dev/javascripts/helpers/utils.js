@@ -118,20 +118,18 @@ export function preventLink(e) {
 	requestAnimationFrame(()=> {
 		window.location.href = el.href;
 
-		if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
-			console.log('already fullscreen');
-		} else {
-			console.log('go fullscreen');
-			let DOM = document.documentElement,
-				rfs = DOM.requestFullscreen
-				|| DOM.webkitRequestFullscreen
-				|| DOM.webkitRequestFullScreen
-				|| DOM.mozRequestFullScreen
-				|| DOM.msRequestFullscreen
-			;
-
-			rfs.call(DOM);
-		}
+		// if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
+		// 	console.log('already fullscreen');
+		// } else {
+			if (!document.fullscreenElement) {
+				console.log('testssss');
+				document.documentElement.requestFullscreen();
+			} else {
+				// if (document.exitFullscreen) {
+				// 	document.exitFullscreen();
+				// }
+			}
+		// }
 
 	});
 }
