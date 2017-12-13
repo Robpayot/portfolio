@@ -49,10 +49,7 @@ class SceneManager {
 
 		this.el = this.renderer.domElement;
 
-		let coef = window.innerWidth > 1920 ? 0.7 : 0.8;
-
-		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
-		TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
+		this.resizeHandler({});
 
 		this.clock = new Clock(); // time
 
@@ -79,15 +76,34 @@ class SceneManager {
 	resizeHandler(opts) {
 
 		// Update camera
-		opts.camera.aspect = window.innerWidth / window.innerHeight;
-		opts.camera.updateProjectionMatrix();
+		if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
+		if (opts.camera) opts.camera.updateProjectionMatrix();
 
-		let coef = window.innerWidth > 1920 ? 0.7 : 0.8;
+		let coef = window.innerWidth > 1920 ? 0.7 : 0.85;
+
+		// if (Device.touch === true ) {
+		coef *= window.devicePixelRatio; // good perfs on retina mobile
+		// }
 
 		// Update canvas size
 		this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
 		if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 		TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
+
+
+		if (navigator.userAgent.match('CriOS')) { //orientation change issue on iOs Chrome mobile
+			setTimeout(() => {
+
+				// Update camera
+				opts.camera.aspect = window.innerWidth / window.innerHeight;
+				opts.camera.updateProjectionMatrix();
+
+				// Update canvas size
+				this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
+				if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
+				TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
+			}, 100);
+		}
 
 
 	}

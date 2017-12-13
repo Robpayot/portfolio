@@ -116,8 +116,10 @@ export default class ProjectView extends AbstractView {
 
 			bean.on(document.body, 'click.project', '.project__title', this.showContent);
 			// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
-			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			if (Device.touch === false) {
+				bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+				bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			}
 			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -133,7 +135,7 @@ export default class ProjectView extends AbstractView {
 	init() {
 
 
-		this.isControls = false;
+		this.debug = false;
 		this.postProc = true;
 
 		this.cssObjects = [];
@@ -144,10 +146,6 @@ export default class ProjectView extends AbstractView {
 		this.pixelToUnits = 8.1;
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
-
-		// retina screen size
-		this.width = window.innerWidth * window.devicePixelRatio;
-		this.height = window.innerHeight * window.devicePixelRatio;
 
 		//
 		SceneManager.renderer.domElement.setAttribute('data-index', this.id);
@@ -161,6 +159,9 @@ export default class ProjectView extends AbstractView {
 		// Set Camera
 		this.setCamera(50);
 		this.setCameraPos();
+
+
+		this.resizeHandler(this.scene, this.camera); // resize one time for css scene
 
 
 		// Set physics
@@ -194,7 +195,7 @@ export default class ProjectView extends AbstractView {
 
 
 		// Camera controls
-		if (this.isControls === true) {
+		if (this.debug === true) {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
 			this.controls.enableZoom = true;
 		}
@@ -220,7 +221,7 @@ export default class ProjectView extends AbstractView {
 		this.effectFilm.renderToScreen = true;
 
 		const renderTargetParameters = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBAFormat, stencilBuffer: true };
-		this.renderTarget = new WebGLRenderTarget(this.width, this.height, renderTargetParameters);
+		this.renderTarget = new WebGLRenderTarget(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio, renderTargetParameters);
 
 		const renderModel = new RenderPass(this.scene, this.camera);
 
@@ -247,8 +248,8 @@ export default class ProjectView extends AbstractView {
 		// this.UI.intro.style.display = 'none';
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.remove('is-open');
-		global.CURSOR.interractLeave();
-		global.CURSOR.el.classList.remove('alt');
+		if (!Device.touch) global.CURSOR.interractLeave();
+		if (!Device.touch) global.CURSOR.el.classList.remove('alt');
 
 		if (this.alt === true) {
 			this.el.classList.add('alt');
@@ -316,7 +317,7 @@ export default class ProjectView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
-		title.position.set(40, 0, 10);
+		title.position.set(60, 0, 10);
 		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
@@ -329,12 +330,13 @@ export default class ProjectView extends AbstractView {
 		const margePosY = 7;
 		const finalPosY = wHeight / 2 - margePosY;
 
-		global.CURSOR.prev.href = `#project-${this.prevId}`;
-		global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
+		if (!Device.touch) {
+			global.CURSOR.prev.href = `#project-${this.prevId}`;
+			global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
 
-		global.CURSOR.next.href = `#project-${this.nextId}`;
-		global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
-
+			global.CURSOR.next.href = `#project-${this.nextId}`;
+			global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
+		}
 
 		// Gallery
 
@@ -347,6 +349,8 @@ export default class ProjectView extends AbstractView {
 		this.ui.uiContent.classList.add('ui-content', 'is-project');
 
 		this.ui.uiContent.innerHTML = html;
+
+
 
 	}
 
@@ -448,10 +452,13 @@ export default class ProjectView extends AbstractView {
 
 		// on events related to projectContent state
 		bean.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
-		bean.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
-		bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
-		bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
-		bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+		if (Device.touch === false) {
+			bean.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
+			bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
+			bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
+			bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+		}
+
 
 		this.animating = true;
 		this.contentOpen = true;
@@ -517,7 +524,7 @@ export default class ProjectView extends AbstractView {
 		}, 0);
 
 		tl.add(() => {
-			global.CURSOR.interractLeave();
+			if (!Device.touch) global.CURSOR.interractLeave();
 			this.glitch.hover = false;
 
 			// ScrollManager.on(); // start scrollmanager
@@ -536,8 +543,10 @@ export default class ProjectView extends AbstractView {
 		// on events related to init state
 		bean.on(document.body, 'click.project', '.project__title', this.showContent);
 		// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
-		bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-		bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+		if (Device.touch === false) {
+			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+		}
 		// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 		// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -545,7 +554,7 @@ export default class ProjectView extends AbstractView {
 		this.glitch.stop = false;
 		// ScrollManager.off(); // stop scrollmanager
 		this.contentOpen = false;
-		global.CURSOR.interractLeave({back: true});
+		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
 
 		for (let i = 0; i < this.ui.imgs.length; i++) {
@@ -682,6 +691,8 @@ export default class ProjectView extends AbstractView {
 				}});
 			}
 		}
+
+		console.log(this.contentOpen);
 
 
 		if (this.contentOpen === true) {
@@ -845,6 +856,7 @@ export default class ProjectView extends AbstractView {
 					this.goToNoScroll = true;
 					this.dir = -1;
 					window.location.href = `#project-${this.nextId}`;
+					console.log('call window.loc');
 					// this.coefScrollZ = 0.006;
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
@@ -905,7 +917,7 @@ export default class ProjectView extends AbstractView {
 		// On mouse Move Camera movement
 
 		// deceleration
-		if ( this.isControls === false) { //
+		if ( this.debug === false) { //
 
 			// Specify target we want
 			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));

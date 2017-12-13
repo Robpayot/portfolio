@@ -103,3 +103,34 @@ export function getIndex(el) {
 
 	return Array.from(el.parentNode.children).indexOf(el);
 }
+
+export function isTouch() {
+	return (('ontouchstart' in window)
+		|| (navigator.MaxTouchPoints > 0)
+		|| (navigator.msMaxTouchPoints > 0));
+}
+
+export function preventLink(e) {
+	// --> Counter display safari bar on iOs
+	e.preventDefault();
+	const el = e.currentTarget;
+
+	requestAnimationFrame(()=> {
+		window.location.href = el.href;
+
+		if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
+			console.log('already fullscreen');
+		} else {
+			console.log('go fullscreen');
+			let DOM = document.documentElement,
+				rfs = DOM.requestFullscreen
+				|| DOM.webkitRequestFullScreen
+				|| DOM.mozRequestFullScreen
+				|| DOM.msRequestFullscreen
+			;
+
+			rfs.call(DOM);
+		}
+
+	});
+}

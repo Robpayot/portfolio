@@ -15,6 +15,9 @@
 		font-size: 1.2em;
 		line-height: 2em;
 		color: black;
+		@include mobile {
+			line-height: 1.6em;
+		}
 	}
 	.socials {
 
@@ -61,6 +64,10 @@
 			top: 50%;
 			transform: translateY(-50%);
 			display: none;
+
+			@include mobile {
+				width: 100%;
+			}
 		}
 
 		&__title {

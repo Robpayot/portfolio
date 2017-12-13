@@ -15,6 +15,12 @@ export default class Cursor {
 		this.resizeHandler = this.resizeHandler.bind(this);
 
 		this.el = document.querySelector('.cursor');
+
+		if (Device.touch) {
+			this.el.style.display = 'none';
+			console.log('ouiais');
+			return false;
+		}
 		this.wrapper = document.querySelector('.cursor__wrapper');
 		this.svgCircle = this.el.querySelectorAll('circle');
 		this.c1 = this.svgCircle[0];

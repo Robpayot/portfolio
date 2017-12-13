@@ -1,6 +1,6 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian, getRandom, clamp, round } from '../helpers/utils';
+import {toRadian, getRandom, clamp, round, preventLink } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 // import SplitText from '../vendors/SplitText.js';
@@ -36,7 +36,7 @@ export default class IntroView extends AbstractView {
 		this.el = this.ui.webGl;
 		this.gravity = obj.gravity;
 		this.name = 'intro';
-		this.isControls = false;
+		this.debug = false;
 
 		// bind
 
@@ -79,16 +79,15 @@ export default class IntroView extends AbstractView {
 		if (Device.touch === false) {
 			// move camera
 			EmitterManager.on('mousemove', this.onMouseMove);
+			this.ui.button[evListener]('mouseenter', this.onHoverStart);
+			this.ui.button[evListener]('mouseleave', this.onLeaveStart);
+			document[evListener]( 'click', this.onClick , false );
 		} else {
-			document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
-			document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
+
+			this.ui.button[evListener]('click', preventLink);
+			// document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
+			// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
 		}
-
-		document[evListener]( 'keydown', this.onW , false );
-		document[evListener]( 'click', this.onClick , false );
-
-		this.ui.button[evListener]('mouseenter', this.onHoverStart);
-		this.ui.button[evListener]('mouseleave', this.onLeaveStart);
 
 	}
 
@@ -97,7 +96,7 @@ export default class IntroView extends AbstractView {
 		this.setUiContainer();
 
 		this.scene = new Scene();
-		this.scene.background = new Color(0x000000);
+		this.scene.background = new Color(0xFFFFFF);
 
 		this.sceneMirror = new Scene(); // scene only for reflect of Ocean
 		this.sceneMirror.background = new Color(0x000000);
@@ -120,6 +119,7 @@ export default class IntroView extends AbstractView {
 		this.asteroidsMove = false;
 		this.maxDash = 635;
 		this.maxSubSteps = 60; // for p2
+		this.isOcean = !Device.touch; // Ocean issue on mobile and tablette device
 
 		this.raycaster = new Raycaster();
 
@@ -131,22 +131,22 @@ export default class IntroView extends AbstractView {
 		this.cameraMove = true;
 
 		// Camera controls
-		if (this.isControls === true) {
+		if (this.debug === true) {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
 			this.controls.enableZoom = true;
 		}
 
-		this.mouseSize = 40.0;
-		this.mouseSizeClick = 30.0;
-		this.viscosity = 0.015;
-		this.viscosityClick = 0.015;
+		if (this.isOcean) {
+			this.initWater();
+		} else {
+			let geo = new PlaneGeometry(3000,3000);
+			let mat = new MeshBasicMaterial({color: 0xE7EFFC});
+			let ground = new Mesh(geo, mat);
+			ground.position.y = 2;
+			ground.rotation.x = toRadian(-90);
+			this.scene.add(ground);
+		}
 
-		this.effectController = {
-			mouseSize: this.mouseSize,
-			viscosity: this.viscosity
-		};
-
-		this.initWater(false, false);
 		this.setPhysicBlocks();
 		this.setAsteroids();
 
@@ -188,8 +188,8 @@ export default class IntroView extends AbstractView {
 	initWater() {
 
 		// SceneManager.renderer.setPixelRatio( window.devicePixelRatio );
-		SceneManager.renderer.context.getExtension('OES_texture_float');
-		SceneManager.renderer.context.getExtension('OES_texture_float_linear');
+		// SceneManager.renderer.context.getExtension('OES_texture_float');
+		// SceneManager.renderer.context.getExtension('OES_texture_float_linear');
 
 		// Get size Three unit to pixel window
 		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
@@ -287,7 +287,7 @@ export default class IntroView extends AbstractView {
 		this.perimeter = 190;
 
 		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
-		mesh.visible = this.isControls;
+		mesh.visible = this.debug;
 
 		// this.scene.add(mesh);
 
@@ -328,7 +328,7 @@ export default class IntroView extends AbstractView {
 			let boxShape = new p2.Box({ width: el.size.w, height: el.size.h});
 			// create mesh related
 			let mesh = new Mesh(new BoxGeometry(boxShape.width, boxShape.width, boxShape.height), mat);
-			mesh.visible = this.isControls;
+			mesh.visible = this.debug;
 
 			// Add a physic Body
 			mesh.body = new p2.Body({
@@ -541,8 +541,12 @@ export default class IntroView extends AbstractView {
 	raf() {
 
 		// Ocean
-		this.ms_Ocean.deltaTime = this.clock.getDelta();
-		this.ms_Ocean.render();
+
+		if (this.isOcean) {
+			this.ms_Ocean.deltaTime = this.clock.getDelta();
+			this.ms_Ocean.render();
+		}
+
 
 		if (this.gravity === true) this.world.step( 1 / 60); // p2.js gravity
 
@@ -616,39 +620,41 @@ export default class IntroView extends AbstractView {
 			}
 		}
 
-		// Raycaster
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+		if (Device.touch === false) {
+			// Raycaster
+			this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		// on Click asteroids
-		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+			// on Click asteroids
+			const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 
-		if (intersectsAst.length > 0) {
-			this.clickAsteroid = true;
-			this.currentAstHover = this.asteroids[intersectsAst[0].object.index];
-		} else {
-			this.clickAsteroid = false;
-		}
+			if (intersectsAst.length > 0) {
+				this.clickAsteroid = true;
+				this.currentAstHover = this.asteroids[intersectsAst[0].object.index];
+			} else {
+				this.clickAsteroid = false;
+			}
 
-		if (this.startIsHover !== true) {
-			if (this.clickAsteroid === true) global.CURSOR.interractHover();
-			else global.CURSOR.interractLeave();
-		}
+			if (this.startIsHover !== true) {
+				if (this.clickAsteroid === true) global.CURSOR.interractHover();
+				else global.CURSOR.interractLeave();
+			}
 
-		// // deceleration
-		if ( this.isControls === false) {
+			// // deceleration
+			if ( this.debug === false) {
 
-			// Specify target we want
-			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-			this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
+				// Specify target we want
+				this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+				this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
 
-			// Smooth it with deceleration
-			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+				// Smooth it with deceleration
+				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+				this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
 
-			// Apply rotation
-			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+				// Apply rotation
+				this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+				this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
 
+			}
 		}
 
 		// glitch title
@@ -675,6 +681,10 @@ export default class IntroView extends AbstractView {
 		// set ui
 		this.ui.uiContent.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
+		if (Device.touch === true) {
+			// let p = document.querySelector('.start p');
+			// p.innerHTML = 'touch';
+		}
 
 		if (fromProject === false) {
 			this.glitchEl = document.querySelector('.intro__glitch');
@@ -712,6 +722,12 @@ export default class IntroView extends AbstractView {
 
 			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}); // display buttons
 
+			if (Device.touch === true) {
+
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 7);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 7);
+			}
+
 		} else {
 
 			const tl = new TimelineMax();
@@ -731,6 +747,12 @@ export default class IntroView extends AbstractView {
 				// start move Ast
 				this.startMove = true;
 			},0);
+
+			if (Device.touch === true) {
+
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 7);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 7);
+			}
 		}
 
 	}
@@ -763,7 +785,6 @@ export default class IntroView extends AbstractView {
 	}
 
 	transitionOut(dest) {
-
 
 		const tl = new TimelineMax({delay: 0});
 

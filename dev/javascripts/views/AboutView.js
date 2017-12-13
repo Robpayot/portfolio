@@ -129,11 +129,11 @@ export default class AboutView extends AbstractView {
 				this.ui.works[i][evListener]( 'mouseleave', this.onLeaveWork, false );
 			}
 		} else {
-			document[evListener]( 'touchstart', this.onDocumentTouchStart, false ); // à faire pour tablet
-			document[evListener]( 'touchmove', this.onDocumentTouchMove, false );  // à faire pour tablet
+			// document[evListener]( 'touchstart', this.onDocumentTouchStart, false ); // à faire pour tablet
+			// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );  // à faire pour tablet
 		}
 
-		document[evListener]( 'keydown', this.onW , false );
+		// document[evListener]( 'keydown', this.onW , false );
 		document[evListener]( 'click', this.onClick , false );
 
 		this.ui.more[evListener]('click', this.onClickMore);
