@@ -118,18 +118,23 @@ export function preventLink(e) {
 	requestAnimationFrame(()=> {
 		window.location.href = el.href;
 
-		// if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
-		// 	console.log('already fullscreen');
-		// } else {
-			if (!document.fullscreenElement) {
-				console.log('testssss');
-				document.documentElement.requestFullscreen();
-			} else {
-				// if (document.exitFullscreen) {
-				// 	document.exitFullscreen();
-				// }
-			}
-		// }
-
 	});
+	// if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
+	// 	console.log('already fullscreen');
+	// } else {
+	// go full-screen
+	let i = document.documentElement;
+	if (i.requestFullscreen) {
+		i.requestFullscreen();
+	} else if (i.webkitRequestFullscreen) {
+		i.webkitRequestFullscreen();
+	} else if (i.mozRequestFullScreen) {
+		i.mozRequestFullScreen();
+	} else if (i.msRequestFullscreen) {
+		i.msRequestFullscreen();
+	}
+	// if (document.exitFullscreen) {
+	// 	document.exitFullscreen();
+	// }
+	// }
 }
