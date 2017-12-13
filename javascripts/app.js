@@ -834,6 +834,10 @@ var _ScrollManager = require('../managers/ScrollManager');
 
 var _ScrollManager2 = _interopRequireDefault(_ScrollManager);
 
+var _Device = require('../helpers/Device');
+
+var _utils = require('../helpers/utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -854,7 +858,8 @@ var Menu = function () {
 			subLinks: this.el.querySelectorAll('.menu__sublink'),
 			subLinksTitles: this.el.querySelectorAll('.menu__sublink > div'),
 			links: this.el.querySelectorAll('.menu__link'),
-			linksTitles: this.el.querySelectorAll('.menu__link .title--3')
+			linksTitles: this.el.querySelectorAll('.menu__link .title--3'),
+			aLinks: this.el.querySelectorAll('.menu__link a')
 		};
 
 		this.maxDash = 635;
@@ -878,16 +883,23 @@ var Menu = function () {
 			// let onListener = method === false ? 'off' : 'on';
 
 			this.ui.button[evListener]('click', this.toggleOpen);
-			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
-			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
-			for (var i = 0; i < this.ui.linksTitles.length; i++) {
-				this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
-				this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
-			}
 
-			for (var _i = 0; _i < this.ui.subLinksTitles.length; _i++) {
-				this.ui.subLinksTitles[_i][evListener]('mouseenter', this.onHoverLink);
-				this.ui.subLinksTitles[_i][evListener]('mouseleave', this.onLeaveLink);
+			if (_Device.Device.touch === false) {
+				this.ui.button[evListener]('mouseenter', this.onHoverBtn);
+				this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
+				for (var i = 0; i < this.ui.linksTitles.length; i++) {
+					this.ui.linksTitles[i][evListener]('mouseenter', this.onHoverLink);
+					this.ui.linksTitles[i][evListener]('mouseleave', this.onLeaveLink);
+				}
+
+				for (var _i = 0; _i < this.ui.subLinksTitles.length; _i++) {
+					this.ui.subLinksTitles[_i][evListener]('mouseenter', this.onHoverLink);
+					this.ui.subLinksTitles[_i][evListener]('mouseleave', this.onLeaveLink);
+				}
+			} else {
+				for (var _i2 = 0; _i2 < this.ui.aLinks.length; _i2++) {
+					this.ui.aLinks[_i2][evListener]('click', _utils.preventLink);
+				}
 			}
 		}
 	}, {
@@ -1091,7 +1103,7 @@ exports.default = Menu;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../managers/PreloadManager":13,"../managers/ScrollManager":16,"handlebars":88}],7:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":10,"../managers/PreloadManager":13,"../managers/ScrollManager":16,"handlebars":88}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1546,18 +1558,14 @@ var AppManager = function () {
 			//     document.body.classList.add('ie');
 			// }
 
-			_Device.Device.size = 'mobile';
+			_Device.Device.size = 'desktop';
 
-			if (window.innerWidth >= 768) {
-				_Device.Device.size = 'tablet';
-			}
-
-			if (window.innerWidth > 1024) {
+			if (window.innerWidth <= 1440) {
 				_Device.Device.size = 'small-desktop';
-			}
-
-			if (window.innerWidth > 1440) {
-				_Device.Device.size = 'desktop';
+			} else if (window.innerWidth <= 1024) {
+				_Device.Device.size = 'tablet';
+			} else if (window.innerWidth <= 768) {
+				_Device.Device.size = 'mobile';
 			}
 
 			_EmitterManager2.default.emit('resize', window.innerWidth, window.innerHeight);
@@ -1640,6 +1648,8 @@ var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 var _SceneManager = require('./SceneManager');
 
 var _SceneManager2 = _interopRequireDefault(_SceneManager);
+
+var _Device = require('../helpers/Device');
 
 var _AboutView = require('../views/AboutView');
 
@@ -1777,7 +1787,7 @@ var RouterManager = function () {
 				this.currentPage.transitionOut(dir); // animation Out
 
 				if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
-				global.CURSOR.interractLeave({ color: 'reset' });
+				if (!_Device.Device.touch) global.CURSOR.interractLeave({ color: 'reset' });
 				// When animation out, destroy scene, init new view
 
 				_EmitterManager2.default.once('view:transition:out', function () {
@@ -1931,7 +1941,7 @@ exports.default = new RouterManager();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Glitch":5,"../projects/Blob":19,"../projects/Circular":20,"../projects/Levit":21,"../projects/Stars":22,"../views/AboutView":46,"../views/IntroView":48,"./EmitterManager":12,"./SceneManager":15}],15:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../projects/Blob":19,"../projects/Circular":20,"../projects/Levit":21,"../projects/Stars":22,"../views/AboutView":46,"../views/IntroView":48,"./EmitterManager":12,"./SceneManager":15}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10244,8 +10254,10 @@ var ProjectView = function (_AbstractView) {
 
 				_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
 				// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
-				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-				_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+				if (_Device.Device.touch === false) {
+					_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+					_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+				}
 				// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 				// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 			} else {
@@ -10367,8 +10379,8 @@ var ProjectView = function (_AbstractView) {
 			// this.UI.intro.style.display = 'none';
 			global.MENU.el.classList.add('is-active');
 			global.MENU.el.classList.remove('is-open');
-			global.CURSOR.interractLeave();
-			global.CURSOR.el.classList.remove('alt');
+			if (!_Device.Device.touch) global.CURSOR.interractLeave();
+			if (!_Device.Device.touch) global.CURSOR.el.classList.remove('alt');
 
 			if (this.alt === true) {
 				this.el.classList.add('alt');
@@ -10447,11 +10459,13 @@ var ProjectView = function (_AbstractView) {
 			var margePosY = 7;
 			var finalPosY = wHeight / 2 - margePosY;
 
-			global.CURSOR.prev.href = '#project-' + this.prevId;
-			global.CURSOR.prev.setAttribute('data-color', _data2.default.projects[this.prevId].color);
+			if (!_Device.Device.touch) {
+				global.CURSOR.prev.href = '#project-' + this.prevId;
+				global.CURSOR.prev.setAttribute('data-color', _data2.default.projects[this.prevId].color);
 
-			global.CURSOR.next.href = '#project-' + this.nextId;
-			global.CURSOR.next.setAttribute('data-color', _data2.default.projects[this.nextId].color);
+				global.CURSOR.next.href = '#project-' + this.nextId;
+				global.CURSOR.next.setAttribute('data-color', _data2.default.projects[this.nextId].color);
+			}
 
 			// Gallery
 
@@ -10640,7 +10654,7 @@ var ProjectView = function (_AbstractView) {
 			}, 0);
 
 			tl.add(function () {
-				global.CURSOR.interractLeave();
+				if (!_Device.Device.touch) global.CURSOR.interractLeave();
 				_this3.glitch.hover = false;
 
 				// ScrollManager.on(); // start scrollmanager
@@ -10669,7 +10683,7 @@ var ProjectView = function (_AbstractView) {
 			this.glitch.stop = false;
 			// ScrollManager.off(); // stop scrollmanager
 			this.contentOpen = false;
-			global.CURSOR.interractLeave({ back: true });
+			if (!_Device.Device.touch) global.CURSOR.interractLeave({ back: true });
 			TweenMax.set(global.MENU.ui.button, { display: 'block' });
 
 			for (var i = 0; i < this.ui.imgs.length; i++) {
