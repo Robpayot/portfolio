@@ -396,6 +396,9 @@ body {
 .title--3 {
   font-size: 4.8rem;
   line-height: 1.6em; }
+  @media screen and (max-width: 720px) {
+    .title--3 {
+      font-size: 3.6rem; } }
 
 .title--4 {
   font-size: 2em;
@@ -852,9 +855,7 @@ body {
   display: inline-block;
   vertical-align: middle;
   white-space: nowrap;
-  -webkit-transform: translateX(50%);
-  -ms-transform: translateX(50%);
-  transform: translateX(50%); }
+  pointer-events: auto; }
   .project__title span {
     opacity: 0;
     visibility: hidden;
@@ -991,6 +992,10 @@ body {
       display: -ms-flexbox;
       display: flex;
       left: 29vw;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
       opacity: 0;
       transition: opacity 0.5s ease; }
       @media screen and (max-width: 1440px) {
@@ -1020,6 +1025,10 @@ body {
       transition: color 0.2s ease;
       display: inline-block;
       vertical-align: middle; }
+      @media screen and (max-width: 720px) {
+        .ui .menu__sublink {
+          margin: 1.5rem 0;
+          font-size: 1.4rem; } }
       .ui .menu__sublink .menu__subtitle {
         display: inline-block;
         position: relative;
@@ -1038,6 +1047,9 @@ body {
           transition: width 0.4s cubic-bezier(0.16, 0.29, 0, 1); }
       .ui .menu__sublink:first-child {
         margin-top: 4rem; }
+        @media screen and (max-width: 720px) {
+          .ui .menu__sublink:first-child {
+            margin-top: 2rem; } }
       .ui .menu__sublink.is-active {
         color: white; }
         .ui .menu__sublink.is-active .menu__nb {
@@ -1172,6 +1184,9 @@ body {
         font-size: 1.2em;
         line-height: 2em;
         color: black; }
+        @media screen and (max-width: 720px) {
+          .ui-content.is-about p, .ui-content.is-about li {
+            line-height: 1.6em; } }
       .ui-content.is-about .socials li {
         display: inline-block;
         color: black;
@@ -1206,6 +1221,9 @@ body {
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
         display: none; }
+        @media screen and (max-width: 720px) {
+          .ui-content.is-about .about__intro {
+            width: 100%; } }
       .ui-content.is-about .about__title {
         font-size: 3.4em;
         line-height: 1.8em;

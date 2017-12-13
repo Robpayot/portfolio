@@ -340,7 +340,6 @@ export default class Stars extends ProjectView {
 		// console.log(-this.camRotSmooth.y * 70);
 
 		// Terrain
-
 		if ( this.terrain.visible ) {
 
 			let fLow = 0.1, fHigh = 0.8;

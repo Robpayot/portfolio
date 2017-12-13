@@ -317,7 +317,7 @@ export default class ProjectView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
-		title.position.set(40, 0, 10);
+		title.position.set(60, 0, 10);
 		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
@@ -349,6 +349,8 @@ export default class ProjectView extends AbstractView {
 		this.ui.uiContent.classList.add('ui-content', 'is-project');
 
 		this.ui.uiContent.innerHTML = html;
+
+
 
 	}
 
@@ -450,10 +452,13 @@ export default class ProjectView extends AbstractView {
 
 		// on events related to projectContent state
 		bean.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
-		bean.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
-		bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
-		bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
-		bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+		if (Device.touch === false) {
+			bean.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
+			bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
+			bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
+			bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+		}
+
 
 		this.animating = true;
 		this.contentOpen = true;
@@ -538,8 +543,10 @@ export default class ProjectView extends AbstractView {
 		// on events related to init state
 		bean.on(document.body, 'click.project', '.project__title', this.showContent);
 		// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
-		bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-		bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+		if (Device.touch === false) {
+			bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+			bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+		}
 		// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 		// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -684,6 +691,8 @@ export default class ProjectView extends AbstractView {
 				}});
 			}
 		}
+
+		console.log(this.contentOpen);
 
 
 		if (this.contentOpen === true) {

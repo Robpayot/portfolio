@@ -1,9 +1,11 @@
 import ProjectView from '../views/ProjectView';
 import { getRandom, toRadian } from '../helpers/utils';
+import { Device } from '../helpers/Device';
 
 // THREE JS
 import { MeshPhongMaterial, DirectionalLight } from 'three';
 import Asteroid from '../shapes/Asteroid';
+
 
 
 export default class Levit extends ProjectView {
@@ -150,24 +152,27 @@ export default class Levit extends ProjectView {
 	raf() {
 
 
-		this.raycaster.setFromCamera(this.mouse, this.camera);
+		if (Device.touch === false) {
+			this.raycaster.setFromCamera(this.mouse, this.camera);
 
-		const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-		this.intersection = intersectsAst.length > 0 ? intersectsAst[ 0 ] : null;
+			const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+			this.intersection = intersectsAst.length > 0 ? intersectsAst[ 0 ] : null;
 
-		if ( this.toggle > 0.02 && this.intersection !== null) {
-			document.body.style.cursor = 'pointer';
-			this.hoverAst = true;
-			this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
-			const el = this.asteroids[intersectsAst[0].object.index];
-			el.active = true;
+			if ( this.toggle > 0.02 && this.intersection !== null) {
+				document.body.style.cursor = 'pointer';
+				this.hoverAst = true;
+				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
+				const el = this.asteroids[intersectsAst[0].object.index];
+				el.active = true;
 
-		} else {
-			this.hoverAst = false;
-			for (let i = 0; i < this.nbAst; i++) {
-				this.asteroids[i].active = false;
+			} else {
+				this.hoverAst = false;
+				for (let i = 0; i < this.nbAst; i++) {
+					this.asteroids[i].active = false;
+				}
 			}
 		}
+
 
 		this.toggle += this.clock.getDelta();
 

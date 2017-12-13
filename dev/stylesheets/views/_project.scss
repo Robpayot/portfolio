@@ -5,7 +5,7 @@
         display: inline-block;
         vertical-align: middle;
         white-space: nowrap;
-        transform: translateX(50%);
+        pointer-events: auto;
         span {
             opacity: 0;
             visibility: hidden;

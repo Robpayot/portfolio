@@ -114,7 +114,8 @@
 		position: absolute;
 		display: flex;
 		left: 29vw;
-
+		top: 50%;
+    	transform: translateY(-50%);
 		opacity: 0;
 		// cursor: pointer;
 
@@ -160,7 +161,10 @@
 		// overflow: hidden;
 		display: inline-block;
 		vertical-align: middle;
-
+		@include mobile {
+			margin: 1.5rem 0;
+			font-size: 1.4rem;
+		}
 		.menu__subtitle {
 			display: inline-block;
 			position: relative;
@@ -182,6 +186,9 @@
 
 		&:first-child{
 			margin-top: 4rem;
+			@include mobile {
+				margin-top: 2rem;
+			}
 		}
 		&.is-active {
 			color: rgba(255,255,255,1);

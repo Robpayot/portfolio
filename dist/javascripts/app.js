@@ -2267,6 +2267,8 @@ var _Asteroid = require('../shapes/Asteroid');
 
 var _Asteroid2 = _interopRequireDefault(_Asteroid);
 
+var _Device = require('../helpers/Device');
+
 var _three = require('three');
 
 var _BlobLightShader = require('../shaders/BlobLightShader');
@@ -2417,21 +2419,24 @@ var Blob = function (_ProjectView) {
 		key: 'raf',
 		value: function raf() {
 
-			this.raycaster.setFromCamera(this.mouse, this.camera);
+			if (_Device.Device.touch === false) {
 
-			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-			this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
+				this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			if (this.toggle > 0.02 && this.intersection !== null) {
-				document.body.style.cursor = 'pointer';
-				this.hoverAst = true;
-				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
-				var el = this.asteroids[intersectsAst[0].object.index];
-				el.active = true;
-			} else {
-				this.hoverAst = false;
-				for (var i = 0; i < this.nbAst; i++) {
-					this.asteroids[i].active = false;
+				var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+				this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
+
+				if (this.toggle > 0.02 && this.intersection !== null) {
+					document.body.style.cursor = 'pointer';
+					this.hoverAst = true;
+					this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
+					var el = this.asteroids[intersectsAst[0].object.index];
+					el.active = true;
+				} else {
+					this.hoverAst = false;
+					for (var i = 0; i < this.nbAst; i++) {
+						this.asteroids[i].active = false;
+					}
 				}
 			}
 
@@ -2442,14 +2447,17 @@ var Blob = function (_ProjectView) {
 
 				// Move top and bottom --> Levit effect
 				this.asteroids[_i].mesh.position.y = this.asteroids[_i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[_i].speed + this.asteroids[_i].offset) * this.asteroids[_i].range.coef + this.asteroids[_i].range.add;
-				// rotate
-				this.asteroids[_i].mesh.material.uniforms['time'].value = .00065 * (Date.now() - this.inc); // use getDelta??
 
-				if (this.asteroids[_i].mesh.material.uniforms['weight'].value >= 0.0) {
-					if (this.asteroids[_i].active === true) {
-						this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value + 0.035, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
-					} else {
-						this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value - 0.03, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
+				if (_Device.Device.touch === false) {
+					// rotate
+					this.asteroids[_i].mesh.material.uniforms['time'].value = .00065 * (Date.now() - this.inc); // use getDelta??
+
+					if (this.asteroids[_i].mesh.material.uniforms['weight'].value >= 0.0) {
+						if (this.asteroids[_i].active === true) {
+							this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value + 0.035, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
+						} else {
+							this.asteroids[_i].mesh.material.uniforms['weight'].value = (0, _utils.clamp)(this.asteroids[_i].mesh.material.uniforms['weight'].value - 0.03, 0.0, this.asteroids[_i].initW + this.asteroids[_i].rangeMat.coef + this.asteroids[_i].rangeMat.add);
+						}
 					}
 				}
 			}
@@ -2469,7 +2477,7 @@ var Blob = function (_ProjectView) {
 
 exports.default = Blob;
 
-},{"../helpers/utils":10,"../shaders/BlobLightShader":23,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":169}],20:[function(require,module,exports){
+},{"../helpers/Device":7,"../helpers/utils":10,"../shaders/BlobLightShader":23,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":169}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2673,6 +2681,8 @@ var _ProjectView3 = _interopRequireDefault(_ProjectView2);
 
 var _utils = require('../helpers/utils');
 
+var _Device = require('../helpers/Device');
+
 var _three = require('three');
 
 var _Asteroid = require('../shapes/Asteroid');
@@ -2826,21 +2836,23 @@ var Levit = function (_ProjectView) {
 		key: 'raf',
 		value: function raf() {
 
-			this.raycaster.setFromCamera(this.mouse, this.camera);
+			if (_Device.Device.touch === false) {
+				this.raycaster.setFromCamera(this.mouse, this.camera);
 
-			var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
-			this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
+				var intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
+				this.intersection = intersectsAst.length > 0 ? intersectsAst[0] : null;
 
-			if (this.toggle > 0.02 && this.intersection !== null) {
-				document.body.style.cursor = 'pointer';
-				this.hoverAst = true;
-				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
-				var el = this.asteroids[intersectsAst[0].object.index];
-				el.active = true;
-			} else {
-				this.hoverAst = false;
-				for (var i = 0; i < this.nbAst; i++) {
-					this.asteroids[i].active = false;
+				if (this.toggle > 0.02 && this.intersection !== null) {
+					document.body.style.cursor = 'pointer';
+					this.hoverAst = true;
+					this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
+					var el = this.asteroids[intersectsAst[0].object.index];
+					el.active = true;
+				} else {
+					this.hoverAst = false;
+					for (var i = 0; i < this.nbAst; i++) {
+						this.asteroids[i].active = false;
+					}
 				}
 			}
 
@@ -2879,7 +2891,7 @@ exports.default = Levit;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/utils":10,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":169}],22:[function(require,module,exports){
+},{"../helpers/Device":7,"../helpers/utils":10,"../shapes/Asteroid":34,"../views/ProjectView":49,"three":169}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3245,7 +3257,6 @@ var Stars = function (_ProjectView) {
 			// console.log(-this.camRotSmooth.y * 70);
 
 			// Terrain
-
 			if (this.terrain.visible) {
 
 				var fLow = 0.1,
@@ -8206,12 +8217,12 @@ var AboutView = function (_AbstractView) {
 					this.ui.works[_i][evListener]('mouseenter', this.onHoverWork, false);
 					this.ui.works[_i][evListener]('mouseleave', this.onLeaveWork, false);
 				}
-			} else {
-				document[evListener]('touchstart', this.onDocumentTouchStart, false); // à faire pour tablet
-				document[evListener]('touchmove', this.onDocumentTouchMove, false); // à faire pour tablet
-			}
+			} else {}
+			// document[evListener]( 'touchstart', this.onDocumentTouchStart, false ); // à faire pour tablet
+			// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );  // à faire pour tablet
 
-			document[evListener]('keydown', this.onW, false);
+
+			// document[evListener]( 'keydown', this.onW , false );
 			document[evListener]('click', this.onClick, false);
 
 			this.ui.more[evListener]('click', this.onClickMore);
@@ -10446,7 +10457,7 @@ var ProjectView = function (_AbstractView) {
 			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-title'));
 			var html = template(data);
 			var title = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
-			title.position.set(40, 0, 10);
+			title.position.set(60, 0, 10);
 			title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 			this.prevId = this.id - 1 < 0 ? _data2.default.projects.length - 1 : this.id - 1;
@@ -10586,10 +10597,12 @@ var ProjectView = function (_AbstractView) {
 
 			// on events related to projectContent state
 			_bean2.default.on(document.body, 'click.projectContent', '.project__container', this.onClickContainer);
-			_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
-			_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
-			_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
-			_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+			if (_Device.Device.touch === false) {
+				_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__container', this.onHoverContainer);
+				_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
+				_bean2.default.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
+				_bean2.default.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+			}
 
 			this.animating = true;
 			this.contentOpen = true;
@@ -10674,8 +10687,10 @@ var ProjectView = function (_AbstractView) {
 			// on events related to init state
 			_bean2.default.on(document.body, 'click.project', '.project__title', this.showContent);
 			// bean.on(document.body, 'click.project', '.project__arrow', this.goTo);
-			_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-			_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			if (_Device.Device.touch === false) {
+				_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+				_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			}
 			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
 			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
@@ -10820,6 +10835,8 @@ var ProjectView = function (_AbstractView) {
 						} });
 				}
 			}
+
+			console.log(this.contentOpen);
 
 			if (this.contentOpen === true) {
 				// need profil for each browser
