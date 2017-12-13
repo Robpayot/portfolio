@@ -124,6 +124,7 @@ export function preventLink(e) {
 			console.log('go fullscreen');
 			let DOM = document.documentElement,
 				rfs = DOM.requestFullscreen
+				|| DOM.webkitRequestFullscreen
 				|| DOM.webkitRequestFullScreen
 				|| DOM.mozRequestFullScreen
 				|| DOM.msRequestFullscreen
