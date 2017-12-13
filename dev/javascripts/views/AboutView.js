@@ -595,9 +595,9 @@ export default class AboutView extends AbstractView {
 		TweenMax.to(this.ui.worksCircle[index], 0, {opacity: 0});
 		const tl = new TimelineMax();
 
-		tl.to(this.ui.worksDown2[index], 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
-		tl.to(this.ui.worksDown[index], 0.9, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
-		tl.to(this.ui.worksUp[index], 1, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
+		tl.to(this.ui.worksDown2[index], 0.8, {strokeDashoffset: this.maxDash * 7 - 100, ease: window.Expo.easeOut }, 0);
+		tl.to(this.ui.worksDown[index], 0.9, {strokeDashoffset: this.maxDash * 6 - 180, ease: window.Expo.easeOut }, 0.1);
+		tl.to(this.ui.worksUp[index], 1, {strokeDashoffset: this.maxDash - 205, ease: window.Expo.easeOut }, 0.2);
 		tl.set([this.ui.worksUp[index], this.ui.worksDown[index], this.ui.worksDown2[index]], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animLink = false;

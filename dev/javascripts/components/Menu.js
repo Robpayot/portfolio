@@ -75,14 +75,14 @@ export default class Menu {
 
 			TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 			this.el.classList.remove('is-open');
-			global.CURSOR.el.classList.remove('menu-open');
+			if (!Device.touch) global.CURSOR.el.classList.remove('menu-open');
 			const tl = new TimelineMax();
 
 			// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.1 );
-			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0.1 );
+			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
 			tl.add(() => {
 				this.ui.buttonSvg.classList.remove('is-open');
 				this.ui.buttonSvg.classList.add('is-close');
@@ -105,14 +105,14 @@ export default class Menu {
 			ScrollManager.on();
 
 			this.el.classList.remove('is-open');
-			global.CURSOR.el.classList.remove('menu-open');
+			if (!Device.touch) global.CURSOR.el.classList.remove('menu-open');
 			const tl = new TimelineMax();
 
 			// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.1 );
-			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: -this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
+			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0.1 );
+			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
 			tl.add(() => {
 				this.ui.buttonSvg.classList.remove('is-open');
 				this.ui.buttonSvg.classList.add('is-close');
@@ -126,7 +126,7 @@ export default class Menu {
 			ScrollManager.off();
 
 			this.el.classList.add('is-open');
-			global.CURSOR.el.classList.add('menu-open');
+			if (!Device.touch) global.CURSOR.el.classList.add('menu-open');
 
 			const links = document.querySelectorAll('.menu__link .title--3');
 
@@ -136,10 +136,10 @@ export default class Menu {
 			tl.staggerFromTo([links[2], links[1], links[0]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
 			// tl.set('.menu__sublink span', {opacity: 1}, 1.5);
 			tl.staggerFromTo('.menu__sublink div', 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.03, 0.4);
-			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: -this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 3 - 205, ease: window.Expo.easeOut}, 0.1 );
-			tl.to('.menu__button .open-up', 0.9, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0.3);
+			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 5, ease: window.Expo.easeOut }, 0);
+			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 5 - 205, ease: window.Expo.easeOut}, 0.1 );
+			tl.to('.menu__button .open-up', 0.9, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.3);
 			tl.add(()=> {
 				this.ui.buttonSvg.classList.add('is-open');
 				this.ui.buttonSvg.classList.remove('is-close');
@@ -186,8 +186,8 @@ export default class Menu {
 		TweenMax.to('.menu__button circle', 0, {opacity: 0});
 		if (this.ui.buttonSvg.classList.contains('is-close')) {
 
-			tl.to('.menu__button .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
-			tl.to('.menu__button .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+			tl.to('.menu__button .close-up', 1, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0);
+			tl.to('.menu__button .close-down', 1.2, {strokeDashoffset: this.maxDash * 5 + 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
 				this.animBtn = false;
@@ -196,8 +196,8 @@ export default class Menu {
 			tl.fromTo('.navigate', 1, {y: 20}, {y:0, ease: window.Expo.easeOut}, 0);
 			tl.fromTo('.navigate', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
 		} else {
-			tl.to('.menu__button .open-up', 1, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0 );
-			tl.to('.menu__button .open-down', 1.2, {strokeDashoffset: -this.maxDash - 205, ease: window.Expo.easeOut}, 0);
+			tl.to('.menu__button .open-up', 1, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0 );
+			tl.to('.menu__button .open-down', 1.2, {strokeDashoffset: this.maxDash - 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 			tl.add(()=> {
 				this.animBtn = false;

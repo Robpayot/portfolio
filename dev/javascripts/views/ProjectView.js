@@ -423,9 +423,9 @@ export default class ProjectView extends AbstractView {
 
 		const tl = new TimelineMax();
 		tl.set(['.project__link .close-up','.project__link .close-down','.project__link .close-down-2','.project__link .open-up','.project__link .open-down'], {clearProps: 'all'});
-		tl.to('.project__link .close-down-2', 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut });
-		tl.to('.project__link .close-down', 0.9, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
-		tl.to('.project__link .close-up', 1, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
+		tl.to('.project__link .close-down-2', 0.8, {strokeDashoffset: this.maxDash * 7 - 100, ease: window.Expo.easeOut });
+		tl.to('.project__link .close-down', 0.9, {strokeDashoffset: this.maxDash * 6 - 180, ease: window.Expo.easeOut }, 0.1);
+		tl.to('.project__link .close-up', 1, {strokeDashoffset: this.maxDash - 205, ease: window.Expo.easeOut }, 0.2);
 		tl.set(['.project__link .close-up','.project__link .close-down','.project__link .close-down-2','.project__link .open-up','.project__link .open-down'], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animLink = false;
@@ -724,8 +724,6 @@ export default class ProjectView extends AbstractView {
 							ease: window.Expo.easeOut
 						}, 0);
 						this.ui.imgs[i].classList.add('is-visible');
-
-
 
 					}
 				}

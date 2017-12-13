@@ -102,7 +102,7 @@ class SceneManager {
 				this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
 				if (opts.cssScene !== undefined) this.cssRenderer.setSize(window.innerWidth, window.innerHeight);
 				TweenMax.set([this.el, this.cssRenderer.domElement], {width: window.innerWidth, height: window.innerHeight});
-			}, 100);
+			}, 400);
 		}
 
 
