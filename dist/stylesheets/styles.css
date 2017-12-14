@@ -292,11 +292,7 @@ html {
       font-size: 8px;
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      overflow: hidden; } }
+      pointer-events: none; } }
 
 body {
   overflow: hidden;
@@ -305,7 +301,6 @@ body {
     body {
       width: 100%;
       height: 100%;
-      position: fixed;
       top: 0;
       left: 0;
       pointer-events: none;
@@ -646,6 +641,9 @@ body {
     .project__title .glitch__canvas {
       height: 420px;
       top: 3%; }
+      @media screen and (max-width: 720px) {
+        .project__title .glitch__canvas {
+          height: 650px; } }
 
 @-webkit-keyframes rainbow {
   0% {
@@ -857,7 +855,13 @@ body {
   white-space: nowrap;
   pointer-events: auto;
   position: relative;
-  z-index: 9000; }
+  z-index: 9000;
+  -webkit-transform: translateX(50%);
+  -ms-transform: translateX(50%);
+  transform: translateX(50%); }
+  @media screen and (max-width: 720px) {
+    .project__title {
+      font-size: 758%; } }
   .project__title span {
     opacity: 0;
     visibility: hidden;
@@ -888,6 +892,9 @@ body {
   top: -300px;
   font-size: 55px;
   left: 5px; }
+  @media screen and (max-width: 720px) {
+    .project__number {
+      font-size: 78px; } }
 
 .project__more {
   left: 0px;
@@ -900,6 +907,10 @@ body {
   top: 170px;
   opacity: 1;
   transition: padding 0.8s cubic-bezier(0.16, 0.29, 0, 1); }
+  @media screen and (max-width: 720px) {
+    .project__more {
+      top: 210px;
+      font-size: 70px; } }
   .project__more:after {
     content: '';
     position: absolute;

@@ -110,6 +110,7 @@ export default class AboutView extends AbstractView {
 		EmitterManager[onListener]('raf', this.raf);
 
 		if (Device.touch === false) {
+			document[evListener]( 'click', this.onClick , false );
 			// move camera
 			EmitterManager.on('mousemove', this.onMouseMove);
 
@@ -134,7 +135,6 @@ export default class AboutView extends AbstractView {
 		}
 
 		// document[evListener]( 'keydown', this.onW , false );
-		document[evListener]( 'click', this.onClick , false );
 
 		this.ui.more[evListener]('click', this.onClickMore);
 		this.ui.back[evListener]('click', this.onClickBack);
@@ -177,6 +177,7 @@ export default class AboutView extends AbstractView {
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
 		this.cameraMove = true;
+
 
 		// Camera controls
 		if (this.isControls === true) {
@@ -641,23 +642,25 @@ export default class AboutView extends AbstractView {
 
 	raf() {
 
-		if ( this.clickAnim === true) {
-			this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
-		} else {
-			// Raycaster
-			if ( this.mouseMoved ) {
+		if (Device.touch === false) {
+			if ( this.clickAnim === true) {
+				this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+			} else {
+				// Raycaster
+				if ( this.mouseMoved ) {
 
-				this.raycaster.setFromCamera(this.mouse, this.camera);
+					this.raycaster.setFromCamera(this.mouse, this.camera);
 
-				let intersects = this.raycaster.intersectObject( this.meshRay );
+					let intersects = this.raycaster.intersectObject( this.meshRay );
 
-				if ( intersects.length > 0 ) {
-					this.currentPos = intersects[ 0 ].point;
-					this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+					if ( intersects.length > 0 ) {
+						this.currentPos = intersects[ 0 ].point;
+						this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
 
+					}
+
+					this.mouseMoved = false;
 				}
-
-				this.mouseMoved = false;
 			}
 		}
 
@@ -735,6 +738,8 @@ export default class AboutView extends AbstractView {
 
 	resizeHandler() {
 		super.resizeHandler();
+
+
 		// remove Mesh water
 		let obj = this.scene.getObjectByName('water');
 		if (obj.geometry) obj.geometry.dispose();

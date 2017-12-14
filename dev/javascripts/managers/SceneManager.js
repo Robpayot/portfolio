@@ -95,8 +95,8 @@ class SceneManager {
 			setTimeout(() => {
 
 				// Update camera
-				opts.camera.aspect = window.innerWidth / window.innerHeight;
-				opts.camera.updateProjectionMatrix();
+				if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
+				if (opts.camera) opts.camera.updateProjectionMatrix();
 
 				// Update canvas size
 				this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);

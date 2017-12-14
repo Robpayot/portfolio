@@ -325,7 +325,7 @@ export default class ProjectView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
-		title.position.set(60, 0, 10);
+		title.position.set(40, 0, 10);
 		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;

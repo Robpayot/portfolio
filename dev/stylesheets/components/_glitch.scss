@@ -58,6 +58,10 @@
 			height: 420px;
 			top: 3%;
 
+			@include mobile {
+				height: 650px;
+			}
+
 		}
 	}
 }
