@@ -150,6 +150,9 @@ export default class AboutView extends AbstractView {
 		global.MENU.el.classList.add('alt');
 		global.MENU.el.classList.remove('is-open');
 
+		// Set UiContainers
+		this.setUiContainer();
+
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
 		// SceneManager.renderer.setPixelRatio( clamp(window.devicePixelRatio, 1, 1.5)); // passer à 1.5 si rétina
@@ -193,9 +196,6 @@ export default class AboutView extends AbstractView {
 		this.initWater(false, false);
 
 		this.setGround();
-
-		// Set CssContainers
-		this.setUiContainer();
 
 		// let gui = new dat.GUI();
 
@@ -394,14 +394,11 @@ export default class AboutView extends AbstractView {
 	setUiContainer() {
 
 		const data = DATA;
-		// console.log(data, PreloadManager.getResult('tpl-about-content'));
-
-		// Context + gallery arrows
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-about');
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
 		let html  = template(data);
 
-		this.ui.uiContent.className = '';
-		this.ui.uiContent.classList.add('ui-content', 'is-about');
 		this.ui.uiContent.innerHTML = html;
 
 	}
