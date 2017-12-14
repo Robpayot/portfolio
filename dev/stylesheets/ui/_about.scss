@@ -10,6 +10,7 @@
 	left: 50%;
 	transform: translateX(-50%);
 	// max-width: 1000px;
+	position: absolute;
 
 	p, li {
 		font-size: 1.2em;
@@ -140,19 +141,19 @@
 	    			.open-down,
 					.open-up {
 						stroke-dasharray: 635;
-						stroke-dashoffset: 635;
+						stroke-dashoffset: 3175; // Fix safari issue : It doesn't like negative dash-offset
 					}
 					.close-up {
 						stroke-dasharray: 635; // !
-						stroke-dashoffset: -840;
+						stroke-dashoffset: 1700;
 					}
 					.close-down {
 						stroke-dasharray: 635; // !
-						stroke-dashoffset: -180;
+						stroke-dashoffset: 2360;
 					}
 					.close-down-2 {
 						stroke-dasharray: 635; // !
-						stroke-dashoffset: 535;
+						stroke-dashoffset: 3075;
 					}
 	    		}
 

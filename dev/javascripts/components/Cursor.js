@@ -89,8 +89,8 @@ export default class Cursor {
 		if (obj.type === 'next') {
 			const tl = new TimelineMax();
 			tl.to(['.up-1', '.up-2'], 0.5, {opacity: 1});
-			tl.to('.up-1', 0.6, {strokeDashoffset: '292%', ease: window.Expo.easeOut }, 0.1);
-			tl.to('.up-2', 0.7, {strokeDashoffset: '186%', ease: window.Expo.easeOut }, 0.1);
+			tl.to('.up-1', 0.6, {strokeDashoffset: '492%', ease: window.Expo.easeOut }, 0.1);
+			tl.to('.up-2', 0.7, {strokeDashoffset: '386%', ease: window.Expo.easeOut }, 0.1);
 			tl.set(['.up-1', '.up-2'], {clearProps: 'stroke-dashoffset'});
 			tl.fromTo(this.next, 1, { y: '100%', x: '-50%'}, { y: '0%', x: '-50%', ease: window.Expo.easeOut}, 0);
 			tl.fromTo(this.next, 0.5, {opacity: 0}, {opacity: 1, ease: window.Linear.easeNone}, 0);
@@ -98,8 +98,8 @@ export default class Cursor {
 		} else if (obj.type === 'prev') {
 			const tl = new TimelineMax();
 			tl.to(['.down-1', '.down-2'], 0.5, {opacity: 1});
-			tl.to('.down-2', 0.95, {strokeDashoffset: '-236%', ease: window.Expo.easeOut }, 0);
-			tl.to('.down-1', 0.8, {strokeDashoffset: '-130%', ease: window.Expo.easeOut }, 0.1);
+			tl.to('.down-2', 0.95, {strokeDashoffset: '164%', ease: window.Expo.easeOut }, 0);
+			tl.to('.down-1', 0.8, {strokeDashoffset: '270%', ease: window.Expo.easeOut }, 0.1);
 			tl.set(['.down-1', '.down-2'], {clearProps: 'stroke-dashoffset'});
 			tl.fromTo(this.prev, 1, { y: '-100%', x: '-50%'}, { y: '0%', x: '-50%', ease: window.Expo.easeOut}, 0);
 			tl.fromTo(this.prev, 0.5, {opacity: 0}, {opacity: 1, ease: window.Linear.easeNone}, 0);

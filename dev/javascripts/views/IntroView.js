@@ -20,6 +20,8 @@ import '../shaders/OceanShader';
 import '../vendors/MirrorRenderer';
 import Ocean from '../vendors/Ocean';
 import p2 from 'p2';
+// GYRO JS
+import Gyro from '../vendors/gyro.min';
 
 
 // import dat from 'dat-gui';
@@ -149,6 +151,7 @@ export default class IntroView extends AbstractView {
 
 		this.setPhysicBlocks();
 		this.setAsteroids();
+
 
 		// this.resizeHandler(); // size first time
 
@@ -639,23 +642,34 @@ export default class IntroView extends AbstractView {
 				else global.CURSOR.interractLeave();
 			}
 
-			// // deceleration
-			if ( this.debug === false) {
-
-				// Specify target we want
-				this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-				this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
-
-				// Smooth it with deceleration
-				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-				this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
-
-				// Apply rotation
-				this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-				this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
-
-			}
 		}
+		// Gyro coordonate
+		if (this.gyro === true) {
+			// const o = Gyro.getOrientation();
+			// this.mouse.x = o.y;
+			// // clamp(o.x * 5.5, -5, 5);
+			// this.mouse.y = -o.x;
+			// clamp(-o.y * 5.5, -5.5, 5.5);
+		}
+
+		// // deceleration
+		if ( this.debug === false) {
+
+			// Specify target we want
+			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+			this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
+
+			// Smooth it with deceleration
+			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+			// Apply rotation
+			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
+			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
+			// this.camera.rotation.y = this.camRotSmooth.y; // --> radian
+
+		}
+
 
 		// glitch title
 		if (this.glitch) {
@@ -767,6 +781,12 @@ export default class IntroView extends AbstractView {
 			onComplete: () => {
 				this.cameraMove = false;
 
+				if (Device.touch === true) { // if device gyro ?
+					// Set up Gyroscope
+					Gyro.stopTracking(); // Stop periodic calls
+					Gyro.calibrate(); // Calibrate measurement during the page loading
+					this.gyro = true;
+				}
 			}
 		});
 

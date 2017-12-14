@@ -110,6 +110,7 @@ export default class AboutView extends AbstractView {
 		EmitterManager[onListener]('raf', this.raf);
 
 		if (Device.touch === false) {
+			document[evListener]( 'click', this.onClick , false );
 			// move camera
 			EmitterManager.on('mousemove', this.onMouseMove);
 
@@ -134,7 +135,6 @@ export default class AboutView extends AbstractView {
 		}
 
 		// document[evListener]( 'keydown', this.onW , false );
-		document[evListener]( 'click', this.onClick , false );
 
 		this.ui.more[evListener]('click', this.onClickMore);
 		this.ui.back[evListener]('click', this.onClickBack);
@@ -149,6 +149,9 @@ export default class AboutView extends AbstractView {
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.add('alt');
 		global.MENU.el.classList.remove('is-open');
+
+		// Set UiContainers
+		this.setUiContainer();
 
 		this.scene = new Scene();
 		this.scene.background = new Color(0x000000);
@@ -178,6 +181,7 @@ export default class AboutView extends AbstractView {
 
 		this.cameraMove = true;
 
+
 		// Camera controls
 		if (this.isControls === true) {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
@@ -192,9 +196,6 @@ export default class AboutView extends AbstractView {
 		this.initWater(false, false);
 
 		this.setGround();
-
-		// Set CssContainers
-		this.setUiContainer();
 
 		// let gui = new dat.GUI();
 
@@ -393,14 +394,11 @@ export default class AboutView extends AbstractView {
 	setUiContainer() {
 
 		const data = DATA;
-		// console.log(data, PreloadManager.getResult('tpl-about-content'));
-
-		// Context + gallery arrows
+		this.ui.uiContent.className = '';
+		this.ui.uiContent.classList.add('ui-content', 'is-about');
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
 		let html  = template(data);
 
-		this.ui.uiContent.className = '';
-		this.ui.uiContent.classList.add('ui-content', 'is-about');
 		this.ui.uiContent.innerHTML = html;
 
 	}
@@ -595,9 +593,9 @@ export default class AboutView extends AbstractView {
 		TweenMax.to(this.ui.worksCircle[index], 0, {opacity: 0});
 		const tl = new TimelineMax();
 
-		tl.to(this.ui.worksDown2[index], 0.8, {strokeDashoffset: this.maxDash * 3 - 100, ease: window.Expo.easeOut }, 0);
-		tl.to(this.ui.worksDown[index], 0.9, {strokeDashoffset: this.maxDash * 2 - 180, ease: window.Expo.easeOut }, 0.1);
-		tl.to(this.ui.worksUp[index], 1, {strokeDashoffset: -this.maxDash * 3 - 205, ease: window.Expo.easeOut }, 0.2);
+		tl.to(this.ui.worksDown2[index], 0.8, {strokeDashoffset: this.maxDash * 7 - 100, ease: window.Expo.easeOut }, 0);
+		tl.to(this.ui.worksDown[index], 0.9, {strokeDashoffset: this.maxDash * 6 - 180, ease: window.Expo.easeOut }, 0.1);
+		tl.to(this.ui.worksUp[index], 1, {strokeDashoffset: this.maxDash - 205, ease: window.Expo.easeOut }, 0.2);
 		tl.set([this.ui.worksUp[index], this.ui.worksDown[index], this.ui.worksDown2[index]], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animLink = false;
@@ -641,23 +639,25 @@ export default class AboutView extends AbstractView {
 
 	raf() {
 
-		if ( this.clickAnim === true) {
-			this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
-		} else {
-			// Raycaster
-			if ( this.mouseMoved ) {
+		if (Device.touch === false) {
+			if ( this.clickAnim === true) {
+				this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+			} else {
+				// Raycaster
+				if ( this.mouseMoved ) {
 
-				this.raycaster.setFromCamera(this.mouse, this.camera);
+					this.raycaster.setFromCamera(this.mouse, this.camera);
 
-				let intersects = this.raycaster.intersectObject( this.meshRay );
+					let intersects = this.raycaster.intersectObject( this.meshRay );
 
-				if ( intersects.length > 0 ) {
-					this.currentPos = intersects[ 0 ].point;
-					this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
+					if ( intersects.length > 0 ) {
+						this.currentPos = intersects[ 0 ].point;
+						this.heightmapVariable.material.uniforms.mousePos.value.set( this.currentPos.x, this.currentPos.z );
 
+					}
+
+					this.mouseMoved = false;
 				}
-
-				this.mouseMoved = false;
 			}
 		}
 
@@ -735,6 +735,8 @@ export default class AboutView extends AbstractView {
 
 	resizeHandler() {
 		super.resizeHandler();
+
+
 		// remove Mesh water
 		let obj = this.scene.getObjectByName('water');
 		if (obj.geometry) obj.geometry.dispose();

@@ -6,6 +6,12 @@
         vertical-align: middle;
         white-space: nowrap;
         pointer-events: auto;
+	    position: relative;
+	    z-index: 9000;
+	    transform: translateX(50%); // ALIGN WITH OTHER TITLES
+		@include mobile {
+			font-size: 758%;
+		}
         span {
             opacity: 0;
             visibility: hidden;
@@ -43,6 +49,9 @@
     	top: -300px;
     	font-size: 55px;
     	left: 5px;
+		@include mobile {
+			font-size: 78px;
+		}
     }
 
     &__more {
@@ -56,6 +65,10 @@
 		top: 170px;
 		opacity: 1;
 		transition: padding 0.8s $easeToinou;
+		@include mobile {
+			top: 210px;
+			font-size: 70px;
+		}
 		&:after {
 			content: '';
 			position: absolute;

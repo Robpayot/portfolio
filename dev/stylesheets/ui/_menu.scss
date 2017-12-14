@@ -76,16 +76,16 @@
 			&.is-close {
 				.open-down,
 				.open-up {
-					stroke-dasharray: 635;
-					stroke-dashoffset: 635;
+					stroke-dasharray: 635; 
+					stroke-dashoffset: 1905; // Fix safari issue : It doesn't like negative dash-offset
 				}
 				.close-up {
 					stroke-dasharray: 635; // !
-					stroke-dashoffset: 0;
+					stroke-dashoffset: 1270;
 				}
 				.close-down {
 					stroke-dasharray: 635; // !
-					stroke-dashoffset: 840;
+					stroke-dashoffset: 2110;
 				}
 			}
 
@@ -93,18 +93,18 @@
 
 				.open-up {
 					stroke-dasharray: 635; // !
-					stroke-dashoffset: 0;
+					stroke-dashoffset: 1270;
 				}
 
 				.open-down {
 					stroke-dasharray: 635; // !
-					stroke-dashoffset: 430;
+					stroke-dashoffset: 1700;
 				}
 
 				.close-up,
 				.close-down {
 					stroke-dasharray: 635;
-					stroke-dashoffset: 635;
+					stroke-dashoffset: 1905;
 				}
 			}
 		}

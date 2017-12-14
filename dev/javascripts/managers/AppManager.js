@@ -35,8 +35,8 @@ class AppManager {
 		const tl = new TimelineMax({repeat: -1});
 		TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
 
-		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
-		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0);
+		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 5 + 205, ease: window.Expo.easeOut}, 0);
 		tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 
 		const tl2 = new TimelineMax({repeat: -1});
