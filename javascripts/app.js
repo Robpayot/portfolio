@@ -2067,8 +2067,8 @@ var SceneManager = function () {
 				setTimeout(function () {
 
 					// Update camera
-					opts.camera.aspect = window.innerWidth / window.innerHeight;
-					opts.camera.updateProjectionMatrix();
+					if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
+					if (opts.camera) opts.camera.updateProjectionMatrix();
 
 					// Update canvas size
 					_this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
@@ -8212,6 +8212,7 @@ var AboutView = function (_AbstractView) {
 			_EmitterManager2.default[onListener]('raf', this.raf);
 
 			if (_Device.Device.touch === false) {
+				document[evListener]('click', this.onClick, false);
 				// move camera
 				_EmitterManager2.default.on('mousemove', this.onMouseMove);
 
@@ -8236,7 +8237,6 @@ var AboutView = function (_AbstractView) {
 
 
 			// document[evListener]( 'keydown', this.onW , false );
-			document[evListener]('click', this.onClick, false);
 
 			this.ui.more[evListener]('click', this.onClickMore);
 			this.ui.back[evListener]('click', this.onClickBack);
@@ -8794,22 +8794,24 @@ var AboutView = function (_AbstractView) {
 		key: 'raf',
 		value: function raf() {
 
-			if (this.clickAnim === true) {
-				this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
-			} else {
-				// Raycaster
-				if (this.mouseMoved) {
+			if (_Device.Device.touch === false) {
+				if (this.clickAnim === true) {
+					this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
+				} else {
+					// Raycaster
+					if (this.mouseMoved) {
 
-					this.raycaster.setFromCamera(this.mouse, this.camera);
+						this.raycaster.setFromCamera(this.mouse, this.camera);
 
-					var intersects = this.raycaster.intersectObject(this.meshRay);
+						var intersects = this.raycaster.intersectObject(this.meshRay);
 
-					if (intersects.length > 0) {
-						this.currentPos = intersects[0].point;
-						this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
+						if (intersects.length > 0) {
+							this.currentPos = intersects[0].point;
+							this.heightmapVariable.material.uniforms.mousePos.value.set(this.currentPos.x, this.currentPos.z);
+						}
+
+						this.mouseMoved = false;
 					}
-
-					this.mouseMoved = false;
 				}
 			}
 
@@ -8887,6 +8889,7 @@ var AboutView = function (_AbstractView) {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
 			_get(AboutView.prototype.__proto__ || Object.getPrototypeOf(AboutView.prototype), 'resizeHandler', this).call(this);
+
 			// remove Mesh water
 			var obj = this.scene.getObjectByName('water');
 			if (obj.geometry) obj.geometry.dispose();
@@ -10478,7 +10481,7 @@ var ProjectView = function (_AbstractView) {
 			var template = _handlebars2.default.compile(_PreloadManager2.default.getResult('tpl-project-title'));
 			var html = template(data);
 			var title = new _CssContainer2.default(html, this.cssScene, this.cssObjects);
-			title.position.set(60, 0, 10);
+			title.position.set(40, 0, 10);
 			title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 			this.prevId = this.id - 1 < 0 ? _data2.default.projects.length - 1 : this.id - 1;
