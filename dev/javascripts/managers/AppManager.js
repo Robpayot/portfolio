@@ -10,7 +10,7 @@ import bean from 'bean';
 import PreloadManager from './PreloadManager';
 import  '../helpers/handlebarsRegister';
 import { loadJSON } from '../helpers/utils-three';
-import { isTouch } from '../helpers/utils';
+import { isTouch, preventLink } from '../helpers/utils';
 import { TextureLoader } from 'three';
 
 
@@ -27,6 +27,8 @@ class AppManager {
 	}
 
 	preload() {
+
+		this.resizeHandler(); // resize once
 
 		this.startLoad = 0;
 		this.maxDash = 635;
@@ -79,11 +81,16 @@ class AppManager {
 			{ id: 'introTxt', src: `${global.BASE}/images/textures/name.png` },
 			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
 			{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
+			// bkg projects
+			{ id: 'bkg-0', src: `${global.BASE}/images/textures/project-0.jpg` },
+			{ id: 'bkg-1', src: `${global.BASE}/images/textures/project-1.jpg` },
+			{ id: 'bkg-2', src: `${global.BASE}/images/textures/project-2.jpg` },
+			{ id: 'bkg-3', src: `${global.BASE}/images/textures/project-3.jpg` }
 		]);
 
 		// SkyTex
 		global.SKYTEX = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
-		global.PROJECTTEX = new TextureLoader().load( `${global.BASE}/images/textures/project-1.png` );
+		// global.PROJECTTEX = new TextureLoader().load( `${global.BASE}/images/textures/project-1.png` );
 
 		// Preload all img projects
 		for (let i = 0; i < DATA.projects.length; i++) {
@@ -109,19 +116,37 @@ class AppManager {
 		// TweenMax.set('.preload', {display: 'none'});
 
 		PreloadManager.on('complete', () => {
-			this.start();
+			if (Device.touch === false) this.start();
 			PreloadManager.off('progress');
 			const tl = new TimelineMax();
-			tl.to('.preload', 1, {autoAlpha: 0}, 2);
+			if (Device.touch === false) {
+				tl.to('.preload', 1, {autoAlpha: 0}, 2);
+			} else {
+				tl.to('.preload__wrapper', 1, {opacity: 0}, 2);
+			}
 			tl.add(() => {
 
 				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+				if (Device.touch === true) {
+					let wrapper = document.querySelector('.preload__wrapper');
+					wrapper.innerHTML = 'start';
+					wrapper.classList.add('start-fs');
+					TweenMax.set(wrapper, {opacity: 1});
+
+					wrapper.addEventListener('click', (e) => {
+
+						preventLink(e, true);
+						this.start();
+						TweenMax.to('.preload', 0.7, {autoAlpha: 0});
+					});
+				}
 
 			});
 		}, this, true);
 	}
 
 	start() {
+		console.log('start');
 
 		this.events(true);
 
@@ -149,8 +174,6 @@ class AppManager {
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		let onListener = method === false ? 'off' : 'on';
 
-
-		this.resizeHandler(); // resize once
 
 		// Global events
 		// raf

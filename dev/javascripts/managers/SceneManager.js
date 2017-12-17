@@ -12,6 +12,8 @@ class SceneManager {
 
 	start() {
 
+		console.log('startttt');
+
 		// Set unique Renderer
 
 		this.xp = document.querySelector('.xp');

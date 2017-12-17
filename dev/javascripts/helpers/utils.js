@@ -110,15 +110,18 @@ export function isTouch() {
 		|| (navigator.msMaxTouchPoints > 0));
 }
 
-export function preventLink(e) {
+export function preventLink(e, nohref = false) {
 	// --> Counter display safari bar on iOs
 	e.preventDefault();
-	const el = e.currentTarget;
 
-	requestAnimationFrame(()=> {
-		window.location.href = el.href;
+	if (nohref === false) {
+		const el = e.currentTarget;
+		requestAnimationFrame(()=> {
+			window.location.href = el.href;
 
-	});
+		});
+	}
+
 	// if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
 	// 	console.log('already fullscreen');
 	// } else {
