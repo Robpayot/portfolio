@@ -21,7 +21,10 @@ import '../vendors/MirrorRenderer';
 import Ocean from '../vendors/Ocean';
 import p2 from 'p2';
 // GYRO JS
-import Gyro from '../vendors/gyro.min';
+// import Gyro from '../vendors/gyro.min';
+import DeviceOrientationControls from '../vendors/DeviceOrientationControls';
+
+console.log(DeviceOrientationControls);
 
 
 // import dat from 'dat-gui';
@@ -55,6 +58,8 @@ export default class IntroView extends AbstractView {
 		this.onHoverStart = this.onHoverStart.bind(this);
 		this.onLeaveStart = this.onLeaveStart.bind(this);
 
+		this.ui.debug = document.querySelector('.debug');
+
 
 		this.models = global.MODELS;
 		this.init();
@@ -62,6 +67,19 @@ export default class IntroView extends AbstractView {
 		this.events(true);
 
 		this.transitionIn(!obj.fromUrl);
+
+		this.gyro = false; // device.gyro ?
+
+
+
+		if (this.gyro === true) {
+			// Gyro.frequency = 500;
+			// Gyro.startTracking((o) => {
+			// 	this.o = o;
+			// }); // Stop periodic calls
+			global.FIRST = true;
+		}
+
 
 		// init
 
@@ -127,6 +145,7 @@ export default class IntroView extends AbstractView {
 
 		// Mouse
 		this.mouse = { x: 0, y: 0 };
+		this.o = { alpha: 0, beta: 0 };
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
@@ -157,6 +176,7 @@ export default class IntroView extends AbstractView {
 
 
 		global.CURSOR.el.classList.add('alt');
+
 
 	}
 
@@ -643,30 +663,48 @@ export default class IntroView extends AbstractView {
 			}
 
 		}
-		// Gyro coordonate
-		if (this.gyro === true) {
-			// const o = Gyro.getOrientation();
-			// this.mouse.x = o.y;
-			// // clamp(o.x * 5.5, -5, 5);
-			// this.mouse.y = -o.x;
-			// clamp(-o.y * 5.5, -5.5, 5.5);
-		}
+
+		
 
 		// // deceleration
 		if ( this.debug === false) {
 
-			// Specify target we want
-			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-			this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
 
-			// Smooth it with deceleration
-			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
-			this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+			this.ui.debug.innerHTML = this.camera.rotation.y;
 
-			// Apply rotation
-			this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX;
-			this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // --> radian
-			// this.camera.rotation.y = this.camRotSmooth.y; // --> radian
+
+			if (this.gyro === true ) {
+				// this.camera.rotation.x = clamp(toRadian(clamp(this.o.gamma, -20, 20)), -0.25, 0.25) + this.currentCameraRotX; // Gauche / droite --> radian
+				// this.camera.rotation.y = clamp(-toRadian(clamp(-this.o.alpha, -20, 20)), -0.25, 0.25); // Gauche / droite --> radian
+				// Apply rotation
+				if (this.isCalibrate === true) {
+					this.controls.update();
+					// this.camera.rotation.order = 'XYZ';
+
+					this.camera.rotation.x = this.camera.rotation.x + this.currentCameraRotX;
+					this.camera.rotation.y = this.camera.rotation.y + toRadian(-90);
+					// this.camera.rotation.z = this.camera.rotation.z + toRadian(-90);
+					// this.camera.rotation.y = 0;
+					// this.camera.rotation.z = 0;
+					// this.camera.rotation.x = clamp(this.camera.rotation.x + this.currentCameraRotX, -1.8, -1.3);
+					// this.camera.rotation.y = clamp(this.camera.rotation.y, -0.2, 0.2);
+					// this.camera.rotation.y = this.camera.rotation.z;
+					// this.camera.rotation.z = this.camera.rotation.y;
+					// this.camera.rotation.y = 0;
+				}
+
+			} else {
+				// Specify target we want
+				this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
+				this.camRotTarget.y = -toRadian(round(this.mouse.x * 4, 100));
+
+				// Smooth it with deceleration
+				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
+				this.camRotSmooth.y += (this.camRotTarget.y - this.camRotSmooth.y) * 0.08;
+
+				this.camera.rotation.x = this.camRotSmooth.x + this.currentCameraRotX; // Haut / Bas
+				this.camera.rotation.y = clamp(this.camRotSmooth.y, -0.13, 0.13); // Gauche / droite --> radian
+			}
 
 		}
 
@@ -780,12 +818,15 @@ export default class IntroView extends AbstractView {
 		const tl = new TimelineMax({
 			onComplete: () => {
 				this.cameraMove = false;
-
 				if (Device.touch === true) { // if device gyro ?
 					// Set up Gyroscope
-					Gyro.stopTracking(); // Stop periodic calls
-					Gyro.calibrate(); // Calibrate measurement during the page loading
-					this.gyro = true;
+					this.controls = new DeviceOrientationControls(this.camera);
+					this.controls.disconnect();
+					this.controls.connect();
+					setTimeout(() => {
+						this.isCalibrate = true;
+					}, 100);
+
 				}
 			}
 		});
@@ -827,6 +868,32 @@ export default class IntroView extends AbstractView {
 		this.cameraMove = true;
 
 
+	}
+
+	resizeHandler() {
+		// if (this.controls) this.controls.updateAlphaOffsetAngle(90);
+		if (this.gyro === true) { // if device gyro ?
+
+			// this.controls.updateAlphaOffsetAngle(90);
+			// Set up Gyroscope
+			// setTimeout(() => {
+			// 	this.mouse.x = this.mouse.y = 0;
+			// 	// Gyro.stopTracking(); // Stop periodic calls
+			// 	Gyro.calibrate(); // Calibrate measurement during the page loading
+			// 	this.mouse.x = this.mouse.y = 0;
+			// }, 500);
+			// Gyro.calibrate();
+
+		}
+		super.resizeHandler();
+	}
+
+	destroy() {
+		if (this.gyro === true) { // if device gyro ?
+
+			this.controls.disconnect();
+		}
+		super.destroy();
 	}
 
 
