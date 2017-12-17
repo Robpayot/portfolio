@@ -349,6 +349,8 @@ var _datGui2 = _interopRequireDefault(_datGui);
 
 var _utils = require('../helpers/utils');
 
+var _Device = require('../helpers/Device');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -440,8 +442,10 @@ var Glitch = function () {
 			// this.video.autoplay = true;
 			// this.video.loop = true;
 			this.video.muted = true;
+			this.video.setAttribute('playsinline', '');
 			this.video.pause();
-			this.el.appendChild(this.video);
+			// this.el.appendChild(this.video);
+			// this.video.remove();
 		}
 	}, {
 		key: 'init',
@@ -526,9 +530,11 @@ var Glitch = function () {
 				}
 				// this.ctxAlphaBuffer.restore();
 
-
+				// if (Device.touch === false) {
 				this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
 				this.ctx.globalCompositeOperation = 'source-in';
+				// }
+
 
 				this.ctx.drawImage(this.introTxt, 0, 0, this.width, this.height);
 
@@ -807,7 +813,7 @@ exports.default = Glitch;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"dat-gui":56,"handlebars":89}],6:[function(require,module,exports){
+},{"../helpers/Device":7,"../helpers/utils":10,"../managers/EmitterManager":12,"../managers/PreloadManager":13,"dat-gui":56,"handlebars":89}],6:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1297,13 +1303,18 @@ function isTouch() {
 }
 
 function preventLink(e) {
+	var nohref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	// --> Counter display safari bar on iOs
 	e.preventDefault();
-	var el = e.currentTarget;
 
-	requestAnimationFrame(function () {
-		window.location.href = el.href;
-	});
+	if (nohref === false) {
+		var el = e.currentTarget;
+		requestAnimationFrame(function () {
+			window.location.href = el.href;
+		});
+	}
+
 	// if (window.fullScreen || window.innerWidth === screen.width && window.innerHeight === screen.height) {
 	// 	console.log('already fullscreen');
 	// } else {
@@ -1463,13 +1474,30 @@ var AppManager = function () {
 			// TweenMax.set('.preload', {display: 'none'});
 
 			_PreloadManager2.default.on('complete', function () {
-				_this2.start();
+				if (_Device.Device.touch === false) _this2.start();
 				_PreloadManager2.default.off('progress');
 				var tl = new TimelineMax();
-				tl.to('.preload', 1, { autoAlpha: 0 }, 2);
+				if (_Device.Device.touch === false) {
+					tl.to('.preload', 1, { autoAlpha: 0 }, 2);
+				} else {
+					tl.to('.preload__wrapper', 1, { opacity: 0 }, 2);
+				}
 				tl.add(function () {
 
 					TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
+					if (_Device.Device.touch === true) {
+						var wrapper = document.querySelector('.preload__wrapper');
+						wrapper.innerHTML = 'start';
+						wrapper.classList.add('start-fs');
+						TweenMax.set(wrapper, { opacity: 1 });
+
+						wrapper.addEventListener('click', function (e) {
+							// e.preventDefault();
+							(0, _utils.preventLink)(e, true);
+							_this2.start();
+							TweenMax.to('.preload', 1, { autoAlpha: 0 });
+						});
+					}
 				});
 			}, this, true);
 		}
@@ -1832,7 +1860,12 @@ var RouterManager = function () {
 						gravity: false
 					});
 
-					window.location = '#about';
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#about';
+						});
+					} else window.location = '#about';
 					break;
 
 				case '/project-0':
@@ -1853,7 +1886,12 @@ var RouterManager = function () {
 						dir: dir
 					});
 
-					window.location = '#project-0';
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#project-0';
+						});
+					} else window.location = '#project-0';
 					break;
 
 				case '/project-1':
@@ -1871,7 +1909,12 @@ var RouterManager = function () {
 						fromUrl: fromUrl,
 						dir: dir
 					});
-					window.location = '#project-1';
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#project-1';
+						});
+					} else window.location = '#project-1';
 					break;
 
 				case '/project-2':
@@ -1890,7 +1933,12 @@ var RouterManager = function () {
 						dir: dir
 					});
 
-					window.location = '#project-2';
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#project-2';
+						});
+					} else window.location = '#project-2';
 					break;
 
 				case '/project-3':
@@ -1909,7 +1957,14 @@ var RouterManager = function () {
 						fromUrl: fromUrl,
 						dir: dir
 					});
-					window.location = '#project-3';
+
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#project-3';
+						});
+					} else window.location = '#project-3';
+
 					break;
 
 				case '/glitch':
@@ -1925,7 +1980,14 @@ var RouterManager = function () {
 						debug: true,
 						type: 'intro'
 					});
-					window.location = '#glitch';
+
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#glitch';
+						});
+					} else window.location = '#glitch';
+
 					break;
 
 				default:
@@ -1934,7 +1996,14 @@ var RouterManager = function () {
 						gravity: true,
 						fromUrl: fromUrl
 					});
-					window.location = '#intro';
+
+					if (_Device.Device.touch === true) {
+						requestAnimationFrame(function () {
+							// --> Counter display safari bar on iOs
+							window.location = '#intro';
+						});
+					} else window.location = '#intro';
+
 					break;
 			}
 
@@ -9457,7 +9526,7 @@ var IntroView = function (_AbstractView) {
 
 		_this.transitionIn(!obj.fromUrl);
 
-		_this.gyro = false; // device.gyro ?
+		_this.gyro = _Device.Device.touch; // device.gyro ?
 
 
 		if (_this.gyro === true) {
@@ -10056,18 +10125,19 @@ var IntroView = function (_AbstractView) {
 			// // deceleration
 			if (this.debug === false) {
 
-				this.ui.debug.innerHTML = this.camera.rotation.y;
+				// this.ui.debug.innerHTML = this.camera.rotation.y;
+
 
 				if (this.gyro === true) {
 					// this.camera.rotation.x = clamp(toRadian(clamp(this.o.gamma, -20, 20)), -0.25, 0.25) + this.currentCameraRotX; // Gauche / droite --> radian
 					// this.camera.rotation.y = clamp(-toRadian(clamp(-this.o.alpha, -20, 20)), -0.25, 0.25); // Gauche / droite --> radian
 					// Apply rotation
 					if (this.isCalibrate === true) {
-						this.controls.update();
-						// this.camera.rotation.order = 'XYZ';
+						// this.controls.update();
+						// // this.camera.rotation.order = 'XYZ';
 
-						this.camera.rotation.x = this.camera.rotation.x + this.currentCameraRotX;
-						this.camera.rotation.y = this.camera.rotation.y + (0, _utils.toRadian)(-90);
+						// this.camera.rotation.x = this.camera.rotation.x + this.currentCameraRotX;
+						// this.camera.rotation.y = this.camera.rotation.y + toRadian(-90);
 						// this.camera.rotation.z = this.camera.rotation.z + toRadian(-90);
 						// this.camera.rotation.y = 0;
 						// this.camera.rotation.z = 0;
@@ -10207,12 +10277,11 @@ var IntroView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					_this5.cameraMove = false;
-					if (_Device.Device.touch === true) {
+					if (_this5.gyro === true) {
 						// if device gyro ?
 						// Set up Gyroscope
 						_this5.controls = new _DeviceOrientationControls2.default(_this5.camera);
 						_this5.controls.disconnect();
-						_this5.controls.connect();
 						setTimeout(function () {
 							_this5.isCalibrate = true;
 						}, 100);
