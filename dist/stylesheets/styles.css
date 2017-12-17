@@ -796,6 +796,14 @@ body {
     background-color: black; }
   .preload__wrapper {
     position: relative; }
+    .preload__wrapper.start-fs {
+      pointer-events: auto;
+      font-size: 1.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-family: 'Theinhardt';
+      font-weight: normal;
+      font-style: normal; }
   .preload__txt {
     text-align: center;
     font-size: 1.2rem;

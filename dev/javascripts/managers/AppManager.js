@@ -10,7 +10,7 @@ import bean from 'bean';
 import PreloadManager from './PreloadManager';
 import  '../helpers/handlebarsRegister';
 import { loadJSON } from '../helpers/utils-three';
-import { isTouch } from '../helpers/utils';
+import { isTouch, preventLink } from '../helpers/utils';
 import { TextureLoader } from 'three';
 
 
@@ -109,13 +109,30 @@ class AppManager {
 		// TweenMax.set('.preload', {display: 'none'});
 
 		PreloadManager.on('complete', () => {
-			this.start();
+			if (Device.touch === false) this.start();
 			PreloadManager.off('progress');
 			const tl = new TimelineMax();
-			tl.to('.preload', 1, {autoAlpha: 0}, 2);
+			if (Device.touch === false) {
+				tl.to('.preload', 1, {autoAlpha: 0}, 2);
+			} else {
+				tl.to('.preload__wrapper', 1, {opacity: 0}, 2);
+			}
 			tl.add(() => {
 
 				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+				if (Device.touch === true) {
+					let wrapper = document.querySelector('.preload__wrapper');
+					wrapper.innerHTML = 'start';
+					wrapper.classList.add('start-fs');
+					TweenMax.set(wrapper, {opacity: 1});
+
+					wrapper.addEventListener('click', (e) => {
+						// e.preventDefault();
+						preventLink(e, true);
+						this.start();
+						TweenMax.to('.preload', 1, {autoAlpha: 0});
+					});
+				}
 
 			});
 		}, this, true);

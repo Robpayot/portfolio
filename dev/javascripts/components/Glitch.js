@@ -4,6 +4,7 @@ import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import dat from 'dat-gui';
 import { getRandom, clamp } from '../helpers/utils';
+import { Device } from '../helpers/Device';
 
 export default class Glitch {
 
@@ -95,8 +96,10 @@ export default class Glitch {
 		// this.video.autoplay = true;
 		// this.video.loop = true;
 		this.video.muted = true;
+		this.video.setAttribute('playsinline', '');
 		this.video.pause();
-		this.el.appendChild(this.video);
+		// this.el.appendChild(this.video);
+		// this.video.remove();
 
 	}
 
@@ -182,9 +185,11 @@ export default class Glitch {
 			}
 			// this.ctxAlphaBuffer.restore();
 
-
+			// if (Device.touch === false) {
 			this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
 			this.ctx.globalCompositeOperation = 'source-in';
+			// }
+
 
 			this.ctx.drawImage(this.introTxt, 0, 0, this.width, this.height);
 

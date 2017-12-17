@@ -68,7 +68,7 @@ export default class IntroView extends AbstractView {
 
 		this.transitionIn(!obj.fromUrl);
 
-		this.gyro = false; // device.gyro ?
+		this.gyro = Device.touch; // device.gyro ?
 
 
 
@@ -664,13 +664,11 @@ export default class IntroView extends AbstractView {
 
 		}
 
-		
-
 		// // deceleration
 		if ( this.debug === false) {
 
 
-			this.ui.debug.innerHTML = this.camera.rotation.y;
+			// this.ui.debug.innerHTML = this.camera.rotation.y;
 
 
 			if (this.gyro === true ) {
@@ -678,11 +676,11 @@ export default class IntroView extends AbstractView {
 				// this.camera.rotation.y = clamp(-toRadian(clamp(-this.o.alpha, -20, 20)), -0.25, 0.25); // Gauche / droite --> radian
 				// Apply rotation
 				if (this.isCalibrate === true) {
-					this.controls.update();
-					// this.camera.rotation.order = 'XYZ';
+					// this.controls.update();
+					// // this.camera.rotation.order = 'XYZ';
 
-					this.camera.rotation.x = this.camera.rotation.x + this.currentCameraRotX;
-					this.camera.rotation.y = this.camera.rotation.y + toRadian(-90);
+					// this.camera.rotation.x = this.camera.rotation.x + this.currentCameraRotX;
+					// this.camera.rotation.y = this.camera.rotation.y + toRadian(-90);
 					// this.camera.rotation.z = this.camera.rotation.z + toRadian(-90);
 					// this.camera.rotation.y = 0;
 					// this.camera.rotation.z = 0;
@@ -818,11 +816,10 @@ export default class IntroView extends AbstractView {
 		const tl = new TimelineMax({
 			onComplete: () => {
 				this.cameraMove = false;
-				if (Device.touch === true) { // if device gyro ?
+				if (this.gyro === true) { // if device gyro ?
 					// Set up Gyroscope
 					this.controls = new DeviceOrientationControls(this.camera);
 					this.controls.disconnect();
-					this.controls.connect();
 					setTimeout(() => {
 						this.isCalibrate = true;
 					}, 100);
