@@ -28,6 +28,8 @@ class AppManager {
 
 	preload() {
 
+		this.resizeHandler(); // resize once
+
 		this.startLoad = 0;
 		this.maxDash = 635;
 
@@ -127,10 +129,10 @@ class AppManager {
 					TweenMax.set(wrapper, {opacity: 1});
 
 					wrapper.addEventListener('click', (e) => {
-						// e.preventDefault();
+
 						preventLink(e, true);
 						this.start();
-						TweenMax.to('.preload', 1, {autoAlpha: 0});
+						TweenMax.to('.preload', 0.7, {autoAlpha: 0});
 					});
 				}
 
@@ -139,6 +141,7 @@ class AppManager {
 	}
 
 	start() {
+		console.log('start');
 
 		this.events(true);
 
@@ -166,8 +169,6 @@ class AppManager {
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		let onListener = method === false ? 'off' : 'on';
 
-
-		this.resizeHandler(); // resize once
 
 		// Global events
 		// raf

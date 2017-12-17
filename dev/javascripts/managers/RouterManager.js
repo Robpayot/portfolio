@@ -160,12 +160,12 @@ class RouterManager {
 					fromUrl,
 					dir
 				});
-
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#project-0';
-					});
-				} else window.location = '#project-0';
+				window.location = '#project-0';
+				// if (Device.touch === true) {
+				// 	requestAnimationFrame(() => { // --> Counter display safari bar on iOs
+				// 		window.location = '#project-0';
+				// 	});
+				// } else window.location = '#project-0';
 				break;
 
 			case '/project-1':

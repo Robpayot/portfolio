@@ -1408,6 +1408,8 @@ var AppManager = function () {
 		key: 'preload',
 		value: function preload() {
 
+			this.resizeHandler(); // resize once
+
 			this.startLoad = 0;
 			this.maxDash = 635;
 
@@ -1492,10 +1494,10 @@ var AppManager = function () {
 						TweenMax.set(wrapper, { opacity: 1 });
 
 						wrapper.addEventListener('click', function (e) {
-							// e.preventDefault();
+
 							(0, _utils.preventLink)(e, true);
 							_this2.start();
-							TweenMax.to('.preload', 1, { autoAlpha: 0 });
+							TweenMax.to('.preload', 0.7, { autoAlpha: 0 });
 						});
 					}
 				});
@@ -1504,6 +1506,7 @@ var AppManager = function () {
 	}, {
 		key: 'start',
 		value: function start() {
+			console.log('start');
 
 			this.events(true);
 
@@ -1531,8 +1534,6 @@ var AppManager = function () {
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			var onListener = method === false ? 'off' : 'on';
-
-			this.resizeHandler(); // resize once
 
 			// Global events
 			// raf
@@ -1885,13 +1886,12 @@ var RouterManager = function () {
 						fromUrl: fromUrl,
 						dir: dir
 					});
-
-					if (_Device.Device.touch === true) {
-						requestAnimationFrame(function () {
-							// --> Counter display safari bar on iOs
-							window.location = '#project-0';
-						});
-					} else window.location = '#project-0';
+					window.location = '#project-0';
+					// if (Device.touch === true) {
+					// 	requestAnimationFrame(() => { // --> Counter display safari bar on iOs
+					// 		window.location = '#project-0';
+					// 	});
+					// } else window.location = '#project-0';
 					break;
 
 				case '/project-1':
@@ -2052,6 +2052,8 @@ var SceneManager = function () {
 	_createClass(SceneManager, [{
 		key: 'start',
 		value: function start() {
+
+			console.log('startttt');
 
 			// Set unique Renderer
 
@@ -10190,8 +10192,8 @@ var IntroView = function (_AbstractView) {
 			this.ui.uiContent.style.display = 'block';
 			global.MENU.el.classList.remove('is-active');
 			if (_Device.Device.touch === true) {
-				// let p = document.querySelector('.start p');
-				// p.innerHTML = 'touch';
+				var p = document.querySelector('.start p');
+				p.innerHTML = 'touch';
 			}
 
 			if (fromProject === false) {
@@ -10277,14 +10279,14 @@ var IntroView = function (_AbstractView) {
 			var tl = new TimelineMax({
 				onComplete: function onComplete() {
 					_this5.cameraMove = false;
-					if (_this5.gyro === true) {
-						// if device gyro ?
+					if (_this5.gyro === true) {// if device gyro ?
 						// Set up Gyroscope
-						_this5.controls = new _DeviceOrientationControls2.default(_this5.camera);
-						_this5.controls.disconnect();
-						setTimeout(function () {
-							_this5.isCalibrate = true;
-						}, 100);
+						// this.controls = new DeviceOrientationControls(this.camera);
+						// this.controls.disconnect();
+						// setTimeout(() => {
+						// 	this.isCalibrate = true;
+						// }, 100);
+
 					}
 				}
 			});
@@ -10345,10 +10347,9 @@ var IntroView = function (_AbstractView) {
 	}, {
 		key: 'destroy',
 		value: function destroy() {
-			if (this.gyro === true) {
-				// if device gyro ?
+			if (this.gyro === true) {// if device gyro ?
 
-				this.controls.disconnect();
+				// this.controls.disconnect();
 			}
 			_get(IntroView.prototype.__proto__ || Object.getPrototypeOf(IntroView.prototype), 'destroy', this).call(this);
 		}

@@ -732,8 +732,8 @@ export default class IntroView extends AbstractView {
 		this.ui.uiContent.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
 		if (Device.touch === true) {
-			// let p = document.querySelector('.start p');
-			// p.innerHTML = 'touch';
+			let p = document.querySelector('.start p');
+			p.innerHTML = 'touch';
 		}
 
 		if (fromProject === false) {
@@ -818,11 +818,11 @@ export default class IntroView extends AbstractView {
 				this.cameraMove = false;
 				if (this.gyro === true) { // if device gyro ?
 					// Set up Gyroscope
-					this.controls = new DeviceOrientationControls(this.camera);
-					this.controls.disconnect();
-					setTimeout(() => {
-						this.isCalibrate = true;
-					}, 100);
+					// this.controls = new DeviceOrientationControls(this.camera);
+					// this.controls.disconnect();
+					// setTimeout(() => {
+					// 	this.isCalibrate = true;
+					// }, 100);
 
 				}
 			}
@@ -888,7 +888,7 @@ export default class IntroView extends AbstractView {
 	destroy() {
 		if (this.gyro === true) { // if device gyro ?
 
-			this.controls.disconnect();
+			// this.controls.disconnect();
 		}
 		super.destroy();
 	}
