@@ -114,7 +114,7 @@ export default class Glitch {
 		this.phaseStep = 0.2; //determines how often we will change channel and amplitude
 
 		// set up alpha video
-		this.setAlphaVideo();
+		if (this.obj.type === 'intro') this.setAlphaVideo();
 		this.resizeHandler();
 
 		if (this.debug === true) {

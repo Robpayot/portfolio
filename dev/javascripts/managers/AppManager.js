@@ -81,11 +81,16 @@ class AppManager {
 			{ id: 'introTxt', src: `${global.BASE}/images/textures/name.png` },
 			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
 			{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
+			// bkg projects
+			{ id: 'bkg-0', src: `${global.BASE}/images/textures/project-0.jpg` },
+			{ id: 'bkg-1', src: `${global.BASE}/images/textures/project-1.jpg` },
+			{ id: 'bkg-2', src: `${global.BASE}/images/textures/project-2.jpg` },
+			{ id: 'bkg-3', src: `${global.BASE}/images/textures/project-3.jpg` }
 		]);
 
 		// SkyTex
 		global.SKYTEX = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
-		global.PROJECTTEX = new TextureLoader().load( `${global.BASE}/images/textures/project-1.png` );
+		// global.PROJECTTEX = new TextureLoader().load( `${global.BASE}/images/textures/project-1.png` );
 
 		// Preload all img projects
 		for (let i = 0; i < DATA.projects.length; i++) {
