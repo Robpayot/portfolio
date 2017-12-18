@@ -744,38 +744,41 @@ export default class IntroView extends AbstractView {
 			});
 
 			const canvas = this.glitchEl.querySelector('.glitch__canvas');
+			const delayOffset = Device.touch === true ? 2 : 0;
+			const delayOffset2 = Device.touch === true ? -1 : 0;
+			const delayOffset3 = Device.touch === true ? 0 : 2.3;
 
 			const tl = new TimelineMax();
 			// canvas title
-			tl.set( canvas, {opacity: 1}, 2.3); // Display Glitch Title
+			tl.set( canvas, {opacity: 1}, 2.3 - delayOffset); // Display Glitch Title
 			tl.add(() => {
 				// start glitch title
 				this.glitch.ready = true;
 				this.glitch.video.play(); // play it
-			});
+			}, delayOffset3);
 			tl.fromTo(this.ui.overlay, 2, { // Fade white
 				opacity: 1
 			},{
 				opacity: 0
-			}, 3.5);
+			}, 2.5 - delayOffset - delayOffset2);
 			tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:() => { // fadeOUt/stop Glitch
 				this.glitch.ready = false;
-			}}, 6);
+			}}, 6 - delayOffset);
 			tl.add(() => {
 
 				this.moveCameraIn(fromProject);
-			}, 1);
+			}, 1 - delayOffset);
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
-			}, 4);
+			}, 4 - delayOffset);
 
 			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}); // display buttons
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 7);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 7);
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 7 - delayOffset);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 7 - delayOffset);
 			}
 
 		} else {
@@ -831,7 +834,8 @@ export default class IntroView extends AbstractView {
 		if (fromProject === true) {
 			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
 		} else {
-			tl.to(this.camera.position, 7, {y: this.minZoom, ease: window.Expo.easeInOut}); // 7
+			let time = Device.touch === true ? 4.5 : 5.5;
+			tl.to(this.camera.position, time, {y: this.minZoom, ease: window.Expo.easeInOut}); // 7
 		}
 
 

@@ -1,5 +1,5 @@
 .preload {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	background-color: white;
@@ -9,6 +9,7 @@
 	justify-content: center;
 	align-items: center;
 	z-index: 9000;
+	overflow: hidden;
 
 	&__bars {
 		position: relative;

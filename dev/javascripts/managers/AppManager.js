@@ -131,13 +131,13 @@ class AppManager {
 					let wrapper = document.querySelector('.preload__wrapper');
 					wrapper.innerHTML = 'start';
 					wrapper.classList.add('start-fs');
-					TweenMax.set(wrapper, {opacity: 1});
+					TweenMax.to(wrapper, 0.5, {opacity: 1});
 
 					wrapper.addEventListener('click', (e) => {
 
 						preventLink(e, true);
 						this.start();
-						TweenMax.to('.preload', 0.7, {autoAlpha: 0});
+						TweenMax.to('.preload', 0.4, {autoAlpha: 0});
 					});
 				}
 

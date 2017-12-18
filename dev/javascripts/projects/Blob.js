@@ -27,7 +27,8 @@ export default class Blob extends ProjectView {
 		this.video.autoplay = true;
 		this.video.loop = true;
 		this.video.muted = true;
-		this.el.appendChild(this.video);
+		this.video.setAttribute('playsinline', '');
+		// this.el.appendChild(this.video);
 
 		if (this.canplay === true) {
 			this.init();
