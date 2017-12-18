@@ -1666,7 +1666,7 @@ Object.defineProperty(exports, "__esModule", {
 
 require('preload-js');
 
-var queue = new window.createjs.LoadQueue(false);
+var queue = new window.createjs.LoadQueue(true);
 queue.setMaxConnections(60);
 queue.maintainScriptOrder = false;
 
