@@ -155,10 +155,10 @@ export default class ProjectView extends AbstractView {
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
 
-		//
-		let imgSource = PreloadManager.getItem(`bkg-${this.id}`).src;
+		SceneManager.renderer.domElement.setAttribute('data-index', this.id);
+		// let imgSource = PreloadManager.getItem(`bkg-${this.id}`).src;
 
-		SceneManager.renderer.domElement.style.backgroundImage = `url(${imgSource})`;
+		// SceneManager.renderer.domElement.style.backgroundImage = `url(${imgSource})`;
 
 		// url(PreloadManager.getResult)
 
