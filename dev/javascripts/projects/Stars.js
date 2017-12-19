@@ -23,6 +23,7 @@ export default class Stars extends ProjectView {
 		this.lights = [];
 		this.coefSpeed = 0.015;
 
+
 		this.init();
 
 		this.setTerrain();
@@ -63,10 +64,12 @@ export default class Stars extends ProjectView {
 		// HEIGHT + NORMAL MAPS
 
 		// var normalShader = NormalMapShader;
+		const marge = 70;
 
 		// NormalMap shader
-		this.size = 250;
-		this.scaleHeight = 40;
+		this.size = this.wScreenSize + marge; //
+
+		this.scaleHeight = this.size * 0.15;
 		this.tPosY = -20 - this.scaleHeight;
 
 		this.nbVertices = 150; /// ???
@@ -155,6 +158,11 @@ export default class Stars extends ProjectView {
 	}
 
 	setAsteroids() {
+		// Pixel to Units magic FORMULE
+		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+		const h = 2 * Math.tan( vFOV / 2 ) * this.zoomZ; // visible height dist = 60 (160 - 100)
+
+		this.wScreenSize = h * window.innerWidth / window.innerHeight;
 
 		this.asteroids = [];
 		this.asteroidsM = [];
@@ -217,7 +225,7 @@ export default class Stars extends ProjectView {
 			// const range = getRandom(3, 8);
 
 			const pos = {
-				x: getRandom(-80, 80),
+				x: getRandom(-this.wScreenSize / 2, this.wScreenSize / 2),
 				y: getRandom(this.bottomY, this.topY),
 				z: getRandom(-100, 30),
 			};
@@ -252,8 +260,8 @@ export default class Stars extends ProjectView {
 		gradient.addColorStop( 0, color );
 		// gradient.addColorStop( 0.1, 'rgba(0,255,255,1)' );
 		gradient.addColorStop( 0.3, color );
-		gradient.addColorStop( 0.7, 'rgba(0,0,0,0.5)' );
-		gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+		gradient.addColorStop( 0.7, 'rgba(0,0,0,0)' );
+		gradient.addColorStop( 1, 'rgba(0,0,0,0)' );
 		context.fillStyle = gradient;
 		context.fillRect( 0, 0, canvas.width, canvas.height );
 		return canvas;
