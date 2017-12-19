@@ -97,10 +97,9 @@ class RouterManager {
 		if (this.currentPage !== null) {
 
 			this.lastPage = this.currentPage.name;
-			let dir = this.lastId > index ? -1 : 1;
+			let dir = this.lastId > index ? 1 : -1;
 			if (goToPage === '/about') dir = -1;
 			if (goToPage === '/intro') dir = 1;
-			console.log(goToPage);
 			this.currentPage.transitionOut(dir); // animation Out
 
 			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
@@ -136,11 +135,6 @@ class RouterManager {
 					gravity: false,
 				});
 
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#about';
-					});
-				} else window.location = '#about';
 				break;
 
 			case '/project-0':
@@ -160,12 +154,7 @@ class RouterManager {
 					fromUrl,
 					dir
 				});
-				window.location = '#project-0';
-				// if (Device.touch === true) {
-				// 	requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-				// 		window.location = '#project-0';
-				// 	});
-				// } else window.location = '#project-0';
+
 				break;
 
 			case '/project-1':
@@ -183,11 +172,7 @@ class RouterManager {
 					fromUrl,
 					dir
 				});
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#project-1';
-					});
-				} else window.location = '#project-1';
+
 				break;
 
 			case '/project-2':
@@ -206,11 +191,6 @@ class RouterManager {
 					dir
 				});
 
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#project-2';
-					});
-				} else window.location = '#project-2';
 				break;
 
 			case '/project-3':
@@ -230,12 +210,6 @@ class RouterManager {
 					dir
 				});
 
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#project-3';
-					});
-				} else window.location = '#project-3';
-
 				break;
 
 			case '/glitch':
@@ -252,12 +226,6 @@ class RouterManager {
 					type: 'intro'
 				});
 
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#glitch';
-					});
-				} else window.location = '#glitch';
-
 				break;
 
 			default:
@@ -266,12 +234,6 @@ class RouterManager {
 					gravity: true,
 					fromUrl
 				});
-
-				if (Device.touch === true) {
-					requestAnimationFrame(() => { // --> Counter display safari bar on iOs
-						window.location = '#intro';
-					});
-				} else window.location = '#intro';
 
 				break;
 		}

@@ -20,6 +20,7 @@
     "deamdify": "~0.2.0",
     "del": "~2.2.2",
     "extfs": "~0.0.7",
+    "fontfaceobserver": "^2.0.13",
     "gsap": "^1.19.1",
     "gulp": "~3.9.1",
     "gulp-autoprefixer": "~3.1.0",

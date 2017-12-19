@@ -16,7 +16,6 @@ import HeightmapFragmentShader from '../shaders/HeightmapFragmentShader';
 // import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
 import WaterVertexShader from '../shaders/WaterVertexShader';
 
-
 // import dat from 'dat-gui';
 
 export default class AboutView extends AbstractView {
@@ -61,6 +60,7 @@ export default class AboutView extends AbstractView {
 
 		// preload Models
 		// when all is loaded
+
 		this.init();
 
 		// ui
@@ -94,7 +94,6 @@ export default class AboutView extends AbstractView {
 		global.OVERLAY.classList.add('black');
 
 		this.transitionIn();
-
 
 		// init
 
@@ -143,6 +142,9 @@ export default class AboutView extends AbstractView {
 	}
 
 	init() {
+
+		console.log('init about');
+
 
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 		// this.UI.intro.style.display = 'none';
@@ -211,6 +213,8 @@ export default class AboutView extends AbstractView {
 		// gui.close();
 
 		global.CURSOR.el.classList.add('alt');
+
+		this.isInit = true;
 
 	}
 
@@ -638,6 +642,8 @@ export default class AboutView extends AbstractView {
 	}
 
 	raf() {
+
+		if (this.isInit !== true) return false;
 
 		if (Device.touch === false) {
 			if ( this.clickAnim === true) {

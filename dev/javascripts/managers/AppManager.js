@@ -1,7 +1,6 @@
 import EmitterManager from './EmitterManager';
 import RouterManager from './RouterManager';
 import { Device } from '../helpers/Device';
-// import WebFont from 'webfontloader';
 import DATA from '../../datas/data.json';
 import SceneManager from './SceneManager';
 import Menu from '../components/Menu';
@@ -12,6 +11,7 @@ import  '../helpers/handlebarsRegister';
 import { loadJSON } from '../helpers/utils-three';
 import { isTouch, preventLink } from '../helpers/utils';
 import { TextureLoader } from 'three';
+import FontFaceObserver from 'fontfaceobserver';
 
 
 class AppManager {
@@ -45,7 +45,17 @@ class AppManager {
 		tl2.to('.preload__txt', 1, {opacity: 1});
 		tl2.to('.preload__txt', 1, {opacity: 0});
 
-		this.preloadModels();
+		let font = new FontFaceObserver('Theinhardt');
+		let fontL = new FontFaceObserver('Theinhardt-light', {
+			weight: 300
+		});
+		let fontM = new FontFaceObserver('Theinhardt-medium', {
+			weight: 50
+		});
+
+		Promise.all([font.load(), fontL.load(), fontM.load()]).then(() => {
+			this.preloadModels();
+		});
 
 	}
 
@@ -131,13 +141,14 @@ class AppManager {
 					let wrapper = document.querySelector('.preload__wrapper');
 					wrapper.innerHTML = 'start';
 					wrapper.classList.add('start-fs');
-					TweenMax.set(wrapper, {opacity: 1});
+					TweenMax.to(wrapper, 0.5, {opacity: 1});
 
 					wrapper.addEventListener('click', (e) => {
 
 						preventLink(e, true);
+						TweenMax.to('.preload', 1, {autoAlpha: 0});
 						this.start();
-						TweenMax.to('.preload', 0.7, {autoAlpha: 0});
+
 					});
 				}
 

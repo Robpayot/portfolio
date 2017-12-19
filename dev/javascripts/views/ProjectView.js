@@ -155,10 +155,10 @@ export default class ProjectView extends AbstractView {
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
 
-		//
-		let imgSource = PreloadManager.getItem(`bkg-${this.id}`).src;
+		SceneManager.renderer.domElement.setAttribute('data-index', this.id);
+		// let imgSource = PreloadManager.getItem(`bkg-${this.id}`).src;
 
-		SceneManager.renderer.domElement.style.backgroundImage = `url(${imgSource})`;
+		// SceneManager.renderer.domElement.style.backgroundImage = `url(${imgSource})`;
 
 		// url(PreloadManager.getResult)
 
@@ -334,13 +334,6 @@ export default class ProjectView extends AbstractView {
 
 		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
 		this.nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
-
-		// Pixel to Units magic FORMULE
-		const distZ = -10;
-		const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
-		const wHeight = 2 * Math.tan( vFOV / 2 ) * (this.zoomZ - distZ); // visible height dist = 60 (160 - 100)
-		const margePosY = 7;
-		const finalPosY = wHeight / 2 - margePosY;
 
 		if (!Device.touch) {
 			global.CURSOR.prev.href = `#project-${this.prevId}`;
