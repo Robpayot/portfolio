@@ -106,7 +106,9 @@ class AppManager {
 		for (let i = 0; i < DATA.projects.length; i++) {
 
 			for (let y = 0; y < DATA.projects[i].imgs.length; y++) {
-				PreloadManager.loadFile(`${global.BASE}/images/projects/${DATA.projects[i].imgs[y]}`);
+				if (/.mp4$/.test(DATA.projects[i].imgs[y]) === false) { // if not mp4 video
+					PreloadManager.loadFile(`${global.BASE}/images/projects/${DATA.projects[i].imgs[y]}`);
+				}
 			}
 
 		}

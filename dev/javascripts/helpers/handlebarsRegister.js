@@ -12,3 +12,15 @@ Handlebars.registerHelper('math', (lvalue, operator, rvalue, options) => {
 		'%': lvalue % rvalue
 	}[operator];
 });
+
+
+Handlebars.registerHelper('isvideo', (string, options) => {
+
+	if (/.mp4$/.test(string) === true) {
+		return options.fn(this);
+	} else {
+		return options.inverse(this);
+	}
+});
+
+

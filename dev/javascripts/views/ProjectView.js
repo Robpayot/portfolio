@@ -91,7 +91,7 @@ export default class ProjectView extends AbstractView {
 		this.maxZoomZ = 0;
 		this.lastTouchY = 0;
 		this.startTouchY = 0;
-		this.coefScrollY = Device.touch === true ? 0.1 : 0.1;
+		this.coefScrollY = Device.touch === true ? 0.1 : 0.6;
 		// this.stopScrollZ = true;
 
 		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
@@ -155,10 +155,14 @@ export default class ProjectView extends AbstractView {
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
 
-		SceneManager.renderer.domElement.setAttribute('data-index', this.id);
-		// let imgSource = PreloadManager.getItem(`bkg-${this.id}`).src;
+		// SceneManager.renderer.domElement.setAttribute('data-index', this.id);
 
-		// SceneManager.renderer.domElement.style.backgroundImage = `url(${imgSource})`;
+		// Get Blob URL bkg
+		let arrayBufferView = PreloadManager.getResult(`bkg-${this.id}`, true);
+		let blob = new Blob( [ arrayBufferView ], { type: 'image/jpeg' } );
+		let urlCreator = window.URL || window.webkitURL;
+		let blobURL = urlCreator.createObjectURL( blob );
+		SceneManager.renderer.domElement.style.backgroundImage = `url(${blobURL})`;
 
 		// url(PreloadManager.getResult)
 
@@ -370,7 +374,8 @@ export default class ProjectView extends AbstractView {
 			clearInterval(this.refreshIntervalId);
 
 			this.ui.container = document.querySelector('.project__container');
-			this.ui.imgs = document.querySelectorAll('.project__image');
+			this.ui.imgs = document.querySelectorAll('.project__item');
+			this.ui.videos = document.querySelectorAll('.project__video video');
 			this.ui.footer = document.querySelector('.project__footer');
 
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
@@ -494,7 +499,11 @@ export default class ProjectView extends AbstractView {
 			x: 0,
 			ease: Power2.easeOut
 		});
-
+		tl.add(() => {
+			for (let i = 0; i < this.ui.videos.length; i++) {
+				this.ui.videos[i].play();
+			}
+		}, 1.7);
 		tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 1.7);  // ,1.7
 		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
 
@@ -583,7 +592,7 @@ export default class ProjectView extends AbstractView {
 			// this.contentOpen = false;
 		} });
 
-		tl.staggerTo(['.project__top', '.project__image', '.project__footer' ], 1.2, {
+		tl.staggerTo(['.project__top', '.project__item', '.project__footer' ], 1.2, {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		}, 0.1);
@@ -1165,12 +1174,12 @@ export default class ProjectView extends AbstractView {
 			this.camera.rotation.order = 'XYZ';
 		} });
 
-		tl.set(['.project__container', '.project__image', '.gallery__arrow', '.project__footer' ], {
+		tl.set(['.project__container', '.project__item', '.gallery__arrow', '.project__footer' ], {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		});
 
-		tl.set(['.project__image', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
+		tl.set(['.project__item', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
 
 		this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * 1);
 		this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * 1);

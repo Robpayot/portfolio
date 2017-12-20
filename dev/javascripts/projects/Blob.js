@@ -87,7 +87,7 @@ export default class Blob extends ProjectView {
 					time: { type: 'f', value: 0 },
 					weight: { type: 'f', value: 0 },
 					brightness: { type: 'f', value: 0 },
-					contrast: { type: 'f', value: 0.7 }, // already set
+					contrast: { type: 'f', value: 0.6 }, // already set
 				},
 				vertexShader: blobLightShader.vertexShader,
 				fragmentShader: blobLightShader.fragmentShader

@@ -271,18 +271,7 @@ gulp.task('copy:sound', function() {
 });
 
 // Registering main copy task
-gulp.task('copy', ['copy:root']);
-
-// Registering main copy task
-gulp.task('copy', ['copy:sound']);
-
-gulp.task('copy', ['copy:image']);
-
-gulp.task('copy', ['copy:video']);
-
-gulp.task('copy', ['copy:template']);
-
-gulp.task('copy', ['copy:font']);
+gulp.task('copy', ['copy:root', 'copy:sound', 'copy:image', 'copy:video', 'copy:template', 'copy:font']);
 
 
 //---------------------------------------------------------------------------------------------

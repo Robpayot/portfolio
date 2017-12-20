@@ -142,13 +142,25 @@ $project3D-w : 1075px;
 	        opacity: 0.9;
 	        user-select: none;
 	        visibility: hidden;
-	        margin-bottom: 4.0rem;
+	        margin-bottom: 7.0rem;
 	        transform-origin: 0% 0%;
 
 	        img {
 	            width: 100%;
 	            border: 1px solid rgba(128, 128, 128, 0.15);
 	            transform-origin: 0% 0%;
+	        }
+	    }
+
+	    &__video {
+			width: 100%;
+	        user-select: none;
+	        // visibility: hidden;
+	        margin-bottom: 7.0rem;
+	        transform-origin: 0% 0%;
+
+	        video {
+	            width: 100%;
 	        }
 	    }
 
