@@ -35,9 +35,11 @@
 		{{#each imgs}}
 		 	{{#isvideo this}}
 				<div class="project__video project__item">
-					<video poster="/images/projects/{{../this}}-poster.jpg" width='100%' height='100%' muted playsinline loop >
-						<source src="images/projects/{{../this}}" type="video/mp4">
-					</video>
+					{{#islow}}
+						<video poster="images/projects/{{../../slug}}-poster.jpg" src="images/projects/{{../../slug}}-low.mp4" muted playsinline loop ></video>
+					{{else}}
+						<video poster="images/projects/{{../../slug}}-poster.jpg" src="images/projects/{{../this}}" muted playsinline loop ></video>
+					{{/islow}}
 				</div>
 			{{else}}
 				<div class="project__image project__item"><img src="images/projects/{{../this}}" alt="project image" /></div>
