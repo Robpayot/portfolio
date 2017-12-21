@@ -53,7 +53,15 @@ class AppManager {
 			weight: 50
 		});
 
-		Promise.all([font.load(), fontL.load(), fontM.load()]).then(() => {
+		// not working on safari / Firefox
+		Promise.all([
+			font.load(),
+			fontL.load(),
+			fontM.load()
+		]).then(() => {
+			this.preloadModels();
+		}).catch(reason => {
+			// console.log(reason);
 			this.preloadModels();
 		});
 
@@ -159,7 +167,6 @@ class AppManager {
 	}
 
 	start() {
-		console.log('start');
 
 		this.events(true);
 
