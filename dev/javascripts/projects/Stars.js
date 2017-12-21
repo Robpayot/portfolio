@@ -19,7 +19,7 @@ export default class Stars extends ProjectView {
 		// bind
 		this.setTerrain = this.setTerrain.bind(this);
 
-		this.nbAst = 100;
+		this.nbAst = 130;
 		this.lights = [];
 		this.coefSpeed = 0.015;
 
@@ -227,7 +227,7 @@ export default class Stars extends ProjectView {
 			const pos = {
 				x: getRandom(-this.wScreenSize / 2, this.wScreenSize / 2),
 				y: getRandom(this.bottomY, this.topY),
-				z: getRandom(-100, 30),
+				z: getRandom(-130, 110),
 			};
 
 			const random = Math.round(getRandom(0,this.nbMat - 1));

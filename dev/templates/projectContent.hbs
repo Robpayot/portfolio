@@ -33,7 +33,11 @@
 	</div>
 	<div class="project__gallery">
 		{{#each imgs}}
-			<div class="project__image"><img src="images/projects/{{this}}" alt="project image" /></div>
+		 	{{#isvideo this}}
+				<div class="project__video project__item"><video src="images/projects/{{../this}}" muted playsinline loop ></video></div>
+			{{else}}
+				<div class="project__image project__item"><img src="images/projects/{{../this}}" alt="project image" /></div>
+			{{/isvideo}}
 		{{/each}}
 	</div>
 	<div class="project__footer">

@@ -11,7 +11,7 @@ export default class Circular extends ProjectView {
 
 		super(obj);
 
-		this.nbAst = 25;
+		this.nbAst = 27;
 		this.color1 = 0xEF2178;
 		this.color2 = 0x5A1996;
 		this.color3 = 0x424242;
