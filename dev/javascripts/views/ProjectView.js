@@ -766,7 +766,14 @@ export default class ProjectView extends AbstractView {
 
 			if (Device.touch === false) {
 				// need profil for each browser
-				this.scrollY -= e.deltaY * 0.2;
+				let isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+				if (isFirefox) {
+					console.log('FF');
+					this.scrollY -= e.deltaY * 0.6;
+				} else {
+					this.scrollY -= e.deltaY * 0.2;
+				}
 
 				this.animScrollContainer();
 			}
