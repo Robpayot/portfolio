@@ -34,7 +34,11 @@
 	<div class="project__gallery">
 		{{#each imgs}}
 		 	{{#isvideo this}}
-				<div class="project__video project__item"><video src="images/projects/{{../this}}" muted playsinline loop ></video></div>
+				<div class="project__video project__item">
+					<video poster="/images/projects/{{../this}}-poster.jpg" width='100%' height='100%' muted playsinline loop >
+						<source src="images/projects/{{../this}}" type="video/mp4">
+					</video>
+				</div>
 			{{else}}
 				<div class="project__image project__item"><img src="images/projects/{{../this}}" alt="project image" /></div>
 			{{/isvideo}}

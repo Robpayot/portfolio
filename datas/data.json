@@ -1,6 +1,7 @@
 {
     "projects": [{
         "title": "EAKTR",
+        "slug": "eaktr",
         "context": "personnal project",
         "date": "2017",
         "descr": "Portfolio BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.",
@@ -12,6 +13,7 @@
         "colorName": "red"
     },{
         "title": "BMW Motorshow",
+        "slug": "bmw-parismotorshow",
         "context": "84.Paris",
         "date": "2016",
         "descr": "360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.",
@@ -23,6 +25,7 @@
         "colorName": "blue"
     },{
         "title": "Withings",
+        "slug": "withings-year-in-review",
         "context": "84.Paris",
         "date": "2016",
         "descr": "3Js project animation",
@@ -34,6 +37,7 @@
         "colorName": "pink"
     },{
         "title": "The Forest",
+        "slug": "the-suicide-forest",
         "context": "UNIT 9",
         "date": "2015",
         "descr": "Scary 360 experiment in Virtual Reality (Google cardboard).",
