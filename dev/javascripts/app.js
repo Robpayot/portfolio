@@ -2,7 +2,9 @@
 
 // Default Babel Polyfill, be careful, be sure you need it
 // because it's ~6000 lines of code unminified
-// import 'babel-polyfill';
+import 'babel-polyfill';
+
+
 import './vendors/modernizr-custom';
 import 'gsap';
 

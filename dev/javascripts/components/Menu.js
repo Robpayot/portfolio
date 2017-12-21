@@ -3,9 +3,10 @@ import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 import DATA from '../../datas/data.json';
 import ScrollManager from '../managers/ScrollManager';
-import RouterManager from '../managers/RouterManager';
+// import RouterManager from '../managers/RouterManager';
 import { Device } from '../helpers/Device';
 import { preventLink } from '../helpers/utils';
+import '../helpers/polyfills';
 
 export default class Menu {
 
