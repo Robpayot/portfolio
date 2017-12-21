@@ -18,7 +18,6 @@ export default class Cursor {
 
 		if (Device.touch) {
 			this.el.style.display = 'none';
-			console.log('ouiais');
 			return false;
 		}
 		this.wrapper = document.querySelector('.cursor__wrapper');
@@ -29,7 +28,6 @@ export default class Cursor {
 		this.prev = this.wrapper.querySelector('.cursor__prev');
 		this.text = this.el.querySelector('text');
 
-		console.log(this.text);
 
 		this.circleObj = {val : 15.9};
 		this.mouse = {};
