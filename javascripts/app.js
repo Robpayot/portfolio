@@ -2158,9 +2158,9 @@ var SceneManager = function () {
 
 			var coef = window.innerWidth > 1920 ? 0.7 : 0.85;
 
-			// if (Device.touch === true ) {
-			coef *= window.devicePixelRatio; // good perfs on retina mobile
-			// }
+			if (_Device.Device.touch === true) {
+				coef *= window.devicePixelRatio; // good perfs on retina mobile
+			}
 
 			// Update canvas size
 			this.renderer.setSize(window.innerWidth * coef, window.innerHeight * coef);
