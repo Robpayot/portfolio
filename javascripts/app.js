@@ -11191,7 +11191,7 @@ var ProjectView = function (_AbstractView) {
 
 				if (this.ui.imgs[i].classList.contains('is-visible') === false) {
 
-					if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight * 0.7) {
+					if ((0, _utils.getOffsetTop)(this.ui.imgs[i]) - this.scrollY <= window.innerHeight - 100) {
 
 						var tl = new TimelineMax();
 						tl.set(this.ui.imgs[i], { visibility: 'visible' });
