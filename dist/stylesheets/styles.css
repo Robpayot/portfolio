@@ -1289,18 +1289,23 @@ body {
         width: 100%;
         display: none; }
       .ui-content.is-about .about__work {
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
-        align-items: center;
-        -webkit-box-pack: justify;
-        -ms-flex-pack: justify;
-        justify-content: space-between;
-        margin-bottom: 3.6rem;
-        line-height: 2em;
-        font-size: 2em; }
+        margin-bottom: 3.6rem; }
+        .ui-content.is-about .about__work__top {
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex;
+          -webkit-box-align: center;
+          -ms-flex-align: center;
+          align-items: center;
+          -webkit-box-pack: justify;
+          -ms-flex-pack: justify;
+          justify-content: space-between;
+          font-size: 2em;
+          line-height: 2rem; }
+        .ui-content.is-about .about__work p {
+          font-size: 1.4rem;
+          font-family: 'Theinhardt-light';
+          font-weight: 300; }
         .ui-content.is-about .about__work span {
           margin-right: 20px; }
         .ui-content.is-about .about__work a {

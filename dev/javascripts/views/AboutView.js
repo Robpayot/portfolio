@@ -70,7 +70,7 @@ export default class AboutView extends AbstractView {
 			more: document.querySelector('.about__more'),
 			back: document.querySelector('.about__back'),
 			socials: document.querySelector('.ui-content.is-about .socials'),
-			p: document.querySelectorAll('.ui-content.is-about p'),
+			p: document.querySelectorAll('.ui-content.is-about p:not(.about__work__descr)'),
 			introWrap: document.querySelector('.about__intro'),
 			worksWrap: document.querySelector('.about__works'),
 			works: document.querySelectorAll('.about__work'),

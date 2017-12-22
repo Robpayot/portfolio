@@ -52,7 +52,26 @@ module.exports={
         "link": "http://thesuicideforest.com/",
         "color": "#1FB04C",
         "colorName": "green"
-    }]
+    }],
+    "about": {
+        "content" : "",
+        "tw": "",
+        "gh": "",
+        "ld": "",
+        "projects": [{
+            "title" : "Wave Generator",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        },{
+            "title" : "Wave Generator 2",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        },{
+            "title" : "Wave Generator 3",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        }]
+    }
 }
 
 },{}],2:[function(require,module,exports){
@@ -8379,7 +8398,7 @@ var AboutView = function (_AbstractView) {
 			more: document.querySelector('.about__more'),
 			back: document.querySelector('.about__back'),
 			socials: document.querySelector('.ui-content.is-about .socials'),
-			p: document.querySelectorAll('.ui-content.is-about p'),
+			p: document.querySelectorAll('.ui-content.is-about p:not(.about__work__descr)'),
 			introWrap: document.querySelector('.about__intro'),
 			worksWrap: document.querySelector('.about__works'),
 			works: document.querySelectorAll('.about__work'),
