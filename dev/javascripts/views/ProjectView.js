@@ -504,26 +504,29 @@ export default class ProjectView extends AbstractView {
 				this.ui.videos[i].play();
 			}
 		}, 1.7);
-		tl.set(['.project__top', this.ui.imgs[0]], { visibility: 'visible' }, 1.7);  // ,1.7
+		tl.set('.project__gallery', { opacity: 1 }, 0);  // ,1.7, '.project__gallery'
+		tl.set(['.project__top', ...this.ui.imgs], { visibility: 'visible' }, 0);  // ,1.7
 		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
 
-		tl.staggerFromTo(['.project__top', this.ui.imgs[0]], 1.2, { // 1.2
+		tl.fromTo('.project__top', 1.2, { // 1.2
 			opacity: 0,
 			y: 80
 		}, {
 			opacity: 0.9,
 			y: 0,
 			ease: window.Expo.easeOut
-		}, 0.2, 1.7);
-
-		tl.fromTo(this.ui.imgs[0], 1.2, {
-			scaleY: 2
-		}, {
-			scaleY: 1,
-			ease: window.Expo.easeOut
 		}, 1.7);
 
-		this.ui.imgs[0].classList.add('is-visible');
+		// tl.fromTo(this.ui.imgs[0], 1.2, {
+		// 	scaleY: 2
+		// }, {
+		// 	scaleY: 1,
+		// 	ease: window.Expo.easeOut
+		// }, 1.7);
+
+		tl.add(() => {
+			this.ui.imgs[0].classList.add('is-visible');
+		}, 1.8);
 
 		// angle
 
@@ -576,11 +579,6 @@ export default class ProjectView extends AbstractView {
 		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
 
-		for (let i = 0; i < this.ui.imgs.length; i++) {
-			this.ui.imgs[i].classList.remove('is-visible');
-		}
-		this.ui.footer.classList.remove('is-visible');
-
 		const trigo = { angle: 0 };
 		this.currentRotateY = { angle: toRadian(90)};
 		const tl = new TimelineMax({ onComplete: () => {
@@ -592,7 +590,7 @@ export default class ProjectView extends AbstractView {
 			// this.contentOpen = false;
 		} });
 
-		tl.staggerTo(['.project__top', '.project__item', '.project__footer' ], 1.2, {
+		tl.staggerTo(['.project__top', '.project__footer', '.project__gallery' ], 1.2, {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		}, 0.1);
@@ -631,6 +629,13 @@ export default class ProjectView extends AbstractView {
 
 		tl.to(global.MENU.ui.button, 2, {
 			opacity: 1
+		}, 2.6);
+
+		tl.add(() => {
+			for (let i = 0; i < this.ui.imgs.length; i++) {
+				this.ui.imgs[i].classList.remove('is-visible');
+			}
+			this.ui.footer.classList.remove('is-visible');
 		}, 2.6);
 
 		if (global.SCROLLED === false) {
@@ -708,21 +713,21 @@ export default class ProjectView extends AbstractView {
 
 					const tl = new TimelineMax();
 					tl.set(this.ui.imgs[i], {visibility: 'visible'});
-					tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
-						opacity: 0,
-						y: 80
-					}, {
-						opacity: 0.9,
-						y: 0,
-						ease: window.Expo.easeOut
-					});
+					// tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
+					// 	opacity: 0,
+					// 	y: 80
+					// }, {
+					// 	opacity: 0.9,
+					// 	y: 0,
+					// 	ease: window.Expo.easeOut
+					// });
 
-					tl.fromTo(this.ui.imgs[i], 1.2, {
-						scaleY: 2
-					}, {
-						scaleY: 1,
-						ease: window.Expo.easeOut
-					}, 0);
+					// tl.fromTo(this.ui.imgs[i], 1.2, {
+					// 	scaleY: 2
+					// }, {
+					// 	scaleY: 1,
+					// 	ease: window.Expo.easeOut
+					// }, 0);
 					this.ui.imgs[i].classList.add('is-visible');
 
 				}
@@ -956,10 +961,10 @@ export default class ProjectView extends AbstractView {
 
 			if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) { // end
 				this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;
-				TweenMax.to(this.ui.container, 0.7, { y: -this.scrollYSmooth}); // smooth it
+				TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth}); // smooth it
 			} else if (this.scrollYSmooth < 0) { // top
 				this.scrollY = this.scrollYSmooth = 0;
-				TweenMax.to(this.ui.container, 0.7, { y: -this.scrollYSmooth}); // smooth it
+				TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth}); // smooth it
 			} else {
 				TweenMax.set(this.ui.container, { y: -this.scrollYSmooth});
 			}
@@ -1181,7 +1186,7 @@ export default class ProjectView extends AbstractView {
 			this.camera.rotation.order = 'XYZ';
 		} });
 
-		tl.set(['.project__container', '.project__item', '.gallery__arrow', '.project__footer' ], {
+		tl.set(['.project__container', '.gallery__arrow', '.project__footer' ], {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		});
