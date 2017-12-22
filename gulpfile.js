@@ -76,7 +76,6 @@ gulp.task('clean', function(){
 	return del.sync([
 		'/dist/**',
 		'!/dist',
-		'!/dist/images',
 		'!/dist/videos',
 		'!/dist/sounds',
 		'!/dist/fonts'
@@ -282,9 +281,9 @@ gulp.task('watch', function() {
 	gulp.watch('./dev/stylesheets/**', ['stylesheets']);
 	gulp.watch('./dev/datas/**', ['datas']);
 	gulp.watch(copyRoot, ['copy:root']);
-	gulp.watch('./dev/sounds/**', ['copy:sound']);
-	gulp.watch('./dev/images/**', ['copy:image']);
-	gulp.watch('./dev/videos/**', ['copy:video']);
+	gulp.watch('./dev/sounds/**', ['copy']);
+	gulp.watch('./dev/images/**', ['copy']);
+	gulp.watch('./dev/videos/**', ['copy']);
 	gulp.watch('./dev/templates/**', ['copy:template']);
 	gulp.watch('./dev/fonts/**', ['copy:font']);
 	
