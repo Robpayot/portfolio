@@ -124,6 +124,10 @@
 		    	justify-content: space-between;		
 		    	font-size: 2em;
 		    	line-height: 2rem;
+				@include mobile {
+					font-size: 1.7em;
+					line-height: 1em;
+				}
 			}
 
 			p {

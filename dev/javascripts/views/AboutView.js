@@ -398,10 +398,11 @@ export default class AboutView extends AbstractView {
 	setUiContainer() {
 
 		const data = DATA;
+		console.log(data.about);
 		this.ui.uiContent.className = '';
 		this.ui.uiContent.classList.add('ui-content', 'is-about');
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
-		let html  = template(data);
+		let html  = template(data.about);
 
 		this.ui.uiContent.innerHTML = html;
 
