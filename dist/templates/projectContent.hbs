@@ -36,9 +36,9 @@
 		 	{{#isvideo this}}
 				<div class="project__video project__item">
 					{{#islow}}
-						<video poster="images/projects/{{../../slug}}-poster.jpg" src="images/projects/{{../../slug}}-low.mp4" muted playsinline loop ></video>
+						<video poster="images/projects/{{../../media}}-poster.jpg" src="images/projects/{{../../media}}-low.mp4" muted playsinline loop ></video>
 					{{else}}
-						<video poster="images/projects/{{../../slug}}-poster.jpg" src="images/projects/{{../this}}" muted playsinline loop ></video>
+						<video poster="images/projects/{{../../media}}-poster.jpg" src="images/projects/{{../this}}" muted playsinline loop ></video>
 					{{/islow}}
 				</div>
 			{{else}}

@@ -136,14 +136,7 @@ $project3D-w : 1075px;
 	        width: 100%;
 	    }
 
-	    &__image {
-			width: 100%;
-	        // max-height: 300px;
-	        opacity: 0.9;
-	        user-select: none;
-	        visibility: hidden;
-	        margin-bottom: 7.0rem;
-	        transform-origin: 0% 0%;
+	    &__image {	        
 
 	        img {
 	            width: 100%;
@@ -153,15 +146,27 @@ $project3D-w : 1075px;
 	    }
 
 	    &__video {
-			width: 100%;
-	        user-select: none;
-	        // visibility: hidden;
-	        margin-bottom: 7.0rem;
-	        transform-origin: 0% 0%;
 
 	        video {
 	            width: 100%;
 	        }
+	    }
+
+	    &__item {
+	    	width: 100%;
+	        visibility: hidden;
+	        margin-bottom: 7.0rem;
+	        user-select: none;
+	        opacity: 0;
+	    	transition: opacity 0.6s linear,  transform 1.2s $ExpoEaseOut;
+	    	transform: scaleY(2) translateY(80px);
+	    	transform-origin: 0% 0%;
+	    	
+
+	    	&.is-visible {
+	    		transform: scaleY(1) translateY(0px);
+	    		opacity: 1;
+	    	}
 	    }
 
 	    &__btn {
