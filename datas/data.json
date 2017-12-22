@@ -54,9 +54,9 @@
     }],
     "about": {
         "content" : "",
-        "tw": "",
-        "gh": "",
-        "ld": "",
+        "tw": "https://twitter.com/RobinPayot",
+        "gh": "https://github.com/Robpayot",
+        "ld": "https://fr.linkedin.com/in/robin-payot-71951748",
         "projects": [{
             "title" : "Wave Generator",
             "descr": "hel ozeof zeffzfz efoihzefzef.",
