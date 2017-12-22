@@ -51,5 +51,24 @@
         "link": "http://thesuicideforest.com/",
         "color": "#1FB04C",
         "colorName": "green"
-    }]
+    }],
+    "about": {
+        "content" : "",
+        "tw": "https://twitter.com/RobinPayot",
+        "gh": "https://github.com/Robpayot",
+        "ld": "https://fr.linkedin.com/in/robin-payot-71951748",
+        "projects": [{
+            "title" : "Wave Generator",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        },{
+            "title" : "Wave Generator 2",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        },{
+            "title" : "Wave Generator 3",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        }]
+    }
 }

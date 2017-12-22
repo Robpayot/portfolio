@@ -70,7 +70,7 @@ export default class AboutView extends AbstractView {
 			more: document.querySelector('.about__more'),
 			back: document.querySelector('.about__back'),
 			socials: document.querySelector('.ui-content.is-about .socials'),
-			p: document.querySelectorAll('.ui-content.is-about p'),
+			p: document.querySelectorAll('.ui-content.is-about p:not(.about__work__descr)'),
 			introWrap: document.querySelector('.about__intro'),
 			worksWrap: document.querySelector('.about__works'),
 			works: document.querySelectorAll('.about__work'),
@@ -398,10 +398,11 @@ export default class AboutView extends AbstractView {
 	setUiContainer() {
 
 		const data = DATA;
+		console.log(data.about);
 		this.ui.uiContent.className = '';
 		this.ui.uiContent.classList.add('ui-content', 'is-about');
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-about-content'));
-		let html  = template(data);
+		let html  = template(data.about);
 
 		this.ui.uiContent.innerHTML = html;
 
