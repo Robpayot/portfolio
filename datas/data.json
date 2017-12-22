@@ -51,5 +51,25 @@
         "link": "http://thesuicideforest.com/",
         "color": "#1FB04C",
         "colorName": "green"
-    }]
+    }],
+
+    "about": {
+        "content" : "",
+        "tw": "",
+        "gh": "",
+        "ld": "",
+        "projects": [{
+            "title" : "Wave Generator",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        },{
+            "title" : "Wave Generator 2",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        },{
+            "title" : "Wave Generator 3",
+            "descr": "hel ozeof zeffzfz efoihzefzef.",
+            "link": "zoobiza"
+        }]
+    }
 }
