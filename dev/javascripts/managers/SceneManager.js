@@ -12,7 +12,6 @@ class SceneManager {
 
 	start() {
 
-		console.log('startttt');
 
 		// Set unique Renderer
 

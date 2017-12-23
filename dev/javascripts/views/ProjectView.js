@@ -190,10 +190,10 @@ export default class ProjectView extends AbstractView {
 		// Set asteroid
 		this.setAsteroids();
 
-		if (this.pointsLight === true) {
-			// Set envelop
-			this.setEnvelop();
-		}
+		// if (this.pointsLight === true) {
+		// 	// Set envelop
+		// 	this.setEnvelop();
+		// }
 		// set Light
 		this.setLight();
 
@@ -411,7 +411,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onClickContainer(e) {
-		console.log('click container');
 		e.stopPropagation();
 	}
 
@@ -786,7 +785,6 @@ export default class ProjectView extends AbstractView {
 
 		} else {
 			if (this.stopScrollZ === true) return false;
-			console.log('scroll zzzz');
 
 			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
 				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse

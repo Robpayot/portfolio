@@ -142,7 +142,6 @@ export default class Menu {
 	onClickOutside(e) {
 
 		if (this.el.classList.contains('is-open') === true ) {
-			console.log('ok');
 			this.toggleOpen(e, true);
 		}
 	}

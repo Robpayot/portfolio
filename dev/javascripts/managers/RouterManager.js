@@ -33,26 +33,9 @@ class RouterManager {
 	onChange() {
 
 		if (this.ready !== true) return false;
-		const url = window.location.href;
 
+		this.testUrl();
 
-		if (/\/#about/.test(url) === true) {
-			this.switchView('/about', 0, true);
-		} else if (this.regexProjects[0].test(url) === true) {
-			this.switchView(`/${data.projects[0].slug}`, 0, true);
-		} else if (this.regexProjects[1].test(url) === true) {
-			this.switchView(`/${data.projects[1].slug}`, 1, true);
-		} else if (this.regexProjects[2].test(url) === true) {
-			this.switchView(`/${data.projects[2].slug}`, 2, true);
-		} else if (this.regexProjects[3].test(url) === true) {
-			this.switchView(`/${data.projects[3].slug}`, 3, true);
-		} else if (/\/#glitch/.test(url) === true) {
-			this.switchView('/glitch', 0, true);
-		} else {
-			this.switchView('/intro', 0, true);
-		}
-
-		EmitterManager.on('router:switch', this.switchView);
 	}
 
 	start() {
@@ -64,6 +47,16 @@ class RouterManager {
 		this.project2 = null;
 		this.project3 = null;
 
+		this.testUrl();
+
+		EmitterManager.on('router:switch', this.switchView);
+		window.addEventListener('hashchange', this.onChange, false);
+
+		this.ready = true;
+	}
+
+	testUrl() {
+
 		const url = window.location.href;
 
 		if (/\/#about/.test(url) === true) {
@@ -81,11 +74,6 @@ class RouterManager {
 		} else {
 			this.switchView('/intro', 0, true);
 		}
-
-		EmitterManager.on('router:switch', this.switchView);
-		window.addEventListener('hashchange', this.onChange, false);
-
-		this.ready = true;
 	}
 
 	switchView(goToPage, index = 0, fromUrl = false) {
