@@ -535,6 +535,9 @@ body {
       background-image: url(../images/textures/project-2.jpg); }
     .webGl__canvas[data-index="3"] {
       background-image: url(../images/textures/project-3.jpg); }
+    .about .webGl__canvas {
+      background-image: none;
+      background-color: #E7EFFC; }
 
 .graphicBars {
   background-color: transparent;
@@ -1480,6 +1483,11 @@ body {
         -webkit-transform-origin: 0% 0%;
         -ms-transform-origin: 0% 0%;
         transform-origin: 0% 0%; }
+        @media screen and (max-width: 720px) {
+          .ui-content.is-project .project__item {
+            transition: opacity 1s linear, -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1); } }
         .ui-content.is-project .project__item.is-visible {
           -webkit-transform: scaleY(1) translateY(0px);
           -ms-transform: scaleY(1) translateY(0px);

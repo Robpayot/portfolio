@@ -14,7 +14,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, Color, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
+import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -33,6 +33,17 @@ export default class ProjectView extends AbstractView {
 	constructor(obj) {
 
 		super();
+
+
+		// Update background
+		// SceneManager.renderer.domElement.setAttribute('data-index', this.id);
+
+		// Get Blob URL bkg
+		let arrayBufferView = PreloadManager.getResult(`bkg-${obj.id}`, true);
+		let blob = new Blob( [ arrayBufferView ], { type: 'image/jpeg' } );
+		let urlCreator = window.URL || window.webkitURL;
+		let blobURL = urlCreator.createObjectURL( blob );
+		SceneManager.renderer.domElement.style.backgroundImage = `url(${blobURL})`;
 
 		// properties
 		this.el = this.ui.webGl;
@@ -154,15 +165,6 @@ export default class ProjectView extends AbstractView {
 		this.pixelToUnits = 8.1;
 		this.coefText = 0.04;
 		this.coefImage = 0.04;
-
-		// SceneManager.renderer.domElement.setAttribute('data-index', this.id);
-
-		// Get Blob URL bkg
-		let arrayBufferView = PreloadManager.getResult(`bkg-${this.id}`, true);
-		let blob = new Blob( [ arrayBufferView ], { type: 'image/jpeg' } );
-		let urlCreator = window.URL || window.webkitURL;
-		let blobURL = urlCreator.createObjectURL( blob );
-		SceneManager.renderer.domElement.style.backgroundImage = `url(${blobURL})`;
 
 		// url(PreloadManager.getResult)
 
@@ -301,9 +303,6 @@ export default class ProjectView extends AbstractView {
 
 		this.pathRadius = this.zoomZ;
 		this.camera.position.set(0, 0, 70);
-		if (Device.size === 'mobile') {
-			this.camera.position.set(0, 0, 200);
-		}
 
 
 	}
@@ -575,15 +574,15 @@ export default class ProjectView extends AbstractView {
 		this.cameraRotX = true;
 		this.glitch.stop = false;
 		// ScrollManager.off(); // stop scrollmanager
-		this.contentOpen = false;
 		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
+
+		this.lastTouchY = this.scrollY = this.scrollYSmooth = 0;
 
 		const trigo = { angle: 0 };
 		this.currentRotateY = { angle: toRadian(90)};
 		const tl = new TimelineMax({ onComplete: () => {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
-			this.scrollY = this.scrollYSmooth = 0;
 			TweenMax.set(this.ui.container, { y: -this.scrollY});
 			this.cameraMove = false;
 			this.camera.rotation.order = 'XYZ';
@@ -632,6 +631,7 @@ export default class ProjectView extends AbstractView {
 		}, 2.6);
 
 		tl.add(() => {
+			this.contentOpen = false;
 			for (let i = 0; i < this.ui.imgs.length; i++) {
 				this.ui.imgs[i].classList.remove('is-visible');
 			}
@@ -704,12 +704,13 @@ export default class ProjectView extends AbstractView {
 	}
 
 	animScrollContainer() {
+		// let coefIsVisible = Device.touch ? 130 : 100;
 
 		for (let i = 1; i < this.ui.imgs.length; i++) {
 
 			if (this.ui.imgs[i].classList.contains('is-visible') === false) {
 
-				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= window.innerHeight - 100) {
+				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= document.body.offsetHeight - 100) {
 
 					const tl = new TimelineMax();
 					tl.set(this.ui.imgs[i], {visibility: 'visible'});
@@ -785,6 +786,7 @@ export default class ProjectView extends AbstractView {
 
 		} else {
 			if (this.stopScrollZ === true) return false;
+			console.log('scroll zzzz');
 
 			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
 				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
@@ -803,6 +805,7 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onTouchMoveContainer(e) {
+		// e.preventDefault();
 		let touchobj = e.changedTouches[0];// reference first touch point for this event
 		let y = parseInt(touchobj.clientY) - this.startTouchY + this.lastTouchY;
 

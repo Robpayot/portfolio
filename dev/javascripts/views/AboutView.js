@@ -59,7 +59,6 @@ export default class AboutView extends AbstractView {
 		this.onLeaveWork = this.onLeaveWork.bind(this);
 
 		// preload Models
-		// when all is loaded
 
 		this.init();
 

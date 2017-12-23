@@ -23,6 +23,11 @@
     	&[data-index="3"] {
     		background-image: url(../images/textures/project-3.jpg); 
     	}
+
+    	.about & {
+    		background-image: none;
+    		background-color: #E7EFFC;
+    	}
     }
 }
 

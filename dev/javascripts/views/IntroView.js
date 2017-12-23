@@ -22,9 +22,9 @@ import Ocean from '../vendors/Ocean';
 import p2 from 'p2';
 // GYRO JS
 // import Gyro from '../vendors/gyro.min';
-import DeviceOrientationControls from '../vendors/DeviceOrientationControls';
+// import DeviceOrientationControls from '../vendors/DeviceOrientationControls';
 
-console.log(DeviceOrientationControls);
+// console.log(DeviceOrientationControls);
 
 
 // import dat from 'dat-gui';

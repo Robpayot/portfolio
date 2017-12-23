@@ -154,8 +154,8 @@ class AppManager {
 					TweenMax.to(wrapper, 0.5, {opacity: 1});
 
 					wrapper.addEventListener('click', (e) => {
-
 						preventLink(e, true);
+						this.resizeHandler();
 						TweenMax.to('.preload', 1, {autoAlpha: 0});
 						this.start();
 
@@ -202,9 +202,7 @@ class AppManager {
 			document[evListener]( 'mousemove', this.onMouseMove, false );
 		} else {
 			// orientationchange
-			window[evListener]('touchstart', this.onTouchStart, false);
 			window[evListener]('touchmove', this.onTouchMove, false);
-			window[evListener]('touchend', this.onTouchEnd, false);
 		}
 
 		bean[onListener](window, 'resize orientationchange', this.resizeHandler);
@@ -223,13 +221,6 @@ class AppManager {
 		EmitterManager.emit('mousemove', eventX, eventY);
 	}
 
-	onTouchStart(e) {
-		// e.preventDefault();
-		// console.log(e);
-
-		EmitterManager.emit('touchstart', e);
-	}
-
 	onTouchMove(e) {
 		e.preventDefault();
 		// console.log('test');
@@ -237,14 +228,8 @@ class AppManager {
 		EmitterManager.emit('touchmove', e);
 	}
 
-	onTouchEnd(e) {
-		// e.preventDefault();
-		// console.log(e);
-
-		EmitterManager.emit('touchend', e);
-	}
-
 	resizeHandler() {
+		console.log('resize !!!!');
 
 
 		Device.touch = isTouch();
