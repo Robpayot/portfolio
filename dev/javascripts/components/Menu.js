@@ -31,6 +31,7 @@ export default class Menu {
 		this.maxDash = 635;
 		this.animBtn = false;
 		this.hoverBtn = false;
+		this.tl = new TimelineMax();
 
 		// bind
 		this.toggleOpen = this.toggleOpen.bind(this);
@@ -76,13 +77,15 @@ export default class Menu {
 
 		if (e) e.stopPropagation();
 
-		if (this.animBtn === true) return false;
-		if (this.animClicked === true) return false;
+		if (this.animBtn === true && close === false) return false;
+		if (this.animClicked === true && close === false) return false;
 
 		this.animBtn = true;
 		this.animClicked = true;
 
+		this.tl.kill();
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
+		TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
 
 		if (this.el.classList.contains('is-open') === true || close === true) {
 			this.el.style.pointerEvents = 'none';
@@ -91,14 +94,16 @@ export default class Menu {
 
 			this.el.classList.remove('is-open');
 			if (!Device.touch) global.CURSOR.el.classList.remove('menu-open');
-			const tl = new TimelineMax();
+
+
+			this.tl = new TimelineMax();
 
 			// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0.1 );
-			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
-			tl.add(() => {
+			this.tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
+			this.tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
+			this.tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0.1 );
+			this.tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
+			this.tl.add(() => {
 				this.ui.buttonSvg.classList.remove('is-open');
 				this.ui.buttonSvg.classList.add('is-close');
 				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
@@ -114,19 +119,20 @@ export default class Menu {
 			this.el.classList.add('is-open');
 			if (!Device.touch) global.CURSOR.el.classList.add('menu-open');
 
+
 			const links = document.querySelectorAll('.menu__link .title--3');
 
-			const tl = new TimelineMax();
+			this.tl = new TimelineMax();
 
-			tl.set(links, {opacity: 0});
-			tl.staggerFromTo([links[2], links[1], links[0]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
+			this.tl.set(links, {opacity: 0});
+			this.tl.staggerFromTo([links[2], links[1], links[0]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
 			// tl.set('.menu__sublink span', {opacity: 1}, 1.5);
-			tl.staggerFromTo('.menu__sublink div', 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.03, 0.4);
-			tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 5, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 5 - 205, ease: window.Expo.easeOut}, 0.1 );
-			tl.to('.menu__button .open-up', 0.9, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.3);
-			tl.add(()=> {
+			this.tl.staggerFromTo('.menu__sublink div', 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.03, 0.4);
+			this.tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
+			this.tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 5, ease: window.Expo.easeOut }, 0);
+			this.tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 5 - 205, ease: window.Expo.easeOut}, 0.1 );
+			this.tl.to('.menu__button .open-up', 0.9, {strokeDashoffset: this.maxDash * 2, ease: window.Expo.easeOut}, 0.3);
+			this.tl.add(()=> {
 				this.ui.buttonSvg.classList.add('is-open');
 				this.ui.buttonSvg.classList.remove('is-close');
 				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});

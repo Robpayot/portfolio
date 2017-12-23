@@ -233,7 +233,7 @@ export default class ProjectView extends AbstractView {
 
 		// Film effect
 		// noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
-		this.effectFilm = new FilmPass( 0.45, 0, 648, false );
+		this.effectFilm = new FilmPass( 0.35, 0, 648, false );
 
 		// this.effectVignette.renderToScreen = true;
 		this.effectFilm.renderToScreen = true;
@@ -454,6 +454,8 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 
+		console.log('show content', this.animating);
+
 		this.glitch.hover = false; // kill Glitch
 		this.tlGlitch.kill();
 		bean.off(document.body, '.project'); // off events related to init state
@@ -559,6 +561,8 @@ export default class ProjectView extends AbstractView {
 
 	backFromContent() {
 
+		this.animating = true;
+
 		bean.off(document.body, '.projectContent'); // off events related state projectContent
 
 		// on events related to init state
@@ -576,6 +580,7 @@ export default class ProjectView extends AbstractView {
 		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
 
+
 		this.lastTouchY = this.scrollY = this.scrollYSmooth = 0;
 
 		const trigo = { angle: 0 };
@@ -583,8 +588,8 @@ export default class ProjectView extends AbstractView {
 		const tl = new TimelineMax({ onComplete: () => {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
 			TweenMax.set(this.ui.container, { y: -this.scrollY});
-			this.cameraMove = false;
 			this.camera.rotation.order = 'XYZ';
+			this.animating = false;
 			// this.contentOpen = false;
 		} });
 
@@ -756,6 +761,8 @@ export default class ProjectView extends AbstractView {
 
 	scroll(e) {
 
+		if (this.animating === true) return false;
+
 		if (this.transitionInComplete !== true) {
 			e.deltaY = 0; // prevent inertia
 		} else {
@@ -777,7 +784,7 @@ export default class ProjectView extends AbstractView {
 					console.log('FF');
 					this.scrollY -= e.deltaY * 0.6;
 				} else {
-					this.scrollY -= e.deltaY * 0.2;
+					this.scrollY -= e.deltaY * 0.17;
 				}
 
 				this.animScrollContainer();
@@ -820,6 +827,9 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onClick(e) {
+
+		if (this.animating === true) return false;
+
 
 		if (this.contentOpen === true) {
 			this.backFromContent();
@@ -897,7 +907,6 @@ export default class ProjectView extends AbstractView {
 
 	raf() {
 
-		this.render();
 
 		// on scroll Z
 		// smooth scroll
@@ -976,6 +985,9 @@ export default class ProjectView extends AbstractView {
 			// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 
 		}
+
+		this.render();
+
 
 		// glitch title
 		if (this.glitch) {
@@ -1163,7 +1175,6 @@ export default class ProjectView extends AbstractView {
 
 		const tl = new TimelineMax({ onComplete: () => {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
-			this.cameraMove = false;
 			this.camera.rotation.order = 'XYZ';
 		} });
 

@@ -149,8 +149,6 @@ export default class IntroView extends AbstractView {
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
-		this.cameraMove = true;
-
 		// Camera controls
 		if (this.debug === true) {
 			this.controls = new OrbitControls(this.camera, SceneManager.renderer.domElement);
@@ -818,7 +816,6 @@ export default class IntroView extends AbstractView {
 
 		const tl = new TimelineMax({
 			onComplete: () => {
-				this.cameraMove = false;
 				if (this.gyro === true) { // if device gyro ?
 					// Set up Gyroscope
 					// this.controls = new DeviceOrientationControls(this.camera);

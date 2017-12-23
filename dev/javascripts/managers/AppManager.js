@@ -100,10 +100,10 @@ class AppManager {
 			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
 			{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
 			// bkg projects
-			{ id: 'bkg-0', src: `${global.BASE}/images/textures/project-0.jpg` },
-			{ id: 'bkg-1', src: `${global.BASE}/images/textures/project-1.jpg` },
-			{ id: 'bkg-2', src: `${global.BASE}/images/textures/project-2.jpg` },
-			{ id: 'bkg-3', src: `${global.BASE}/images/textures/project-3.jpg` }
+			{ id: 'bkg-0', src: `${global.BASE}/images/textures/project-0.png` },
+			{ id: 'bkg-1', src: `${global.BASE}/images/textures/project-1.png` },
+			{ id: 'bkg-2', src: `${global.BASE}/images/textures/project-2.png` },
+			{ id: 'bkg-3', src: `${global.BASE}/images/textures/project-3.png` }
 		]);
 
 		// SkyTex
