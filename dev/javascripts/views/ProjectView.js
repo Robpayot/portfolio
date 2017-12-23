@@ -14,7 +14,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
+import { LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -339,10 +339,10 @@ export default class ProjectView extends AbstractView {
 		this.nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
 
 		if (!Device.touch) {
-			global.CURSOR.prev.href = `#project-${this.prevId}`;
+			global.CURSOR.prev.href = `#${DATA.projects[this.prevId].slug}`;
 			global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
 
-			global.CURSOR.next.href = `#project-${this.nextId}`;
+			global.CURSOR.next.href = `#${DATA.projects[this.nextId].slug}`;
 			global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
 		}
 
@@ -915,8 +915,7 @@ export default class ProjectView extends AbstractView {
 					// this.transitionOutScrolled = true;
 					this.goToNoScroll = true;
 					this.dir = -1;
-					window.location.href = `#project-${this.nextId}`;
-					console.log('call window.loc');
+					window.location.href = `#${DATA.projects[this.nextId].slug}`;
 					// this.coefScrollZ = 0.006;
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
@@ -936,7 +935,7 @@ export default class ProjectView extends AbstractView {
 					this.stopScrollZ = true;
 					this.goToNoScroll = true;
 					this.dir = 1;
-					window.location.href = `#project-${this.prevId}`;
+					window.location.href = `#${DATA.projects[this.prevId].slug}`;
 					// this.scrollZ = this.minZoomZ; // final destination
 					// this.coefScrollZ = 0.027;
 				}

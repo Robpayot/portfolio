@@ -23,6 +23,11 @@ class RouterManager {
 		this.initView = this.initView.bind(this);
 		this.onChange = this.onChange.bind(this);
 
+		this.regexProjects = [];
+		for (let i = 0; i < data.projects.length; i++) {
+			this.regexProjects[i] = new RegExp(`/#${data.projects[i].slug}`);
+		}
+
 	}
 
 	onChange() {
@@ -30,16 +35,17 @@ class RouterManager {
 		if (this.ready !== true) return false;
 		const url = window.location.href;
 
+
 		if (/\/#about/.test(url) === true) {
 			this.switchView('/about', 0, true);
-		} else if (/\/#project-0/.test(url) === true) {
-			this.switchView('/project-0', 0, true);
-		} else if (/\/#project-1/.test(url) === true) {
-			this.switchView('/project-1', 1, true);
-		} else if (/\/#project-2/.test(url) === true) {
-			this.switchView('/project-2', 2, true);
-		} else if (/\/#project-3/.test(url) === true) {
-			this.switchView('/project-3', 3, true);
+		} else if (this.regexProjects[0].test(url) === true) {
+			this.switchView(`/${data.projects[0].slug}`, 0, true);
+		} else if (this.regexProjects[1].test(url) === true) {
+			this.switchView(`/${data.projects[1].slug}`, 1, true);
+		} else if (this.regexProjects[2].test(url) === true) {
+			this.switchView(`/${data.projects[2].slug}`, 2, true);
+		} else if (this.regexProjects[3].test(url) === true) {
+			this.switchView(`/${data.projects[3].slug}`, 3, true);
 		} else if (/\/#glitch/.test(url) === true) {
 			this.switchView('/glitch', 0, true);
 		} else {
@@ -62,14 +68,14 @@ class RouterManager {
 
 		if (/\/#about/.test(url) === true) {
 			this.switchView('/about', 0, true);
-		} else if (/\/#project-0/.test(url) === true) {
-			this.switchView('/project-0', 0, true);
-		} else if (/\/#project-1/.test(url) === true) {
-			this.switchView('/project-1', 1, true);
-		} else if (/\/#project-2/.test(url) === true) {
-			this.switchView('/project-2', 2, true);
-		} else if (/\/#project-3/.test(url) === true) {
-			this.switchView('/project-3', 3, true);
+		} else if (this.regexProjects[0].test(url) === true) {
+			this.switchView(`/${data.projects[0].slug}`, 0, true);
+		} else if (this.regexProjects[1].test(url) === true) {
+			this.switchView(`/${data.projects[1].slug}`, 1, true);
+		} else if (this.regexProjects[2].test(url) === true) {
+			this.switchView(`/${data.projects[2].slug}`, 2, true);
+		} else if (this.regexProjects[3].test(url) === true) {
+			this.switchView(`/${data.projects[3].slug}`, 3, true);
 		} else if (/\/#glitch/.test(url) === true) {
 			this.switchView('/glitch', 0, true);
 		} else {
@@ -84,7 +90,6 @@ class RouterManager {
 
 	switchView(goToPage, index = 0, fromUrl = false) {
 
-		console.log('change view', goToPage, index, this.currentPage);
 		if (this.currentPage) {
 			if (this.currentPage.uri === goToPage) {
 				// alreay on this view
@@ -102,7 +107,7 @@ class RouterManager {
 			if (goToPage === '/intro') dir = 1;
 			this.currentPage.transitionOut(dir); // animation Out
 
-			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(true); // close Menu
+			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(null, true); // close Menu
 			if (!Device.touch) global.CURSOR.interractLeave({color: 'reset'});
 			// When animation out, destroy scene, init new view
 
@@ -137,7 +142,7 @@ class RouterManager {
 
 				break;
 
-			case '/project-0':
+			case `/${data.projects[0].slug}`:
 
 				id = 0;
 				dir = this.lastId > id ? -1 : 1;
@@ -157,7 +162,7 @@ class RouterManager {
 
 				break;
 
-			case '/project-1':
+			case `/${data.projects[1].slug}`:
 
 				id = 1;
 				dir = this.lastId > id ? -1 : 1;
@@ -175,7 +180,7 @@ class RouterManager {
 
 				break;
 
-			case '/project-2':
+			case `/${data.projects[2].slug}`:
 
 				id = 2;
 				dir = this.lastId > id ? -1 : 1;
@@ -193,7 +198,7 @@ class RouterManager {
 
 				break;
 
-			case '/project-3':
+			case `/${data.projects[3].slug}`:
 
 				id = 3;
 				dir = this.lastId > id ? -1 : 1;

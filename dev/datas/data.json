@@ -14,7 +14,7 @@
         "colorName": "red"
     },{
         "title": "BMW Motorshow",
-        "slug": "bmw-parismotorshow",
+        "slug": "bmw-motorshow",
         "context": "84.Paris",
         "date": "2016",
         "descr": "360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris. 360 WebGL experiment in the BMW booth of the Mondial Auto Show in Paris.",
@@ -27,7 +27,7 @@
         "colorName": "blue"
     },{
         "title": "Nokia Health",
-        "slug": "withings-year-in-review",
+        "slug": "nokia-health",
         "context": "84.Paris",
         "date": "2016",
         "descr": "3Js project animation",
@@ -40,7 +40,7 @@
         "colorName": "pink"
     },{
         "title": "The Forest",
-        "slug": "the-suicide-forest",
+        "slug": "the-forest",
         "context": "UNIT 9",
         "date": "2015",
         "descr": "Scary 360 experiment in Virtual Reality (Google cardboard).",

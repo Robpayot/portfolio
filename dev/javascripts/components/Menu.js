@@ -74,7 +74,7 @@ export default class Menu {
 
 	toggleOpen(e, close = false) {
 
-		e.stopPropagation();
+		if (e) e.stopPropagation();
 
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
@@ -107,8 +107,6 @@ export default class Menu {
 			});
 
 		} else {
-
-			// e.stopPropagation();
 
 			ScrollManager.off();
 			this.el.style.pointerEvents = 'auto';
