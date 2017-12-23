@@ -26,7 +26,9 @@ export default class Stars extends ProjectView {
 
 		this.init();
 
-		this.setTerrain();
+		setTimeout(() => {
+			this.setTerrain();
+		}, 200); // maybe fix white issue
 
 		console.log('Stars view');
 
@@ -348,35 +350,37 @@ export default class Stars extends ProjectView {
 		// console.log(-this.camRotSmooth.y * 70);
 
 		// Terrain
-		if ( this.terrain.visible ) {
+		if (this.terrain) {
+			if ( this.terrain.visible ) {
 
-			let fLow = 0.1, fHigh = 0.8;
+				let fLow = 0.1, fHigh = 0.8;
 
-			// relative to light ???
+				// relative to light ???
 
-			this.lightVal = MathThree.clamp( this.lightVal + 0.5 * this.coefSpeed * this.lightDir, fLow, fHigh );
+				this.lightVal = MathThree.clamp( this.lightVal + 0.5 * this.coefSpeed * this.lightDir, fLow, fHigh );
 
-			let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
+				let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
 
-			this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
+				this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
 
-			if ( this.updateNoise ) {
+				if ( this.updateNoise ) {
 
-				this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
-				this.uniformsNoise[ 'time' ].value += this.coefSpeed * this.animDelta;
+					this.animDelta = MathThree.clamp( this.animDelta + 0.00075 * this.animDeltaDir, 0, 0.05 );
+					this.uniformsNoise[ 'time' ].value += this.coefSpeed * this.animDelta;
 
-				// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
+					// this.uniformsNoise[ 'offset' ].value.x += delta * 0.05; // moves
 
-				this.uniformsTerrain[ 'uOffset' ].value.x = 4 * this.uniformsNoise[ 'offset' ].value.x;
+					this.uniformsTerrain[ 'uOffset' ].value.x = 4 * this.uniformsNoise[ 'offset' ].value.x;
 
-				this.quadTarget.material = this.mlib[ 'heightmap' ];
-				SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
+					this.quadTarget.material = this.mlib[ 'heightmap' ];
+					SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
 
-				this.movingLight.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
-				// this.movingLight.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+					this.movingLight.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
+					// this.movingLight.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+
+				}
 
 			}
-
 		}
 		super.raf();
 	}
