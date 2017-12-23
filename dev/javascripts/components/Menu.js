@@ -34,6 +34,7 @@ export default class Menu {
 
 		// bind
 		this.toggleOpen = this.toggleOpen.bind(this);
+		this.onClickOutside = this.onClickOutside.bind(this);
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.update = this.update.bind(this);
@@ -46,7 +47,7 @@ export default class Menu {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		// let onListener = method === false ? 'off' : 'on';
-
+		this.el[evListener]('click', this.onClickOutside);
 
 		if (Device.touch === false) {
 			this.ui.button[evListener]('click', this.toggleOpen);
@@ -71,39 +72,20 @@ export default class Menu {
 
 	}
 
-	toggleOpen(close = false) {
+	toggleOpen(e, close = false) {
 
-		if (close === true) {
-
-
-			TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
-			this.el.classList.remove('is-open');
-			if (!Device.touch) global.CURSOR.el.classList.remove('menu-open');
-			const tl = new TimelineMax();
-
-			// tl.fromTo('.menu__link .title--3', 1, {x: '-100%'}, { x: 0, ease: window.Expo.easeOut});
-			tl.to('.menu__button .open-up', 0.3, {strokeDashoffset: this.maxDash * 3, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .open-down', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
-			tl.to('.menu__button .close-up', 0.65, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0.1 );
-			tl.to('.menu__button .close-down', 0.9, {strokeDashoffset: this.maxDash + 205, ease: window.Expo.easeOut}, 0.3);
-			tl.add(() => {
-				this.ui.buttonSvg.classList.remove('is-open');
-				this.ui.buttonSvg.classList.add('is-close');
-				TweenMax.set(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down'], {clearProps: 'all'});
-				this.animBtn = false;
-				this.animClicked = false;
-			});
-			return false;
-		}
+		e.stopPropagation();
 
 		if (this.animBtn === true) return false;
 		if (this.animClicked === true) return false;
+
 		this.animBtn = true;
 		this.animClicked = true;
 
 		TweenMax.killTweensOf(['.menu__button .close-up','.menu__button .close-down','.menu__button .open-up','.menu__button .open-down']);
 
-		if (this.el.classList.contains('is-open') === true) {
+		if (this.el.classList.contains('is-open') === true || close === true) {
+			this.el.style.pointerEvents = 'none';
 
 			ScrollManager.on();
 
@@ -126,7 +108,10 @@ export default class Menu {
 
 		} else {
 
+			// e.stopPropagation();
+
 			ScrollManager.off();
+			this.el.style.pointerEvents = 'auto';
 
 			this.el.classList.add('is-open');
 			if (!Device.touch) global.CURSOR.el.classList.add('menu-open');
@@ -153,6 +138,14 @@ export default class Menu {
 
 			TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});
 			TweenMax.to('.navigate', 0.2, {opacity: 0, ease: window.Linear.easeNone});
+		}
+	}
+
+	onClickOutside(e) {
+
+		if (this.el.classList.contains('is-open') === true ) {
+			console.log('ok');
+			this.toggleOpen(e, true);
 		}
 	}
 

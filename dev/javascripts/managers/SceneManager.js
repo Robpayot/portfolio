@@ -83,7 +83,7 @@ class SceneManager {
 
 		let coef = window.innerWidth > 1920 ? 0.7 : 0.85;
 
-		if (Device.touch === true && Device.size === 'mobile') {
+		if (Device.touch === true && window.innerWidth <= 1200) {
 			coef *= window.devicePixelRatio; // good perfs on retina mobile
 		}
 
