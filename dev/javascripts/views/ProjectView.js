@@ -897,6 +897,8 @@ export default class ProjectView extends AbstractView {
 
 	raf() {
 
+		this.render();
+
 		// on scroll Z
 		// smooth scroll
 		if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
@@ -918,15 +920,6 @@ export default class ProjectView extends AbstractView {
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
 
-				// this.coefScrollZ += 0.001; // acceleration
-				// this.camera.position.z = this.scrollZSmooth;
-
-				// if (this.scrollZSmooth < this.maxZoomZ + 30)  {
-				// 	this.transitionOutScrolled = true;
-				// 	if (this.hrefChanged === true) this.transitionOut();
-				// 	else window.location.href = `#project-${this.nextId}`; // transitionOut + change href if scrolled only
-				// }
-
 			} else if (this.scrollZSmooth > this.zoomZ) { // going backward
 				if (this.stopScrollZ !== true) {
 					// this.transitionOutScrolled = true;
@@ -938,17 +931,7 @@ export default class ProjectView extends AbstractView {
 					// this.coefScrollZ = 0.027;
 				}
 
-				// this.camera.position.z = this.scrollZSmooth;
-
-				// if (this.scrollZSmooth > this.minZoomZ - 30 )  {
-				// 	this.transitionOutScrolled = true;
-				// 	if (this.hrefChanged === true) this.transitionOut();
-				// 	else window.location.href = `#project-${this.prevId}`; // transitionOut + change href if scrolled only
-				// }
 			}
-			// else {
-			// 	// this.camera.position.z = this.scrollZSmooth;
-			// }
 
 		}
 
@@ -993,8 +976,6 @@ export default class ProjectView extends AbstractView {
 			// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 
 		}
-
-		this.render();
 
 		// glitch title
 		if (this.glitch) {

@@ -85,6 +85,10 @@ class RouterManager {
 			}
 		}
 
+		if (this.isChanging === true) return false;
+
+		this.isChanging = true;
+
 		// return false;
 
 		if (this.currentPage !== null) {
@@ -100,7 +104,7 @@ class RouterManager {
 			// When animation out, destroy scene, init new view
 
 			EmitterManager.once('view:transition:out', () => {
-
+				this.isChanging = false;
 
 				this.currentPage.destroy(true);
 				this.initView(goToPage, index, false);
@@ -110,6 +114,7 @@ class RouterManager {
 		} else {
 			// here we are sure that transition come from a refresh, so fromUrl = true
 			this.initView(goToPage, index, true);
+			this.isChanging = false;
 
 		}
 

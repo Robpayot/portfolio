@@ -1863,6 +1863,10 @@ var RouterManager = function () {
 				}
 			}
 
+			if (this.isChanging === true) return false;
+
+			this.isChanging = true;
+
 			// return false;
 
 			if (this.currentPage !== null) {
@@ -1878,6 +1882,7 @@ var RouterManager = function () {
 				// When animation out, destroy scene, init new view
 
 				_EmitterManager2.default.once('view:transition:out', function () {
+					_this.isChanging = false;
 
 					_this.currentPage.destroy(true);
 					_this.initView(goToPage, index, false);
@@ -1885,6 +1890,7 @@ var RouterManager = function () {
 			} else {
 				// here we are sure that transition come from a refresh, so fromUrl = true
 				this.initView(goToPage, index, true);
+				this.isChanging = false;
 			}
 		}
 	}, {
@@ -11235,6 +11241,8 @@ var ProjectView = function (_AbstractView) {
 		key: 'raf',
 		value: function raf() {
 
+			this.render();
+
 			// on scroll Z
 			// smooth scroll
 			if ((0, _utils.round)(this.scrollZ, 10) !== (0, _utils.round)(this.scrollZSmooth, 10)) {
@@ -11256,15 +11264,6 @@ var ProjectView = function (_AbstractView) {
 						// this.coefScrollZ = 0.006;
 						// this.scrollZ = this.maxZoomZ; // final destination
 					}
-
-					// this.coefScrollZ += 0.001; // acceleration
-					// this.camera.position.z = this.scrollZSmooth;
-
-					// if (this.scrollZSmooth < this.maxZoomZ + 30)  {
-					// 	this.transitionOutScrolled = true;
-					// 	if (this.hrefChanged === true) this.transitionOut();
-					// 	else window.location.href = `#project-${this.nextId}`; // transitionOut + change href if scrolled only
-					// }
 				} else if (this.scrollZSmooth > this.zoomZ) {
 					// going backward
 					if (this.stopScrollZ !== true) {
@@ -11276,18 +11275,7 @@ var ProjectView = function (_AbstractView) {
 						// this.scrollZ = this.minZoomZ; // final destination
 						// this.coefScrollZ = 0.027;
 					}
-
-					// this.camera.position.z = this.scrollZSmooth;
-
-					// if (this.scrollZSmooth > this.minZoomZ - 30 )  {
-					// 	this.transitionOutScrolled = true;
-					// 	if (this.hrefChanged === true) this.transitionOut();
-					// 	else window.location.href = `#project-${this.prevId}`; // transitionOut + change href if scrolled only
-					// }
 				}
-				// else {
-				// 	// this.camera.position.z = this.scrollZSmooth;
-				// }
 			}
 
 			// on scroll Content
@@ -11331,8 +11319,6 @@ var ProjectView = function (_AbstractView) {
 				// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
 				// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 			}
-
-			this.render();
 
 			// glitch title
 			if (this.glitch) {
