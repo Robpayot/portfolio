@@ -1015,7 +1015,6 @@ var Menu = function () {
 		value: function onClickOutside(e) {
 
 			if (this.el.classList.contains('is-open') === true) {
-				console.log('ok');
 				this.toggleOpen(e, true);
 			}
 		}
@@ -1805,25 +1804,8 @@ var RouterManager = function () {
 		value: function onChange() {
 
 			if (this.ready !== true) return false;
-			var url = window.location.href;
 
-			if (/\/#about/.test(url) === true) {
-				this.switchView('/about', 0, true);
-			} else if (this.regexProjects[0].test(url) === true) {
-				this.switchView('/' + _data2.default.projects[0].slug, 0, true);
-			} else if (this.regexProjects[1].test(url) === true) {
-				this.switchView('/' + _data2.default.projects[1].slug, 1, true);
-			} else if (this.regexProjects[2].test(url) === true) {
-				this.switchView('/' + _data2.default.projects[2].slug, 2, true);
-			} else if (this.regexProjects[3].test(url) === true) {
-				this.switchView('/' + _data2.default.projects[3].slug, 3, true);
-			} else if (/\/#glitch/.test(url) === true) {
-				this.switchView('/glitch', 0, true);
-			} else {
-				this.switchView('/intro', 0, true);
-			}
-
-			_EmitterManager2.default.on('router:switch', this.switchView);
+			this.testUrl();
 		}
 	}, {
 		key: 'start',
@@ -1836,6 +1818,17 @@ var RouterManager = function () {
 			this.project2 = null;
 			this.project3 = null;
 
+			this.testUrl();
+
+			_EmitterManager2.default.on('router:switch', this.switchView);
+			window.addEventListener('hashchange', this.onChange, false);
+
+			this.ready = true;
+		}
+	}, {
+		key: 'testUrl',
+		value: function testUrl() {
+
 			var url = window.location.href;
 
 			if (/\/#about/.test(url) === true) {
@@ -1853,11 +1846,6 @@ var RouterManager = function () {
 			} else {
 				this.switchView('/intro', 0, true);
 			}
-
-			_EmitterManager2.default.on('router:switch', this.switchView);
-			window.addEventListener('hashchange', this.onChange, false);
-
-			this.ready = true;
 		}
 	}, {
 		key: 'switchView',
@@ -2066,8 +2054,6 @@ var SceneManager = function () {
 	_createClass(SceneManager, [{
 		key: 'start',
 		value: function start() {
-
-			console.log('startttt');
 
 			// Set unique Renderer
 
@@ -8348,7 +8334,7 @@ var AboutView = function (_AbstractView) {
 			// this.UI.intro.style.display = 'none';
 			global.MENU.el.classList.add('is-active');
 			global.MENU.el.classList.add('alt');
-			global.MENU.el.classList.remove('is-open');
+			global.MENU.toggleOpen(null, true);
 
 			// Set UiContainers
 			this.setUiContainer();
@@ -10541,10 +10527,10 @@ var ProjectView = function (_AbstractView) {
 			// Set asteroid
 			this.setAsteroids();
 
-			if (this.pointsLight === true) {
-				// Set envelop
-				this.setEnvelop();
-			}
+			// if (this.pointsLight === true) {
+			// 	// Set envelop
+			// 	this.setEnvelop();
+			// }
 			// set Light
 			this.setLight();
 
@@ -10756,7 +10742,6 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'onClickContainer',
 		value: function onClickContainer(e) {
-			console.log('click container');
 			e.stopPropagation();
 		}
 	}, {
@@ -11133,7 +11118,6 @@ var ProjectView = function (_AbstractView) {
 				}
 			} else {
 				if (this.stopScrollZ === true) return false;
-				console.log('scroll zzzz');
 
 				if (e.deltaY > 30 || e.deltaY < -30) {
 					///!\ depend of Browsers clamp value. Have to make a real scroll
