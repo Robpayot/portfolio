@@ -17,7 +17,7 @@
 		<div class="title--3">Projects</div>
 		<ul class="menu__sublinks">
 			{{#each projects}}
-				<a href="#project-{{@index}}" class="menu__sublink" data-color="{{this.color}}">
+				<a href="#{{this.slug}}" class="menu__sublink" data-color="{{this.color}}">
 					<div>
 						<span class="menu__nb"><span class="menu__color">0{{math @index '+' 1}}</span></span><span class="menu__subtitle">{{this.title}}</span>
 					</div>

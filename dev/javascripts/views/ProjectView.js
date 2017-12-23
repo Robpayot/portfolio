@@ -14,7 +14,7 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { RGBFormat, LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
+import { LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
 import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
@@ -190,10 +190,10 @@ export default class ProjectView extends AbstractView {
 		// Set asteroid
 		this.setAsteroids();
 
-		if (this.pointsLight === true) {
-			// Set envelop
-			this.setEnvelop();
-		}
+		// if (this.pointsLight === true) {
+		// 	// Set envelop
+		// 	this.setEnvelop();
+		// }
 		// set Light
 		this.setLight();
 
@@ -339,10 +339,10 @@ export default class ProjectView extends AbstractView {
 		this.nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
 
 		if (!Device.touch) {
-			global.CURSOR.prev.href = `#project-${this.prevId}`;
+			global.CURSOR.prev.href = `#${DATA.projects[this.prevId].slug}`;
 			global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
 
-			global.CURSOR.next.href = `#project-${this.nextId}`;
+			global.CURSOR.next.href = `#${DATA.projects[this.nextId].slug}`;
 			global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
 		}
 
@@ -411,7 +411,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onClickContainer(e) {
-		console.log('click container');
 		e.stopPropagation();
 	}
 
@@ -786,7 +785,6 @@ export default class ProjectView extends AbstractView {
 
 		} else {
 			if (this.stopScrollZ === true) return false;
-			console.log('scroll zzzz');
 
 			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
 				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
@@ -899,6 +897,8 @@ export default class ProjectView extends AbstractView {
 
 	raf() {
 
+		this.render();
+
 		// on scroll Z
 		// smooth scroll
 		if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
@@ -915,20 +915,10 @@ export default class ProjectView extends AbstractView {
 					// this.transitionOutScrolled = true;
 					this.goToNoScroll = true;
 					this.dir = -1;
-					window.location.href = `#project-${this.nextId}`;
-					console.log('call window.loc');
+					window.location.href = `#${DATA.projects[this.nextId].slug}`;
 					// this.coefScrollZ = 0.006;
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
-
-				// this.coefScrollZ += 0.001; // acceleration
-				// this.camera.position.z = this.scrollZSmooth;
-
-				// if (this.scrollZSmooth < this.maxZoomZ + 30)  {
-				// 	this.transitionOutScrolled = true;
-				// 	if (this.hrefChanged === true) this.transitionOut();
-				// 	else window.location.href = `#project-${this.nextId}`; // transitionOut + change href if scrolled only
-				// }
 
 			} else if (this.scrollZSmooth > this.zoomZ) { // going backward
 				if (this.stopScrollZ !== true) {
@@ -936,22 +926,12 @@ export default class ProjectView extends AbstractView {
 					this.stopScrollZ = true;
 					this.goToNoScroll = true;
 					this.dir = 1;
-					window.location.href = `#project-${this.prevId}`;
+					window.location.href = `#${DATA.projects[this.prevId].slug}`;
 					// this.scrollZ = this.minZoomZ; // final destination
 					// this.coefScrollZ = 0.027;
 				}
 
-				// this.camera.position.z = this.scrollZSmooth;
-
-				// if (this.scrollZSmooth > this.minZoomZ - 30 )  {
-				// 	this.transitionOutScrolled = true;
-				// 	if (this.hrefChanged === true) this.transitionOut();
-				// 	else window.location.href = `#project-${this.prevId}`; // transitionOut + change href if scrolled only
-				// }
 			}
-			// else {
-			// 	// this.camera.position.z = this.scrollZSmooth;
-			// }
 
 		}
 
@@ -996,8 +976,6 @@ export default class ProjectView extends AbstractView {
 			// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 
 		}
-
-		this.render();
 
 		// glitch title
 		if (this.glitch) {

@@ -186,7 +186,7 @@ export default class IntroView extends AbstractView {
 
 		// Intro content
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-intro-content'));
-		let html  = template(data);
+		let html  = template(data.projects[0]);
 
 		this.ui.uiContent.className = '';
 		this.ui.uiContent.classList.add('ui-content', 'is-intro');

@@ -149,7 +149,7 @@ export default class AboutView extends AbstractView {
 		// this.UI.intro.style.display = 'none';
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.add('alt');
-		global.MENU.el.classList.remove('is-open');
+		global.MENU.toggleOpen(null, true);
 
 		// Set UiContainers
 		this.setUiContainer();
