@@ -180,8 +180,6 @@ export default class AboutView extends AbstractView {
 		this.camRotTarget = new Vector3(0, 0, 0);
 		this.camRotSmooth = new Vector3(0, 0, 0);
 
-		this.cameraMove = true;
-
 
 		// Camera controls
 		if (this.isControls === true) {
@@ -701,7 +699,6 @@ export default class AboutView extends AbstractView {
 
 		const tl = new TimelineMax({
 			onComplete: () => {
-				this.cameraMove = false;
 				// this.transitionOut();
 
 			},
