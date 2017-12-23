@@ -233,7 +233,7 @@ export default class ProjectView extends AbstractView {
 
 		// Film effect
 		// noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
-		this.effectFilm = new FilmPass( 0.45, 0, 648, false );
+		this.effectFilm = new FilmPass( 0.35, 0, 648, false );
 
 		// this.effectVignette.renderToScreen = true;
 		this.effectFilm.renderToScreen = true;
