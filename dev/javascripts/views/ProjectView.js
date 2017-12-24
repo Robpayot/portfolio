@@ -348,10 +348,8 @@ export default class ProjectView extends AbstractView {
 
 		// Gallery
 
-		// arrows
-
 		// Context + gallery arrows
-		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'));
+		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'), {noEscape: true});
 		html  = template(data);
 		this.ui.uiContent.className = '';
 		this.ui.uiContent.classList.add('ui-content', 'is-project');

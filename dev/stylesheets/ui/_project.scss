@@ -6,8 +6,8 @@ $project3D-w : 1075px;
 	z-index: 10;
 	text-align: left;
 	user-select: none;
-	font-size: 1.4rem;
-
+	font-size: 1.5rem;
+    letter-spacing: 0.06rem;
 	.project {
 
 		&.alt {
@@ -182,7 +182,7 @@ $project3D-w : 1075px;
 	    	display: flex;
 	    	justify-content: space-between;
 	    	align-items: baseline;
-	    	font-size: 0.8em;
+	    	font-size: 1em;
 	    	text-align: left;
 	    	width: 100%;
 	    	// transform: translateY(50%);
