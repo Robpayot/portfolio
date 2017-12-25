@@ -452,7 +452,7 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 
-		console.log('show content', this.animating);
+		// console.log('show content', this.animating);
 
 		this.glitch.hover = false; // kill Glitch
 		this.tlGlitch.kill();

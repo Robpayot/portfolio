@@ -36,7 +36,7 @@ export default class Blob extends ProjectView {
 			this.video.addEventListener('canplay', this.init);
 		}
 
-		console.log('Blob view');
+		// console.log('Blob view');
 
 	}
 

@@ -19,7 +19,7 @@ export default class Circular extends ProjectView {
 		this.init();
 
 
-		console.log('Circular view');
+		// console.log('Circular view');
 
 	}
 

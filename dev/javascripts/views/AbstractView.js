@@ -63,7 +63,7 @@ export default class AbstractView {
 
 	destroy(all = false) {
 
-		console.log('destroy');
+		// console.log('destroy');
 		if (this.contentOpen) this.reset();
 
 		if (all === true) {

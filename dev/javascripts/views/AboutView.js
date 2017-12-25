@@ -142,7 +142,7 @@ export default class AboutView extends AbstractView {
 
 	init() {
 
-		console.log('init about');
+		// console.log('init about');
 
 
 		// if ( ! Detector.webgl ) Detector.addGetWebGLMessage();

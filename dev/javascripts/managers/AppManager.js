@@ -229,7 +229,6 @@ class AppManager {
 	}
 
 	resizeHandler() {
-		console.log('resize !!!!');
 
 
 		Device.touch = isTouch();

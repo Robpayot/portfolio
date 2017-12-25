@@ -30,7 +30,7 @@ export default class Stars extends ProjectView {
 			this.setTerrain();
 		}, 200); // maybe fix white issue
 
-		console.log('Stars view');
+		// console.log('Stars view');
 
 	}
 

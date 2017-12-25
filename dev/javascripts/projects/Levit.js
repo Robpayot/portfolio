@@ -23,7 +23,7 @@ export default class Levit extends ProjectView {
 		this.models = global.MODELS;
 		this.init();
 
-		console.log('Levit view');
+		// console.log('Levit view');
 
 	}
 
