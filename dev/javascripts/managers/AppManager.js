@@ -179,7 +179,7 @@ class AppManager {
 		this.ui = {
 			preloadSymbol: document.querySelector('.preload__symbol'),
 			xp: document.querySelector('.xp'),
-			webGl: document.querySelector('.webGl'),
+			webGl: document.querySelector('.webGL'),
 			overlay: document.querySelector('.overlay'),
 			uiContent: document.querySelector('.ui-content')
 		};

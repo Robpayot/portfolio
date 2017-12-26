@@ -25,7 +25,7 @@ class SceneManager {
 		this.cssRenderer.domElement.style.top = 0;
 		this.cssRenderer.domElement.style.left = 0;
 		this.cssRenderer.domElement.style.zIndex = 1;
-		this.cssRenderer.domElement.classList.add('webGl');
+		this.cssRenderer.domElement.classList.add('webGL');
 
 		this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
 		// this.renderer.setClearColor(0xffffff, 1);
@@ -39,7 +39,7 @@ class SceneManager {
 		this.renderer.domElement.style.left = 0;
 		// this.renderer.domElement.style.backgroundColor = 'red';
 
-		this.renderer.domElement.classList.add('webGl__canvas');
+		this.renderer.domElement.classList.add('webGL__canvas');
 		this.cssRenderer.domElement.appendChild(this.renderer.domElement);
 
 		this.xp.appendChild(this.cssRenderer.domElement);

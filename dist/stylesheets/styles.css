@@ -338,26 +338,26 @@ body {
     stroke-dasharray: 635;
     stroke-dashoffset: 635; }
 
-.webGl {
+.webGL {
   position: relative;
   color: #FFFFFF; }
-  .webGl .css-container {
+  .webGL .css-container {
     font-size: 28px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none; }
-  .webGl__canvas {
+  .webGL__canvas {
     background-size: cover; }
-    .webGl__canvas[data-index="0"] {
+    .webGL__canvas[data-index="0"] {
       background-image: url(../images/textures/project-0.jpg); }
-    .webGl__canvas[data-index="1"] {
+    .webGL__canvas[data-index="1"] {
       background-image: url(../images/textures/project-1.jpg); }
-    .webGl__canvas[data-index="2"] {
+    .webGL__canvas[data-index="2"] {
       background-image: url(../images/textures/project-2.jpg); }
-    .webGl__canvas[data-index="3"] {
+    .webGL__canvas[data-index="3"] {
       background-image: url(../images/textures/project-3.jpg); }
-    .about .webGl__canvas {
+    .about .webGL__canvas {
       background-image: none !important;
       background-color: #E7EFFC !important; }
 

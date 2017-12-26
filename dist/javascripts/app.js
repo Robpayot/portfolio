@@ -1589,7 +1589,7 @@ var AppManager = function () {
 			this.ui = {
 				preloadSymbol: document.querySelector('.preload__symbol'),
 				xp: document.querySelector('.xp'),
-				webGl: document.querySelector('.webGl'),
+				webGl: document.querySelector('.webGL'),
 				overlay: document.querySelector('.overlay'),
 				uiContent: document.querySelector('.ui-content')
 			};
@@ -2072,7 +2072,7 @@ var SceneManager = function () {
 			this.cssRenderer.domElement.style.top = 0;
 			this.cssRenderer.domElement.style.left = 0;
 			this.cssRenderer.domElement.style.zIndex = 1;
-			this.cssRenderer.domElement.classList.add('webGl');
+			this.cssRenderer.domElement.classList.add('webGL');
 
 			this.renderer = new _three.WebGLRenderer({ antialias: true, alpha: true });
 			// this.renderer.setClearColor(0xffffff, 1);
@@ -2086,7 +2086,7 @@ var SceneManager = function () {
 			this.renderer.domElement.style.left = 0;
 			// this.renderer.domElement.style.backgroundColor = 'red';
 
-			this.renderer.domElement.classList.add('webGl__canvas');
+			this.renderer.domElement.classList.add('webGL__canvas');
 			this.cssRenderer.domElement.appendChild(this.renderer.domElement);
 
 			this.xp.appendChild(this.cssRenderer.domElement);
