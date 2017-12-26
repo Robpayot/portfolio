@@ -12,7 +12,7 @@ import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
 
 
-import { Vector2, Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, PointLight, RepeatWrapping, PlaneGeometry, Mesh, MeshBasicMaterial, Color, MeshPhongMaterial, RGBFormat, LinearFilter } from 'three';
+import { Raycaster, Vector3, Scene, SphereGeometry, BoxGeometry, DoubleSide, DirectionalLight, RepeatWrapping, PlaneGeometry, Mesh, MeshBasicMaterial, Color, MeshPhongMaterial } from 'three';
 import OrbitControls from '../vendors/OrbitControls';
 import '../shaders/ScreenSpaceShader';
 import '../shaders/FFTOceanShader';

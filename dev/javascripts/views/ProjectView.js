@@ -22,7 +22,7 @@ import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 
 // POSTPROCESSING
 // import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
-import { VignetteShader } from '../shaders/VignetteShader';
+// import { VignetteShader } from '../shaders/VignetteShader';
 import '../postprocessing/Pass'; // missing in EffectComposer
 import { FilmPass } from '../postprocessing/FilmPass';
 
@@ -227,9 +227,9 @@ export default class ProjectView extends AbstractView {
 
 		// EFFECT COMPOSER
 		// Vignette
-		this.effectVignette = new ShaderPass( VignetteShader );
-		this.effectVignette.uniforms[ 'offset' ].value = 0.95;
-		this.effectVignette.uniforms[ 'darkness' ].value = 1.6;
+		// this.effectVignette = new ShaderPass( VignetteShader );
+		// this.effectVignette.uniforms[ 'offset' ].value = 0.95;
+		// this.effectVignette.uniforms[ 'darkness' ].value = 1.6;
 
 		// Film effect
 		// noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
@@ -339,8 +339,14 @@ export default class ProjectView extends AbstractView {
 		this.nextId = this.id + 1 > DATA.projects.length - 1 ? 0 : this.id + 1;
 
 		if (!Device.touch) {
-			global.CURSOR.prev.href = `#${DATA.projects[this.prevId].slug}`;
-			global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
+
+			if (this.id !== 0) {
+				global.CURSOR.prev.href = `#${DATA.projects[this.prevId].slug}`;
+				global.CURSOR.prev.setAttribute('data-color', DATA.projects[this.prevId].color);
+			} else {
+				global.CURSOR.prev.href = '';
+			}
+
 
 			global.CURSOR.next.href = `#${DATA.projects[this.nextId].slug}`;
 			global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
@@ -791,8 +797,11 @@ export default class ProjectView extends AbstractView {
 		} else {
 			if (this.stopScrollZ === true) return false;
 
-			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value. Have to make a real scroll
+			if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value.
 				this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
+
+				if (this.id === 0) this.scrollZ = Math.min(this.zoomZ, this.scrollZ); // cannot scroll supp zoomZ
+
 			}
 
 		}
@@ -833,7 +842,7 @@ export default class ProjectView extends AbstractView {
 			this.backFromContent();
 		}
 
-		if (global.CURSOR.hoverGoTo === true) {
+		if (global.CURSOR.hoverGoTo === true && global.CURSOR.currentEl !== '') {
 
 			RouterManager.currentPage.goTo(null, global.CURSOR.currentEl);
 			window.location.href = global.CURSOR.currentEl.href;
@@ -888,10 +897,14 @@ export default class ProjectView extends AbstractView {
 			global.CURSOR.interractHover({type: 'next', color: global.CURSOR.next.getAttribute('data-color'), el: global.CURSOR.next});
 			this.cursorActive = true;
 		} else if (y > window.innerHeight * 0.80 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8) {
-			this.goToNoScroll = true;
-			this.dir = 1;
-			global.CURSOR.interractHover({type: 'prev', color: global.CURSOR.prev.getAttribute('data-color'), el: global.CURSOR.prev});
-			this.cursorActive = true;
+
+			if (this.id !== 0) {
+				this.goToNoScroll = true;
+				this.dir = 1;
+				global.CURSOR.interractHover({type: 'prev', color: global.CURSOR.prev.getAttribute('data-color'), el: global.CURSOR.prev});
+				this.cursorActive = true;
+			}
+
 		} else {
 			if (this.cursorActive === true) {
 				this.goToNoScroll = false;
@@ -928,6 +941,7 @@ export default class ProjectView extends AbstractView {
 				}
 
 			} else if (this.scrollZSmooth > this.zoomZ) { // going backward
+
 				if (this.stopScrollZ !== true) {
 					// this.transitionOutScrolled = true;
 					this.stopScrollZ = true;
@@ -937,7 +951,6 @@ export default class ProjectView extends AbstractView {
 					// this.scrollZ = this.minZoomZ; // final destination
 					// this.coefScrollZ = 0.027;
 				}
-
 			}
 
 		}

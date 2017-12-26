@@ -1,67 +1,69 @@
 .project {
 
-    &__title {
-        font-size: 488%;
-        display: inline-block;
-        vertical-align: middle;
-        white-space: nowrap;
-        pointer-events: auto;
-	    position: relative;
-	    z-index: 9000;
-	    transform: translateX(50%); // ALIGN WITH OTHER TITLES
-		@include mobile {
-			font-size: 758%;
+		&__title {
+				font-size: 488%;
+				display: inline-block;
+				vertical-align: middle;
+				white-space: nowrap;
+				pointer-events: auto;
+				position: relative;
+				z-index: 9000;
+				transform: translateX(50%); // align with other title
+
+				@include mobile {
+					font-size: 758%;
+				}
+
+				span {
+						opacity: 0;
+						visibility: hidden;
+						display: inline-block;
+				}
+				svg {
+						opacity: 0;
+						display: none;
+						&.transi {
+								transition: transform 0.6s $easeToinou;
+						}
+				}
+				&:hover {
+						svg {
+								transform: translateX(15px) !important;
+						}
+						.project__more {
+							padding-left: 100px;
+						}
+						.project__more::after {
+							width: 60px;
+						}
+				}
 		}
-        span {
-            opacity: 0;
-            visibility: hidden;
-            display: inline-block;
-        }
-        svg {
-            opacity: 0;
-            display: none;
-            &.transi {
-                transition: transform 0.6s $easeToinou;
-            }
-        }
-        &:hover {
-            svg {
-                transform: translateX(15px) !important;
-            }
-            .project__more {
-            	padding-left: 100px;
-            }
-            .project__more::after {
-            	width: 60px;
-            }
-        }
-    }
 
-    &__number, &__more {
-    	position: absolute;
-    	color: white;
-    	// display: none;
-    	opacity: 0;
-    }
+		&__number, &__more {
+			position: absolute;
+			color: white;
+			// display: none;
+			opacity: 0;
+		}
 
-    &__number {
-    	position: absolute;
-    	top: -300px;
-    	font-size: 55px;
-    	left: 5px;
+		&__number {
+			position: absolute;
+			top: -300px;
+			font-size: 55px;
+			left: 5px;
 		@include mobile {
 			font-size: 78px;
 		}
-    }
+		}
 
-    &__more {
-    	left: 0px;
-    	padding-left: 0px;
-    	font-size: 44px; // in px because resize relative to the scene
-    	letter-spacing: 4px;
-    	font-family: 'Theinhardt';
-	    font-weight: normal;
-	    font-style: normal;
+		&__more {
+			left: 0px;
+			padding-left: 0px;
+			font-size: 44px; // in px because resize relative to the scene
+			letter-spacing: 4px;
+			font-family: 'Theinhardt';
+			font-weight: normal;
+			font-style: normal;
 		top: 170px;
 		opacity: 1;
 		transition: padding 0.8s $easeToinou;
@@ -82,6 +84,6 @@
 		}
 		// font-size: 2em;
 
-    }
+		}
 
 }
