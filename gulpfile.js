@@ -288,14 +288,7 @@ gulp.task('watch', function() {
 	gulp.watch('./dev/fonts/**', ['copy:font']);
 	
 	browserSync.watch([
-		'./dist/datas/**',
-		'./dist/stylesheets/**',
-		'./dist/javascripts/**',
-		'./dev/images/**',
-		'./dev/videos/**',
-		'./dist/templates/**',
-		'./dist/fonts/**',
-		copyRoot
+		'./dist/**',
 	], {
 		ignored: '**/*.map'
 	}).on('change', browserSync.reload);

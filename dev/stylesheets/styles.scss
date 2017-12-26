@@ -6,7 +6,6 @@
 @import "core/import";
 
 // Add the layout dependencies here
-@import "layouts/grid";
 @import "layouts/body";
 @import "layouts/overlay";
 // @import "layouts/header";
@@ -15,14 +14,11 @@
 // Typography
 @import "typography/font-face";
 @import "typography/titles";
-@import "typography/subtitles";
 
 // Add your components here
 @import "components/buttons";
 @import "components/xp";
 @import "components/webGl";
-@import "components/graphicBars";
-@import "components/jauge";
 @import "components/glitch";
 @import "components/cursor";
 @import "components/color";
