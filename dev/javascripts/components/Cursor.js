@@ -66,6 +66,7 @@ export default class Cursor {
 
 		if (obj.color !== undefined) {
 			this.c2.style.stroke = obj.color;
+			if (obj.color === '#000000') this.c2.style.strokeWidth = 5;
 			this.hoverGoTo = true;
 			this.currentEl = obj.el;
 			// remplie
@@ -127,6 +128,8 @@ export default class Cursor {
 		this.currentEl = null;
 		this.hoverGoTo = false;
 		this.stopFollow = false;
+
+		this.c2.style.strokeWidth = 2;
 		// console.log('leave');
 		// remplie
 

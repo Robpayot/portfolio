@@ -15,7 +15,7 @@ import Glitch from '../components/Glitch';
 
 // THREE JS
 import { LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
-import EffectComposer, { RenderPass, ShaderPass } from 'three-effectcomposer-es6';
+import EffectComposer, { RenderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 
@@ -347,9 +347,14 @@ export default class ProjectView extends AbstractView {
 				global.CURSOR.prev.href = '';
 			}
 
+			if (this.id !== DATA.projects.length - 1) {
+				global.CURSOR.next.href = `#${DATA.projects[this.nextId].slug}`;
+				global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
+			} else {
+				global.CURSOR.next.href = '#about';
+				global.CURSOR.next.setAttribute('data-color', '#000000');
+			}
 
-			global.CURSOR.next.href = `#${DATA.projects[this.nextId].slug}`;
-			global.CURSOR.next.setAttribute('data-color', DATA.projects[this.nextId].color);
 		}
 
 		// Gallery
@@ -935,7 +940,12 @@ export default class ProjectView extends AbstractView {
 					// this.transitionOutScrolled = true;
 					this.goToNoScroll = true;
 					this.dir = -1;
-					window.location.href = `#${DATA.projects[this.nextId].slug}`;
+
+					if (this.id !== DATA.projects.length - 1) {
+						window.location.href = `#${DATA.projects[this.nextId].slug}`;
+					} else {
+						window.location.href = '#about';
+					}
 					// this.coefScrollZ = 0.006;
 					// this.scrollZ = this.maxZoomZ; // final destination
 				}
