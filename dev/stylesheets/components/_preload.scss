@@ -31,6 +31,9 @@
 
 	&__wrapper {
 		position: relative;
+		display: flex;
+		align-items: center;
+		pointer-events: auto;
 
 		&.start-fs {
 			pointer-events: auto;
@@ -44,8 +47,16 @@
 
 	}
 
+	&__glitch {
+		height: 100%;
+		display: inline-block !important;
+	}
+
 	&__txt {
-		// position: absolute;
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
 		text-align: center;
 		font-size: 1.2rem;
 		text-transform: uppercase;
@@ -60,6 +71,7 @@
 	&__symbol {
 		color: black;
 		font-size: 2rem;
+		margin-right: 4.0rem;
 		pointer-events: auto;
 		cursor: pointer;
 
@@ -67,11 +79,16 @@
 		svg circle {
 			stroke: black;
 		}
+
+		svg circle {
+			stroke-dasharray: 307%;
+			stroke-dashoffset: 307%;
+		}
 		svg {
 			margin: 0 auto;
 			display: block;
-			width: 7.0rem;
-			height: 7.0rem;
+			width: 6.5rem;
+			height: 6.5rem;
 			position: relative;
 			transform: rotate(-90deg);
 			// cursor: pointer;

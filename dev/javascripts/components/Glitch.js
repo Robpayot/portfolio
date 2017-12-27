@@ -2,7 +2,7 @@
 import EmitterManager from '../managers/EmitterManager';
 import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
-import dat from 'dat-gui';
+// import dat from 'dat-gui';
 import { getRandom, clamp } from '../helpers/utils';
 import { Device } from '../helpers/Device';
 
@@ -60,7 +60,7 @@ export default class Glitch {
 
 		if (this.debug === true) {
 			let template = Handlebars.compile(PreloadManager.getResult('template-glitch'));
-			let html  = template();
+			let html = template();
 
 			this.el.innerHTML = html;
 		}
@@ -92,7 +92,8 @@ export default class Glitch {
 
 		this.video = document.createElement('video');
 		this.video.id = 'video2';
-		this.video.src = 'videos/destr-reverse.mp4';
+		// this.video.src = 'videos/destr-reverse.mp4';
+		this.video.src = 'videos/destr.mp4';
 		// this.video.autoplay = true;
 		// this.video.loop = true;
 		this.video.muted = true;
@@ -185,10 +186,10 @@ export default class Glitch {
 			}
 			// this.ctxAlphaBuffer.restore();
 
-			// if (Device.touch === false) {
-			this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
-			this.ctx.globalCompositeOperation = 'source-in';
-			// }
+			if (this.isLoading === false) {
+				this.ctx.putImageData(this.imageAlpha, 0, 0, 0, 0, this.width, this.height);
+				this.ctx.globalCompositeOperation = 'source-in';
+			}
 
 
 			this.ctx.drawImage(this.introTxt, 0, 0, this.width, this.height);
@@ -415,7 +416,7 @@ export default class Glitch {
 		if (this.obj.type === 'intro') {
 			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 			// r.p : We select only the first half
-			this.width = clamp(window.innerWidth * 0.31, 200, 600) * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
+			this.width = clamp(window.innerWidth * 0.31, 200, 300) * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
 			this.height = this.width * this.introTxt.height / this.introTxt.width; // retina;
 
 			// Image size
@@ -456,8 +457,7 @@ export default class Glitch {
 		this.ui.canvas.height = this.height;
 
 		if (this.obj.type === 'intro') {
-			TweenMax.set(this.ui.canvas, {width: this.width / 2}); // retina display
-			TweenMax.set(this.ui.canvas, {height: this.height / 2});
+			TweenMax.set([this.ui.canvas, this.el], {width: this.width / 2, height: this.height / 2}); // retina display
 		}
 
 		this.ctx.font = this.font;

@@ -12,6 +12,7 @@ import { loadJSON } from '../helpers/utils-three';
 import { isTouch, preventLink } from '../helpers/utils';
 import { TextureLoader } from 'three';
 import FontFaceObserver from 'fontfaceobserver';
+import Glitch from '../components/Glitch';
 
 
 class AppManager {
@@ -23,6 +24,7 @@ class AppManager {
 		this.raf = this.raf.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.preload = this.preload.bind(this);
+		this.preloadTextures = this.preloadTextures.bind(this);
 
 	}
 
@@ -50,7 +52,7 @@ class AppManager {
 			weight: 300
 		});
 		let fontM = new FontFaceObserver('Theinhardt-medium', {
-			weight: 50
+			weight: 500
 		});
 
 		// not working on safari / Firefox
@@ -61,8 +63,8 @@ class AppManager {
 		]).then(() => {
 			this.preloadModels();
 		}).catch(reason => {
-			// console.log(reason);
-			this.preloadModels();
+			console.log(reason);
+			// this.preloadModels();
 		});
 
 	}
@@ -80,13 +82,40 @@ class AppManager {
 
 
 			global.MODELS = results;
-			this.preloadTextures();
+
+			PreloadManager.loadFile({ id: 'introTxt', src: `${global.BASE}/images/textures/name-2.png` });
+
+			// this.preloadTextures();
+
+			this.introTexLoad = PreloadManager.on('complete', () => {
+
+				PreloadManager.off('complete', this.introTexLoad);
+				this.preloadTextures();
+
+			}, this, true);
 
 
 		});
 	}
 
 	preloadTextures() {
+
+		console.log('preload textures', PreloadManager.getResult('introTxt'));
+
+		this.glitchEl = document.querySelector('.preload__glitch');
+		this.glitch = new Glitch({ // issue link to ui footer here but Css
+			el: this.glitchEl,
+			type: 'intro'
+		});
+
+		this.glitch.isLoading = true;
+		this.glitch.ready = true;
+		// this.glitch.video.play(); // play it
+		// Display glitch
+		this.events(true);
+		// this.glitch.isLoading = false;
+		// this.glitch.video.play(); // play it
+
 		// Preload all assets
 		PreloadManager.loadManifest([
 			// template hbs
@@ -96,7 +125,6 @@ class AppManager {
 			{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
 			{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },
 			// textures
-			{ id: 'introTxt', src: `${global.BASE}/images/textures/name.png` },
 			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
 			{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
 			// bkg projects
@@ -123,9 +151,9 @@ class AppManager {
 
 		PreloadManager.on('progress', (e) => {
 
-			// console.log(e.progress);
-			let percent = `${e.progress * 100}%`;
-			TweenMax.to('.preload__bar', 0.2, {width: percent});
+			let percent = `${307 - e.progress * 100 / 100 * 307}%`;
+			TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: percent, ease: window.Linear.easeNone});
+			// TweenMax.to('.preload__bar', 0.2, {width: percent});
 
 			if (this.startLoad === 0) {
 				this.startLoad = 1;
@@ -136,27 +164,40 @@ class AppManager {
 		// TweenMax.set('.preload', {display: 'none'});
 
 		PreloadManager.on('complete', () => {
-			if (Device.touch === false) this.start();
+
 			PreloadManager.off('progress');
 			const tl = new TimelineMax();
 			if (Device.touch === false) {
+				this.start();
 				tl.to('.preload', 1, {autoAlpha: 0}, 2);
-			} else {
-				tl.to('.preload__wrapper', 1, {opacity: 0}, 2);
+				tl.add(() => {
+
+					// start destruction
+					this.glitch.isLoading = false;
+					this.glitch.video.play(); // play it
+				}, 1);
+				tl.add(() => {
+
+					// this.glitch.ready = false;
+				}, 3);
+
 			}
 			tl.add(() => {
 
 				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 				if (Device.touch === true) {
 					let wrapper = document.querySelector('.preload__wrapper');
-					wrapper.innerHTML = 'start';
-					wrapper.classList.add('start-fs');
-					TweenMax.to(wrapper, 0.5, {opacity: 1});
+					let txt = document.querySelector('.preload__txt');
+					txt.innerHTML = 'start';
+					// wrapper.classList.add('start-fs');
+					TweenMax.to([txt, wrapper], 0.5, {opacity: 1});
 
 					wrapper.addEventListener('click', (e) => {
 						preventLink(e, true);
 						this.resizeHandler();
 						TweenMax.to('.preload', 1, {autoAlpha: 0});
+						this.glitch.isLoading = false;
+						this.glitch.video.play(); // play it
 						this.start();
 
 					});
@@ -168,7 +209,11 @@ class AppManager {
 
 	start() {
 
-		this.events(true);
+		console.log('start');
+
+
+
+		// this.events(true);
 
 		global.MENU = new Menu();
 		global.CURSOR = new Cursor();
@@ -212,6 +257,13 @@ class AppManager {
 	raf() {
 
 		EmitterManager.emit('raf');
+		// glitch title
+		if (this.glitch) {
+
+			if (this.glitch.ready === true) {
+				this.glitch.render();
+			}
+		}
 	}
 
 	onMouseMove(e) {
