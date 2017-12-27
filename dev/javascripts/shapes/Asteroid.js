@@ -1,6 +1,6 @@
 import AbstractShape from './AbstractShape';
 // import { Vector3 } from 'three';
-import { getRandom, toRadian } from '../helpers/utils';
+import { toRadian } from '../helpers/utils';
 import p2 from 'p2';
 
 export default class Asteroid extends AbstractShape {
@@ -11,7 +11,6 @@ export default class Asteroid extends AbstractShape {
 
 		obj.type = obj.type || 'box';
 		obj.scale = obj.scale || 1;
-		obj.offsetScale = obj.offsetScale || 0;
 		obj.rot = obj.rot || { x: 0, y: 0, z: 0 };
 		obj.width = obj.geometry.parameters !== undefined ? obj.geometry.parameters.width : obj.width;
 		obj.height = obj.geometry.parameters !== undefined ? obj.geometry.parameters.height : obj.height;

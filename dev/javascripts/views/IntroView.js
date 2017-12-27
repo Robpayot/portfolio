@@ -132,8 +132,8 @@ export default class IntroView extends AbstractView {
 		if (this.gravity === true) this.initPhysics([0,0]);
 
 		this.nbAst = 30;
-		this.minZoom = 400;
-		this.maxZoom = 700;
+		this.minZoom = 900;
+		this.maxZoom = 1700;
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;
@@ -180,11 +180,9 @@ export default class IntroView extends AbstractView {
 
 	setUiContainer() {
 
-		const data = DATA;
-
 		// Intro content
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-intro-content'));
-		let html  = template(data.projects[0]);
+		let html  = template(DATA.projects[0]);
 
 		this.ui.uiContent.className = '';
 		this.ui.uiContent.classList.add('ui-content', 'is-intro');
@@ -202,7 +200,7 @@ export default class IntroView extends AbstractView {
 
 	setCameraPos() {
 
-		this.camera.position.set(0, 70, 0);
+		this.camera.position.set(0, 200, 0);
 		this.currentCameraRotX = this.camera.rotation.x = toRadian(-90);
 	}
 
@@ -226,7 +224,7 @@ export default class IntroView extends AbstractView {
 		}
 
 		let gsize = 256; // size of a square which is repeated
-		let res = 256; // 512 :'(
+		let res = 512; // 512 :'(
 		let gres = gsize / 2;
 		// let origx = -gsize / 2;
 		// let origz = -gsize / 2;
@@ -292,7 +290,7 @@ export default class IntroView extends AbstractView {
 		mesh.position.y = 5;
 		mesh.position.x = 0;
 		mesh.rotation.y = toRadian(-180);
-		mesh.scale.set(27, 27, 27);
+		mesh.scale.set(60, 60, 60);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
 
 
@@ -305,7 +303,7 @@ export default class IntroView extends AbstractView {
 			opacity: 0.4
 		} );
 
-		this.perimeter = 190;
+		this.perimeter = 490;
 
 		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
 		mesh.visible = this.debug;
@@ -320,23 +318,23 @@ export default class IntroView extends AbstractView {
 			opacity: 0.2
 		} );
 
-		this.fZone = 22; // Zone where asteroids can't appear. Or physic conflicts
+		this.fZone = 49; // Zone where asteroids can't appear. Or physic conflicts
 
 		let blocksParams = [{
-			size: {w: this.fZone * 2, h: 110, d: 160},
-			pos: {x: 0, y: 0, z: 50},
+			size: {w: this.fZone * 2, h: 245, d: 160},
+			pos: {x: -4, y: 0, z: 100},
 			rot: {x: 0, y: 0, z: 0}
 		}, {
-			size: {w: 40, h: 110, d: 160},
-			pos: {x: -38, y: 0, z: -33},
+			size: {w: 85, h: 250, d: 160},
+			pos: {x: -90, y: 0, z: -85},
 			rot: {x: 0, y: -45, z: 0}
 		}, {
-			size: {w: 34, h: 75, d: 160},
-			pos: {x: 48, y: 0, z: -61},
+			size: {w: 75, h: 185, d: 160},
+			pos: {x: 115, y: 0, z: -130},
 			rot: {x: 0, y: 40, z: 0}
 		},{
-			size: {w: 35, h: 35, d: 60},
-			pos: {x: 0, y: 0, z: 107},
+			size: {w: 70, h: 70, d: 160},
+			pos: {x: -4, y: 0, z: 227},
 			rot: {x: 0, y: -40, z: 0}
 		}];
 
@@ -416,7 +414,7 @@ export default class IntroView extends AbstractView {
 		this.astXMin = -this.perimeter;
 		this.astXMax = this.perimeter;
 		this.startZ = -this.perimeter;
-		this.reappearZ = -300;
+		this.reappearZ = -400;
 		this.endZ = this.perimeter;
 
 		for (let i = 0; i < this.nbAst; i++) {
@@ -462,15 +460,14 @@ export default class IntroView extends AbstractView {
 			const force = {
 				x: 0,
 				y: 0,
-				z: getRandom(-20, -25)
+				z: getRandom(-25, -30)
 			};
 
-			const scale = getRandom(8, 10);
+			const scale = getRandom(14, 16);
 			// const speed = getRandom(500, 600); // more is slower
 			// const range = getRandom(2, 5);
 			const range = 0;
 			const timeRotate = getRandom(14000, 16000);
-			const offsetScale = -10;
 
 			const asteroid = new Asteroid({
 				type: 'circle',
@@ -483,7 +480,6 @@ export default class IntroView extends AbstractView {
 				rot,
 				force,
 				scale,
-				offsetScale,
 				range,
 				// speed,
 				timeRotate,
@@ -584,7 +580,7 @@ export default class IntroView extends AbstractView {
 				if (this.asteroidsMove === true) {
 					// Apply IMPULSE
 
-					this.asteroids[i].body.velocity[1] = clamp(this.asteroids[i].force.z, -25, 0); // --> garder la meme accélération pour flux constant // "y"
+					this.asteroids[i].body.velocity[1] = clamp(this.asteroids[i].force.z, -30, 0); // --> garder la meme accélération pour flux constant // "y"
 					this.asteroids[i].body.velocity[0] = clamp(this.asteroids[i].body.velocity[0], -20, 20);
 
 					// Clamp rotation
