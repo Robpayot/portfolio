@@ -129,7 +129,7 @@ class RouterManager {
 		switch (goToPage) {
 			case '/about':
 
-				this.currentPage = this.about = new AboutView({ // Attention, Garde en mémoire une cette variable très lourde !
+				this.currentPage = new AboutView({ // Attention, Garde en mémoire une cette variable très lourde !
 					gravity: false,
 				});
 
@@ -159,7 +159,7 @@ class RouterManager {
 
 				id = 1;
 				dir = this.lastId > id ? -1 : 1;
-				this.currentPage = this.project1 = new Blob({
+				this.currentPage = new Blob({
 					id,
 					bkg: 0x0101010,
 					astd: 'spheres',
@@ -177,7 +177,7 @@ class RouterManager {
 
 				id = 2;
 				dir = this.lastId > id ? -1 : 1;
-				this.currentPage = this.project2 = new Circular({
+				this.currentPage = new Circular({
 					id,
 					bkg: 0x0101010,
 					astd: 'spheres',
@@ -196,7 +196,7 @@ class RouterManager {
 				id = 3;
 				dir = this.lastId > id ? -1 : 1;
 				if (this.lastId === 0) dir = -1;
-				this.currentPage = this.project3 = new Levit({
+				this.currentPage = new Levit({
 					id,
 					bkg: 0x0101010,
 					astd: 'cubes',

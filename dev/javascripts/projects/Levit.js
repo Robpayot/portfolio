@@ -71,7 +71,7 @@ export default class Levit extends ProjectView {
 			const range = getRandom(3, 8);
 			const timeRotate = getRandom(0.0013, 0.0016);
 
-			const model = Math.round(getRandom(3, 5));
+			const model = Math.round(getRandom(2, 4));
 
 			const asteroid = new Asteroid({
 				width: this.models[model].size.x,

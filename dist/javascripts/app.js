@@ -1458,6 +1458,7 @@ var AppManager = function () {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.preload = this.preload.bind(this);
 		this.preloadTextures = this.preloadTextures.bind(this);
+		this.callbackInit = this.callbackInit.bind(this);
 	}
 
 	_createClass(AppManager, [{
@@ -1467,20 +1468,50 @@ var AppManager = function () {
 
 			this.resizeHandler(); // resize once
 
-			this.startLoad = 0;
-			this.maxDash = 635;
 
-			// Animation
-			var tl = new TimelineMax({ repeat: -1 });
-			TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down']);
+			_PreloadManager2.default.loadFile({ id: 'introTxt', src: global.BASE + '/images/textures/name-2.png' });
 
-			tl.to('.preload__symbol .close-up', 1, { strokeDashoffset: 0, ease: window.Expo.easeOut }, 0);
-			tl.to('.preload__symbol .close-down', 1.2, { strokeDashoffset: this.maxDash * 5 + 205, ease: window.Expo.easeOut }, 0);
-			tl.set(['.preload__symbol .close-up', '.preload__symbol .close-down'], { clearProps: 'all' });
+			this.introTexLoad = _PreloadManager2.default.on('complete', function () {
 
-			var tl2 = new TimelineMax({ repeat: -1 });
-			tl2.to('.preload__txt', 1, { opacity: 1 });
-			tl2.to('.preload__txt', 1, { opacity: 0 });
+				_PreloadManager2.default.off('complete', _this.introTexLoad);
+
+				// Display Title
+				_this.glitchEl = document.querySelector('.preload__glitch');
+				_this.glitch = new _Glitch2.default({ // issue link to ui footer here but Css
+					el: _this.glitchEl,
+					type: 'intro'
+				});
+
+				_this.glitch.isLoading = true;
+				_this.glitch.ready = true;
+
+				// Loader Animation
+				var maxDash = 635;
+
+				var tl = new TimelineMax({ repeat: -1 });
+				TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down']);
+
+				tl.to('.preload__symbol .close-up', 1, { strokeDashoffset: 0, ease: window.Expo.easeOut }, 0);
+				tl.to('.preload__symbol .close-down', 1.2, { strokeDashoffset: maxDash * 5 + 205, ease: window.Expo.easeOut }, 0);
+				tl.set(['.preload__symbol .close-up', '.preload__symbol .close-down'], { clearProps: 'all' });
+
+				var tl2 = new TimelineMax({ repeat: -1 });
+				tl2.to('.preload__txt', 1, { opacity: 1 });
+				tl2.to('.preload__txt', 1, { opacity: 0 });
+
+				TweenMax.to('.preload__wrapper', 0.5, { opacity: 1 });
+
+				// Run global events
+				_this.events(true);
+
+				// start others preload
+				_this.preloadFonts();
+			}, this, true);
+		}
+	}, {
+		key: 'preloadFonts',
+		value: function preloadFonts() {
+			var _this2 = this;
 
 			var font = new _fontfaceobserver2.default('Theinhardt');
 			var fontL = new _fontfaceobserver2.default('Theinhardt-light', {
@@ -1492,7 +1523,7 @@ var AppManager = function () {
 
 			// not working on safari / Firefox
 			Promise.all([font.load(), fontL.load(), fontM.load()]).then(function () {
-				_this.preloadModels();
+				_this2.preloadModels();
 			}).catch(function (reason) {
 				console.log(reason);
 				// this.preloadModels();
@@ -1501,44 +1532,22 @@ var AppManager = function () {
 	}, {
 		key: 'preloadModels',
 		value: function preloadModels() {
-			var _this2 = this;
+			var _this3 = this;
 
 			// First preload Three.js models
-			Promise.all([(0, _utilsThree.loadJSON)('datas/models/triangle.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y6.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
+			Promise.all([(0, _utilsThree.loadJSON)('datas/models/triangle.json'), (0, _utilsThree.loadJSON)('datas/models/triangles_y6.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-1.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-2.json'), (0, _utilsThree.loadJSON)('datas/models/iceberg-3.json')]).then(function (results) {
 
 				global.MODELS = results;
 
-				_PreloadManager2.default.loadFile({ id: 'introTxt', src: global.BASE + '/images/textures/name-2.png' });
-
-				// this.preloadTextures();
-
-				_this2.introTexLoad = _PreloadManager2.default.on('complete', function () {
-
-					_PreloadManager2.default.off('complete', _this2.introTexLoad);
-					_this2.preloadTextures();
-				}, _this2, true);
+				_this3.preloadTextures();
 			});
 		}
 	}, {
 		key: 'preloadTextures',
 		value: function preloadTextures() {
-			var _this3 = this;
+			var _this4 = this;
 
 			console.log('preload textures', _PreloadManager2.default.getResult('introTxt'));
-
-			this.glitchEl = document.querySelector('.preload__glitch');
-			this.glitch = new _Glitch2.default({ // issue link to ui footer here but Css
-				el: this.glitchEl,
-				type: 'intro'
-			});
-
-			this.glitch.isLoading = true;
-			this.glitch.ready = true;
-			// this.glitch.video.play(); // play it
-			// Display glitch
-			this.events(true);
-			// this.glitch.isLoading = false;
-			// this.glitch.video.play(); // play it
 
 			// Preload all assets
 			_PreloadManager2.default.loadManifest([
@@ -1570,9 +1579,6 @@ var AppManager = function () {
 				TweenMax.to('.preload__symbol circle', 0.5, { strokeDashoffset: percent, ease: window.Linear.easeNone });
 				// TweenMax.to('.preload__bar', 0.2, {width: percent});
 
-				if (_this3.startLoad === 0) {
-					_this3.startLoad = 1;
-				}
 			});
 			// TweenMax.set('.preload', {display: 'none'});
 
@@ -1581,22 +1587,16 @@ var AppManager = function () {
 				_PreloadManager2.default.off('progress');
 				var tl = new TimelineMax();
 				if (_Device.Device.touch === false) {
-					_this3.start();
-					tl.to('.preload', 1, { autoAlpha: 0 }, 2);
+					TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
+					TweenMax.set(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt'], { clearProps: 'all' });
+
 					tl.add(function () {
 
-						// start destruction
-						_this3.glitch.isLoading = false;
-						_this3.glitch.video.play(); // play it
-					}, 1);
-					tl.add(function () {
-
-						// this.glitch.ready = false;
-					}, 3);
+						_this4.start();
+					}, 0.6);
 				}
 				tl.add(function () {
 
-					TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
 					if (_Device.Device.touch === true) {
 						var wrapper = document.querySelector('.preload__wrapper');
 						var txt = document.querySelector('.preload__txt');
@@ -1606,23 +1606,42 @@ var AppManager = function () {
 
 						wrapper.addEventListener('click', function (e) {
 							(0, _utils.preventLink)(e, true);
-							_this3.resizeHandler();
+							_this4.resizeHandler();
 							TweenMax.to('.preload', 1, { autoAlpha: 0 });
-							_this3.glitch.isLoading = false;
-							_this3.glitch.video.play(); // play it
-							_this3.start();
+							_this4.glitch.isLoading = false;
+							_this4.glitch.video.play(); // play it
+							_this4.start();
 						});
 					}
 				});
 			}, this, true);
 		}
 	}, {
+		key: 'callbackInit',
+		value: function callbackInit() {
+			var _this5 = this;
+
+			// start destruction effect
+			this.glitch.isLoading = false;
+			this.glitch.video.play(); // play it
+
+			var tl = new TimelineMax();
+
+			tl.to('.preload', 1.5, { autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone });
+
+			tl.add(function () {
+				_RouterManager2.default.currentPage.transitionIn(false);
+			}, 0);
+
+			tl.add(function () {
+				_this5.glitch.ready = false;
+			});
+		}
+	}, {
 		key: 'start',
 		value: function start() {
 
-			console.log('start');
-
-			// this.events(true);
+			// Start main components
 
 			global.MENU = new _Menu2.default();
 			global.CURSOR = new _Cursor2.default();
@@ -1958,7 +1977,7 @@ var RouterManager = function () {
 			switch (goToPage) {
 				case '/about':
 
-					this.currentPage = this.about = new _AboutView2.default({ // Attention, Garde en mémoire une cette variable très lourde !
+					this.currentPage = new _AboutView2.default({ // Attention, Garde en mémoire une cette variable très lourde !
 						gravity: false
 					});
 
@@ -1988,7 +2007,7 @@ var RouterManager = function () {
 
 					id = 1;
 					dir = this.lastId > id ? -1 : 1;
-					this.currentPage = this.project1 = new _Blob2.default({
+					this.currentPage = new _Blob2.default({
 						id: id,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -2006,7 +2025,7 @@ var RouterManager = function () {
 
 					id = 2;
 					dir = this.lastId > id ? -1 : 1;
-					this.currentPage = this.project2 = new _Circular2.default({
+					this.currentPage = new _Circular2.default({
 						id: id,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -2025,7 +2044,7 @@ var RouterManager = function () {
 					id = 3;
 					dir = this.lastId > id ? -1 : 1;
 					if (this.lastId === 0) dir = -1;
-					this.currentPage = this.project3 = new _Levit2.default({
+					this.currentPage = new _Levit2.default({
 						id: id,
 						bkg: 0x0101010,
 						astd: 'cubes',
@@ -2898,7 +2917,7 @@ var Levit = function (_ProjectView) {
 				var range = (0, _utils.getRandom)(3, 8);
 				var timeRotate = (0, _utils.getRandom)(0.0013, 0.0016);
 
-				var model = Math.round((0, _utils.getRandom)(3, 5));
+				var model = Math.round((0, _utils.getRandom)(2, 4));
 
 				var asteroid = new _Asteroid2.default({
 					width: this.models[model].size.x,
@@ -9330,6 +9349,10 @@ var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 
 var _utils = require('../helpers/utils');
 
+var _AppManager = require('../managers/AppManager');
+
+var _AppManager2 = _interopRequireDefault(_AppManager);
+
 var _SceneManager = require('../managers/SceneManager');
 
 var _SceneManager2 = _interopRequireDefault(_SceneManager);
@@ -9430,12 +9453,18 @@ var IntroView = function (_AbstractView) {
 
 		_this.ui.debug = document.querySelector('.debug');
 
+		console.log('go');
+
 		_this.models = global.MODELS;
-		_this.init();
+		_this.init(function () {
+			// freeze of 4 seconds, Creation scene time, need a callback
+
+
+			_AppManager2.default.callbackInit();
+			// this.transitionIn(!obj.fromUrl);
+		});
 
 		_this.events(true);
-
-		_this.transitionIn(!obj.fromUrl);
 
 		_this.gyro = _Device.Device.touch; // device.gyro ?
 
@@ -9481,7 +9510,7 @@ var IntroView = function (_AbstractView) {
 		}
 	}, {
 		key: 'init',
-		value: function init() {
+		value: function init(callback) {
 
 			this.setUiContainer();
 
@@ -9543,6 +9572,8 @@ var IntroView = function (_AbstractView) {
 
 
 			global.CURSOR.el.classList.add('alt');
+
+			callback();
 		}
 	}, {
 		key: 'setUiContainer',
@@ -9656,7 +9687,7 @@ var IntroView = function (_AbstractView) {
 				color: 0xffffff,
 				flatShading: true
 			});
-			mesh = new _three.Mesh(this.models[2], mat);
+			mesh = new _three.Mesh(this.models[1], mat);
 			mesh.position.y = 5;
 			mesh.position.x = 0;
 			mesh.rotation.y = (0, _utils.toRadian)(-180);
@@ -10120,11 +10151,11 @@ var IntroView = function (_AbstractView) {
 				// 	this.glitch.ready = true;
 				// 	this.glitch.video.play(); // play it
 				// }, delayOffset3);
-				tl.fromTo(this.ui.overlay, 2, { // Fade white
-					opacity: 1
-				}, {
-					opacity: 0
-				}, 0 - delayOffset - delayOffset2);
+				// tl.fromTo(this.ui.overlay, 2, { // Fade white
+				// 	opacity: 1
+				// },{
+				// 	opacity: 0
+				// }, 0 - delayOffset - delayOffset2);
 				// tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:() => { // fadeOUt/stop Glitch
 				// 	this.glitch.ready = false;
 				// }}, 6 - delayOffset);
@@ -10137,12 +10168,12 @@ var IntroView = function (_AbstractView) {
 					_this4.startMove = true;
 				}, 1 - delayOffset);
 
-				tl.fromTo(this.ui.button, 3, { opacity: 0, display: 'block' }, { opacity: 1, display: 'block' }); // display buttons
+				tl.fromTo(this.ui.button, 3, { opacity: 0, display: 'block' }, { opacity: 1, display: 'block' }, 4); // display buttons
 
 				if (_Device.Device.touch === true) {
 
-					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 7 - delayOffset);
-					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 7 - delayOffset);
+					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 4 - delayOffset);
+					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 4 - delayOffset);
 				}
 			} else {
 
@@ -10199,8 +10230,8 @@ var IntroView = function (_AbstractView) {
 			if (fromProject === true) {
 				tl.fromTo(this.camera.position, 5, { y: this.maxZoom }, { y: this.minZoom, ease: window.Expo.easeOut }, 0); // 5
 			} else {
-				var time = _Device.Device.touch === true ? 4.5 : 5.5;
-				tl.to(this.camera.position, time, { y: this.minZoom, ease: window.Expo.easeInOut }); // 7
+				var time = _Device.Device.touch === true ? 4.5 : 4.5;
+				tl.to(this.camera.position, time, { y: this.minZoom, ease: window.Expo.easeInOut }, 0); // 7
 			}
 
 			tl.add(function () {
@@ -10268,7 +10299,7 @@ exports.default = IntroView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/FFTOceanShader":25,"../shaders/OceanShader":29,"../shaders/ScreenSpaceShader":30,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":381,"p2":425,"three":466}],49:[function(require,module,exports){
+},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":11,"../managers/AppManager":12,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/FFTOceanShader":25,"../shaders/OceanShader":29,"../shaders/ScreenSpaceShader":30,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":381,"p2":425,"three":466}],49:[function(require,module,exports){
 (function (global){
 'use strict';
 

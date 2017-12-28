@@ -1,6 +1,7 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round, preventLink } from '../helpers/utils';
+import AppManager from '../managers/AppManager';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 // import SplitText from '../vendors/SplitText.js';
@@ -60,13 +61,19 @@ export default class IntroView extends AbstractView {
 
 		this.ui.debug = document.querySelector('.debug');
 
+		console.log('go');
+
 
 		this.models = global.MODELS;
-		this.init();
+		this.init(() => { // freeze of 4 seconds, Creation scene time, need a callback
+
+
+			AppManager.callbackInit();
+			// this.transitionIn(!obj.fromUrl);
+		});
+
 
 		this.events(true);
-
-		this.transitionIn(!obj.fromUrl);
 
 		this.gyro = Device.touch; // device.gyro ?
 
@@ -111,7 +118,7 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	init() {
+	init(callback) {
 
 		this.setUiContainer();
 
@@ -174,6 +181,8 @@ export default class IntroView extends AbstractView {
 
 
 		global.CURSOR.el.classList.add('alt');
+
+		callback();
 
 
 	}
@@ -286,7 +295,7 @@ export default class IntroView extends AbstractView {
 			color: 0xffffff,
 			flatShading: true
 		} );
-		mesh = new Mesh(this.models[2], mat);
+		mesh = new Mesh(this.models[1], mat);
 		mesh.position.y = 5;
 		mesh.position.x = 0;
 		mesh.rotation.y = toRadian(-180);
@@ -751,11 +760,11 @@ export default class IntroView extends AbstractView {
 			// 	this.glitch.ready = true;
 			// 	this.glitch.video.play(); // play it
 			// }, delayOffset3);
-			tl.fromTo(this.ui.overlay, 2, { // Fade white
-				opacity: 1
-			},{
-				opacity: 0
-			}, 0 - delayOffset - delayOffset2);
+			// tl.fromTo(this.ui.overlay, 2, { // Fade white
+			// 	opacity: 1
+			// },{
+			// 	opacity: 0
+			// }, 0 - delayOffset - delayOffset2);
 			// tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:() => { // fadeOUt/stop Glitch
 			// 	this.glitch.ready = false;
 			// }}, 6 - delayOffset);
@@ -768,12 +777,12 @@ export default class IntroView extends AbstractView {
 				this.startMove = true;
 			}, 1 - delayOffset);
 
-			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}); // display buttons
+			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 4); // display buttons
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 7 - delayOffset);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 7 - delayOffset);
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 4 - delayOffset);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 4 - delayOffset);
 			}
 
 		} else {
@@ -828,8 +837,8 @@ export default class IntroView extends AbstractView {
 		if (fromProject === true) {
 			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
 		} else {
-			let time = Device.touch === true ? 4.5 : 5.5;
-			tl.to(this.camera.position, time, {y: this.minZoom, ease: window.Expo.easeInOut}); // 7
+			let time = Device.touch === true ? 4.5 : 4.5;
+			tl.to(this.camera.position, time, {y: this.minZoom, ease: window.Expo.easeInOut}, 0); // 7
 		}
 
 

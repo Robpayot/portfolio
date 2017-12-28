@@ -25,6 +25,7 @@ class AppManager {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.preload = this.preload.bind(this);
 		this.preloadTextures = this.preloadTextures.bind(this);
+		this.callbackInit = this.callbackInit.bind(this);
 
 	}
 
@@ -32,21 +33,54 @@ class AppManager {
 
 		this.resizeHandler(); // resize once
 
-		this.startLoad = 0;
-		this.maxDash = 635;
 
-		// Animation
-		const tl = new TimelineMax({repeat: -1});
-		TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
+		PreloadManager.loadFile({ id: 'introTxt', src: `${global.BASE}/images/textures/name-2.png` });
 
-		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0);
-		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 5 + 205, ease: window.Expo.easeOut}, 0);
-		tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 
-		const tl2 = new TimelineMax({repeat: -1});
-		tl2.to('.preload__txt', 1, {opacity: 1});
-		tl2.to('.preload__txt', 1, {opacity: 0});
+		this.introTexLoad = PreloadManager.on('complete', () => {
 
+			PreloadManager.off('complete', this.introTexLoad);
+
+			// Display Title
+			this.glitchEl = document.querySelector('.preload__glitch');
+			this.glitch = new Glitch({ // issue link to ui footer here but Css
+				el: this.glitchEl,
+				type: 'intro'
+			});
+
+			this.glitch.isLoading = true;
+			this.glitch.ready = true;
+
+
+			// Loader Animation
+			let maxDash = 635;
+
+			const tl = new TimelineMax({repeat: -1});
+			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
+
+			tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0);
+			tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: maxDash * 5 + 205, ease: window.Expo.easeOut}, 0);
+			tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
+
+			const tl2 = new TimelineMax({repeat: -1});
+			tl2.to('.preload__txt', 1, {opacity: 1});
+			tl2.to('.preload__txt', 1, {opacity: 0});
+
+			TweenMax.to('.preload__wrapper', 0.5, {opacity: 1});
+
+			// Run global events
+			this.events(true);
+
+			// start others preload
+			this.preloadFonts();
+
+		}, this, true);
+
+
+
+	}
+
+	preloadFonts() {
 		let font = new FontFaceObserver('Theinhardt');
 		let fontL = new FontFaceObserver('Theinhardt-light', {
 			weight: 300
@@ -62,18 +96,18 @@ class AppManager {
 			fontM.load()
 		]).then(() => {
 			this.preloadModels();
+
+
 		}).catch(reason => {
 			console.log(reason);
 			// this.preloadModels();
 		});
-
 	}
 
 	preloadModels() {
 		// First preload Three.js models
 		Promise.all([
 			loadJSON('datas/models/triangle.json'),
-			loadJSON('datas/models/triangles_y.json'),
 			loadJSON('datas/models/triangles_y6.json'),
 			loadJSON('datas/models/iceberg-1.json'),
 			loadJSON('datas/models/iceberg-2.json'),
@@ -83,16 +117,7 @@ class AppManager {
 
 			global.MODELS = results;
 
-			PreloadManager.loadFile({ id: 'introTxt', src: `${global.BASE}/images/textures/name-2.png` });
-
-			// this.preloadTextures();
-
-			this.introTexLoad = PreloadManager.on('complete', () => {
-
-				PreloadManager.off('complete', this.introTexLoad);
-				this.preloadTextures();
-
-			}, this, true);
+			this.preloadTextures();
 
 
 		});
@@ -102,19 +127,6 @@ class AppManager {
 
 		console.log('preload textures', PreloadManager.getResult('introTxt'));
 
-		this.glitchEl = document.querySelector('.preload__glitch');
-		this.glitch = new Glitch({ // issue link to ui footer here but Css
-			el: this.glitchEl,
-			type: 'intro'
-		});
-
-		this.glitch.isLoading = true;
-		this.glitch.ready = true;
-		// this.glitch.video.play(); // play it
-		// Display glitch
-		this.events(true);
-		// this.glitch.isLoading = false;
-		// this.glitch.video.play(); // play it
 
 		// Preload all assets
 		PreloadManager.loadManifest([
@@ -155,10 +167,6 @@ class AppManager {
 			TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: percent, ease: window.Linear.easeNone});
 			// TweenMax.to('.preload__bar', 0.2, {width: percent});
 
-			if (this.startLoad === 0) {
-				this.startLoad = 1;
-
-			}
 
 		});
 		// TweenMax.set('.preload', {display: 'none'});
@@ -168,23 +176,17 @@ class AppManager {
 			PreloadManager.off('progress');
 			const tl = new TimelineMax();
 			if (Device.touch === false) {
-				this.start();
-				tl.to('.preload', 1, {autoAlpha: 0}, 2);
+				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+				TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
+
 				tl.add(() => {
 
-					// start destruction
-					this.glitch.isLoading = false;
-					this.glitch.video.play(); // play it
-				}, 1);
-				tl.add(() => {
-
-					// this.glitch.ready = false;
-				}, 3);
+					this.start();
+				}, 0.6);
 
 			}
 			tl.add(() => {
 
-				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 				if (Device.touch === true) {
 					let wrapper = document.querySelector('.preload__wrapper');
 					let txt = document.querySelector('.preload__txt');
@@ -207,13 +209,28 @@ class AppManager {
 		}, this, true);
 	}
 
+	callbackInit() {
+
+		// start destruction effect
+		this.glitch.isLoading = false;
+		this.glitch.video.play(); // play it
+
+		const tl = new TimelineMax();
+
+		tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
+
+		tl.add(() => {
+			RouterManager.currentPage.transitionIn(false);
+		}, 0);
+
+		tl.add(() => {
+			this.glitch.ready = false;
+		});
+	}
+
 	start() {
 
-		console.log('start');
-
-
-
-		// this.events(true);
+		// Start main components
 
 		global.MENU = new Menu();
 		global.CURSOR = new Cursor();

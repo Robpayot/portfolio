@@ -557,7 +557,8 @@ body {
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
-    pointer-events: auto; }
+    pointer-events: auto;
+    opacity: 0; }
     .preload__wrapper.start-fs {
       pointer-events: auto;
       font-size: 1.6rem;
