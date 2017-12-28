@@ -195,11 +195,17 @@ class AppManager {
 
 				let onWrapperClick = (e) => {
 
-					wrapper.removeEventListener('click', onWrapperClick);
+
 					TweenMax.to(txt, 0.5, {opacity: 0});
+
+					wrapper.removeEventListener('click', onWrapperClick);
+
 					preventLink(e, true);
 					this.resizeHandler();
-					this.start();
+					tl.add(() => {
+						this.start();
+					}, 0.6);
+
 				};
 
 				wrapper.addEventListener('click', onWrapperClick);
@@ -235,20 +241,32 @@ class AppManager {
 	callbackInit() {
 
 		// start destruction effect
-		this.glitch.isLoading = false;
 		this.glitch.video.play(); // play it
 
 		const tl = new TimelineMax();
 
-		tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
+		// tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
 
-		tl.add(() => {
-			RouterManager.currentPage.transitionIn(false);
-		}, 0);
+		if (Device.touch === false) {
+			this.glitch.isLoading = false;
+			tl.add(() => {
+				RouterManager.currentPage.transitionIn(false);
+			}, 0);
+
+		} else {
+			tl.add(() => {
+				RouterManager.currentPage.transitionIn(false);
+				this.glitch.isLoading = false;
+			}, 0.9);
+		}
+
+		tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 
 		tl.add(() => {
 			this.glitch.ready = false;
 		});
+
+
 	}
 
 	events(method) {

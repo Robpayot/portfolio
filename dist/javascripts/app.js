@@ -1605,11 +1605,15 @@ var AppManager = function () {
 
 					var onWrapperClick = function onWrapperClick(e) {
 
-						wrapper.removeEventListener('click', onWrapperClick);
 						TweenMax.to(txt, 0.5, { opacity: 0 });
+
+						wrapper.removeEventListener('click', onWrapperClick);
+
 						(0, _utils.preventLink)(e, true);
 						_this4.resizeHandler();
-						_this4.start();
+						tl.add(function () {
+							_this4.start();
+						}, 0.6);
 					};
 
 					wrapper.addEventListener('click', onWrapperClick);
@@ -1646,16 +1650,25 @@ var AppManager = function () {
 			var _this5 = this;
 
 			// start destruction effect
-			this.glitch.isLoading = false;
 			this.glitch.video.play(); // play it
 
 			var tl = new TimelineMax();
 
-			tl.to('.preload', 1.5, { autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone });
+			// tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
 
-			tl.add(function () {
-				_RouterManager2.default.currentPage.transitionIn(false);
-			}, 0);
+			if (_Device.Device.touch === false) {
+				this.glitch.isLoading = false;
+				tl.add(function () {
+					_RouterManager2.default.currentPage.transitionIn(false);
+				}, 0);
+			} else {
+				tl.add(function () {
+					_RouterManager2.default.currentPage.transitionIn(false);
+					_this5.glitch.isLoading = false;
+				}, 0.9);
+			}
+
+			tl.to('.preload', 1.5, { autoAlpha: 0, ease: window.Linear.easeNone }, '+=0.5');
 
 			tl.add(function () {
 				_this5.glitch.ready = false;
@@ -10139,8 +10152,8 @@ var IntroView = function (_AbstractView) {
 				// });
 
 				// const canvas = this.glitchEl.querySelector('.glitch__canvas');
-				var delayOffset = _Device.Device.touch === true ? 2 : 0;
-				var delayOffset2 = _Device.Device.touch === true ? -1 : 0;
+				var delayOffset = _Device.Device.touch === true ? 0 : 0;
+				// const delayOffset2 = Device.touch === true ? -1 : 0;
 				// const delayOffset3 = Device.touch === true ? 0 : 2.3;
 
 				var tl = new TimelineMax();
@@ -10172,8 +10185,8 @@ var IntroView = function (_AbstractView) {
 
 				if (_Device.Device.touch === true) {
 
-					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 4 - delayOffset);
-					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 4 - delayOffset);
+					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 3);
+					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 3);
 				}
 			} else {
 

@@ -748,8 +748,8 @@ export default class IntroView extends AbstractView {
 			// });
 
 			// const canvas = this.glitchEl.querySelector('.glitch__canvas');
-			const delayOffset = Device.touch === true ? 2 : 0;
-			const delayOffset2 = Device.touch === true ? -1 : 0;
+			const delayOffset = Device.touch === true ? 0 : 0;
+			// const delayOffset2 = Device.touch === true ? -1 : 0;
 			// const delayOffset3 = Device.touch === true ? 0 : 2.3;
 
 			const tl = new TimelineMax();
@@ -781,8 +781,8 @@ export default class IntroView extends AbstractView {
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 4 - delayOffset);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 4 - delayOffset);
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 3);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
 			}
 
 		} else {
