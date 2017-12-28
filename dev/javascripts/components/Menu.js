@@ -48,9 +48,9 @@ export default class Menu {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		// let onListener = method === false ? 'off' : 'on';
-		this.el[evListener]('click', this.onClickOutside);
 
 		if (Device.touch === false) {
+			this.el[evListener]('click', this.onClickOutside);
 			this.ui.button[evListener]('click', this.toggleOpen);
 			this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 			this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
@@ -64,6 +64,7 @@ export default class Menu {
 				this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 			}
 		} else {
+			// this.el[evListener]('touchstart', this.onClickOutside);
 			this.ui.button[evListener]('touchstart', this.toggleOpen);
 			for (let i = 0; i < this.ui.aLinks.length; i++) {
 				this.ui.aLinks[i][evListener]('click', preventLink);

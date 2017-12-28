@@ -113,7 +113,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	startScene() {
-		console.log('yes ?');
 
 		super.startScene();
 	}
@@ -158,8 +157,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	init(sceneReady) {
-
-		console.log('initttti');
 
 		this.sceneReady = sceneReady;
 

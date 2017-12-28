@@ -914,9 +914,9 @@ var Menu = function () {
 
 			var evListener = method === false ? 'removeEventListener' : 'addEventListener';
 			// let onListener = method === false ? 'off' : 'on';
-			this.el[evListener]('click', this.onClickOutside);
 
 			if (_Device.Device.touch === false) {
+				this.el[evListener]('click', this.onClickOutside);
 				this.ui.button[evListener]('click', this.toggleOpen);
 				this.ui.button[evListener]('mouseenter', this.onHoverBtn);
 				this.ui.button[evListener]('mouseleave', this.onLeaveBtn);
@@ -930,6 +930,7 @@ var Menu = function () {
 					this.ui.subLinksTitles[_i][evListener]('mouseleave', this.onLeaveLink);
 				}
 			} else {
+				// this.el[evListener]('touchstart', this.onClickOutside);
 				this.ui.button[evListener]('touchstart', this.toggleOpen);
 				for (var _i2 = 0; _i2 < this.ui.aLinks.length; _i2++) {
 					this.ui.aLinks[_i2][evListener]('click', _utils.preventLink);
@@ -1547,8 +1548,6 @@ var AppManager = function () {
 		value: function preloadTextures() {
 			var _this4 = this;
 
-			console.log('preload textures', _PreloadManager2.default.getResult('introTxt'));
-
 			// Preload all assets
 			_PreloadManager2.default.loadManifest([
 			// template hbs
@@ -1655,7 +1654,7 @@ var AppManager = function () {
 			var tl = new TimelineMax();
 
 			if (_Device.Device.touch === false) {
-				console.log(_RouterManager2.default.fromUrl);
+
 				this.glitch.isLoading = false; // apply video alpha
 				tl.add(function () {
 					_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
@@ -9154,7 +9153,6 @@ var AbstractView = function () {
 			this.init(function () {
 				// Creation scene time, need a callback the first time
 
-				console.log('finish init');
 				_AppManager2.default.callbackInit();
 			});
 		}
@@ -9467,8 +9465,6 @@ var IntroView = function (_AbstractView) {
 		_this.onLeaveStart = _this.onLeaveStart.bind(_this);
 
 		_this.ui.debug = document.querySelector('.debug');
-
-		console.log('go');
 
 		_this.models = global.MODELS;
 
@@ -10120,7 +10116,6 @@ var IntroView = function (_AbstractView) {
 
 			var fromProject = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-			console.log('intro !');
 
 			this.el.classList.add('intro');
 			this.el.classList.remove('project');
@@ -10462,7 +10457,6 @@ var ProjectView = function (_AbstractView) {
 	_createClass(ProjectView, [{
 		key: 'startScene',
 		value: function startScene() {
-			console.log('yes ?');
 
 			_get(ProjectView.prototype.__proto__ || Object.getPrototypeOf(ProjectView.prototype), 'startScene', this).call(this);
 		}
@@ -10507,8 +10501,6 @@ var ProjectView = function (_AbstractView) {
 	}, {
 		key: 'init',
 		value: function init(sceneReady) {
-
-			console.log('initttti');
 
 			this.sceneReady = sceneReady;
 

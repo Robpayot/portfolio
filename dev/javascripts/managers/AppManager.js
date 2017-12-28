@@ -125,8 +125,6 @@ class AppManager {
 
 	preloadTextures() {
 
-		console.log('preload textures', PreloadManager.getResult('introTxt'));
-
 
 		// Preload all assets
 		PreloadManager.loadManifest([
@@ -246,7 +244,7 @@ class AppManager {
 		const tl = new TimelineMax();
 
 		if (Device.touch === false) {
-			console.log(RouterManager.fromUrl);
+
 			this.glitch.isLoading = false; // apply video alpha
 			tl.add(() => {
 				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);

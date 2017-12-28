@@ -60,8 +60,6 @@ export default class IntroView extends AbstractView {
 
 		this.ui.debug = document.querySelector('.debug');
 
-		console.log('go');
-
 
 		this.models = global.MODELS;
 
@@ -713,7 +711,6 @@ export default class IntroView extends AbstractView {
 	}
 
 	transitionIn(fromProject = false) {
-		console.log('intro !');
 
 		this.el.classList.add('intro');
 		this.el.classList.remove('project');

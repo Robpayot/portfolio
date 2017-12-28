@@ -18,7 +18,6 @@ export default class AbstractView {
 
 		this.init(() => { // Creation scene time, need a callback the first time
 
-			console.log('finish init');
 			AppManager.callbackInit();
 
 		});
