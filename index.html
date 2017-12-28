@@ -75,11 +75,15 @@
 					<circle fill="none" stroke="#000000" stroke-width="55" stroke-miterlimit="10" cx="304.8" cy="483.7" r="1021.5"/>
 				</svg>
 			</div>
-			<p class="preload__txt">loading</p>
-			<div class="preload__bars">
+<!-- 			<div class="preload__bars">
 				<div class="preload__bar-bkg"></div>
 				<div class="preload__bar"></div>
+			</div> -->
+			<div class="preload__glitch">
+				<canvas class="glitch__canvas"></canvas>
+				<canvas class="glitch__canvas-alpha-buffer"></canvas>
 			</div>
+			<p class="preload__txt">loading</p>
 		</div>
 	</section>
 	<div class="overlay"></div>
@@ -103,7 +107,7 @@
 		gtag('config', 'UA-45793528-1');
 	</script>
 
-<!-- 	<script>
+	<script>
 		var script = document.createElement('script');
 		script.onload = function() {
 			var stats = new Stats();
@@ -115,7 +119,7 @@
 		};
 		script.src = '//rawgit.com/mrdoob/stats.js/master/build/stats.min.js';
 		document.head.appendChild(script);
-	</script> -->
+	</script>
 
 </body>
 
