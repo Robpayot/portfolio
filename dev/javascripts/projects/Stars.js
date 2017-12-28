@@ -3,8 +3,9 @@ import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 
 
+
 // THREE JS
-import { SphereGeometry, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, Geometry, Vector3, ShaderLib, UniformsUtils, ShaderMaterial, AdditiveBlending, Points, Color, Texture } from 'three';
+import { SphereGeometry, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending, Points } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -23,8 +24,7 @@ export default class Stars extends ProjectView {
 		this.lights = [];
 		this.coefSpeed = 0.015;
 
-
-		this.init();
+		super.startScene();
 
 		setTimeout(() => {
 			this.setTerrain();

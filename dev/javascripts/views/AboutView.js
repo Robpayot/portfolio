@@ -60,7 +60,7 @@ export default class AboutView extends AbstractView {
 
 		// preload Models
 
-		this.init();
+		super.startScene();
 
 		// ui
 		this.ui = {
@@ -91,8 +91,6 @@ export default class AboutView extends AbstractView {
 
 		this.events(true);
 		global.OVERLAY.classList.add('black');
-
-		this.transitionIn();
 
 		// init
 
@@ -140,7 +138,7 @@ export default class AboutView extends AbstractView {
 
 	}
 
-	init() {
+	init(sceneReady) {
 
 		// console.log('init about');
 
@@ -212,6 +210,8 @@ export default class AboutView extends AbstractView {
 		global.CURSOR.el.classList.add('alt');
 
 		this.isInit = true;
+
+		sceneReady();
 
 	}
 

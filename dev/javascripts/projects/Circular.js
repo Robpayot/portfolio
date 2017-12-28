@@ -2,7 +2,7 @@ import ProjectView from '../views/ProjectView';
 import { getRandom, toRadian } from '../helpers/utils';
 
 // THREE JS
-import { Mesh, Group, PlaneGeometry, DirectionalLight, MeshLambertMaterial, PointLight, Object3D } from 'three';
+import { Mesh, Group, PlaneGeometry, DirectionalLight, MeshLambertMaterial, Object3D } from 'three';
 
 
 export default class Circular extends ProjectView {
@@ -16,7 +16,7 @@ export default class Circular extends ProjectView {
 		this.color2 = 0x5A1996;
 		this.color3 = 0x424242;
 
-		this.init();
+		super.startScene();
 
 
 		// console.log('Circular view');

@@ -1650,28 +1650,27 @@ var AppManager = function () {
 			var _this5 = this;
 
 			// start destruction effect
-			this.glitch.video.play(); // play it
+			this.glitch.video.play(); // play video
 
 			var tl = new TimelineMax();
 
-			// tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
-
 			if (_Device.Device.touch === false) {
-				this.glitch.isLoading = false;
+				console.log(_RouterManager2.default.fromUrl);
+				this.glitch.isLoading = false; // apply video alpha
 				tl.add(function () {
-					_RouterManager2.default.currentPage.transitionIn(false);
+					_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
 				}, 0);
 			} else {
 				tl.add(function () {
-					_RouterManager2.default.currentPage.transitionIn(false);
-					_this5.glitch.isLoading = false;
+					_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
+					_this5.glitch.isLoading = false; // apply video alpha
 				}, 0.9);
 			}
 
 			tl.to('.preload', 1.5, { autoAlpha: 0, ease: window.Linear.easeNone }, '+=0.5');
 
 			tl.add(function () {
-				_this5.glitch.ready = false;
+				_this5.glitch.ready = false; // stop raf destr
 			});
 		}
 	}, {
@@ -1983,6 +1982,8 @@ var RouterManager = function () {
 			var lastPage = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
 
+			this.fromUrl = fromUrl;
+
 			// let slug;
 			var dir = void 0;
 			var id = void 0;
@@ -2002,7 +2003,7 @@ var RouterManager = function () {
 					dir = this.lastId > id ? -1 : 1;
 
 					if (this.lastId === 3 || this.lastId === undefined) dir = 1;
-					this.currentPage = this.project0 = new _Stars2.default({ // Attention, Garde en mémoire une cette variable très lourde !
+					this.currentPage = new _Stars2.default({ // Attention, Garde en mémoire une cette variable très lourde !
 						id: id,
 						bkg: 0x0101010,
 						astd: 'spheres',
@@ -2010,7 +2011,6 @@ var RouterManager = function () {
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[0],
-						fromUrl: fromUrl,
 						dir: dir
 					});
 
@@ -2028,7 +2028,6 @@ var RouterManager = function () {
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[1],
-						fromUrl: fromUrl,
 						dir: dir
 					});
 
@@ -2046,7 +2045,6 @@ var RouterManager = function () {
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[2],
-						fromUrl: fromUrl,
 						dir: dir
 					});
 
@@ -2065,7 +2063,6 @@ var RouterManager = function () {
 						pointsLight: true,
 						alt: false,
 						data: _data2.default.projects[3],
-						fromUrl: fromUrl,
 						dir: dir
 					});
 
@@ -2090,8 +2087,7 @@ var RouterManager = function () {
 				default:
 
 					this.currentPage = new _IntroView2.default({
-						gravity: true,
-						fromUrl: fromUrl
+						gravity: true
 					});
 
 					break;
@@ -2464,7 +2460,7 @@ var Blob = function (_ProjectView) {
 
 		var _this = _possibleConstructorReturn(this, (Blob.__proto__ || Object.getPrototypeOf(Blob)).call(this, obj));
 
-		_this.init = _this.init.bind(_this);
+		_this.playTex = _this.playTex.bind(_this);
 
 		_this.toggle = 0;
 		_this.intersection;
@@ -2480,9 +2476,9 @@ var Blob = function (_ProjectView) {
 		// this.el.appendChild(this.video);
 
 		if (_this.canplay === true) {
-			_this.init();
+			_this.playTex();
 		} else {
-			_this.video.addEventListener('canplay', _this.init);
+			_this.video.addEventListener('canplay', _this.playTex);
 		}
 
 		// console.log('Blob view');
@@ -2491,12 +2487,12 @@ var Blob = function (_ProjectView) {
 	}
 
 	_createClass(Blob, [{
-		key: 'init',
-		value: function init() {
+		key: 'playTex',
+		value: function playTex() {
 			if (this.canplay === true) return false;
 			this.canplay = true;
 
-			_get(Blob.prototype.__proto__ || Object.getPrototypeOf(Blob.prototype), 'init', this).call(this);
+			_get(Blob.prototype.__proto__ || Object.getPrototypeOf(Blob.prototype), 'startScene', this).call(this);
 		}
 	}, {
 		key: 'setAsteroids',
@@ -2661,6 +2657,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
+// THREE JS
+
+
 var _ProjectView2 = require('../views/ProjectView');
 
 var _ProjectView3 = _interopRequireDefault(_ProjectView2);
@@ -2677,9 +2676,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// THREE JS
-
-
 var Circular = function (_ProjectView) {
 	_inherits(Circular, _ProjectView);
 
@@ -2693,7 +2689,7 @@ var Circular = function (_ProjectView) {
 		_this.color2 = 0x5A1996;
 		_this.color3 = 0x424242;
 
-		_this.init();
+		_get(Circular.prototype.__proto__ || Object.getPrototypeOf(Circular.prototype), 'startScene', _this).call(_this);
 
 		// console.log('Circular view');
 
@@ -2848,6 +2844,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
+// THREE JS
+
+
 var _ProjectView2 = require('../views/ProjectView');
 
 var _ProjectView3 = _interopRequireDefault(_ProjectView2);
@@ -2870,9 +2869,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// THREE JS
-
-
 var Levit = function (_ProjectView) {
 	_inherits(Levit, _ProjectView);
 
@@ -2888,7 +2884,7 @@ var Levit = function (_ProjectView) {
 		_this.toggle = 0;
 
 		_this.models = global.MODELS;
-		_this.init();
+		_get(Levit.prototype.__proto__ || Object.getPrototypeOf(Levit.prototype), 'startScene', _this).call(_this);
 
 		// console.log('Levit view');
 
@@ -3075,6 +3071,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
+// THREE JS
+
+
 var _ProjectView2 = require('../views/ProjectView');
 
 var _ProjectView3 = _interopRequireDefault(_ProjectView2);
@@ -3107,9 +3106,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// THREE JS
-
-
 var Stars = function (_ProjectView) {
 	_inherits(Stars, _ProjectView);
 
@@ -3125,7 +3121,7 @@ var Stars = function (_ProjectView) {
 		_this.lights = [];
 		_this.coefSpeed = 0.015;
 
-		_this.init();
+		_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'startScene', _this).call(_this);
 
 		setTimeout(function () {
 			_this.setTerrain();
@@ -8177,6 +8173,8 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+// import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
+
 
 var _AbstractView2 = require('./AbstractView');
 
@@ -8235,8 +8233,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// import SmoothFragmentShader from '../shaders/SmoothFragmentShader';
-
 
 // import dat from 'dat-gui';
 
@@ -8284,7 +8280,7 @@ var AboutView = function (_AbstractView) {
 
 		// preload Models
 
-		_this.init();
+		_get(AboutView.prototype.__proto__ || Object.getPrototypeOf(AboutView.prototype), 'startScene', _this).call(_this);
 
 		// ui
 		_this.ui = {
@@ -8315,8 +8311,6 @@ var AboutView = function (_AbstractView) {
 
 		_this.events(true);
 		global.OVERLAY.classList.add('black');
-
-		_this.transitionIn();
 
 		// init
 
@@ -8366,7 +8360,7 @@ var AboutView = function (_AbstractView) {
 		}
 	}, {
 		key: 'init',
-		value: function init() {
+		value: function init(sceneReady) {
 
 			// console.log('init about');
 
@@ -8437,6 +8431,8 @@ var AboutView = function (_AbstractView) {
 			global.CURSOR.el.classList.add('alt');
 
 			this.isInit = true;
+
+			sceneReady();
 		}
 
 		////////////////////
@@ -9152,6 +9148,17 @@ var AbstractView = function () {
 	}
 
 	_createClass(AbstractView, [{
+		key: 'startScene',
+		value: function startScene() {
+
+			this.init(function () {
+				// Creation scene time, need a callback the first time
+
+				console.log('finish init');
+				_AppManager2.default.callbackInit();
+			});
+		}
+	}, {
 		key: 'initPhysics',
 		value: function initPhysics(gravity) {
 
@@ -9351,6 +9358,11 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+// import SplitText from '../vendors/SplitText.js';
+
+
+// import Glitch from '../components/Glitch';
+
 
 var _AbstractView2 = require('./AbstractView');
 
@@ -9362,10 +9374,6 @@ var _EmitterManager2 = _interopRequireDefault(_EmitterManager);
 
 var _utils = require('../helpers/utils');
 
-var _AppManager = require('../managers/AppManager');
-
-var _AppManager2 = _interopRequireDefault(_AppManager);
-
 var _SceneManager = require('../managers/SceneManager');
 
 var _SceneManager2 = _interopRequireDefault(_SceneManager);
@@ -9375,10 +9383,6 @@ var _Asteroid = require('../shapes/Asteroid');
 var _Asteroid2 = _interopRequireDefault(_Asteroid);
 
 var _Device = require('../helpers/Device');
-
-var _Glitch = require('../components/Glitch');
-
-var _Glitch2 = _interopRequireDefault(_Glitch);
 
 var _handlebars = require('handlebars');
 
@@ -9421,8 +9425,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// import SplitText from '../vendors/SplitText.js';
-
 
 // GYRO JS
 // import Gyro from '../vendors/gyro.min';
@@ -9469,13 +9471,8 @@ var IntroView = function (_AbstractView) {
 		console.log('go');
 
 		_this.models = global.MODELS;
-		_this.init(function () {
-			// freeze of 4 seconds, Creation scene time, need a callback
 
-
-			_AppManager2.default.callbackInit();
-			// this.transitionIn(!obj.fromUrl);
-		});
+		_get(IntroView.prototype.__proto__ || Object.getPrototypeOf(IntroView.prototype), 'startScene', _this).call(_this);
 
 		_this.events(true);
 
@@ -9523,7 +9520,7 @@ var IntroView = function (_AbstractView) {
 		}
 	}, {
 		key: 'init',
-		value: function init(callback) {
+		value: function init(sceneReady) {
 
 			this.setUiContainer();
 
@@ -9586,7 +9583,7 @@ var IntroView = function (_AbstractView) {
 
 			global.CURSOR.el.classList.add('alt');
 
-			callback();
+			sceneReady();
 		}
 	}, {
 		key: 'setUiContainer',
@@ -10110,14 +10107,6 @@ var IntroView = function (_AbstractView) {
 				}
 			}
 
-			// glitch title
-			// if (this.glitch) {
-
-			// 	if (this.glitch.ready === true) {
-			// 		this.glitch.render();
-			// 	}
-			// }
-
 			// move sky
 			// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
 
@@ -10145,33 +10134,11 @@ var IntroView = function (_AbstractView) {
 			}
 
 			if (fromProject === false) {
-				// this.glitchEl = document.querySelector('.intro__glitch');
-				// this.glitch = new Glitch({ // issue link to ui footer here but Css
-				// 	el: this.glitchEl,
-				// 	type: 'intro'
-				// });
 
-				// const canvas = this.glitchEl.querySelector('.glitch__canvas');
 				var delayOffset = _Device.Device.touch === true ? 0 : 0;
-				// const delayOffset2 = Device.touch === true ? -1 : 0;
-				// const delayOffset3 = Device.touch === true ? 0 : 2.3;
 
 				var tl = new TimelineMax();
-				// canvas title
-				// tl.set( canvas, {opacity: 1}, 2.3 - delayOffset); // Display Glitch Title
-				// tl.add(() => {
-				// 	// start glitch title
-				// 	this.glitch.ready = true;
-				// 	this.glitch.video.play(); // play it
-				// }, delayOffset3);
-				// tl.fromTo(this.ui.overlay, 2, { // Fade white
-				// 	opacity: 1
-				// },{
-				// 	opacity: 0
-				// }, 0 - delayOffset - delayOffset2);
-				// tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:() => { // fadeOUt/stop Glitch
-				// 	this.glitch.ready = false;
-				// }}, 6 - delayOffset);
+
 				tl.add(function () {
 
 					_this4.moveCameraIn(fromProject);
@@ -10196,12 +10163,12 @@ var IntroView = function (_AbstractView) {
 				this.camera.rotation.x = (0, _utils.toRadian)(-90);
 				_tl.add(function () {
 					_this4.moveCameraIn(fromProject);
-				}, 1.5);
+				}, 0.1);
 				_tl.set(this.ui.button, { opacity: 0, display: 'block' }, '+=1.5');
 				_tl.to(this.ui.button, 3, { opacity: 1 });
 				_tl.to('.overlay', 1, {
 					opacity: 0
-				}, 1.6);
+				}, 0.1);
 
 				_tl.add(function () {
 					// start move Ast
@@ -10312,7 +10279,7 @@ exports.default = IntroView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../components/Glitch":5,"../helpers/Device":7,"../helpers/utils":11,"../managers/AppManager":12,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/FFTOceanShader":25,"../shaders/OceanShader":29,"../shaders/ScreenSpaceShader":30,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":381,"p2":425,"three":466}],49:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/SceneManager":16,"../shaders/FFTOceanShader":25,"../shaders/OceanShader":29,"../shaders/ScreenSpaceShader":30,"../shapes/Asteroid":34,"../vendors/MirrorRenderer":39,"../vendors/Ocean":40,"../vendors/OrbitControls":41,"./AbstractView":47,"handlebars":381,"p2":425,"three":466}],49:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -10493,6 +10460,13 @@ var ProjectView = function (_AbstractView) {
 	}
 
 	_createClass(ProjectView, [{
+		key: 'startScene',
+		value: function startScene() {
+			console.log('yes ?');
+
+			_get(ProjectView.prototype.__proto__ || Object.getPrototypeOf(ProjectView.prototype), 'startScene', this).call(this);
+		}
+	}, {
 		key: 'events',
 		value: function events(method) {
 
@@ -10532,7 +10506,11 @@ var ProjectView = function (_AbstractView) {
 		}
 	}, {
 		key: 'init',
-		value: function init() {
+		value: function init(sceneReady) {
+
+			console.log('initttti');
+
+			this.sceneReady = sceneReady;
 
 			this.debug = false;
 			this.postProc = true;
@@ -10766,14 +10744,7 @@ var ProjectView = function (_AbstractView) {
 				});
 
 				// Start transition In
-				if (this.fromUrl === true) {
-					this.transitionIn(true);
-					this.fromUrl = false;
-				} else {
-					this.transitionIn();
-				}
-
-				this.initGalleryY = 0;
+				this.sceneReady();
 
 				// TweenMax.set('.project__next hr', {y: -100});
 				// TweenMax.set('.project__prev hr', {y: -120});
@@ -11485,7 +11456,7 @@ var ProjectView = function (_AbstractView) {
 
 			tl.to('.overlay', 0.8, {
 				opacity: 0
-			}, 0);
+			}, 0.5);
 
 			tl.add(function () {
 				// remover overlay class

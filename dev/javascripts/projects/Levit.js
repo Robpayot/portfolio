@@ -21,7 +21,7 @@ export default class Levit extends ProjectView {
 		this.toggle = 0;
 
 		this.models = global.MODELS;
-		this.init();
+		super.startScene();
 
 		// console.log('Levit view');
 

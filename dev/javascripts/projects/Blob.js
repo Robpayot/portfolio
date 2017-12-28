@@ -14,7 +14,7 @@ export default class Blob extends ProjectView {
 
 		super(obj);
 
-		this.init = this.init.bind(this);
+		this.playTex = this.playTex.bind(this);
 
 		this.toggle = 0;
 		this.intersection;
@@ -31,20 +31,20 @@ export default class Blob extends ProjectView {
 		// this.el.appendChild(this.video);
 
 		if (this.canplay === true) {
-			this.init();
+			this.playTex();
 		} else {
-			this.video.addEventListener('canplay', this.init);
+			this.video.addEventListener('canplay', this.playTex);
 		}
 
 		// console.log('Blob view');
 
 	}
 
-	init() {
+	playTex() {
 		if (this.canplay === true) return false;
 		this.canplay = true;
 
-		super.init();
+		super.startScene();
 	}
 
 	setAsteroids() {

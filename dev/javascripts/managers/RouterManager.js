@@ -122,6 +122,9 @@ class RouterManager {
 
 	initView(goToPage, index = null, fromUrl, lastPage = null) {
 
+
+		this.fromUrl = fromUrl;
+
 		// let slug;
 		let dir;
 		let id;
@@ -141,7 +144,7 @@ class RouterManager {
 				dir = this.lastId > id ? -1 : 1;
 
 				if (this.lastId === 3 || this.lastId === undefined) dir = 1;
-				this.currentPage = this.project0 = new Stars({ // Attention, Garde en mémoire une cette variable très lourde !
+				this.currentPage = new Stars({ // Attention, Garde en mémoire une cette variable très lourde !
 					id,
 					bkg: 0x0101010,
 					astd: 'spheres',
@@ -149,7 +152,6 @@ class RouterManager {
 					pointsLight: true,
 					alt: false,
 					data: data.projects[0],
-					fromUrl,
 					dir
 				});
 
@@ -167,7 +169,6 @@ class RouterManager {
 					pointsLight: true,
 					alt: false,
 					data: data.projects[1],
-					fromUrl,
 					dir
 				});
 
@@ -185,7 +186,6 @@ class RouterManager {
 					pointsLight: true,
 					alt: false,
 					data: data.projects[2],
-					fromUrl,
 					dir
 				});
 
@@ -204,7 +204,6 @@ class RouterManager {
 					pointsLight: true,
 					alt: false,
 					data: data.projects[3],
-					fromUrl,
 					dir
 				});
 
@@ -229,8 +228,7 @@ class RouterManager {
 			default:
 
 				this.currentPage = new IntroView({
-					gravity: true,
-					fromUrl
+					gravity: true
 				});
 
 				break;

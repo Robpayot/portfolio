@@ -1,13 +1,12 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getRandom, clamp, round, preventLink } from '../helpers/utils';
-import AppManager from '../managers/AppManager';
 import SceneManager from '../managers/SceneManager';
 import Asteroid from '../shapes/Asteroid';
 // import SplitText from '../vendors/SplitText.js';
 import { Device } from '../helpers/Device';
 
-import Glitch from '../components/Glitch';
+// import Glitch from '../components/Glitch';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import PreloadManager from '../managers/PreloadManager';
@@ -65,13 +64,8 @@ export default class IntroView extends AbstractView {
 
 
 		this.models = global.MODELS;
-		this.init(() => { // freeze of 4 seconds, Creation scene time, need a callback
 
-
-			AppManager.callbackInit();
-			// this.transitionIn(!obj.fromUrl);
-		});
-
+		super.startScene();
 
 		this.events(true);
 
@@ -118,7 +112,7 @@ export default class IntroView extends AbstractView {
 
 	}
 
-	init(callback) {
+	init(sceneReady) {
 
 		this.setUiContainer();
 
@@ -182,7 +176,7 @@ export default class IntroView extends AbstractView {
 
 		global.CURSOR.el.classList.add('alt');
 
-		callback();
+		sceneReady();
 
 
 	}
@@ -710,14 +704,6 @@ export default class IntroView extends AbstractView {
 		}
 
 
-		// glitch title
-		// if (this.glitch) {
-
-		// 	if (this.glitch.ready === true) {
-		// 		this.glitch.render();
-		// 	}
-		// }
-
 		// move sky
 		// this.skyTex.offset.x = this.clock.getElapsedTime() * 0.05;
 
@@ -741,33 +727,12 @@ export default class IntroView extends AbstractView {
 		}
 
 		if (fromProject === false) {
-			// this.glitchEl = document.querySelector('.intro__glitch');
-			// this.glitch = new Glitch({ // issue link to ui footer here but Css
-			// 	el: this.glitchEl,
-			// 	type: 'intro'
-			// });
 
-			// const canvas = this.glitchEl.querySelector('.glitch__canvas');
 			const delayOffset = Device.touch === true ? 0 : 0;
-			// const delayOffset2 = Device.touch === true ? -1 : 0;
-			// const delayOffset3 = Device.touch === true ? 0 : 2.3;
+
 
 			const tl = new TimelineMax();
-			// canvas title
-			// tl.set( canvas, {opacity: 1}, 2.3 - delayOffset); // Display Glitch Title
-			// tl.add(() => {
-			// 	// start glitch title
-			// 	this.glitch.ready = true;
-			// 	this.glitch.video.play(); // play it
-			// }, delayOffset3);
-			// tl.fromTo(this.ui.overlay, 2, { // Fade white
-			// 	opacity: 1
-			// },{
-			// 	opacity: 0
-			// }, 0 - delayOffset - delayOffset2);
-			// tl.to(this.glitchEl, 1, {autoAlpha: 0, onComplete:() => { // fadeOUt/stop Glitch
-			// 	this.glitch.ready = false;
-			// }}, 6 - delayOffset);
+
 			tl.add(() => {
 
 				this.moveCameraIn(fromProject);
@@ -793,12 +758,12 @@ export default class IntroView extends AbstractView {
 			this.camera.rotation.x = toRadian(-90);
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 1.5);
+			}, 0.1);
 			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
 			tl.to(this.ui.button, 3, {opacity: 1});
 			tl.to('.overlay', 1, {
 				opacity: 0
-			}, 1.6);
+			}, 0.1);
 
 			tl.add(() => {
 				// start move Ast

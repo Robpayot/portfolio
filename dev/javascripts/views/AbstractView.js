@@ -14,6 +14,16 @@ export default class AbstractView {
 
 	}
 
+	startScene() {
+
+		this.init(() => { // Creation scene time, need a callback the first time
+
+			console.log('finish init');
+			AppManager.callbackInit();
+
+		});
+	}
+
 	initPhysics(gravity) {
 
 		this.world = new p2.World({

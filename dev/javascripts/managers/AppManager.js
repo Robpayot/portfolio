@@ -241,29 +241,28 @@ class AppManager {
 	callbackInit() {
 
 		// start destruction effect
-		this.glitch.video.play(); // play it
+		this.glitch.video.play(); // play video
 
 		const tl = new TimelineMax();
 
-		// tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
-
 		if (Device.touch === false) {
-			this.glitch.isLoading = false;
+			console.log(RouterManager.fromUrl);
+			this.glitch.isLoading = false; // apply video alpha
 			tl.add(() => {
-				RouterManager.currentPage.transitionIn(false);
+				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 			}, 0);
 
 		} else {
 			tl.add(() => {
-				RouterManager.currentPage.transitionIn(false);
-				this.glitch.isLoading = false;
+				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
+				this.glitch.isLoading = false; // apply video alpha
 			}, 0.9);
 		}
 
 		tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 
 		tl.add(() => {
-			this.glitch.ready = false;
+			this.glitch.ready = false; // stop raf destr
 		});
 
 

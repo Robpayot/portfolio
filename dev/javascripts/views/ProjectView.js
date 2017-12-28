@@ -112,6 +112,12 @@ export default class ProjectView extends AbstractView {
 
 	}
 
+	startScene() {
+		console.log('yes ?');
+
+		super.startScene();
+	}
+
 	events(method) {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
@@ -151,7 +157,11 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	init() {
+	init(sceneReady) {
+
+		console.log('initttti');
+
+		this.sceneReady = sceneReady;
 
 
 		this.debug = false;
@@ -396,14 +406,8 @@ export default class ProjectView extends AbstractView {
 			});
 
 			// Start transition In
-			if (this.fromUrl === true) {
-				this.transitionIn(true);
-				this.fromUrl = false;
-			} else {
-				this.transitionIn();
-			}
+			this.sceneReady();
 
-			this.initGalleryY = 0;
 
 			// TweenMax.set('.project__next hr', {y: -100});
 			// TweenMax.set('.project__prev hr', {y: -120});
@@ -1111,7 +1115,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.to('.overlay', 0.8, {
 			opacity: 0
-		}, 0);
+		}, 0.5);
 
 		tl.add(() => {
 			// remover overlay class
