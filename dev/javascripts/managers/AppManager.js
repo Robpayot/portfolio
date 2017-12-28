@@ -174,58 +174,39 @@ class AppManager {
 		PreloadManager.on('complete', () => {
 
 			PreloadManager.off('progress');
+
+			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
+			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
+
 			const tl = new TimelineMax();
 			if (Device.touch === false) {
-				TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
-				TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
 
 				tl.add(() => {
 
 					this.start();
 				}, 0.6);
 
+			} else {
+
+				let wrapper = document.querySelector('.preload__wrapper');
+				let txt = document.querySelector('.preload__txt');
+				txt.innerHTML = 'start';
+				TweenMax.to(txt, 0.5, {opacity: 1});
+
+				let onWrapperClick = (e) => {
+
+					wrapper.removeEventListener('click', onWrapperClick);
+					TweenMax.to(txt, 0.5, {opacity: 0});
+					preventLink(e, true);
+					this.resizeHandler();
+					this.start();
+				};
+
+				wrapper.addEventListener('click', onWrapperClick);
+
 			}
-			tl.add(() => {
 
-				if (Device.touch === true) {
-					let wrapper = document.querySelector('.preload__wrapper');
-					let txt = document.querySelector('.preload__txt');
-					txt.innerHTML = 'start';
-					// wrapper.classList.add('start-fs');
-					TweenMax.to([txt, wrapper], 0.5, {opacity: 1});
-
-					wrapper.addEventListener('click', (e) => {
-						preventLink(e, true);
-						this.resizeHandler();
-						TweenMax.to('.preload', 1, {autoAlpha: 0});
-						this.glitch.isLoading = false;
-						this.glitch.video.play(); // play it
-						this.start();
-
-					});
-				}
-
-			});
 		}, this, true);
-	}
-
-	callbackInit() {
-
-		// start destruction effect
-		this.glitch.isLoading = false;
-		this.glitch.video.play(); // play it
-
-		const tl = new TimelineMax();
-
-		tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
-
-		tl.add(() => {
-			RouterManager.currentPage.transitionIn(false);
-		}, 0);
-
-		tl.add(() => {
-			this.glitch.ready = false;
-		});
 	}
 
 	start() {
@@ -249,6 +230,25 @@ class AppManager {
 		global.OVERLAY = this.ui.overlay;
 
 		RouterManager.start(); // Init Router and views
+	}
+
+	callbackInit() {
+
+		// start destruction effect
+		this.glitch.isLoading = false;
+		this.glitch.video.play(); // play it
+
+		const tl = new TimelineMax();
+
+		tl.to('.preload', 1.5, {autoAlpha: 0, delay: 0.5, ease: window.Linear.easeNone});
+
+		tl.add(() => {
+			RouterManager.currentPage.transitionIn(false);
+		}, 0);
+
+		tl.add(() => {
+			this.glitch.ready = false;
+		});
 	}
 
 	events(method) {
