@@ -64,13 +64,11 @@ export default class Blob extends ProjectView {
 
 		let pos;
 		const posFixed = [
-			{ x: 30, y: -20, z: -10, s: 6 },
-			{ x: -50, y: 15, z: 30 },
-			{ x: 40, y: -90, z: -80 },
-			{ x: -40, y: 70, z: -50 },
-			{ x: 60, y: 20, z: -40 },
-			// { x: 80, y: -30, z: 50 },
-			// { x: -40, y: -40, z: -100 },
+			{ x: 30, y: 35, z: -10, s: 5 },
+			{ x: -50, y: -30, z: 30 },
+			{ x: 40, y: -78, z: -80 },
+			{ x: -60, y: 50, z: -50 },
+			{ x: 70, y: -15, z: -40 },
 		];
 
 		this.nbAst = posFixed.length;
@@ -117,7 +115,7 @@ export default class Blob extends ProjectView {
 
 			const asteroid = new Asteroid({
 				geometry,
-				material: material,
+				material,
 				pos,
 				rot,
 				force,

@@ -1112,7 +1112,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.to('.overlay', 0.8, {
 			opacity: 0
-		}, 0.5);
+		}, 0.1);
 
 		tl.add(() => {
 			// remover overlay class

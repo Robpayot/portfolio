@@ -44,11 +44,11 @@ export default class Levit extends ProjectView {
 		// get positions from a json
 		// /! nu;brer of astd needed
 		posFixed = [
-			{ x: -40, y: -10, z: 80 },
+			{ x: -50, y: -10, z: 80 },
 			{ x: -50, y: 5, z: 10 },
 			{ x: -30, y: -60, z: -20 },
 			{ x: -10, y: 40, z: -40 },
-			{ x: -60, y: 10, z: -40 },
+			{ x: -60, y: 50, z: -40 },
 			{ x: 0, y: -40, z: -60 },
 			{ x: 30, y: 20, z: 60 },
 			{ x: 20, y: -20, z: -30 },
@@ -66,7 +66,7 @@ export default class Levit extends ProjectView {
 
 			pos = posFixed[i];
 
-			const scale = getRandom(0.025, 0.035);
+			const scale = getRandom(0.018, 0.035);
 			const speed = getRandom(0.5,0.72);
 			const range = getRandom(3, 8);
 			const timeRotate = getRandom(0.0013, 0.0016);
