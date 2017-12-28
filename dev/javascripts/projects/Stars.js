@@ -171,7 +171,7 @@ export default class Stars extends ProjectView {
 		this.materials = [];
 
 		this.nbMat = 5;
-		this.topY = 25;
+		this.topY = 80;
 		this.bottomY = -45;
 
 		for (let i = 0; i < this.nbMat; i++) {

@@ -5,7 +5,7 @@
 import 'babel-polyfill';
 
 
-import './vendors/modernizr-custom';
+// import './vendors/modernizr-custom';
 import 'gsap';
 
 import AppManager from './managers/AppManager';
