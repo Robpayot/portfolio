@@ -1,14 +1,16 @@
 import ProjectView from '../views/ProjectView';
 import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
+import { Device } from '../helpers/Device';
 
 
 
 // THREE JS
-import { SphereGeometry, DirectionalLight, Math as MathThree, Scene, MeshBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending, Points } from 'three';
+import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Line, Vector3, Object3D, MeshPhongMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
+
 
 
 export default class Stars extends ProjectView {
@@ -20,7 +22,7 @@ export default class Stars extends ProjectView {
 		// bind
 		this.setTerrain = this.setTerrain.bind(this);
 
-		this.nbAst = 130;
+		this.nbAst = 150;
 		this.lights = [];
 		this.coefSpeed = 0.015;
 
@@ -137,7 +139,7 @@ export default class Stars extends ProjectView {
 		}
 
 
-		const plane = new PlaneBufferGeometry( SCREEN_WIDTH, SCREEN_HEIGHT );
+		let plane = new PlaneBufferGeometry( SCREEN_WIDTH, SCREEN_HEIGHT );
 
 		this.quadTarget = new Mesh( plane, new MeshBasicMaterial( { color: 0x000000 } ) );
 		// this.quadTarget.position.z = -500;
@@ -156,6 +158,20 @@ export default class Stars extends ProjectView {
 		this.scene.add( this.terrain );
 
 		this.animDeltaDir *= -1;
+
+
+		const cursorPlane = new PlaneBufferGeometry( 1000, 1000 );
+
+
+		this.cursorPlane = new Mesh( cursorPlane, new MeshPhongMaterial( { color: 0x00ff00, visible: false } ) );
+		this.cursorPlane.position.set( 0, this.tPosY, -50 );
+		this.cursorPlane.rotation.x = toRadian(-70);
+		this.cursorPlane.rotation.z = toRadian(-45);
+		// this.cursorPlane.visible = false;
+
+		this.scene.add(this.cursorPlane);
+
+
 
 	}
 
@@ -271,48 +287,40 @@ export default class Stars extends ProjectView {
 
 	setLight() {
 
-		let paramsLight = [
-			{ x: 0, y: 0, z: -10, d: 120, it: 1.5, moving: true },
-			// { x: 0, y: 0, z: -100, d: 150, it: 2 },
-			// { x: 0, y: 0, z: 0, d: 30, it: 2 },
-			// { x: 0, y: 30, z: 30 },
-			// { x: 0, y: 30, z: -30 },
-			// { x: -30, y: 30, z: 0 },
-			// { x: 0, y: -30, z: 0 }
-		];
 
-		for (let i = 0; i < paramsLight.length; i++) {
+		this.pointLight = new PointLight(0xffffff, 1.5, 120, 1);
+		this.pointLight.range = 120;
+		// add to the scene
+		this.scene.add(this.pointLight);
 
-			const d = paramsLight[i].d || 100;
-			const it = paramsLight[i].it || 1;
-
-			// create a point light
-			let pointLight = new PointLight(0xffffff, it, d, 1);
-			// set its position
-			pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			pointLight.range = 60;
-			pointLight.offset = -40;
-
-			// add to the scene
-			this.scene.add(pointLight);
-			if (paramsLight[i].moving === true) {
-				this.lights.push(pointLight);
-			}
-		}
-
-
-		let light = new DirectionalLight( 0xBF1812, 2 );
-		light.position.set( 0, 0, 1 );
-		this.scene.add( light );
-
-		// test
+		// Help & Debug
 
 		const geometry = new SphereGeometry(6,6,50);
 
 		const material = new MeshBasicMaterial({color: 0x00FFFFF});
 
-		this.movingLight = new Points(geometry, material);
+		this.movingLight = new Mesh(geometry, material);
+		this.movingLight.position.y = 60;
 		// this.scene.add(this.movingLight);
+
+		const geometry2 = new Geometry();
+		const material2 = new LineBasicMaterial({color: 0x00FFFFF});
+		geometry2.vertices.push(
+			new Vector3( 0, 0, 0 ),
+			new Vector3( 0, 60, 0 )
+		);
+
+		const line = new Line( geometry2, material2 );
+
+		this.group = new Object3D();
+
+		this.group.add(line);
+		this.group.add(this.movingLight);
+
+		this.group.rotation.x = toRadian(20); // perpendiculaire
+		this.group.visible = false;
+
+		this.scene.add( this.group );
 
 
 	}
@@ -353,15 +361,31 @@ export default class Stars extends ProjectView {
 		if (this.terrain) {
 			if ( this.terrain.visible ) {
 
-				let fLow = 0.1, fHigh = 0.8;
+				if (Device.touch === false) {
 
-				// relative to light ???
+					this.raycaster.setFromCamera(this.mouse, this.camera);
 
-				this.lightVal = MathThree.clamp( this.lightVal + 0.5 * this.coefSpeed * this.lightDir, fLow, fHigh );
+					const intersection = this.raycaster.intersectObject(this.cursorPlane);
+					if ( intersection.length > 0 ) {
 
-				let valNorm = ( this.lightVal - fLow ) / ( fHigh - fLow );
+						if (this.contentOpen === true) {
+							this.group.position.set(intersection[0].point.x, intersection[0].point.y * 0.9, intersection[0].point.z);
+						} else {
+							this.group.position.set(intersection[0].point.x, intersection[0].point.y, intersection[0].point.z * 0.9);
+						}
 
-				this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement, weird thing here
+						this.pointLight.position.setFromMatrixPosition( this.movingLight.matrixWorld );
+
+					}
+
+				} else {
+					this.movingLight.position.x = this.pointLight.position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.pointLight.range;
+					// this.movingLight.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
+				}
+
+				let valNorm = 0.1; // center light reflection
+
+				this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement,
 
 				if ( this.updateNoise ) {
 
@@ -374,9 +398,6 @@ export default class Stars extends ProjectView {
 
 					this.quadTarget.material = this.mlib[ 'heightmap' ];
 					SceneManager.renderer.render( this.sceneRenderTarget, this.cameraOrtho, this.heightMap, true );
-
-					this.movingLight.position.x = this.lights[0].position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.lights[0].range + this.lights[0].offset;
-					// this.movingLight.position.z = this.lights[0].position.z = -Math.sin(this.time * 2 * Math.PI / 400) * 100 - 100;
 
 				}
 

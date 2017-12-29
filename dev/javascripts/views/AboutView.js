@@ -3,6 +3,7 @@ import EmitterManager from '../managers/EmitterManager';
 import {toRadian, getIndex } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import PreloadManager from '../managers/PreloadManager';
+import RouterManager from '../managers/RouterManager';
 import { Device } from '../helpers/Device';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
@@ -683,12 +684,16 @@ export default class AboutView extends AbstractView {
 		this.el.classList.remove('intro');
 
 		const tl = new TimelineMax();
-		tl.fromTo('.overlay', 1, {
-			opacity: 1
-		}, {
-			opacity: 0,
-			ease: window.Linear.easeNone
-		});
+
+		if ( RouterManager.fromUrl !== true) {
+			tl.fromTo('.overlay', 1, {
+				opacity: 1
+			}, {
+				opacity: 0,
+				ease: window.Linear.easeNone
+			});
+		}
+
 		tl.add(() => {
 			this.moveCameraIn();
 		}, 0);
@@ -696,6 +701,8 @@ export default class AboutView extends AbstractView {
 	}
 
 	moveCameraIn(dest) {
+
+		const delay = RouterManager.fromUrl === true ? 2.5 : 0.5;
 
 		const tl = new TimelineMax({
 			onComplete: () => {
@@ -705,9 +712,9 @@ export default class AboutView extends AbstractView {
 			delay: 0
 		});
 		tl.fromTo(this.camera.position, 5, {y: this.maxZoom - 100 }, {y: this.minZoom, ease: window.Expo.easeOut});
-		tl.set(this.ui.introWrap, {display : 'block'} , 0.5);
-		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 0.5);
-		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 0.5);
+		tl.set(this.ui.introWrap, {display : 'block'} , delay);
+		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, delay);
+		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, delay);
 
 	}
 

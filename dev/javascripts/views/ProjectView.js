@@ -35,6 +35,7 @@ export default class ProjectView extends AbstractView {
 		super();
 
 
+
 		// Update background
 		// SceneManager.renderer.domElement.setAttribute('data-index', this.id);
 
