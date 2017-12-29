@@ -369,9 +369,9 @@ export default class Stars extends ProjectView {
 					if ( intersection.length > 0 ) {
 
 						if (this.contentOpen === true) {
-							this.group.position.set(intersection[0].point.x, intersection[0].point.y * 0.9, intersection[0].point.z);
+							this.group.position.set(intersection[0].point.x, intersection[0].point.y * 0.7, intersection[0].point.z);
 						} else {
-							this.group.position.set(intersection[0].point.x, intersection[0].point.y, intersection[0].point.z * 0.9);
+							this.group.position.set(intersection[0].point.x, intersection[0].point.y, intersection[0].point.z * 0.7);
 						}
 
 						this.pointLight.position.setFromMatrixPosition( this.movingLight.matrixWorld );
