@@ -74,8 +74,8 @@ export default class Cursor {
 				TweenMax.to(this.c2, 4, {strokeDashoffset: '0%', ease: window.Linear.easeNone,
 					onComplete:() => {
 						if (this.hoverGoTo = true) {
-							// RouterManager.currentPage.goTo(null, this.currentEl);
-							// window.location.href = this.currentEl.href;
+							RouterManager.currentPage.goTo(null, this.currentEl);
+							window.location.href = this.currentEl.href;
 						}
 					}
 				});
