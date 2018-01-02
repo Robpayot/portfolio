@@ -128,7 +128,7 @@ export default class ProjectView extends AbstractView {
 			EmitterManager[onListener]('mousemove', this.onMouseMove);
 			window[evListener]('click', this.onClick);
 		} else {
-			window[evListener]('touchstart', this.onClick);
+			// window[evListener]('touchstart', this.onClick);
 		}
 
 		EmitterManager[onListener]('scroll', this.scroll);
@@ -484,6 +484,7 @@ export default class ProjectView extends AbstractView {
 			bean.on(document.body, 'touchstart.projectContent', '.project__container', this.onTouchStartContainer);
 			bean.on(document.body, 'touchmove.projectContent', '.project__container', this.onTouchMoveContainer);
 			bean.on(document.body, 'touchend.projectContent', '.project__container', this.onTouchEndContainer);
+			bean.on(document.body, 'click.projectContent', '.project__back', this.onClick);
 		}
 
 
@@ -719,13 +720,13 @@ export default class ProjectView extends AbstractView {
 	}
 
 	animScrollContainer() {
-		// let coefIsVisible = Device.touch ? 130 : 100;
+		let coefIsVisible = Device.touch ? 50 : 80;
 
 		for (let i = 1; i < this.ui.imgs.length; i++) {
 
 			if (this.ui.imgs[i].classList.contains('is-visible') === false) {
 
-				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= document.body.offsetHeight - 100) {
+				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= document.body.offsetHeight - coefIsVisible) {
 
 					const tl = new TimelineMax();
 					tl.set(this.ui.imgs[i], {visibility: 'visible'});
@@ -843,7 +844,6 @@ export default class ProjectView extends AbstractView {
 	onClick(e) {
 
 		if (this.animating === true) return false;
-
 
 		if (this.contentOpen === true) {
 			this.backFromContent();

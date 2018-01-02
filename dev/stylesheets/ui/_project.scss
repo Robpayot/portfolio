@@ -134,6 +134,10 @@ $project3D-w : 1075px;
 	    	margin-bottom: 6.0rem;
 	    	position: relative;
 	        width: 100%;
+
+			@include mobile {
+	    		margin-top: 3.0rem;
+	    	}
 	    }
 
 	    &__image {	        
@@ -164,6 +168,7 @@ $project3D-w : 1075px;
 
 	    	@include mobile {
 	    		transition: opacity 1s linear,  transform 1.6s $ExpoEaseOut;
+	    		 margin-bottom: 2.0rem;
 	    	}
 	    	
 
@@ -195,15 +200,24 @@ $project3D-w : 1075px;
 		&__back {
 			display: none;
 			position: absolute;
-			top: 18.0rem;
+			bottom: 0;
 			left: 50%;
-			transform: translateX(-50%);
+			transform: translateX(-50%) translateY(100%);
 			text-align: center;
 			text-transform: uppercase;
+	    	letter-spacing: 2.5px;
+	    	font-family: 'Theinhardt-light';
+		    font-weight: normal;
+		    font-style: normal;
+		    font-size: 1.2rem;
 
 			.button {
 				text-transform: none;
 				margin-top: 2.0rem;
+			}
+
+			.is-touch & {
+				display: block;
 			}
 		}
 

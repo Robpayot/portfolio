@@ -64,25 +64,34 @@
 			font-family: 'Theinhardt';
 			font-weight: normal;
 			font-style: normal;
-		top: 170px;
-		opacity: 1;
-		transition: padding 0.8s $easeToinou;
-		@include mobile {
-			top: 210px;
-			font-size: 70px;
-		}
-		&:after {
-			content: '';
-			position: absolute;
-			width: 0px;
-			height: 3px;
-			background-color: white;
-			left: 0px;
-			top: 50%;
-			transform: translateY(-50%);
-			transition: width 0.8s $easeToinou;
-		}
-		// font-size: 2em;
+			top: 170px;
+			opacity: 1;
+			transition: padding 0.8s $easeToinou;
+
+			@include mobile {
+				top: 210px;
+				font-size: 70px;
+			}
+
+			&:after {
+				content: '';
+				position: absolute;
+				width: 0px;
+				height: 3px;
+				background-color: white;
+				left: 0px;
+				top: 50%;
+				transform: translateY(-50%);
+				transition: width 0.8s $easeToinou;
+			}
+
+			span {
+				display: none;
+				@include mobile {
+					display: inline;
+				}
+			}
+			// font-size: 2em;
 
 		}
 

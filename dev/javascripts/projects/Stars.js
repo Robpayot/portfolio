@@ -23,7 +23,7 @@ export default class Stars extends ProjectView {
 		this.setTerrain = this.setTerrain.bind(this);
 
 		this.nbAst = 150;
-		this.lights = [];
+		this.lightIntensity = { val: 0};
 		this.coefSpeed = 0.015;
 
 		super.startScene();
@@ -288,7 +288,7 @@ export default class Stars extends ProjectView {
 	setLight() {
 
 
-		this.pointLight = new PointLight(0xffffff, 1.5, 120, 1);
+		this.pointLight = new PointLight(0xffffff, 0, 120, 1);
 		this.pointLight.range = 120;
 		// add to the scene
 		this.scene.add(this.pointLight);
@@ -404,6 +404,16 @@ export default class Stars extends ProjectView {
 			}
 		}
 		super.raf();
+	}
+
+	transitionIn() {
+
+		super.transitionIn();
+
+		TweenMax.to(this.lightIntensity, 5, {val:1.5, delay: 0, onUpdate:() => {
+			this.pointLight.intensity = this.lightIntensity.val;
+		}});
+
 	}
 
 }

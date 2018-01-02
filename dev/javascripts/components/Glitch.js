@@ -4,7 +4,7 @@ import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 // import dat from 'dat-gui';
 import { getRandom, clamp } from '../helpers/utils';
-import { Device } from '../helpers/Device';
+// import { Device } from '../helpers/Device';
 
 export default class Glitch {
 
@@ -67,12 +67,10 @@ export default class Glitch {
 
 		this.ui = {
 			xp: document.querySelector('.xp'),
-			img: document.querySelector('.glitch__img'),
-			img2: document.querySelector('.glitch__img-2'),
-			imgAlpha: document.querySelector('.glitch__img-3'),
 			canvas: this.el.querySelector('.glitch__canvas'),
 			canvasBuffer: this.el.querySelector('.glitch__canvas-buffer'),
 			canvasAlphaBuffer: this.el.querySelector('.glitch__canvas-alpha-buffer'),
+			preloadWrapper: document.querySelector('.preload__wrapper')
 		};
 
 		this.textHeight = this.textSize; // need a real calcul
@@ -416,8 +414,9 @@ export default class Glitch {
 		if (this.obj.type === 'intro') {
 			// this can be done without alphaData, except in Firefox which doesn't like it when image is bigger than the canvas
 			// r.p : We select only the first half
-			this.width = clamp(window.innerWidth * 0.31, 200, 300) * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
-			this.height = this.width * this.introTxt.height / this.introTxt.width; // retina;
+
+			this.height = this.ui.preloadWrapper.offsetHeight * 2; // Higher than 600 its getting laggy a lot. * 2 for retina
+			this.width = this.height * this.introTxt.width / this.introTxt.height; // retina;
 
 			// Image size
 			this.introTxt.width = this.width;
@@ -434,8 +433,6 @@ export default class Glitch {
 				this.ui.canvasAlphaBuffer.height = this.videoHeight;
 				// this.video.height = this.videoHeight;
 			}
-
-
 
 
 		} else {

@@ -317,6 +317,9 @@ class AppManager {
 
 		Device.touch = isTouch();
 
+		if (Device.touch) document.body.classList.add('is-touch');
+		else document.body.classList.remove('is-touch');
+
 		// Device.browser = Detect.browser();
 
 		// if (/Edge/.test(Device.browser) || /IE/.test(Device.browser)) {

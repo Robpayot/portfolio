@@ -34,6 +34,7 @@
 		display: flex;
 		align-items: center;
 		pointer-events: auto;
+		height: 6.0rem;
 		opacity: 0;
 
 		&.start-fs {
@@ -72,9 +73,11 @@
 	&__symbol {
 		color: black;
 		font-size: 2rem;
-		margin-right: 4.0rem;
+		margin-right: 3.5rem;
 		pointer-events: auto;
 		cursor: pointer;
+		height: 90%;
+		
 
 		svg polyline,
 		svg circle {
@@ -85,11 +88,12 @@
 			stroke-dasharray: 307%;
 			stroke-dashoffset: 307%;
 		}
+
 		svg {
 			margin: 0 auto;
 			display: block;
-			width: 6.5rem;
-			height: 6.5rem;
+			width: auto;
+			height: 100%;
 			position: relative;
 			transform: rotate(-90deg);
 			// cursor: pointer;
