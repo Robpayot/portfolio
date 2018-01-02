@@ -23,7 +23,7 @@
         "media": "bmw",
         "imgs": ["bmw.mp4", "bmw-1.jpg", "bmw-2.jpg", "bmw-3.jpg", "bmw-4.jpg", "bmw-5.jpg", "bmw-6.jpg", "bmw-7.jpg", "bmw-8.jpg"],
         "link": "http://mondialautomobile.bmw.fr/",
-        "color": "#53E1FF",
+        "color": "#1196f1",
         "colorName": "blue"
     },{
         "title": "Nokia Health",
