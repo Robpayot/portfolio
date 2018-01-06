@@ -102,20 +102,35 @@
 				background-color: black;
 				left: 0px;
 				top: 42%;
+				.is-touch & {
+					width: 15px;
+				}
+			}
+
+			.is-touch & {
+				padding-left: 25px;
 			}
 	    }
 
 	    &__back {
 	    	margin-bottom: 36px;
+	    	margin-top: 0px;
 	    }
 
 	    &__works {
 	    	position: absolute;
-	    	top: 50%;
+	    	top: 5rem;
 	    	left: 50%;
-	    	transform: translate(-50%, -50%);
+	    	transform: translate(-50%, 0);
 			width: 100%;
 			display: none;
+			pointer-events: auto;
+
+			&.noscroll {
+		    	top: 50%;
+		    	left: 50%;
+		    	transform: translate(-50%, -50%);	
+			}
 
 	    }
 

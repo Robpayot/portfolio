@@ -126,15 +126,15 @@ export default class ProjectView extends AbstractView {
 		if (Device.touch === false) {
 			// move camera
 			EmitterManager[onListener]('mousemove', this.onMouseMove);
+			EmitterManager[onListener]('scroll', this.scroll);
+			ScrollManager[onListener]();
 			window[evListener]('click', this.onClick);
 		} else {
 			// window[evListener]('touchstart', this.onClick);
 		}
 
-		EmitterManager[onListener]('scroll', this.scroll);
 		EmitterManager[onListener]('resize', this.resizeHandler);
 		EmitterManager[onListener]('raf', this.raf);
-		ScrollManager[onListener]();
 
 		if (method === true) {
 
@@ -465,8 +465,6 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 
-		// console.log('show content', this.animating);
-
 		this.glitch.hover = false; // kill Glitch
 		this.tlGlitch.kill();
 		bean.off(document.body, '.project'); // off events related to init state
@@ -529,13 +527,6 @@ export default class ProjectView extends AbstractView {
 			ease: window.Expo.easeOut
 		}, 1.7);
 
-		// tl.fromTo(this.ui.imgs[0], 1.2, {
-		// 	scaleY: 2
-		// }, {
-		// 	scaleY: 1,
-		// 	ease: window.Expo.easeOut
-		// }, 1.7);
-
 		tl.add(() => {
 			this.ui.imgs[0].classList.add('is-visible');
 		}, 1.8);
@@ -565,9 +556,10 @@ export default class ProjectView extends AbstractView {
 			// ScrollManager.on(); // start scrollmanager
 		}, 0.5);
 
-		if (global.SCROLLED === false) {
-			tl.to('.scroll', 0.5, {opacity: 0}, 0);
-		}
+		// if (global.SCROLLED === false) {
+		TweenMax.killTweensOf('.scroll');
+		TweenMax.to('.scroll', 0.5, {opacity: 0});
+		// }
 
 	}
 
@@ -601,7 +593,6 @@ export default class ProjectView extends AbstractView {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
 			TweenMax.set(this.ui.container, { y: -this.scrollY});
 			this.camera.rotation.order = 'XYZ';
-			this.animating = false;
 			// this.contentOpen = false;
 		} });
 
@@ -647,6 +638,7 @@ export default class ProjectView extends AbstractView {
 		}, 2.6);
 
 		tl.add(() => {
+			this.animating = false;
 			this.contentOpen = false;
 			for (let i = 0; i < this.ui.imgs.length; i++) {
 				this.ui.imgs[i].classList.remove('is-visible');
@@ -794,7 +786,7 @@ export default class ProjectView extends AbstractView {
 
 				if (isFirefox) {
 					console.log('FF');
-					this.scrollY -= e.deltaY * 0.6;
+					this.scrollY -= e.deltaY * 0.9;
 				} else {
 					this.scrollY -= e.deltaY * 0.17;
 				}
@@ -1194,7 +1186,6 @@ export default class ProjectView extends AbstractView {
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
-		// ScrollManager.off(); // stop scrollmanager
 
 		const tl = new TimelineMax({ onComplete: () => {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
@@ -1222,7 +1213,6 @@ export default class ProjectView extends AbstractView {
 	}
 
 	destroy() {
-		// ScrollManager.off();
 		super.destroy();
 
 	}

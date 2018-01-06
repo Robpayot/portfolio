@@ -65,6 +65,10 @@
             "title" : "Video alpha mask",
             "descr": "Mask applied on text using a video alpha in canvas.",
             "link": "https://robpayot.github.io/video-alpha-mask/"
+        },{
+            "title" : "Action contre la faim",
+            "descr": "NGO website made at 84.Paris.",
+            "link": "http://www.actioncontrelafaim.org/"
         }]
     }
 }
