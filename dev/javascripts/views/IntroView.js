@@ -103,7 +103,7 @@ export default class IntroView extends AbstractView {
 			document[evListener]( 'click', this.onClick , false );
 		} else {
 
-			this.ui.button[evListener]('click', preventLink);
+			this.ui.button[evListener]('touchstart', preventLink);
 			// document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
 			// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
 		}

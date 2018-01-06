@@ -9487,7 +9487,7 @@ var IntroView = function (_AbstractView) {
 				document[evListener]('click', this.onClick, false);
 			} else {
 
-				this.ui.button[evListener]('click', _utils.preventLink);
+				this.ui.button[evListener]('touchstart', _utils.preventLink);
 				// document[evListener]( 'touchstart', this.onDocumentTouchStart, false );
 				// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );
 			}
