@@ -660,20 +660,11 @@ body {
     opacity: 0;
     visibility: hidden;
     display: inline-block; }
-  .project__title svg {
-    opacity: 0;
-    display: none; }
-    .project__title svg.transi {
-      transition: -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
-      transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1);
-      transition: transform 0.6s cubic-bezier(0.16, 0.29, 0, 1), -webkit-transform 0.6s cubic-bezier(0.16, 0.29, 0, 1); }
-  .project__title:hover svg {
-    -webkit-transform: translateX(15px) !important;
-    -ms-transform: translateX(15px) !important;
-    transform: translateX(15px) !important; }
-  .project__title:hover .project__more {
+  .project__title:hover .project__more,
+  .is-touch .project__title .project__more {
     padding-left: 100px; }
-  .project__title:hover .project__more::after {
+  .project__title:hover .project__more::after,
+  .is-touch .project__title .project__more::after {
     width: 60px; }
 
 .project__number, .project__more {
@@ -717,6 +708,9 @@ body {
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     transition: width 0.8s cubic-bezier(0.16, 0.29, 0, 1); }
+    @media screen and (max-width: 720px) {
+      .project__more:after {
+        height: 7px; } }
   .project__more span {
     display: none; }
     @media screen and (max-width: 720px) {
@@ -1201,7 +1195,8 @@ body {
         .ui-content.is-project .project__role p:first-child, .ui-content.is-project .project__technos p:first-child, .ui-content.is-project .project__context p:first-child {
           margin-bottom: 1.0rem; }
         .ui-content.is-project .project__role p:last-child, .ui-content.is-project .project__technos p:last-child, .ui-content.is-project .project__context p:last-child {
-          color: #979797; }
+          color: #979797;
+          white-space: nowrap; }
       .ui-content.is-project .project__link {
         width: 40%;
         display: -webkit-box;
@@ -1242,7 +1237,8 @@ body {
         width: 100%; }
         @media screen and (max-width: 720px) {
           .ui-content.is-project .project__gallery {
-            margin-top: 3.0rem; } }
+            margin-top: 3.0rem;
+            margin-bottom: 3.0rem; } }
       .ui-content.is-project .project__image img {
         width: 100%;
         border: 1px solid rgba(128, 128, 128, 0.15);
@@ -1298,24 +1294,42 @@ body {
         color: #979797; }
       .ui-content.is-project .project__back {
         display: none;
+        opacity: 0;
+        visibility: hidden;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
         position: absolute;
-        bottom: 0;
-        left: 50%;
-        -webkit-transform: translateX(-50%) translateY(100%);
-        -ms-transform: translateX(-50%) translateY(100%);
-        transform: translateX(-50%) translateY(100%);
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 2.5px;
-        font-family: 'Theinhardt-light';
-        font-weight: normal;
-        font-style: normal;
-        font-size: 1.2rem; }
-        .ui-content.is-project .project__back .button {
-          text-transform: none;
-          margin-top: 2.0rem; }
+        top: calc(35% + 12px);
+        left: 7vw;
+        pointer-events: auto; }
+        .ui-content.is-project .project__back p {
+          padding-left: 15px;
+          margin-right: -1.5px;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          font-family: 'Theinhardt-light';
+          font-weight: normal;
+          font-style: normal;
+          font-size: 1rem; }
+          .ui-content.is-project .project__back p:after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 1px;
+            background-color: white;
+            left: 0px;
+            top: 43%;
+            -webkit-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%); }
         .is-touch .ui-content.is-project .project__back {
-          display: block; }
+          display: -webkit-box;
+          display: -ms-flexbox;
+          display: flex; }
       .ui-content.is-project .project .link img {
         width: 4.0rem;
         margin-left: 20px;

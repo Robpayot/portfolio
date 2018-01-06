@@ -517,10 +517,10 @@ export default class ProjectView extends AbstractView {
 			}
 		}, 1.7);
 		tl.set('.project__gallery', { opacity: 1 }, 0);  // ,1.7, '.project__gallery'
-		tl.set(['.project__top', ...this.ui.imgs], { visibility: 'visible' }, 0);  // ,1.7
+		tl.set(['.project__top', '.project__back', ...this.ui.imgs], { visibility: 'visible' }, 0);  // ,1.7
 		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
 
-		tl.fromTo('.project__top', 1.2, { // 1.2
+		tl.fromTo(['.project__top', '.project__back'], 1.2, { // 1.2
 			opacity: 0,
 			y: 80
 		}, {
@@ -605,7 +605,7 @@ export default class ProjectView extends AbstractView {
 			// this.contentOpen = false;
 		} });
 
-		tl.staggerTo(['.project__top', '.project__footer', '.project__gallery' ], 1.2, {
+		tl.staggerTo(['.project__top', '.project__footer', '.project__gallery', '.project__back' ], 1.2, {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		}, 0.1);

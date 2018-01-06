@@ -19,24 +19,16 @@
 						visibility: hidden;
 						display: inline-block;
 				}
-				svg {
-						opacity: 0;
-						display: none;
-						&.transi {
-								transition: transform 0.6s $easeToinou;
-						}
+				&:hover,
+				.is-touch &  {
+					.project__more {
+						padding-left: 100px;
+					}
+					.project__more::after {
+						width: 60px;
+					}
 				}
-				&:hover {
-						svg {
-								transform: translateX(15px) !important;
-						}
-						.project__more {
-							padding-left: 100px;
-						}
-						.project__more::after {
-							width: 60px;
-						}
-				}
+
 		}
 
 		&__number, &__more {
@@ -51,9 +43,9 @@
 			top: -300px;
 			font-size: 55px;
 			left: 5px;
-		@include mobile {
-			font-size: 78px;
-		}
+			@include mobile {
+				font-size: 78px;
+			}
 		}
 
 		&__more {
@@ -83,6 +75,9 @@
 				top: 50%;
 				transform: translateY(-50%);
 				transition: width 0.8s $easeToinou;
+				@include mobile {
+					height: 7px;
+				}
 			}
 
 			span {

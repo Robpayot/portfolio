@@ -7,99 +7,100 @@ $project3D-w : 1075px;
 	text-align: left;
 	user-select: none;
 	font-size: 1.5rem;
-    letter-spacing: 0.06rem;
+	letter-spacing: 0.06rem;
 	.project {
 
 		&.alt {
-		    color: $color-black;
-		    .icon {
-		        fill: $color-black;
-		    }
+			color: $color-black;
+			.icon {
+				fill: $color-black;
+			}
 		}
 
-	    .icon {
-	        fill: $color-white;
-	    }
+		.icon {
+			fill: $color-white;
+		}
 
-	    &__container {
-	    	width: 100%;
-	    	position: absolute;
-	    	top: 35%;
-	    	pointer-events: auto;
-	        line-height: 1.4em;
-	        z-index: 10;
-	        text-align: left;
-	        user-select: none;
-	        opacity: 0;
-	        display: none;
+		&__container {
+			width: 100%;
+			position: absolute;
+			top: 35%;
+			pointer-events: auto;
+			line-height: 1.4em;
+			z-index: 10;
+			text-align: left;
+			user-select: none;
+			opacity: 0;
+			display: none;
 			width: calc(100vw - 36vw);
 			// height: 100%;
 			left: 50%;
 			transform: translateX(-50%);
 			max-width: 1300px;
-	    }
+		}
 
-	    &__header {
-	    	width: 100%;
-	    	display: flex;
+		&__header {
+			width: 100%;
+			display: flex;
 			justify-content: space-between;
-	    	align-items: baseline;
-	    	margin-bottom: 2.0rem;
+			align-items: baseline;
+			margin-bottom: 2.0rem;
 
-	    }
+		}
 
-	    &__date {
-	    	color: $color-grey;
-	    }
+		&__date {
+			color: $color-grey;
+		}
 
-	    &__descr {
-	    	width: 100%;
-	    	line-height: 2em;
-	    	font-family: 'Theinhardt-light';
-		    font-weight: 300;
-		    font-style: normal;
-	    }
+		&__descr {
+			width: 100%;
+			line-height: 2em;
+			font-family: 'Theinhardt-light';
+			font-weight: 300;
+			font-style: normal;
+		}
 
-	    &__subHeader {
-	    	width: 100%;
-	    	display: flex;
+		&__subHeader {
+			width: 100%;
+			display: flex;
 			justify-content: flex-start;
 			align-items: center;
 			margin-top: 3.0rem;
 
 			font-family: 'Theinhardt-light';
-		    font-weight: 300;
-		    font-style: normal;
-	    }
+			font-weight: 300;
+			font-style: normal;
+		}
 
-	    &__role,
-	    &__technos,
-	    &__context {
-	    	width: 20%;
+		&__role,
+		&__technos,
+		&__context {
+			width: 20%;
 
-	    	p:first-child {
+			p:first-child {
 				margin-bottom: 1.0rem;
-	    	}
+			}
 
-	    	p:last-child {
-	    		color: $color-grey;
-	    	}
-	    }
+			p:last-child {
+				color: $color-grey;
+				white-space: nowrap;
+			}
+		}
 
-	    &__link {
-	    	width: 40%;
-	    	display: flex;
-	    	justify-content: flex-end;
-	    	align-items: center;
+		&__link {
+			width: 40%;
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
 
-	    	span {
-	    		margin-right: 2.0rem;
-	    	}
+			span {
+				margin-right: 2.0rem;
+			}
 
-	    	a {
+			a {
 
-	    		svg {
-				 	width: 4.5rem;
+				svg {
+					width: 4.5rem;
 					height: 4.5rem;
 					position: relative;
 
@@ -107,7 +108,7 @@ $project3D-w : 1075px;
 					circle {
 						stroke: white;
 					}
-	    			.open-down,
+					.open-down,
 					.open-up {
 						stroke-dasharray: 635;
 						stroke-dashoffset: 3175; // Fix safari issue : It doesn't like negative dash-offset
@@ -124,74 +125,75 @@ $project3D-w : 1075px;
 						stroke-dasharray: 635; // !
 						stroke-dashoffset: 3075;
 					}
-	    		}
+				}
 
-	    	}
-	    }
+			}
+		}
 
-	    &__gallery {
-	    	margin-top: 10.0rem;
-	    	margin-bottom: 6.0rem;
-	    	position: relative;
-	        width: 100%;
+		&__gallery {
+			margin-top: 10.0rem;
+			margin-bottom: 6.0rem;
+			position: relative;
+			width: 100%;
 
 			@include mobile {
-	    		margin-top: 3.0rem;
-	    	}
-	    }
+				margin-top: 3.0rem;
+				margin-bottom: 3.0rem;
+			}
+		}
 
-	    &__image {	        
+		&__image {	        
 
-	        img {
-	            width: 100%;
-	            border: 1px solid rgba(128, 128, 128, 0.15);
-	            transform-origin: 0% 0%;
-	        }
-	    }
+			img {
+				width: 100%;
+				border: 1px solid rgba(128, 128, 128, 0.15);
+				transform-origin: 0% 0%;
+			}
+		}
 
-	    &__video {
+		&__video {
 
-	        video {
-	            width: 100%;
-	        }
-	    }
+			video {
+				width: 100%;
+			}
+		}
 
-	    &__item {
-	    	width: 100%;
-	        visibility: hidden;
-	        margin-bottom: 7.0rem;
-	        user-select: none;
-	        opacity: 0;
-	    	transition: opacity 0.6s linear,  transform 1.2s $ExpoEaseOut;
-	    	transform: scaleY(2) translateY(80px);
-	    	transform-origin: 0% 0%;
+		&__item {
+			width: 100%;
+			visibility: hidden;
+			margin-bottom: 7.0rem;
+			user-select: none;
+			opacity: 0;
+			transition: opacity 0.6s linear,  transform 1.2s $ExpoEaseOut;
+			transform: scaleY(2) translateY(80px);
+			transform-origin: 0% 0%;
 
-	    	@include mobile {
-	    		transition: opacity 1s linear,  transform 1.6s $ExpoEaseOut;
-	    		 margin-bottom: 2.0rem;
-	    	}
-	    	
+			@include mobile {
+				transition: opacity 1s linear,  transform 1.6s $ExpoEaseOut;
+				 margin-bottom: 2.0rem;
+			}
+			
 
-	    	&.is-visible {
-	    		transform: scaleY(1) translateY(0px);
-	    		opacity: 1;
-	    	}
-	    }
+			&.is-visible {
+				transform: scaleY(1) translateY(0px);
+				opacity: 1;
+			}
+		}
 
-	    &__btn {
-	        // cursor: pointer;
-	    }
+		&__btn {
+			// cursor: pointer;
+		}
 
-	    &__footer {
-	    	opacity: 0;
-	    	display: flex;
-	    	justify-content: space-between;
-	    	align-items: baseline;
-	    	font-size: 1em;
-	    	text-align: left;
-	    	width: 100%;
-	    	// transform: translateY(50%);
-	    }
+		&__footer {
+			opacity: 0;
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			font-size: 1em;
+			text-align: left;
+			width: 100%;
+			// transform: translateY(50%);
+		}
 
 		&__awards {
 			color: $color-grey;
@@ -199,87 +201,105 @@ $project3D-w : 1075px;
 
 		&__back {
 			display: none;
-			position: absolute;
-			bottom: 0;
-			left: 50%;
-			transform: translateX(-50%) translateY(100%);
-			text-align: center;
-			text-transform: uppercase;
-	    	letter-spacing: 2.5px;
-	    	font-family: 'Theinhardt-light';
-		    font-weight: normal;
-		    font-style: normal;
-		    font-size: 1.2rem;
+			opacity: 0;
+			visibility: hidden;
 
-			.button {
-				text-transform: none;
-				margin-top: 2.0rem;
+			align-items: center;
+			justify-content: center;
+
+			position: absolute;
+			top: calc(35% + 12px);
+			left: 7vw;
+			pointer-events: auto;
+
+			p {
+				padding-left: 15px;
+				margin-right: -1.5px;
+
+				text-transform: uppercase;
+				letter-spacing: 1.5px;
+				font-family: 'Theinhardt-light';
+				font-weight: normal;
+				font-style: normal;
+				font-size: 1rem;
+
+				&:after {
+					content: '';
+					position: absolute;
+					width: 10px;
+					height: 1px;
+					background-color: white;
+					left: 0px;
+					top: 43%;
+					transform: translateY(-50%);
+				}
 			}
 
+
 			.is-touch & {
-				display: block;
+				display: flex;
 			}
 		}
 
 
-	    .link {
-	        img {
-	            width: 4.0rem;
-	            margin-left: 20px;
-	            margin-bottom: -5px;
-	        }
-	    }
+		.link {
+			img {
+				width: 4.0rem;
+				margin-left: 20px;
+				margin-bottom: -5px;
+			}
+		}
 
-	    .gallery {
-	        &__arrow {
-	            width: 25px;
-	            height: 35px;
-	            display: inline-block;
-	            visibility: hidden;
-	            opacity: 0;
-	            transition: transform 0.5s $easeToinou;
-	            &-l {
-	                transform: rotate(-180deg);
-	                margin-right: 5px;
-	                opacity: 0.2;
-	            }
-	            &:hover {
-	                transform: scale(1.05) translateX(-5px) rotate(-180deg) !important;
-	            }
-	            &-r {
-	                // transform: rotate(0deg);
-	                margin-left: 5px;
-	                &:hover {
-	                    transform: scale(1.05) translateX(5px) !important;
-	                }
-	            }
-	        }
-	    }
+		.gallery {
+			&__arrow {
+				width: 25px;
+				height: 35px;
+				display: inline-block;
+				visibility: hidden;
+				opacity: 0;
+				transition: transform 0.5s $easeToinou;
+				&-l {
+					transform: rotate(-180deg);
+					margin-right: 5px;
+					opacity: 0.2;
+				}
+				&:hover {
+					transform: scale(1.05) translateX(-5px) rotate(-180deg) !important;
+				}
+				&-r {
+					// transform: rotate(0deg);
+					margin-left: 5px;
+					&:hover {
+						transform: scale(1.05) translateX(5px) !important;
+					}
+				}
+			}
+		}
 
 
-	    &__socials {
-	    	position: absolute;
-	    	right: 5rem;
-	    	bottom: 5rem;
-	    	ul li {
-	    		display: inline-block;
-	    		vertical-align: middle;
-	    		opacity: 0.5;
-	    		pointer-events: auto;
-	    		margin: 0 0.5rem;
-	    		transition: opacity 0.5s ease;
+		&__socials {
+			position: absolute;
+			right: 5rem;
+			bottom: 5rem;
+			ul li {
+				display: inline-block;
+				vertical-align: middle;
+				opacity: 0.5;
+				pointer-events: auto;
+				margin: 0 0.5rem;
+				transition: opacity 0.5s ease;
 
-	    		svg {
-	    			width: 1.6rem;
-	    			fill: white;
+				svg {
+					width: 1.6rem;
+					fill: white;
 
-	    		}
+				}
 
-	    		&:hover {
-	    			opacity: 1;
-	    		}
-	    	}
-	    }
+				&:hover {
+					opacity: 1;
+				}
+			}
+		}
 
 	}
 
@@ -289,17 +309,17 @@ $project3D-w : 1075px;
 		bottom: 5rem;
 		left: 50%;
 		transform: translateX(-50%);
-    	letter-spacing: 2.5px;
-    	font-family: 'Theinhardt-light';
-	    font-weight: normal;
-	    font-style: normal;
-	    text-transform: uppercase;
-	    font-size: 1rem;
-	    opacity: 0;
+		letter-spacing: 2.5px;
+		font-family: 'Theinhardt-light';
+		font-weight: normal;
+		font-style: normal;
+		text-transform: uppercase;
+		font-size: 1rem;
+		opacity: 0;
 
-	    .scrolled & {
-	    	display: none;
-	    }
+		.scrolled & {
+			display: none;
+		}
 
 	}
 }
