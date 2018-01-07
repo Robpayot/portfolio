@@ -223,6 +223,8 @@ $project3D-w : 1075px;
 				font-style: normal;
 				font-size: 1rem;
 
+				pointer-events: auto;
+
 				&:after {
 					content: '';
 					position: absolute;

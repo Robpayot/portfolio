@@ -126,13 +126,13 @@ export default class ProjectView extends AbstractView {
 		if (Device.touch === false) {
 			// move camera
 			EmitterManager[onListener]('mousemove', this.onMouseMove);
-			EmitterManager[onListener]('scroll', this.scroll);
-			ScrollManager[onListener]();
 			window[evListener]('click', this.onClick);
 		} else {
 			// window[evListener]('touchstart', this.onClick);
 		}
 
+		EmitterManager[onListener]('scroll', this.scroll);
+		ScrollManager[onListener]();
 		EmitterManager[onListener]('resize', this.resizeHandler);
 		EmitterManager[onListener]('raf', this.raf);
 
@@ -482,7 +482,7 @@ export default class ProjectView extends AbstractView {
 			bean.on(document.body, 'touchstart.projectContent', '.project__container', this.onTouchStartContainer);
 			bean.on(document.body, 'touchmove.projectContent', '.project__container', this.onTouchMoveContainer);
 			bean.on(document.body, 'touchend.projectContent', '.project__container', this.onTouchEndContainer);
-			bean.on(document.body, 'click.projectContent', '.project__back', this.onClick);
+			bean.on(document.body, 'touchstart.projectContent', '.project__back', this.onClick);
 		}
 
 
