@@ -13,8 +13,7 @@ import { isTouch, preventLink } from '../helpers/utils';
 import { TextureLoader } from 'three';
 import FontFaceObserver from 'fontfaceobserver';
 import Glitch from '../components/Glitch';
-import {Howl, Howler} from 'howler';
-console.log(Howler);
+import { Howl } from 'howler';
 
 
 class AppManager {
@@ -77,6 +76,34 @@ class AppManager {
 			this.preloadFonts();
 
 		}, this, true);
+
+		// Sounds
+		global.SOUNDS = {
+			'glitch': new Howl({
+				src: [`${global.BASE}/sounds/glitch-1.mp3`],
+				volume: 0.1
+			}),
+			'switch': new Howl({
+				src: [`${global.BASE}/sounds/switch-3.mp3`],
+				volume: 0.2
+			}),
+			'switch_long': new Howl({
+				src: [`${global.BASE}/sounds/switch-4.mp3`],
+				volume: 0.2
+			}),
+			'hover': new Howl({
+				src: [`${global.BASE}/sounds/hover-3.mp3`],
+				volume: 0.3
+			}),
+			'hover_2': new Howl({
+				src: [`${global.BASE}/sounds/glitch-2.mp3`],
+				volume: 0.1
+			}),
+			'music': new Howl({
+				src: [`${global.BASE}/sounds/music.mp3`],
+				loop: true
+			})
+		};
 
 
 
@@ -150,33 +177,6 @@ class AppManager {
 		global.SKYTEX = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
 		global.BLOBTEX = new TextureLoader().load( `${global.BASE}/images/textures/blob-4.jpg` );
 
-		// Sounds
-		global.SOUNDS = {
-			'glitch': new Howl({
-				src: [`${global.BASE}/sounds/glitch-1.mp3`],
-				volume: 0.1
-			}),
-			'switch': new Howl({
-				src: [`${global.BASE}/sounds/switch-3.mp3`],
-				volume: 0.2
-			}),
-			'switch_long': new Howl({
-				src: [`${global.BASE}/sounds/switch-4.mp3`],
-				volume: 0.2
-			}),
-			'hover': new Howl({
-				src: [`${global.BASE}/sounds/hover-3.mp3`],
-				volume: 0.3
-			}),
-			'hover_2': new Howl({
-				src: [`${global.BASE}/sounds/glitch-2.mp3`],
-				volume: 0.1
-			}),
-			'music': new Howl({
-				src: [`${global.BASE}/sounds/music4.mp3`]
-			})
-		};
-
 		// Preload all img projects
 		for (let i = 0; i < DATA.projects.length; i++) {
 
@@ -205,39 +205,42 @@ class AppManager {
 			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
 
-			const tl = new TimelineMax();
-			if (Device.touch === false) {
+			// Clear listener after first call.
+			global.SOUNDS['music'].once('load', ()=> {
+				const tl = new TimelineMax();
+				if (Device.touch === false) {
 
-				tl.add(() => {
-
-					this.start();
-				}, 0.6);
-
-			} else {
-
-				let wrapper = document.querySelector('.preload__wrapper');
-				let txt = document.querySelector('.preload__txt');
-				txt.innerHTML = 'start';
-				TweenMax.to(txt, 0.5, {opacity: 1});
-
-				let onWrapperClick = (e) => {
-
-
-					TweenMax.to(txt, 0.5, {opacity: 0});
-
-					wrapper.removeEventListener('click', onWrapperClick);
-
-					preventLink(e, true);
-					this.resizeHandler();
 					tl.add(() => {
+
 						this.start();
 					}, 0.6);
 
-				};
+				} else {
 
-				wrapper.addEventListener('click', onWrapperClick);
+					let wrapper = document.querySelector('.preload__wrapper');
+					let txt = document.querySelector('.preload__txt');
+					txt.innerHTML = 'start';
+					TweenMax.to(txt, 0.5, {opacity: 1});
 
-			}
+					let onWrapperClick = (e) => {
+
+
+						TweenMax.to(txt, 0.5, {opacity: 0});
+
+						wrapper.removeEventListener('click', onWrapperClick);
+
+						preventLink(e, true);
+						this.resizeHandler();
+						tl.add(() => {
+							this.start();
+						}, 0.6);
+
+					};
+
+					wrapper.addEventListener('click', onWrapperClick);
+				}
+
+			});
 
 		}, this, true);
 	}
@@ -266,6 +269,8 @@ class AppManager {
 
 		//start sound
 		global.SOUNDS['music'].play();
+		console.log('ok');
+
 	}
 
 	callbackInit() {
