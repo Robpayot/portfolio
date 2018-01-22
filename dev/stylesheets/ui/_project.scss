@@ -278,31 +278,6 @@ $project3D-w : 1075px;
 			}
 		}
 
-
-		&__socials {
-			position: absolute;
-			right: 5rem;
-			bottom: 5rem;
-			ul li {
-				display: inline-block;
-				vertical-align: middle;
-				opacity: 0.5;
-				pointer-events: auto;
-				margin: 0 0.5rem;
-				transition: opacity 0.5s ease;
-
-				svg {
-					width: 1.6rem;
-					fill: white;
-
-				}
-
-				&:hover {
-					opacity: 1;
-				}
-			}
-		}
-
 	}
 
 	.scroll {

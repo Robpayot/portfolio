@@ -153,19 +153,24 @@ class AppManager {
 		// Sounds
 		global.SOUNDS = {
 			'glitch': new Howl({
-				src: [`${global.BASE}/sounds/glitch-1.mp3`]
+				src: [`${global.BASE}/sounds/glitch-1.mp3`],
+				volume: 0.1
 			}),
 			'switch': new Howl({
-				src: [`${global.BASE}/sounds/switch-3.mp3`]
+				src: [`${global.BASE}/sounds/switch-3.mp3`],
+				volume: 0.2
 			}),
 			'switch_long': new Howl({
-				src: [`${global.BASE}/sounds/switch-4.mp3`]
+				src: [`${global.BASE}/sounds/switch-4.mp3`],
+				volume: 0.2
 			}),
 			'hover': new Howl({
-				src: [`${global.BASE}/sounds/hover-3.mp3`]
+				src: [`${global.BASE}/sounds/hover-3.mp3`],
+				volume: 0.3
 			}),
 			'hover_2': new Howl({
-				src: [`${global.BASE}/sounds/glitch-2.mp3`]
+				src: [`${global.BASE}/sounds/glitch-2.mp3`],
+				volume: 0.1
 			}),
 			'music': new Howl({
 				src: [`${global.BASE}/sounds/music4.mp3`]

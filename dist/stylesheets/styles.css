@@ -910,6 +910,26 @@ body {
       text-transform: uppercase;
       font-size: 1rem;
       opacity: 0; }
+  .ui .footer {
+    position: absolute;
+    right: 5rem;
+    bottom: 5rem; }
+    .ui .footer ul li {
+      display: inline-block;
+      vertical-align: middle;
+      opacity: 0.5;
+      pointer-events: auto;
+      margin: 0 0.5rem;
+      transition: opacity 0.5s ease; }
+      .ui .footer ul li.off {
+        opacity: 0.1; }
+      .ui .footer ul li svg {
+        width: 1.6rem;
+        fill: black; }
+      .ui .footer ul li:hover {
+        opacity: 1; }
+  .ui .is-project + .footer ul li svg {
+    fill: white; }
   .ui-content {
     width: 100%;
     height: 100%;
@@ -1372,22 +1392,6 @@ body {
             -webkit-transform: scale(1.05) translateX(5px) !important;
             -ms-transform: scale(1.05) translateX(5px) !important;
             transform: scale(1.05) translateX(5px) !important; }
-      .ui-content.is-project .project__socials {
-        position: absolute;
-        right: 5rem;
-        bottom: 5rem; }
-        .ui-content.is-project .project__socials ul li {
-          display: inline-block;
-          vertical-align: middle;
-          opacity: 0.5;
-          pointer-events: auto;
-          margin: 0 0.5rem;
-          transition: opacity 0.5s ease; }
-          .ui-content.is-project .project__socials ul li svg {
-            width: 1.6rem;
-            fill: white; }
-          .ui-content.is-project .project__socials ul li:hover {
-            opacity: 1; }
       .ui-content.is-project .scroll {
         position: fixed;
         color: white;

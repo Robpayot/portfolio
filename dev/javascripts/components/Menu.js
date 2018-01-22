@@ -7,6 +7,7 @@ import ScrollManager from '../managers/ScrollManager';
 import { Device } from '../helpers/Device';
 import { preventLink } from '../helpers/utils';
 import '../helpers/polyfills';
+import { Howler } from 'howler';
 
 export default class Menu {
 
@@ -25,7 +26,8 @@ export default class Menu {
 			subLinksTitles: this.el.querySelectorAll('.menu__sublink > div'),
 			links: this.el.querySelectorAll('.menu__link'),
 			linksTitles: this.el.querySelectorAll('.menu__link .title--3'),
-			aLinks: this.el.querySelectorAll('.menu__link a')
+			aLinks: this.el.querySelectorAll('.menu__link a'),
+			sound: document.querySelector('.sound')
 		};
 
 		this.maxDash = 635;
@@ -48,6 +50,8 @@ export default class Menu {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
 		// let onListener = method === false ? 'off' : 'on';
+
+		this.ui.sound[evListener]('click', this.toggleSound);
 
 		if (Device.touch === false) {
 			this.el[evListener]('click', this.onClickOutside);
@@ -72,6 +76,18 @@ export default class Menu {
 		}
 
 
+	}
+
+	toggleSound(e) {
+		const el = e.currentTarget;
+
+		if (el.classList.contains('off') === true) {
+			el.classList.remove('off');
+			Howler.volume(1);
+		} else {
+			el.classList.add('off');
+			Howler.volume(0);
+		}
 	}
 
 	toggleOpen(e, close = false) {
