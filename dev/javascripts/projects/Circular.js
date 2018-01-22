@@ -64,6 +64,7 @@ export default class Circular extends ProjectView {
 
 				const pivotPalm = new Object3D();
 				pivotPalm.position.y = -pivotY;
+				pivotPalm.position.x = 0;
 
 				// Pivot each palms
 				if (nbPalm % 2 === 0) {
@@ -105,7 +106,11 @@ export default class Circular extends ProjectView {
 
 			this.groupAst.add(asteroid);
 
+			// asteroid.children[0].position.x = 50;
+
 		}
+
+
 
 		this.scene.add(this.groupAst);
 
@@ -152,10 +157,17 @@ export default class Circular extends ProjectView {
 		// Asteroids meshs
 		for (let i = 0; i < this.nbAst; i++) {
 			this.asteroidsM[i].rotation.z = this.asteroidsM[i].initRot + toRadian(this.clock.getElapsedTime() * this.asteroidsM[i].speed * this.asteroidsM[i].dir);
+
+			for (let y = 0; y < this.asteroidsM[i].children.length; y++) {
+				this.asteroidsM[i].children[y].children[0].position.x = -this.camRotSmooth.y * 200;
+				this.asteroidsM[i].children[y].position.x = this.camRotSmooth.x * 270;
+				// console.log(this.asteroidsM[i].children[y].position);
+			}
 		}
 
 		this.groupAst.rotation.y = toRadian(this.camRotSmooth.y * 50);
 		this.groupAst.rotation.x = toRadian(this.camRotSmooth.x * 50);
+
 
 		super.raf();
 

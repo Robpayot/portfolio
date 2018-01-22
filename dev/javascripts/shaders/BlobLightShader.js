@@ -20,8 +20,9 @@ class BlobLightShader {
 
 				'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );',
 				'float pitch = .5 - asin( vReflect.y ) / PI;',
-				'vec2 pos = vec2( yaw, pitch );',
-				'vec3 color = texture2D( tShine, pos ).rgb;',
+				'vec2 pos = vec2( yaw, pitch );', // old code
+				'vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5;', // Classic sphere mapping
+				'vec3 color = texture2D( tShine, uv ).rgb;',
 				'vec3 colorContrasted = (color) * contrast;',
 				'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);',
 

@@ -798,9 +798,16 @@ export default class IntroView extends AbstractView {
 
 		if (fromProject === true) {
 			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
+			// sound
+			global.SOUNDS['switch_long'].play();
 		} else {
 			let time = Device.touch === true ? 4.5 : 4.5;
 			tl.to(this.camera.position, time, {y: this.minZoom, ease: window.Expo.easeInOut}, 0); // 7
+
+			tl.add(() => {
+				// sound
+				global.SOUNDS['switch_long'].play();
+			}, 1.6);
 		}
 
 
@@ -827,12 +834,15 @@ export default class IntroView extends AbstractView {
 		}, 0);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');
+
 		}, 2);
 
 
 		this.animating = true;
 		this.cameraMove = true;
 
+		// sound
+		global.SOUNDS['switch_long'].play();
 
 	}
 

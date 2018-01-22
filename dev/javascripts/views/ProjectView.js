@@ -450,6 +450,9 @@ export default class ProjectView extends AbstractView {
 			this.animLink = false;
 		});
 
+		// sound
+		global.SOUNDS['hover'].play();
+
 	}
 
 	onLeaveLink() {
@@ -553,6 +556,10 @@ export default class ProjectView extends AbstractView {
 			if (!Device.touch) global.CURSOR.interractLeave();
 			this.glitch.hover = false;
 
+			// sound
+			global.SOUNDS['switch_long'].play();
+			// global.SOUNDS['switch_long'].fade(0, 0.8, 1000);
+
 			// ScrollManager.on(); // start scrollmanager
 		}, 0.5);
 
@@ -644,11 +651,18 @@ export default class ProjectView extends AbstractView {
 				this.ui.imgs[i].classList.remove('is-visible');
 			}
 			this.ui.footer.classList.remove('is-visible');
+
 		}, 2.6);
+
+		tl.add(() => {
+			// sound
+			global.SOUNDS['switch_long'].play();
+		}, 1.5);
 
 		if (global.SCROLLED === false) {
 			tl.to('.scroll', 1, {opacity: 1}, 2.6);
 		}
+
 
 	}
 
@@ -871,6 +885,9 @@ export default class ProjectView extends AbstractView {
 
 
 		global.CURSOR.interractHover();
+
+		// sound
+		global.SOUNDS['glitch'].play();
 	}
 
 	onLeaveTitle() {
@@ -1084,6 +1101,8 @@ export default class ProjectView extends AbstractView {
 		});
 
 		if (this.lastPage === 'intro') {
+			// sound
+			global.SOUNDS['switch_long'].play();
 
 			tl.to(this.dolly, time, {
 				cameraPosition: 1,
@@ -1096,6 +1115,8 @@ export default class ProjectView extends AbstractView {
 			});
 
 		} else {
+			// sound
+			global.SOUNDS['switch_long'].play();
 
 			let start = this.dir === -1 ? 0 : 300;
 			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}); // 2
@@ -1163,6 +1184,10 @@ export default class ProjectView extends AbstractView {
 			});
 
 			this.hrefChanged = true;
+
+			// sound
+			global.SOUNDS['switch_long'].play();
+			// global.SOUNDS['switch_long'].fade(1, 0, 1000);
 
 		} else {
 			// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});

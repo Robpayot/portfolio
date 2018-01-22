@@ -4,7 +4,7 @@ import Asteroid from '../shapes/Asteroid';
 import { Device } from '../helpers/Device';
 
 // THREE JS
-import { ShaderMaterial, VideoTexture, Texture, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
+import { ShaderMaterial, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
 import { BlobLightShader } from '../shaders/BlobLightShader';
 
 
@@ -28,9 +28,9 @@ export default class Blob extends ProjectView {
 		// this.video.loop = true;
 		// this.video.muted = true;
 		// this.video.setAttribute('playsinline', '');
-		this.video = document.createElement('img');
-		this.video.id = 'video';
-		this.video.src = 'images/textures/blob.jpg';
+		// this.video = document.createElement('img');
+		// this.video.id = 'video';
+		// this.video.src = 'images/textures/blob-4.jpg';
 		// this.video.autoplay = true;
 		// this.video.loop = true;
 		// this.video.muted = true;
@@ -64,12 +64,10 @@ export default class Blob extends ProjectView {
 
 		const geometry = new IcosahedronGeometry( 5, 5 );
 
-
-		const tex = new Texture( this.video );
-		tex.minFilter = LinearFilter;
-		tex.magFilter = LinearFilter;
-		tex.format = RGBFormat;
-		tex.needsUpdate = true;
+		global.BLOBTEX.minFilter = LinearFilter;
+		global.BLOBTEX.magFilter = LinearFilter;
+		global.BLOBTEX.format = RGBFormat;
+		global.BLOBTEX.needsUpdate = true;
 
 		let pos;
 		const posFixed = [
@@ -90,7 +88,7 @@ export default class Blob extends ProjectView {
 			const material = new ShaderMaterial( {
 
 				uniforms: {
-					tShine: { type: 't', value: tex },
+					tShine: { type: 't', value: global.BLOBTEX },
 					time: { type: 'f', value: 0 },
 					weight: { type: 'f', value: 0 },
 					brightness: { type: 'f', value: 0 },
@@ -100,6 +98,9 @@ export default class Blob extends ProjectView {
 				fragmentShader: blobLightShader.fragmentShader
 
 			} );
+
+			material.transparent = true;
+			material.opacity = 0.5;
 
 			const rot = {
 				x: 0,
@@ -147,20 +148,6 @@ export default class Blob extends ProjectView {
 			// add mesh to the scene
 			this.scene.add(asteroid.mesh);
 
-			// var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
-			// for ( i = 0; i < faceVertexUvs.length; i ++ ) {
-
-			// 	var uvs = faceVertexUvs[ i ];
-			// 	var face = geometry.faces[ i ];
-
-			// 	for ( var j = 0; j < 3; j ++ ) {
-
-			// 		uvs[ j ].x = face.vertexNormals[ j ].x * 0.5 + 0.5;
-			// 		uvs[ j ].y = face.vertexNormals[ j ].y * 0.5 + 0.5;
-
-			// 	}
-
-			// }
 
 		}
 
@@ -226,7 +213,7 @@ export default class Blob extends ProjectView {
 	}
 
 	destroy() {
-		this.video.removeEventListener('canplay', this.init);
+		// this.video.removeEventListener('canplay', this.init);
 		super.destroy();
 	}
 

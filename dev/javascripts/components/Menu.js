@@ -144,6 +144,9 @@ export default class Menu {
 			TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});
 			TweenMax.to('.navigate', 0.2, {opacity: 0, ease: window.Linear.easeNone});
 		}
+
+		// sound
+		global.SOUNDS['switch'].play();
 	}
 
 	onClickOutside(e) {
@@ -162,6 +165,8 @@ export default class Menu {
 		} else {
 			global.CURSOR.interractHover();
 		}
+		// sound
+		global.SOUNDS['hover_2'].play();
 	}
 
 	onLeaveLink(e) {
@@ -203,6 +208,9 @@ export default class Menu {
 				this.animBtn = false;
 			});
 		}
+
+		// sound
+		global.SOUNDS['hover'].play();
 	}
 
 	onLeaveBtn() {

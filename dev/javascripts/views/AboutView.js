@@ -546,6 +546,7 @@ export default class AboutView extends AbstractView {
 		tl.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3 );
 
 		// this.tlLink.play();
+
 	}
 
 	onLeaveLink(e) {
@@ -568,6 +569,9 @@ export default class AboutView extends AbstractView {
 
 		tl.to(line, 0.7, { width: 15, ease: window.Expo.easeOut }, 0);
 		tl.to(el, 0.7, { paddingLeft: 25, ease: window.Expo.easeOut }, 0);
+
+		// sound
+		global.SOUNDS['hover_2'].play();
 
 	}
 
@@ -602,6 +606,9 @@ export default class AboutView extends AbstractView {
 
 		}, 2);
 
+		// sound
+		global.SOUNDS['switch'].play();
+
 
 	}
 
@@ -616,6 +623,9 @@ export default class AboutView extends AbstractView {
 		tl.set(this.ui.introWrap, {display : 'block'} , 1);
 		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 1);
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
+
+		// sound
+		global.SOUNDS['switch'].play();
 
 	}
 
@@ -638,6 +648,9 @@ export default class AboutView extends AbstractView {
 		tl.add(()=> {
 			this.animLink = false;
 		});
+
+		// sound
+		global.SOUNDS['hover'].play();
 
 	}
 
@@ -801,6 +814,9 @@ export default class AboutView extends AbstractView {
 		tl.set(this.ui.introWrap, {display : 'block'} , delay);
 		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, delay);
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, delay);
+
+		// sound
+		global.SOUNDS['switch_long'].play();
 
 	}
 

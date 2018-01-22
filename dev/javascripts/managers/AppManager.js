@@ -13,6 +13,8 @@ import { isTouch, preventLink } from '../helpers/utils';
 import { TextureLoader } from 'three';
 import FontFaceObserver from 'fontfaceobserver';
 import Glitch from '../components/Glitch';
+import {Howl, Howler} from 'howler';
+console.log(Howler);
 
 
 class AppManager {
@@ -146,7 +148,26 @@ class AppManager {
 
 		// SkyTex
 		global.SKYTEX = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
-		// global.PROJECTTEX = new TextureLoader().load( `${global.BASE}/images/textures/project-1.png` );
+		global.BLOBTEX = new TextureLoader().load( `${global.BASE}/images/textures/blob-4.jpg` );
+
+		// Sounds
+		global.SOUNDS = {
+			'glitch': new Howl({
+				src: [`${global.BASE}/sounds/glitch-1.mp3`]
+			}),
+			'switch': new Howl({
+				src: [`${global.BASE}/sounds/switch-3.mp3`]
+			}),
+			'switch_long': new Howl({
+				src: [`${global.BASE}/sounds/switch-4.mp3`]
+			}),
+			'hover': new Howl({
+				src: [`${global.BASE}/sounds/hover-3.mp3`]
+			}),
+			'hover_2': new Howl({
+				src: [`${global.BASE}/sounds/glitch-2.mp3`]
+			})
+		};
 
 		// Preload all img projects
 		for (let i = 0; i < DATA.projects.length; i++) {
