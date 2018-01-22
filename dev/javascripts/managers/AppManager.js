@@ -166,6 +166,9 @@ class AppManager {
 			}),
 			'hover_2': new Howl({
 				src: [`${global.BASE}/sounds/glitch-2.mp3`]
+			}),
+			'music': new Howl({
+				src: [`${global.BASE}/sounds/music4.mp3`]
 			})
 		};
 
@@ -255,6 +258,9 @@ class AppManager {
 		global.OVERLAY = this.ui.overlay;
 
 		RouterManager.start(); // Init Router and views
+
+		//start sound
+		global.SOUNDS['music'].play();
 	}
 
 	callbackInit() {
