@@ -205,42 +205,39 @@ class AppManager {
 			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
 
-			// Clear listener after first call.
-			global.SOUNDS['music'].once('load', ()=> {
-				const tl = new TimelineMax();
-				if (Device.touch === false) {
+			const tl = new TimelineMax();
+			if (Device.touch === false) {
 
+				tl.add(() => {
+
+					this.start();
+				}, 0.6);
+
+			} else {
+
+				let wrapper = document.querySelector('.preload__wrapper');
+				let txt = document.querySelector('.preload__txt');
+				txt.innerHTML = 'start';
+				TweenMax.to(txt, 0.5, {opacity: 1});
+
+				let onWrapperClick = (e) => {
+
+
+					TweenMax.to(txt, 0.5, {opacity: 0});
+
+					wrapper.removeEventListener('click', onWrapperClick);
+
+					preventLink(e, true);
+					this.resizeHandler();
 					tl.add(() => {
-
 						this.start();
 					}, 0.6);
 
-				} else {
+				};
 
-					let wrapper = document.querySelector('.preload__wrapper');
-					let txt = document.querySelector('.preload__txt');
-					txt.innerHTML = 'start';
-					TweenMax.to(txt, 0.5, {opacity: 1});
+				wrapper.addEventListener('click', onWrapperClick);
+			}
 
-					let onWrapperClick = (e) => {
-
-
-						TweenMax.to(txt, 0.5, {opacity: 0});
-
-						wrapper.removeEventListener('click', onWrapperClick);
-
-						preventLink(e, true);
-						this.resizeHandler();
-						tl.add(() => {
-							this.start();
-						}, 0.6);
-
-					};
-
-					wrapper.addEventListener('click', onWrapperClick);
-				}
-
-			});
 
 		}, this, true);
 	}
