@@ -58,6 +58,10 @@
         "gh": "https://github.com/Robpayot",
         "ld": "https://fr.linkedin.com/in/robin-payot-71951748",
         "projects": [{
+            "title" : "Raindrops",
+            "descr": "Little Pixi.js experiment about drops.",
+            "link": "https://robpayot.github.io/raindrops/dist/"
+        },{
             "title" : "2D wave generator",
             "descr": "Small canvas experiment creating and animate 2D waves.",
             "link": "https://codepen.io/Robpayot/pen/vpKqMp"

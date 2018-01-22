@@ -4,7 +4,7 @@ import Asteroid from '../shapes/Asteroid';
 import { Device } from '../helpers/Device';
 
 // THREE JS
-import { ShaderMaterial, VideoTexture, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
+import { ShaderMaterial, VideoTexture, Texture, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
 import { BlobLightShader } from '../shaders/BlobLightShader';
 
 
@@ -21,20 +21,29 @@ export default class Blob extends ProjectView {
 		this.inc = Date.now();
 
 
-		this.video = document.createElement('video');
+		// this.video = document.createElement('video');
+		// this.video.id = 'video';
+		// this.video.src = 'videos/blob2.mp4';
+		// this.video.autoplay = true;
+		// this.video.loop = true;
+		// this.video.muted = true;
+		// this.video.setAttribute('playsinline', '');
+		this.video = document.createElement('img');
 		this.video.id = 'video';
-		this.video.src = 'videos/blob2.mp4';
-		this.video.autoplay = true;
-		this.video.loop = true;
-		this.video.muted = true;
-		this.video.setAttribute('playsinline', '');
+		this.video.src = 'images/textures/blob.jpg';
+		// this.video.autoplay = true;
+		// this.video.loop = true;
+		// this.video.muted = true;
+		// this.video.setAttribute('playsinline', '');
 		// this.el.appendChild(this.video);
 
-		if (this.canplay === true) {
-			this.playTex();
-		} else {
-			this.video.addEventListener('canplay', this.playTex);
-		}
+		this.playTex();
+
+		// if (this.canplay === true) {
+		// 	this.playTex();
+		// } else {
+		// 	this.video.addEventListener('canplay', this.playTex);
+		// }
 
 		// console.log('Blob view');
 
@@ -56,7 +65,7 @@ export default class Blob extends ProjectView {
 		const geometry = new IcosahedronGeometry( 5, 5 );
 
 
-		const tex = new VideoTexture( this.video );
+		const tex = new Texture( this.video );
 		tex.minFilter = LinearFilter;
 		tex.magFilter = LinearFilter;
 		tex.format = RGBFormat;
@@ -137,6 +146,21 @@ export default class Blob extends ProjectView {
 
 			// add mesh to the scene
 			this.scene.add(asteroid.mesh);
+
+			// var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
+			// for ( i = 0; i < faceVertexUvs.length; i ++ ) {
+
+			// 	var uvs = faceVertexUvs[ i ];
+			// 	var face = geometry.faces[ i ];
+
+			// 	for ( var j = 0; j < 3; j ++ ) {
+
+			// 		uvs[ j ].x = face.vertexNormals[ j ].x * 0.5 + 0.5;
+			// 		uvs[ j ].y = face.vertexNormals[ j ].y * 0.5 + 0.5;
+
+			// 	}
+
+			// }
 
 		}
 

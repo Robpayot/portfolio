@@ -59,6 +59,10 @@ module.exports={
         "gh": "https://github.com/Robpayot",
         "ld": "https://fr.linkedin.com/in/robin-payot-71951748",
         "projects": [{
+            "title" : "Raindrops",
+            "descr": "Little Pixi.js experiment about drops.",
+            "link": "https://robpayot.github.io/raindrops/dist/"
+        },{
             "title" : "2D wave generator",
             "descr": "Small canvas experiment creating and animate 2D waves.",
             "link": "https://codepen.io/Robpayot/pen/vpKqMp"
@@ -2469,20 +2473,29 @@ var Blob = function (_ProjectView) {
 		_this.intersection;
 		_this.inc = Date.now();
 
-		_this.video = document.createElement('video');
+		// this.video = document.createElement('video');
+		// this.video.id = 'video';
+		// this.video.src = 'videos/blob2.mp4';
+		// this.video.autoplay = true;
+		// this.video.loop = true;
+		// this.video.muted = true;
+		// this.video.setAttribute('playsinline', '');
+		_this.video = document.createElement('img');
 		_this.video.id = 'video';
-		_this.video.src = 'videos/blob2.mp4';
-		_this.video.autoplay = true;
-		_this.video.loop = true;
-		_this.video.muted = true;
-		_this.video.setAttribute('playsinline', '');
+		_this.video.src = 'images/textures/blob.jpg';
+		// this.video.autoplay = true;
+		// this.video.loop = true;
+		// this.video.muted = true;
+		// this.video.setAttribute('playsinline', '');
 		// this.el.appendChild(this.video);
 
-		if (_this.canplay === true) {
-			_this.playTex();
-		} else {
-			_this.video.addEventListener('canplay', _this.playTex);
-		}
+		_this.playTex();
+
+		// if (this.canplay === true) {
+		// 	this.playTex();
+		// } else {
+		// 	this.video.addEventListener('canplay', this.playTex);
+		// }
 
 		// console.log('Blob view');
 
@@ -2506,7 +2519,7 @@ var Blob = function (_ProjectView) {
 
 			var geometry = new _three.IcosahedronGeometry(5, 5);
 
-			var tex = new _three.VideoTexture(this.video);
+			var tex = new _three.Texture(this.video);
 			tex.minFilter = _three.LinearFilter;
 			tex.magFilter = _three.LinearFilter;
 			tex.format = _three.RGBFormat;
@@ -2578,6 +2591,21 @@ var Blob = function (_ProjectView) {
 
 				// add mesh to the scene
 				this.scene.add(asteroid.mesh);
+
+				// var faceVertexUvs = geometry.faceVertexUvs[ 0 ];
+				// for ( i = 0; i < faceVertexUvs.length; i ++ ) {
+
+				// 	var uvs = faceVertexUvs[ i ];
+				// 	var face = geometry.faces[ i ];
+
+				// 	for ( var j = 0; j < 3; j ++ ) {
+
+				// 		uvs[ j ].x = face.vertexNormals[ j ].x * 0.5 + 0.5;
+				// 		uvs[ j ].y = face.vertexNormals[ j ].y * 0.5 + 0.5;
+
+				// 	}
+
+				// }
 			}
 		}
 	}, {
