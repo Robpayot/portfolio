@@ -823,7 +823,7 @@ export default class IntroView extends AbstractView {
 
 	transitionOut(dest) {
 
-		const tl = new TimelineMax({delay: 0});
+		const tl = new TimelineMax();
 
 		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
 		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);

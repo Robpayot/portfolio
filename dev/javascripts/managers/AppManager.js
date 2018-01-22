@@ -79,6 +79,10 @@ class AppManager {
 
 		// Sounds
 		global.SOUNDS = {
+			'music': new Howl({
+				src: [`${global.BASE}/sounds/music.mp3`],
+				loop: true
+			}),
 			'glitch': new Howl({
 				src: [`${global.BASE}/sounds/glitch-1.mp3`],
 				volume: 0.1
@@ -98,10 +102,6 @@ class AppManager {
 			'hover_2': new Howl({
 				src: [`${global.BASE}/sounds/glitch-2.mp3`],
 				volume: 0.1
-			}),
-			'music': new Howl({
-				src: [`${global.BASE}/sounds/music.mp3`],
-				loop: true
 			})
 		};
 
@@ -269,7 +269,6 @@ class AppManager {
 
 		//start sound
 		global.SOUNDS['music'].play();
-		console.log('ok');
 
 	}
 
