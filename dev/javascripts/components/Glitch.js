@@ -3,7 +3,7 @@ import EmitterManager from '../managers/EmitterManager';
 import Handlebars from 'handlebars';
 import PreloadManager from '../managers/PreloadManager';
 // import dat from 'dat-gui';
-import { getRandom, clamp } from '../helpers/utils';
+import { getRandom } from '../helpers/utils';
 // import { Device } from '../helpers/Device';
 
 export default class Glitch {
@@ -49,10 +49,10 @@ export default class Glitch {
 	events(method) {
 
 		// let evListener = method === false ? 'removeEventListener' : 'addEventListener';
-		let onListener = method === false ? 'off' : 'on';
+		let listener = method === false ? 'off' : 'on';
 
-		EmitterManager[onListener]('resize', this.resizeHandler);
-		EmitterManager[onListener]('raf', this.render);
+		EmitterManager[listener]('resize', this.resizeHandler);
+		EmitterManager[listener]('raf', this.render);
 
 	}
 

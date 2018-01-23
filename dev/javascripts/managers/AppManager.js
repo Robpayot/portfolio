@@ -302,7 +302,7 @@ class AppManager {
 	events(method) {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
-		let onListener = method === false ? 'off' : 'on';
+		let listener = method === false ? 'off' : 'on';
 
 
 		// Global events
@@ -315,7 +315,7 @@ class AppManager {
 			window[evListener]('touchmove', this.onTouchMove, false);
 		}
 
-		bean[onListener](window, 'resize orientationchange', this.resizeHandler);
+		bean[listener](window, 'resize orientationchange', this.resizeHandler);
 
 	}
 

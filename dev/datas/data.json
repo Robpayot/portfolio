@@ -50,7 +50,19 @@
         "imgs": ["forest.mp4", "forest-1.jpg", "forest-2.jpg", "forest-3.jpg", "forest-4.jpg", "forest-5.jpg"],
         "link": "http://thesuicideforest.com/",
         "color": "#1FB04C",
-        "colorName": "green"
+        "colorName": "green",
+        "asteroidsPositions":[
+            { "x": -50, "y": -10, "z": 80 },
+            { "x": -50, "y": 5, "z": 10 },
+            { "x": -30, "y": -60, "z": -20 },
+            { "x": -10, "y": 40, "z": -40 },
+            { "x": -60, "y": 50, "z": -40 },
+            { "x": 0, "y": -40, "z": -60 },
+            { "x": 30, "y": 20, "z": 60 },
+            { "x": 20, "y": -20, "z": -30 },
+            { "x": 50, "y": -40, "z": 30 },
+            { "x": 40, "y": 20, "z": -80 }
+        ]
     }],
     "about": {
         "content" : "",

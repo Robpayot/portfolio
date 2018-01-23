@@ -121,10 +121,10 @@ export default class AboutView extends AbstractView {
 	events(method) {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
-		let onListener = method === false ? 'off' : 'on';
+		let listener = method === false ? 'off' : 'on';
 
-		EmitterManager[onListener]('resize', this.resizeHandler);
-		EmitterManager[onListener]('raf', this.raf);
+		EmitterManager[listener]('resize', this.resizeHandler);
+		EmitterManager[listener]('raf', this.raf);
 
 		if (Device.touch === false) {
 			document[evListener]( 'click', this.onClick , false );
@@ -132,8 +132,8 @@ export default class AboutView extends AbstractView {
 			EmitterManager.on('mousemove', this.onMouseMove);
 
 			if (this.noscroll !== true) {
-				EmitterManager[onListener]('scroll', this.scroll);
-				ScrollManager[onListener]();
+				EmitterManager[listener]('scroll', this.scroll);
+				ScrollManager[listener]();
 			}
 
 			for (let i = 0; i < this.ui.links.length; i++) {

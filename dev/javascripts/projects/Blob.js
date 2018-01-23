@@ -16,7 +16,7 @@ export default class Blob extends ProjectView {
 
 		this.playTex = this.playTex.bind(this);
 
-		this.toggle = 0;
+		this.interval = 0;
 		this.intersection;
 		this.inc = Date.now();
 
@@ -170,7 +170,7 @@ export default class Blob extends ProjectView {
 			const intersectsAst = this.raycaster.intersectObjects(this.asteroidsM);
 			this.intersection = intersectsAst.length > 0 ? intersectsAst[ 0 ] : null;
 
-			if ( this.toggle > 0.02 && this.intersection !== null) {
+			if ( this.interval > 0.02 && this.intersection !== null) {
 				document.body.style.cursor = 'pointer';
 				this.hoverAst = true;
 				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
@@ -185,7 +185,7 @@ export default class Blob extends ProjectView {
 			}
 		}
 
-		this.toggle += this.clock.getDelta();
+		this.interval += this.clock.getDelta();
 
 		// Asteroids meshs
 		for (let i = 0; i < this.nbAst; i++) {

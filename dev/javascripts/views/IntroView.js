@@ -90,10 +90,10 @@ export default class IntroView extends AbstractView {
 	events(method) {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
-		let onListener = method === false ? 'off' : 'on';
+		let listener = method === false ? 'off' : 'on';
 
-		EmitterManager[onListener]('resize', this.resizeHandler);
-		EmitterManager[onListener]('raf', this.raf);
+		EmitterManager[listener]('resize', this.resizeHandler);
+		EmitterManager[listener]('raf', this.raf);
 
 		if (Device.touch === false) {
 			// move camera
@@ -170,9 +170,7 @@ export default class IntroView extends AbstractView {
 
 
 		// this.resizeHandler(); // size first time
-
-
-		global.CURSOR.el.classList.add('alt');
+		global.CURSOR.el.classList.add('alt'); // ie 11 issue : ClassList on svg
 
 		sceneReady();
 
@@ -374,40 +372,6 @@ export default class IntroView extends AbstractView {
 		});
 
 	}
-
-	// generateGradient() {
-
-	// 	// Use a classic image for better pef
-
-	// 	const size = 512;
-
-	// 	// create canvas
-	// 	let canvas = document.createElement( 'canvas' );
-	// 	canvas.width = size;
-	// 	canvas.height = size;
-
-	// 	// get context
-	// 	const context = canvas.getContext( '2d' );
-
-	// 	// draw gradient
-	// 	context.rect( 0, 0, size, size );
-	// 	const gradient = context.createRadialGradient(size / 2,size / 2,size,size / 2,size / 2,100);
-	// 	gradient.addColorStop(1, '#e9ebee'); // white-grey
-	// 	gradient.addColorStop(0.98, '#e9ebee');
-	// 	gradient.addColorStop(0.9, '#000000');
-	// 	gradient.addColorStop(0, '#000000'); // dark
-	// 	context.fillStyle = gradient;
-	// 	context.fill();
-
-
-	// 	const image = new Image();
-	// 	image.id = 'pic';
-	// 	image.src = canvas.toDataURL();
-	// 	document.documentElement.appendChild(image);
-
-	// 	return image;
-
-	// }
 
 	setAsteroids() {
 

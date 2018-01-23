@@ -14,15 +14,12 @@ import Glitch from '../components/Glitch';
 
 
 // THREE JS
-import { LinearFilter, WebGLRenderTarget, Raycaster, BackSide, Mesh, Scene, RGBAFormat, MeshPhongMaterial, SphereGeometry, Vector3 } from 'three';
+import { LinearFilter, WebGLRenderTarget, Raycaster, Scene, RGBAFormat, Vector3 } from 'three';
 import EffectComposer, { RenderPass } from 'three-effectcomposer-es6';
 import OrbitControls from '../vendors/OrbitControls';
 import { CameraDolly } from '../vendors/three-camera-dolly-custom';
 
-
 // POSTPROCESSING
-// import { THREEx } from '../vendors/threex-glow'; // THREEx lib for Glow shader
-// import { VignetteShader } from '../shaders/VignetteShader';
 import '../postprocessing/Pass'; // missing in EffectComposer
 import { FilmPass } from '../postprocessing/FilmPass';
 
@@ -37,7 +34,6 @@ export default class ProjectView extends AbstractView {
 
 
 		// Update background
-		// SceneManager.renderer.domElement.setAttribute('data-index', this.id);
 
 		// Get Blob URL bkg
 		let arrayBufferView = PreloadManager.getResult(`bkg-${obj.id}`, true);
@@ -76,7 +72,6 @@ export default class ProjectView extends AbstractView {
 		this.transitionOut = this.transitionOut.bind(this);
 		this.scroll = this.scroll.bind(this);
 		this.checkCssContainer = this.checkCssContainer.bind(this);
-		this.setEnvelop = this.setEnvelop.bind(this);
 		this.onHoverLink = this.onHoverLink.bind(this);
 		this.onLeaveLink = this.onLeaveLink.bind(this);
 		this.onClickContainer = this.onClickContainer.bind(this);
@@ -121,36 +116,32 @@ export default class ProjectView extends AbstractView {
 	events(method) {
 
 		let evListener = method === false ? 'removeEventListener' : 'addEventListener';
-		let onListener = method === false ? 'off' : 'on';
+		let listener = method === false ? 'off' : 'on';
 
 		if (Device.touch === false) {
 			// move camera
-			EmitterManager[onListener]('mousemove', this.onMouseMove);
+			EmitterManager[listener]('mousemove', this.onMouseMove);
 			window[evListener]('click', this.onClick);
-		} else {
-			// window[evListener]('touchstart', this.onClick);
 		}
 
-		EmitterManager[onListener]('scroll', this.scroll);
-		ScrollManager[onListener]();
-		EmitterManager[onListener]('resize', this.resizeHandler);
-		EmitterManager[onListener]('raf', this.raf);
+		EmitterManager[listener]('scroll', this.scroll);
+		ScrollManager[listener]();
+		EmitterManager[listener]('resize', this.resizeHandler);
+		EmitterManager[listener]('raf', this.raf);
 
 		if (method === true) {
 
 			if (Device.touch === false) {
-				bean.on(document.body, 'click.project', '.project__title', this.showContent);
-				bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-				bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+				bean[listener](document.body, 'click.project', '.project__title', this.showContent);
+				bean[listener](document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+				bean[listener](document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 			} else {
-				bean.on(document.body, 'touchstart.project', '.project__title', this.showContent);
+				bean[listener](document.body, 'touchstart.project', '.project__title', this.showContent);
 			}
-			// bean.on(document.body, 'mouseover.project', '.project__arrow', this.onHoverBtn);
-			// bean.on(document.body, 'mouseleave.project', '.project__arrow', this.onLeaveBtn);
 
 		} else {
-			bean.off(document.body, '.project');
-			bean.off(document.body, '.projectContent');
+			bean[listener](document.body, '.project');
+			bean[listener](document.body, '.projectContent');
 			this.glitch.hover = false;
 			this.tlGlitch.kill();
 		}
@@ -186,22 +177,14 @@ export default class ProjectView extends AbstractView {
 		this.setCamera(50);
 		this.setCameraPos();
 
-
 		this.resizeHandler(this.scene, this.camera); // resize one time for css scene
-
 
 		// Set physics
 		if (this.gravity === true) this.initPhysics();
 
-		// Set symbol
-
 		// Set asteroid
 		this.setAsteroids();
 
-		// if (this.pointsLight === true) {
-		// 	// Set envelop
-		// 	this.setEnvelop();
-		// }
 		// set Light
 		this.setLight();
 
@@ -230,15 +213,7 @@ export default class ProjectView extends AbstractView {
 		// POST PROCESSING
 		////////////////////
 
-		// IMPORTANT CAREFUL HERE (when changing scene)
-		// SceneManager.renderer.autoClear = false;
-
 		// EFFECT COMPOSER
-		// Vignette
-		// this.effectVignette = new ShaderPass( VignetteShader );
-		// this.effectVignette.uniforms[ 'offset' ].value = 0.95;
-		// this.effectVignette.uniforms[ 'darkness' ].value = 1.6;
-
 		// Film effect
 		// noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
 		this.effectFilm = new FilmPass( 0.35, 0, 648, false );
@@ -254,7 +229,6 @@ export default class ProjectView extends AbstractView {
 		this.composer = new EffectComposer(SceneManager.renderer, this.renderTarget);
 
 		this.composer.addPass(renderModel);
-		// this.composer.addPass(this.effectVignette);
 		this.composer.addPass(this.effectFilm);
 
 		this.start();
@@ -270,8 +244,7 @@ export default class ProjectView extends AbstractView {
 		this.el.classList.remove('about');
 		this.el.classList.add('project');
 
-		// set ui
-		// this.UI.intro.style.display = 'none';
+		// set UI
 		global.MENU.el.classList.add('is-active');
 		global.MENU.el.classList.remove('is-open');
 		if (!Device.touch) global.CURSOR.interractLeave();
@@ -305,28 +278,12 @@ export default class ProjectView extends AbstractView {
 	////////////////////
 
 	setCameraPos() {
-		// this.camera.useTarget = false;
+
 		this.camera.lookAt(this.cameraTarget);
 		this.camera.movingRotX = 0;
 
 		this.pathRadius = this.zoomZ;
 		this.camera.position.set(0, 0, 70);
-
-
-	}
-
-	setEnvelop() {
-		// Set up the sphere vars
-		const width = this.bounceArea;
-
-		const geo = new SphereGeometry(width, 10, 10);
-		const mat = new MeshPhongMaterial({side: BackSide, map: global.PROJECTTEX});
-		this.envelop = new Mesh(geo,mat);
-
-		// this.envelops.push(mesh);
-		// this.scene.add(this.envelop);
-
-
 
 	}
 
@@ -407,9 +364,6 @@ export default class ProjectView extends AbstractView {
 			// Start transition In
 			this.sceneReady();
 
-
-			// TweenMax.set('.project__next hr', {y: -100});
-			// TweenMax.set('.project__prev hr', {y: -120});
 		}
 
 	}
@@ -429,8 +383,6 @@ export default class ProjectView extends AbstractView {
 	onHoverLink(e) {
 
 		global.CURSOR.interractHover({magnet: true, el: this.ui.linkSvg});
-		// if (this.hoverLink === true) return false;
-		// if (this.animLink === true) return false;
 
 		this.animLink = true;
 		this.hoverLink = true;
@@ -492,7 +444,6 @@ export default class ProjectView extends AbstractView {
 
 		this.animating = true;
 		this.contentOpen = true;
-		// this.cameraRotX = true;
 		this.camera.rotation.order = 'YXZ'; // need to change order to rotate correclty X
 
 		TweenMax.to(global.MENU.ui.button, 1, { opacity: 0});
@@ -561,7 +512,7 @@ export default class ProjectView extends AbstractView {
 			global.SOUNDS['switch_long'].play();
 			// global.SOUNDS['switch_long'].fade(0, 0.8, 1000);
 
-			// ScrollManager.on(); // start scrollmanager
+
 		}, 0.5);
 
 		// if (global.SCROLLED === false) {
@@ -588,7 +539,6 @@ export default class ProjectView extends AbstractView {
 
 		this.cameraRotX = true;
 		this.glitch.stop = false;
-		// ScrollManager.off(); // stop scrollmanager
 		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
 
@@ -683,10 +633,6 @@ export default class ProjectView extends AbstractView {
 
 	}
 
-	slide(dir) {
-
-	}
-
 	slideUp() {
 
 		if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
@@ -737,21 +683,7 @@ export default class ProjectView extends AbstractView {
 
 					const tl = new TimelineMax();
 					tl.set(this.ui.imgs[i], {visibility: 'visible'});
-					// tl.fromTo(this.ui.imgs[i], 1.2, { // 1.2
-					// 	opacity: 0,
-					// 	y: 80
-					// }, {
-					// 	opacity: 0.9,
-					// 	y: 0,
-					// 	ease: window.Expo.easeOut
-					// });
 
-					// tl.fromTo(this.ui.imgs[i], 1.2, {
-					// 	scaleY: 2
-					// }, {
-					// 	scaleY: 1,
-					// 	ease: window.Expo.easeOut
-					// }, 0);
 					this.ui.imgs[i].classList.add('is-visible');
 
 				}
@@ -863,7 +795,7 @@ export default class ProjectView extends AbstractView {
 	}
 
 	onHoverContainer() {
-		global.CURSOR.interractLeave({back: true});
+		global.CURSOR.interractLeave({back: true}); // reverse effect
 	}
 
 	onLeaveContainer() {
@@ -873,7 +805,6 @@ export default class ProjectView extends AbstractView {
 	onHoverTitle() {
 
 		this.tlGlitch.restart();
-		// this.tlGlitch.play();
 		this.tlGlitch.repeatDelay(1.3);
 		this.tlGlitch.add(() => {
 			this.glitch.hover = true;
@@ -881,7 +812,6 @@ export default class ProjectView extends AbstractView {
 		this.tlGlitch.add(() => {
 			this.glitch.hover = false;
 			// manual repeat
-			// this.onHoverTitle(); //
 		}, 0.6);
 
 
@@ -978,7 +908,6 @@ export default class ProjectView extends AbstractView {
 
 		// on scroll Content
 		if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
-			// console.log(round(this.scrollY, 10), this.scrollYSmooth);
 
 			// smooth scroll
 			this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
@@ -1013,8 +942,6 @@ export default class ProjectView extends AbstractView {
 			if (this.camera.movingRotX && this.lastPage === 'intro') this.camera.rotation.x = this.camera.movingRotX + this.camRotSmooth.x;
 			else  this.camera.rotation.x = this.camRotSmooth.x;
 			this.camera.rotation.y = this.camRotSmooth.y + this.currentRotateY.angle;
-			// if (this.cameraRotX) this.camera.rotation.x = toRadian(round(this.mouse.y * 4, 100));
-			// this.camera.rotation.y = -toRadian(round(this.mouse.x * 8, 100)) + this.currentRotateY.angle;
 
 		}
 
@@ -1130,7 +1057,6 @@ export default class ProjectView extends AbstractView {
 
 		tl.add(() => {
 			// remover overlay class
-			// this.ui.overlay.classList.remove('black');
 			this.transitionInComplete = true;
 		}, 0.8);
 
@@ -1213,7 +1139,6 @@ export default class ProjectView extends AbstractView {
 		this.glitch.stop = false;
 
 		const tl = new TimelineMax({ onComplete: () => {
-			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
 			this.camera.rotation.order = 'XYZ';
 		} });
 

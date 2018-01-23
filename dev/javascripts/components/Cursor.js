@@ -1,5 +1,4 @@
 import EmitterManager from '../managers/EmitterManager';
-import RouterManager from '../managers/RouterManager';
 import { Device } from '../helpers/Device';
 
 
@@ -14,13 +13,12 @@ export default class Cursor {
 		this.interractLeave = this.interractLeave.bind(this);
 		this.resizeHandler = this.resizeHandler.bind(this);
 
-		this.el = document.querySelector('.cursor');
+		this.wrapper = this.el = document.querySelector('.cursor__wrapper');
 
 		if (Device.touch) {
 			this.el.style.display = 'none';
 			return false;
 		}
-		this.wrapper = document.querySelector('.cursor__wrapper');
 		this.svgCircle = this.el.querySelectorAll('circle');
 		this.c1 = this.svgCircle[0];
 		this.c2 = this.svgCircle[1];
@@ -29,7 +27,7 @@ export default class Cursor {
 		this.text = this.el.querySelector('text');
 
 
-		this.circleObj = {val : 15.9};
+		this.circleObj = {val: 15.9};
 		this.mouse = {};
 		this.cursorTarget = { x: 0, y: 0};
 

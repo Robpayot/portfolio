@@ -19,6 +19,10 @@
 	    font-family: 'Theinhardt-light';
 	    font-weight: normal;
 	    font-style: normal;
+
+	    &.alt circle {
+			stroke: black;
+		}
 	}
 
 	&__next, &__prev {
@@ -94,10 +98,6 @@
 	circle {
 		stroke: white;
 		stroke-width: 2;
-	}
-
-	&.alt circle {
-		stroke: black;
 	}
 
 	&.menu-open circle {
