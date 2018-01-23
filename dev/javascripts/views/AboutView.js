@@ -546,6 +546,8 @@ export default class AboutView extends AbstractView {
 		tl.to(span, 0.3, { width: '100%', ease: window.Power2.easeOut }, 0.3 );
 
 		// this.tlLink.play();
+		// sound
+		global.SOUNDS['hover_2'].play();
 
 	}
 
