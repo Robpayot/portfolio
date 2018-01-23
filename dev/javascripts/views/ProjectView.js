@@ -393,6 +393,7 @@ export default class ProjectView extends AbstractView {
 			this.ui.imgs = document.querySelectorAll('.project__item');
 			this.ui.videos = document.querySelectorAll('.project__video video');
 			this.ui.footer = document.querySelector('.project__footer');
+			this.ui.linkSvg = document.querySelector('.project__link svg');
 
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
@@ -427,7 +428,7 @@ export default class ProjectView extends AbstractView {
 
 	onHoverLink(e) {
 
-		global.CURSOR.interractHover();
+		global.CURSOR.interractHover({magnet: true, el: this.ui.linkSvg});
 		// if (this.hoverLink === true) return false;
 		// if (this.animLink === true) return false;
 
@@ -457,7 +458,7 @@ export default class ProjectView extends AbstractView {
 
 	onLeaveLink() {
 		this.hoverLink = false;
-		global.CURSOR.interractLeave();
+		global.CURSOR.interractLeave({magnet: true, el: this.ui.linkSvg});
 		TweenMax.fromTo('.project__link circle', 0.2, {opacity: 0}, {opacity: 1});
 		TweenMax.set('.project__link circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.project__link circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});

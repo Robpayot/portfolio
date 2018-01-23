@@ -635,7 +635,7 @@ export default class AboutView extends AbstractView {
 
 		const el = e.currentTarget;
 		const index = getIndex(el.parentNode.parentNode);
-		global.CURSOR.interractHover();
+		global.CURSOR.interractHover({magnet: true, el});
 
 		this.animLink = true;
 		this.hoverLink = true;
@@ -661,7 +661,7 @@ export default class AboutView extends AbstractView {
 		const index = getIndex(el.parentNode.parentNode);
 
 		this.hoverLink = false;
-		global.CURSOR.interractLeave();
+		global.CURSOR.interractLeave({magnet: true, el});
 		TweenMax.fromTo(this.ui.worksCircle[index], 0.2, {opacity: 0}, {opacity: 1});
 		TweenMax.set(this.ui.worksCircle[index], {transformOrigin: '50% 50%'});
 		TweenMax.fromTo(this.ui.worksCircle[index], 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
