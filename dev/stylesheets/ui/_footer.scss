@@ -2,28 +2,35 @@
 	position: absolute;
 	right: 5rem;
 	bottom: 5rem;
-	ul li {
-		display: inline-block;
-		vertical-align: middle;
-		opacity: 0.5;
-		pointer-events: auto;
-		margin: 0 0.5rem;
-		transition: opacity 0.5s ease;
 
-		&.off {
-			opacity: 0.1;
-		}
+	ul {
+		display: flex;
+		align-items: center;
 
-		svg {
-			width: 1.6rem;
-			fill: black;
+		li {
+			display: inline-block;
+			vertical-align: middle;
+			opacity: 0.5;
+			pointer-events: auto;
+			margin: 0 0.5rem;
+			transition: opacity 0.5s ease;
 
-		}
+			&.off {
+				opacity: 0.1;
+			}
 
-		&:hover {
-			opacity: 1;
+			svg {
+				width: 1.6rem;
+				fill: black;
+
+			}
+
+			&:hover {
+				opacity: 1;
+			}
 		}
 	}
+
 }
 
 .is-project + .footer ul li svg {
