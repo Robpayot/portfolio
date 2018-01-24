@@ -11,7 +11,8 @@
         "imgs": ["eaktr.mp4", "eaktr-1.jpg", "eaktr-2.jpg", "eaktr-3.jpg", "eaktr-4.jpg", "eaktr-5.jpg"],
         "link": "http://eliasakentour.com/",
         "color": "#d01010",
-        "colorName": "red"
+        "colorName": "red",
+        "postProc": true
     },{
         "title": "BMW Motorshow",
         "slug": "bmw-motorshow",
@@ -24,7 +25,8 @@
         "imgs": ["bmw.mp4", "bmw-1.jpg", "bmw-2.jpg", "bmw-3.jpg", "bmw-4.jpg", "bmw-5.jpg", "bmw-6.jpg", "bmw-7.jpg", "bmw-8.jpg"],
         "link": "http://mondialautomobile.bmw.fr/",
         "color": "#1196f1",
-        "colorName": "blue"
+        "colorName": "blue",
+        "postProc": true
     },{
         "title": "Nokia Health",
         "slug": "nokia-health",

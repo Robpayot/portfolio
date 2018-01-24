@@ -154,7 +154,7 @@ export default class ProjectView extends AbstractView {
 
 
 		this.debug = false;
-		this.postProc = true;
+		this.postProc = this.data.postProc || false;
 
 		this.cssObjects = [];
 		this.finalFov = 45;
@@ -216,7 +216,7 @@ export default class ProjectView extends AbstractView {
 		// EFFECT COMPOSER
 		// Film effect
 		// noiseIntensity, scanlinesIntensity, scanlinesCount, grayscale
-		this.effectFilm = new FilmPass( 0.35, 0, 648, false );
+		this.effectFilm = new FilmPass( 0.2, 0, 0, false );
 
 		// this.effectVignette.renderToScreen = true;
 		this.effectFilm.renderToScreen = true;
