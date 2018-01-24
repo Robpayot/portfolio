@@ -35,26 +35,27 @@ export default class Levit extends ProjectView {
 			flatShading: true
 		});
 
-		const positions = DATA.projects[this.id].asteroidsPositions; // get positions from a json
+		const data = DATA.projects[this.id].asteroidsData; // get positions from a json
 
 		let pos;
 
-		for (let i = 0; i < positions.length; i++) {
+		for (let i = 0; i < data.length; i++) {
 
 			const rot = {
 				x: getRandom(150, 210),
 				y: getRandom(-180, 180),
-				z: getRandom(-15, 15),
+				z: i % 2 === 0 ? getRandom(-15, 0) : getRandom(0, 15),
 			};
 
-			pos = positions[i];
+			pos = data[i];
 
-			const scale = getRandom(0.018, 0.035);
-			const speed = getRandom(0.5,0.72);
+			const scale = getRandom(0.03, 0.047); // getRandom(0.018, 0.035);
+			const speed = getRandom(0.5, 0.68);
 			const range = getRandom(3, 8);
 			const timeRotate = getRandom(0.0013, 0.0016);
 
-			const model = Math.round(getRandom(2, 4));
+			const model = data[i].model || Math.round(getRandom(3, 4));
+
 
 			const asteroid = new Asteroid({
 				width: global.MODELS[model].size.x,
@@ -74,7 +75,6 @@ export default class Levit extends ProjectView {
 			asteroid.mesh.index = i;
 			asteroid.dir = Math.round(getRandom(0,1)) === 0 ? -1 : 1;
 			asteroid.rotateRangeZ = getRandom(-15,15);
-			asteroid.rotateRangeX = getRandom(-30,30);
 			asteroid.offset = getRandom(0,10);
 			asteroid.velocity = 0;
 

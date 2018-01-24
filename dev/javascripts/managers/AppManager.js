@@ -140,7 +140,8 @@ class AppManager {
 			loadJSON('datas/models/triangles_y6.json'),
 			loadJSON('datas/models/iceberg-1.json'),
 			loadJSON('datas/models/iceberg-2.json'),
-			loadJSON('datas/models/iceberg-3.json')
+			loadJSON('datas/models/iceberg-3.json'),
+			loadJSON('datas/models/iceberg-4.json')
 		]).then(results => {
 
 
@@ -190,13 +191,10 @@ class AppManager {
 
 		PreloadManager.on('progress', (e) => {
 
-			let percent = `${307 - e.progress * 100 / 100 * 307}%`;
+			let percent = `${307 - Math.min(0.95, e.progress) * 100 / 100 * 307}%`;
 			TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: percent, ease: window.Linear.easeNone});
-			// TweenMax.to('.preload__bar', 0.2, {width: percent});
-
 
 		});
-		// TweenMax.set('.preload', {display: 'none'});
 
 		PreloadManager.on('complete', () => {
 
@@ -219,6 +217,8 @@ class AppManager {
 				let txt = document.querySelector('.preload__txt');
 				txt.innerHTML = 'start';
 				TweenMax.to(txt, 0.5, {opacity: 1});
+				// Complete loader 100%
+				TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: 0, ease: window.Linear.easeNone});
 
 				let onWrapperClick = (e) => {
 
@@ -266,6 +266,10 @@ class AppManager {
 
 		//start sound
 		global.SOUNDS['music'].play();
+
+		// Complete loader 100%
+		if (Device.touch === false) TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: 0, ease: window.Linear.easeNone});
+
 
 	}
 

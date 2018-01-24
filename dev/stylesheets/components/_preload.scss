@@ -68,6 +68,12 @@
 	    font-weight: normal;
 	    font-style: normal;
 	    opacity: 0;
+
+	    display: none;
+
+	    @include mobile {
+	    	display: block;
+	    }
 	}
 
 	&__symbol {
