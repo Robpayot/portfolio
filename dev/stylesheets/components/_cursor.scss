@@ -23,6 +23,10 @@
 	    &.alt circle {
 			stroke: black;
 		}
+
+		&.menu-open circle {
+			stroke: white;
+		}
 	}
 
 	&__next, &__prev {
@@ -98,10 +102,6 @@
 	circle {
 		stroke: white;
 		stroke-width: 2;
-	}
-
-	&.menu-open circle {
-		stroke: white;
 	}
 
 }
