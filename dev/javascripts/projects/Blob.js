@@ -161,6 +161,22 @@ export default class Blob extends ProjectView {
 
 	}
 
+	transitionIn() {
+
+		console.log('oui');
+
+		const tl = new TimelineMax();
+		let delay = 0;
+
+		for (let i = 0; i < this.asteroidsM.length; i++) {
+
+			tl.fromTo(this.asteroidsM[i].scale, 2.5, {x: 0, y: 0, z: 0}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
+			delay += 0.07;
+		}
+
+		super.transitionIn();
+	}
+
 	raf() {
 
 		if (Device.touch === false) {

@@ -579,7 +579,7 @@ export default class IntroView extends AbstractView {
 
 					this.asteroids[i].animated = true;
 					// Plonge
-					this.asteroids[i].mesh.position.y = this.asteroids[i].mesh.position.y - 1;
+					this.asteroids[i].mesh.position.y = this.asteroids[i].mesh.position.y - 2;
 
 					if (this.asteroids[i].mesh.position.y <= -20) {
 
