@@ -28,9 +28,13 @@ export default class Stars extends ProjectView {
 		this.lightIntensity = { val: 0};
 		this.coefSpeed = 0.015;
 
+		super.startScene();
 		this.setTerrain();
 
-		super.startScene();
+
+		// Add after , try to fix FF issue
+		this.scene.add( this.terrain );
+		this.scene.add(this.cursorPlane);
 
 	}
 
@@ -139,7 +143,6 @@ export default class Stars extends ProjectView {
 		this.terrain.position.set( 0, this.tPosY, -50 );
 		this.terrain.rotation.x = toRadian(-70);
 		this.terrain.rotation.z = toRadian(-45);
-		this.scene.add( this.terrain );
 
 		this.animDeltaDir *= -1;
 
@@ -152,8 +155,6 @@ export default class Stars extends ProjectView {
 		this.cursorPlane.position.set( 0, this.tPosY, -50 );
 		this.cursorPlane.rotation.x = toRadian(-70);
 		this.cursorPlane.rotation.z = toRadian(-45);
-
-		this.scene.add(this.cursorPlane);
 
 
 

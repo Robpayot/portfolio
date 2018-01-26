@@ -503,6 +503,7 @@ export default class IntroView extends AbstractView {
 	}
 
 	onLeaveStart() {
+
 		global.CURSOR.interractLeave({magnet: true, el: this.ui.buttonSvg});
 		this.startIsHover = false;
 		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
@@ -790,7 +791,7 @@ export default class IntroView extends AbstractView {
 		const tl = new TimelineMax();
 
 		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
-		tl.set(this.ui.button, {opacity: 0, display: 'none'}, 0.5);
+		tl.set(this.ui.button, {opacity: 0, visibility: 'hidden'}, 0.5);
 
 		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 200, ease: window.Expo.easeOut}, 0);
 		tl.fromTo('.overlay', 1, {

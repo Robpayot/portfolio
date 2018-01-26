@@ -129,17 +129,8 @@ export default class ProjectView extends AbstractView {
 		EmitterManager[listener]('resize', this.resizeHandler);
 		EmitterManager[listener]('raf', this.raf);
 
-		if (method === true) {
+		if (method !== true) {
 
-			if (Device.touch === false) {
-				bean[listener](document.body, 'click.project', '.project__title', this.showContent);
-				bean[listener](document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
-				bean[listener](document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
-			} else {
-				bean[listener](document.body, 'touchstart.project', '.project__title', this.showContent);
-			}
-
-		} else {
 			bean[listener](document.body, '.project');
 			bean[listener](document.body, '.projectContent');
 			this.glitch.hover = false;
@@ -360,6 +351,19 @@ export default class ProjectView extends AbstractView {
 				clock: this.clock,
 				stop: true
 			});
+
+
+			////////////////////
+			// EVENTS WHEN PROJECT IS CLOSED
+			////////////////////
+
+			if (Device.touch === false) {
+				bean.on(document.body, 'click.project', '.project__title', this.showContent);
+				bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
+				bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
+			} else {
+				bean.on(document.body, 'touchstart.project', '.project__title', this.showContent);
+			}
 
 			// Start transition In
 			this.sceneReady();
