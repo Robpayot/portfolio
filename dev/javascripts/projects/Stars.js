@@ -19,6 +19,8 @@ export default class Stars extends ProjectView {
 
 		super(obj);
 
+		console.log('oui');
+
 		// bind
 		this.setTerrain = this.setTerrain.bind(this);
 
@@ -26,9 +28,9 @@ export default class Stars extends ProjectView {
 		this.lightIntensity = { val: 0};
 		this.coefSpeed = 0.015;
 
-		super.startScene();
-
 		this.setTerrain();
+
+		super.startScene();
 
 	}
 
