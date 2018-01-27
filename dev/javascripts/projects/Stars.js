@@ -19,8 +19,6 @@ export default class Stars extends ProjectView {
 
 		super(obj);
 
-		console.log('oui');
-
 		// bind
 		this.setTerrain = this.setTerrain.bind(this);
 

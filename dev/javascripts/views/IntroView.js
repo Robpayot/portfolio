@@ -171,6 +171,7 @@ export default class IntroView extends AbstractView {
 
 		// this.resizeHandler(); // size first time
 		global.CURSOR.el.classList.add('alt'); // ie 11 issue : ClassList on svg
+		global.OVERLAY.classList.add('is-intro');
 
 		sceneReady();
 
@@ -691,21 +692,18 @@ export default class IntroView extends AbstractView {
 			p.innerHTML = 'touch';
 		}
 
+		const tl = new TimelineMax();
+
 		if (fromProject === false) {
-
-			const delayOffset = Device.touch === true ? 0 : 0;
-
-
-			const tl = new TimelineMax();
 
 			tl.add(() => {
 
 				this.moveCameraIn(fromProject);
-			}, 0 - delayOffset);
+			}, 0 );
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
-			}, 1 - delayOffset);
+			}, 1 );
 
 			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 4); // display buttons
 
@@ -717,23 +715,21 @@ export default class IntroView extends AbstractView {
 
 		} else {
 
-			const tl = new TimelineMax();
-
 			this.camera.position.set(0, this.maxZoom, 0);
 			this.camera.rotation.x = toRadian(-90);
 			tl.add(() => {
 				this.moveCameraIn(fromProject);
-			}, 0.1);
+			}, 0);
 			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
 			tl.to(this.ui.button, 3, {opacity: 1});
-			tl.to('.overlay', 1, {
-				opacity: 0
-			}, 0.1);
+			tl.add(() => {
+				global.OVERLAY.classList.remove('visible');
+			}, 0);
 
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
-			},0);
+			}, 1);
 
 			if (Device.touch === true) {
 
@@ -794,16 +790,13 @@ export default class IntroView extends AbstractView {
 		tl.set(this.ui.button, {opacity: 0, visibility: 'hidden'}, 0.5);
 
 		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 200, ease: window.Expo.easeOut}, 0);
-		tl.fromTo('.overlay', 1, {
-			opacity: 0
-		}, {
-			opacity: 1,
-			ease: window.Linear.easeNone
+		tl.add(() => {
+			global.OVERLAY.classList.add('visible');
 		}, 0);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');
 
-		}, 2);
+		}, 1.5);
 
 
 		this.animating = true;

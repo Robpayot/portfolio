@@ -1656,13 +1656,9 @@ var AppManager = function () {
 				TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
 				TweenMax.set(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt'], { clearProps: 'all' });
 
-				var tl = new TimelineMax();
 				if (_Device.Device.touch === false) {
 
-					tl.add(function () {
-
-						_this4.start();
-					}, 0.6);
+					_this4.start();
 				} else {
 
 					var wrapper = document.querySelector('.preload__wrapper');
@@ -1680,9 +1676,7 @@ var AppManager = function () {
 
 						(0, _utils.preventLink)(e, true);
 						_this4.resizeHandler();
-						tl.add(function () {
-							_this4.start();
-						}, 0.6);
+						_this4.start();
 					};
 
 					wrapper.addEventListener('click', onWrapperClick);
@@ -3192,11 +3186,9 @@ var Stars = function (_ProjectView) {
 	function Stars(obj) {
 		_classCallCheck(this, Stars);
 
+		// bind
 		var _this = _possibleConstructorReturn(this, (Stars.__proto__ || Object.getPrototypeOf(Stars)).call(this, obj));
 
-		console.log('oui');
-
-		// bind
 		_this.setTerrain = _this.setTerrain.bind(_this);
 
 		_this.nbAst = 150;
@@ -9078,12 +9070,9 @@ var AboutView = function (_AbstractView) {
 			var tl = new TimelineMax();
 
 			if (_RouterManager2.default.fromUrl !== true) {
-				tl.fromTo('.overlay', 1, {
-					opacity: 1
-				}, {
-					opacity: 0,
-					ease: window.Linear.easeNone
-				});
+				tl.add(function () {
+					global.OVERLAY.classList.remove('visible');
+				}, 0);
 			}
 
 			tl.add(function () {
@@ -9126,11 +9115,8 @@ var AboutView = function (_AbstractView) {
 			tl.set(this.ui.worksWrap, { display: 'none' });
 
 			tl.fromTo(this.camera.position, 4, { y: this.minZoom }, { y: this.maxZoom, ease: window.Expo.easeOut }, 0);
-			tl.fromTo('.overlay', 1, {
-				opacity: 0
-			}, {
-				opacity: 1,
-				ease: window.Linear.easeNone
+			tl.add(function () {
+				global.OVERLAY.classList.add('visible');
 			}, 0);
 			tl.add(function () {
 				_EmitterManager2.default.emit('view:transition:out');
@@ -9707,6 +9693,7 @@ var IntroView = function (_AbstractView) {
 
 			// this.resizeHandler(); // size first time
 			global.CURSOR.el.classList.add('alt'); // ie 11 issue : ClassList on svg
+			global.OVERLAY.classList.add('is-intro');
 
 			sceneReady();
 		}
@@ -10226,20 +10213,18 @@ var IntroView = function (_AbstractView) {
 				p.innerHTML = 'touch';
 			}
 
+			var tl = new TimelineMax();
+
 			if (fromProject === false) {
-
-				var delayOffset = _Device.Device.touch === true ? 0 : 0;
-
-				var tl = new TimelineMax();
 
 				tl.add(function () {
 
 					_this4.moveCameraIn(fromProject);
-				}, 0 - delayOffset);
+				}, 0);
 				tl.add(function () {
 					// start move Ast
 					_this4.startMove = true;
-				}, 1 - delayOffset);
+				}, 1);
 
 				tl.fromTo(this.ui.button, 3, { opacity: 0, display: 'block' }, { opacity: 1, display: 'block' }, 4); // display buttons
 
@@ -10250,28 +10235,26 @@ var IntroView = function (_AbstractView) {
 				}
 			} else {
 
-				var _tl = new TimelineMax();
-
 				this.camera.position.set(0, this.maxZoom, 0);
 				this.camera.rotation.x = (0, _utils.toRadian)(-90);
-				_tl.add(function () {
+				tl.add(function () {
 					_this4.moveCameraIn(fromProject);
-				}, 0.1);
-				_tl.set(this.ui.button, { opacity: 0, display: 'block' }, '+=1.5');
-				_tl.to(this.ui.button, 3, { opacity: 1 });
-				_tl.to('.overlay', 1, {
-					opacity: 0
-				}, 0.1);
+				}, 0);
+				tl.set(this.ui.button, { opacity: 0, display: 'block' }, '+=1.5');
+				tl.to(this.ui.button, 3, { opacity: 1 });
+				tl.add(function () {
+					global.OVERLAY.classList.remove('visible');
+				}, 0);
 
-				_tl.add(function () {
+				tl.add(function () {
 					// start move Ast
 					_this4.startMove = true;
-				}, 0);
+				}, 1);
 
 				if (_Device.Device.touch === true) {
 
-					_tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 7);
-					_tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 7);
+					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 7);
+					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 7);
 				}
 			}
 		}
@@ -10329,15 +10312,12 @@ var IntroView = function (_AbstractView) {
 			tl.set(this.ui.button, { opacity: 0, visibility: 'hidden' }, 0.5);
 
 			tl.fromTo(this.camera.position, 4, { y: this.minZoom }, { y: this.maxZoom + 200, ease: window.Expo.easeOut }, 0);
-			tl.fromTo('.overlay', 1, {
-				opacity: 0
-			}, {
-				opacity: 1,
-				ease: window.Linear.easeNone
+			tl.add(function () {
+				global.OVERLAY.classList.add('visible');
 			}, 0);
 			tl.add(function () {
 				_EmitterManager2.default.emit('view:transition:out');
-			}, 2);
+			}, 1.5);
 
 			this.animating = true;
 			this.cameraMove = true;
@@ -10553,7 +10533,7 @@ var ProjectView = function (_AbstractView) {
 
 		_this.tlGlitch = new TimelineMax({ repeat: -1, repeatDelay: 1.5, paused: true });
 
-		_this.menu = document.querySelector('.menu');
+		global.OVERLAY.classList.remove('is-intro');
 
 		return _this;
 	}
@@ -11288,7 +11268,7 @@ var ProjectView = function (_AbstractView) {
 			this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 			// console.log(this.mouse);
 
-			if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
+			if (this.contentOpen === true || global.MENU.el.classList.contains('is-open') === true || this.animating === true) return false;
 
 			if (y < window.innerHeight * 0.2 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8) {
 				this.goToNoScroll = true;
@@ -11317,61 +11297,64 @@ var ProjectView = function (_AbstractView) {
 
 			// on scroll Z
 			// smooth scroll
-			if ((0, _utils.round)(this.scrollZ, 10) !== (0, _utils.round)(this.scrollZSmooth, 10)) {
-				// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
+			if (this.scrollZ !== 160 || this.scrollY !== 0) {
 
-				// smooth scroll
-				this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
+				if ((0, _utils.round)(this.scrollZ, 10) !== (0, _utils.round)(this.scrollZSmooth, 10)) {
+					// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
 
-				if (this.scrollZSmooth < this.zoomZ) {
-					// going foward
+					// smooth scroll
+					this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
 
-					// ScrollManager.off();
-					if (this.stopScrollZ !== true) {
-						this.stopScrollZ = true;
-						// this.transitionOutScrolled = true;
-						this.goToNoScroll = true;
-						this.dir = -1;
+					if (this.scrollZSmooth < this.zoomZ) {
+						// going foward
 
-						if (this.id !== _data2.default.projects.length - 1) {
-							window.location.href = '#' + _data2.default.projects[this.nextId].slug;
-						} else {
-							window.location.href = '#about';
+						// ScrollManager.off();
+						if (this.stopScrollZ !== true) {
+							this.stopScrollZ = true;
+							// this.transitionOutScrolled = true;
+							this.goToNoScroll = true;
+							this.dir = -1;
+
+							if (this.id !== _data2.default.projects.length - 1) {
+								window.location.href = '#' + _data2.default.projects[this.nextId].slug;
+							} else {
+								window.location.href = '#about';
+							}
+							// this.coefScrollZ = 0.006;
+							// this.scrollZ = this.maxZoomZ; // final destination
 						}
-						// this.coefScrollZ = 0.006;
-						// this.scrollZ = this.maxZoomZ; // final destination
-					}
-				} else if (this.scrollZSmooth > this.zoomZ) {
-					// going backward
+					} else if (this.scrollZSmooth > this.zoomZ) {
+						// going backward
 
-					if (this.stopScrollZ !== true) {
-						// this.transitionOutScrolled = true;
-						this.stopScrollZ = true;
-						this.goToNoScroll = true;
-						this.dir = 1;
-						window.location.href = '#' + _data2.default.projects[this.prevId].slug;
-						// this.scrollZ = this.minZoomZ; // final destination
-						// this.coefScrollZ = 0.027;
+						if (this.stopScrollZ !== true) {
+							// this.transitionOutScrolled = true;
+							this.stopScrollZ = true;
+							this.goToNoScroll = true;
+							this.dir = 1;
+							window.location.href = '#' + _data2.default.projects[this.prevId].slug;
+							// this.scrollZ = this.minZoomZ; // final destination
+							// this.coefScrollZ = 0.027;
+						}
 					}
 				}
-			}
 
-			// on scroll Content
-			if ((0, _utils.round)(this.scrollY, 10) !== (0, _utils.round)(this.scrollYSmooth, 10)) {
+				// on scroll Content
+				if ((0, _utils.round)(this.scrollY, 10) !== (0, _utils.round)(this.scrollYSmooth, 10)) {
 
-				// smooth scroll
-				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
+					// smooth scroll
+					this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
 
-				if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) {
-					// end
-					this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;
-					TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth }); // smooth it
-				} else if (this.scrollYSmooth < 0) {
-					// top
-					this.scrollY = this.scrollYSmooth = 0;
-					TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth }); // smooth it
-				} else {
-					TweenMax.set(this.ui.container, { y: -this.scrollYSmooth });
+					if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) {
+						// end
+						this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;
+						TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth }); // smooth it
+					} else if (this.scrollYSmooth < 0) {
+						// top
+						this.scrollY = this.scrollYSmooth = 0;
+						TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth }); // smooth it
+					} else {
+						TweenMax.set(this.ui.container, { y: -this.scrollYSmooth });
+					}
 				}
 			}
 
@@ -11382,8 +11365,8 @@ var ProjectView = function (_AbstractView) {
 				//
 
 				// Specify target we want
-				this.camRotTarget.x = (0, _utils.toRadian)((0, _utils.round)(this.mouse.y * 4, 100));
-				this.camRotTarget.y = -(0, _utils.toRadian)((0, _utils.round)(this.mouse.x * 8, 100));
+				this.camRotTarget.x = (0, _utils.toRadian)(this.mouse.y * 4, 100);
+				this.camRotTarget.y = -(0, _utils.toRadian)(this.mouse.x * 8, 100);
 
 				// Smooth it with deceleration
 				this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
@@ -11501,8 +11484,12 @@ var ProjectView = function (_AbstractView) {
 				tl.fromTo(this.camera.position, 3, { z: start }, { z: this.zoomZ, ease: window.Expo.easeOut }); // 2
 			}
 
-			tl.to('.overlay', 0.8, {
-				opacity: 0
+			// tl.to('.overlay', 0.8, {
+			// 	opacity: 0
+			// }, 0.1);
+
+			tl.add(function () {
+				global.OVERLAY.classList.remove('visible');
 			}, 0.1);
 
 			tl.add(function () {
@@ -11538,26 +11525,25 @@ var ProjectView = function (_AbstractView) {
 				if (this.goToNoScroll) dir = this.dir; // se baser sur le dir de goTo non de l'url
 				// Simulate scroll backWard/foward
 				var delay = 0.4;
-				var time = 0.5;
 				if (dir === 1) {
 					// this.scrollZ -= 0.2;
 					delay = 0.4;
 					tl.to(this.camera.position, 1.8, { z: this.minZoomZ, ease: window.Power2.easeOut }); // 2
 				} else {
 					delay = 0.5;
-					time = 0.7;
 					tl.to(this.camera.position, 1, { z: this.maxZoomZ, ease: window.Expo.ease }); // 2
 				}
 
-				tl.to('.overlay', time, {
-					opacity: 1
+				tl.add(function () {
+					global.OVERLAY.classList.add('visible');
 				}, delay);
+
 				tl.add(function () {
 					_this9.animating = false;
 
 					// TweenMax.killAll(); // venere
 					_EmitterManager2.default.emit('view:transition:out');
-				});
+				}, delay + 0.4); // + time
 
 				this.hrefChanged = true;
 
@@ -11566,15 +11552,15 @@ var ProjectView = function (_AbstractView) {
 				// global.SOUNDS['switch_long'].fade(1, 0, 1000);
 			} else {
 				// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
-				tl.to('.overlay', 0.5, {
-					opacity: 1
+				tl.add(function () {
+					global.OVERLAY.classList.add('visible');
 				});
 				tl.add(function () {
 					_this9.animating = false;
 
 					// TweenMax.killAll(); // venere
 					_EmitterManager2.default.emit('view:transition:out');
-				}, 0.8);
+				}, 0.4);
 			}
 		}
 	}, {

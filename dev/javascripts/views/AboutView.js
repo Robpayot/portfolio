@@ -787,12 +787,9 @@ export default class AboutView extends AbstractView {
 		const tl = new TimelineMax();
 
 		if ( RouterManager.fromUrl !== true) {
-			tl.fromTo('.overlay', 1, {
-				opacity: 1
-			}, {
-				opacity: 0,
-				ease: window.Linear.easeNone
-			});
+			tl.add(() => {
+				global.OVERLAY.classList.remove('visible')
+			}, 0)
 		}
 
 		tl.add(() => {
@@ -835,11 +832,8 @@ export default class AboutView extends AbstractView {
 		tl.set(this.ui.worksWrap, {display : 'none'});
 
 		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom, ease: window.Expo.easeOut}, 0);
-		tl.fromTo('.overlay', 1, {
-			opacity: 0
-		}, {
-			opacity: 1,
-			ease: window.Linear.easeNone
+		tl.add(() => {
+			global.OVERLAY.classList.add('visible');
 		}, 0);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');

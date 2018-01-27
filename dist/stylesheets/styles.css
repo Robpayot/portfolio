@@ -184,7 +184,12 @@ body {
   background-color: black;
   opacity: 0;
   z-index: 9000;
-  pointer-events: none; }
+  pointer-events: none;
+  transition: opacity 0.4s linear; }
+  .overlay.is-intro {
+    transition: opacity 1s linear; }
+  .overlay.visible {
+    opacity: 1; }
 
 /* ------------------------------------------------------------------ */
 /*        FONT FACE DECLARATION

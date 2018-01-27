@@ -203,13 +203,9 @@ class AppManager {
 			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
 
-			const tl = new TimelineMax();
 			if (Device.touch === false) {
 
-				tl.add(() => {
-
-					this.start();
-				}, 0.6);
+				this.start();
 
 			} else {
 
@@ -229,9 +225,7 @@ class AppManager {
 
 					preventLink(e, true);
 					this.resizeHandler();
-					tl.add(() => {
-						this.start();
-					}, 0.6);
+					this.start();
 
 				};
 

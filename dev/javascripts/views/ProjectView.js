@@ -103,7 +103,7 @@ export default class ProjectView extends AbstractView {
 
 		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
 
-		this.menu = document.querySelector('.menu');
+		global.OVERLAY.classList.remove('is-intro');
 
 
 	}
@@ -839,7 +839,7 @@ export default class ProjectView extends AbstractView {
 		this.mouse.y = -(y / window.innerHeight) * 2 + 1;
 		// console.log(this.mouse);
 
-		if (this.contentOpen === true || this.menu.classList.contains('is-open') === true || this.animating === true) return false;
+		if (this.contentOpen === true || global.MENU.el.classList.contains('is-open') === true || this.animating === true) return false;
 
 		if (y < window.innerHeight * 0.2 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8 ) {
 			this.goToNoScroll = true;
@@ -871,62 +871,66 @@ export default class ProjectView extends AbstractView {
 
 		// on scroll Z
 		// smooth scroll
-		if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
-			// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
+		if (this.scrollZ !== 160 || this.scrollY !== 0) {
 
-			// smooth scroll
-			this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
+			if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
+				// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
 
-			if (this.scrollZSmooth < this.zoomZ ) { // going foward
+				// smooth scroll
+				this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
 
-				// ScrollManager.off();
-				if (this.stopScrollZ !== true) {
-					this.stopScrollZ = true;
-					// this.transitionOutScrolled = true;
-					this.goToNoScroll = true;
-					this.dir = -1;
+				if (this.scrollZSmooth < this.zoomZ ) { // going foward
 
-					if (this.id !== DATA.projects.length - 1) {
-						window.location.href = `#${DATA.projects[this.nextId].slug}`;
-					} else {
-						window.location.href = '#about';
+					// ScrollManager.off();
+					if (this.stopScrollZ !== true) {
+						this.stopScrollZ = true;
+						// this.transitionOutScrolled = true;
+						this.goToNoScroll = true;
+						this.dir = -1;
+
+						if (this.id !== DATA.projects.length - 1) {
+							window.location.href = `#${DATA.projects[this.nextId].slug}`;
+						} else {
+							window.location.href = '#about';
+						}
+						// this.coefScrollZ = 0.006;
+						// this.scrollZ = this.maxZoomZ; // final destination
 					}
-					// this.coefScrollZ = 0.006;
-					// this.scrollZ = this.maxZoomZ; // final destination
+
+				} else if (this.scrollZSmooth > this.zoomZ) { // going backward
+
+					if (this.stopScrollZ !== true) {
+						// this.transitionOutScrolled = true;
+						this.stopScrollZ = true;
+						this.goToNoScroll = true;
+						this.dir = 1;
+						window.location.href = `#${DATA.projects[this.prevId].slug}`;
+						// this.scrollZ = this.minZoomZ; // final destination
+						// this.coefScrollZ = 0.027;
+					}
 				}
 
-			} else if (this.scrollZSmooth > this.zoomZ) { // going backward
+			}
 
-				if (this.stopScrollZ !== true) {
-					// this.transitionOutScrolled = true;
-					this.stopScrollZ = true;
-					this.goToNoScroll = true;
-					this.dir = 1;
-					window.location.href = `#${DATA.projects[this.prevId].slug}`;
-					// this.scrollZ = this.minZoomZ; // final destination
-					// this.coefScrollZ = 0.027;
+			// on scroll Content
+			if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
+
+				// smooth scroll
+				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
+
+				if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) { // end
+					this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;
+					TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth}); // smooth it
+				} else if (this.scrollYSmooth < 0) { // top
+					this.scrollY = this.scrollYSmooth = 0;
+					TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth}); // smooth it
+				} else {
+					TweenMax.set(this.ui.container, { y: -this.scrollYSmooth});
 				}
-			}
 
+			}
 		}
 
-		// on scroll Content
-		if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
-
-			// smooth scroll
-			this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
-
-			if (this.scrollYSmooth >= this.ui.container.offsetHeight - window.innerHeight / 4) { // end
-				this.scrollY = this.scrollYSmooth = this.ui.container.offsetHeight - window.innerHeight / 4;
-				TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth}); // smooth it
-			} else if (this.scrollYSmooth < 0) { // top
-				this.scrollY = this.scrollYSmooth = 0;
-				TweenMax.to(this.ui.container, 1.4, { y: -this.scrollYSmooth}); // smooth it
-			} else {
-				TweenMax.set(this.ui.container, { y: -this.scrollYSmooth});
-			}
-
-		}
 
 		// On mouse Move Camera movement
 
@@ -934,8 +938,8 @@ export default class ProjectView extends AbstractView {
 		if ( this.debug === false) { //
 
 			// Specify target we want
-			this.camRotTarget.x = toRadian(round(this.mouse.y * 4, 100));
-			this.camRotTarget.y = -toRadian(round(this.mouse.x * 8, 100));
+			this.camRotTarget.x = toRadian(this.mouse.y * 4, 100);
+			this.camRotTarget.y = -toRadian(this.mouse.x * 8, 100);
 
 			// Smooth it with deceleration
 			this.camRotSmooth.x += (this.camRotTarget.x - this.camRotSmooth.x) * 0.08;
@@ -1055,8 +1059,12 @@ export default class ProjectView extends AbstractView {
 
 		}
 
-		tl.to('.overlay', 0.8, {
-			opacity: 0
+		// tl.to('.overlay', 0.8, {
+		// 	opacity: 0
+		// }, 0.1);
+
+		tl.add(() => {
+			global.OVERLAY.classList.remove('visible');
 		}, 0.1);
 
 		tl.add(() => {
@@ -1093,26 +1101,25 @@ export default class ProjectView extends AbstractView {
 			if (this.goToNoScroll) dir = this.dir; // se baser sur le dir de goTo non de l'url
 			// Simulate scroll backWard/foward
 			let delay = 0.4;
-			let time = 0.5;
 			if (dir === 1) {
 				// this.scrollZ -= 0.2;
 				delay = 0.4;
 				tl.to(this.camera.position, 1.8, {z : this.minZoomZ , ease: window.Power2.easeOut}); // 2
 			} else {
 				delay = 0.5;
-				time = 0.7;
 				tl.to(this.camera.position, 1, {z : this.maxZoomZ , ease: window.Expo.ease}); // 2
 			}
 
-			tl.to('.overlay', time, {
-				opacity: 1
+			tl.add(() => {
+				global.OVERLAY.classList.add('visible');
 			}, delay);
+
 			tl.add(() => {
 				this.animating = false;
 
 				// TweenMax.killAll(); // venere
 				EmitterManager.emit('view:transition:out');
-			});
+			}, delay + 0.4); // + time
 
 			this.hrefChanged = true;
 
@@ -1122,15 +1129,15 @@ export default class ProjectView extends AbstractView {
 
 		} else {
 			// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
-			tl.to('.overlay', 0.5, {
-				opacity: 1
+			tl.add(() => {
+				global.OVERLAY.classList.add('visible');
 			});
 			tl.add(() => {
 				this.animating = false;
 
 				// TweenMax.killAll(); // venere
 				EmitterManager.emit('view:transition:out');
-			}, 0.8);
+			}, 0.4);
 		}
 
 

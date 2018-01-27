@@ -8,6 +8,16 @@
 	opacity: 0;
 	z-index: 9000;
 	pointer-events: none;
+	transition: opacity 0.4s linear;
+
+	&.is-intro {
+		transition: opacity 1s linear;
+	}
+
+	&.visible {
+		opacity: 1;
+
+	}
 
 	// &.black {
 	// 	background-color: black;
