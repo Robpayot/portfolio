@@ -201,6 +201,8 @@ $project3D-w : 1075px;
 
 		&__back {
 			display: none;
+			height: 40px;
+			padding: 0 2vw;
 			opacity: 0;
 			visibility: hidden;
 
@@ -208,13 +210,15 @@ $project3D-w : 1075px;
 			justify-content: center;
 
 			position: absolute;
-			top: calc(35% + 12px);
-			left: 7vw;
+			top: calc(35% - 2px);
+			left: 5vw;
 			pointer-events: auto;
 
 			p {
 				padding-left: 15px;
 				margin-right: -1.5px;
+
+				position: relative;
 
 				text-transform: uppercase;
 				letter-spacing: 1.5px;
@@ -232,7 +236,7 @@ $project3D-w : 1075px;
 					height: 1px;
 					background-color: white;
 					left: 0px;
-					top: 43%;
+					top: 48%;
 					transform: translateY(-50%);
 				}
 			}
