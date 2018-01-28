@@ -1556,6 +1556,7 @@ var AppManager = function () {
 			global.SOUNDS = {
 				'music': new _howler.Howl({
 					src: [global.BASE + '/sounds/music.mp3'],
+					volume: 2,
 					loop: true
 				}),
 				'glitch': new _howler.Howl({
@@ -1630,7 +1631,7 @@ var AppManager = function () {
 
 			// SkyTex
 			global.SKYTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
-			global.BLOBTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/blob-4.jpg');
+			global.BLOBTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/blob-7.jpg');
 
 			// Preload all img projects
 			for (var i = 0; i < _data2.default.projects.length; i++) {
@@ -1656,31 +1657,8 @@ var AppManager = function () {
 				TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt']);
 				TweenMax.set(['.preload__symbol .close-up', '.preload__symbol .close-down', '.preload__txt'], { clearProps: 'all' });
 
-				if (_Device.Device.touch === false) {
+				TweenMax.delayedCall(0.6, _this4.start); // --> Avoid freeze creating 3D scene during Animation
 
-					_this4.start();
-				} else {
-
-					var wrapper = document.querySelector('.preload__wrapper');
-					var txt = document.querySelector('.preload__txt');
-					txt.innerHTML = 'start';
-					TweenMax.to(txt, 0.5, { opacity: 1 });
-					// Complete loader 100%
-					TweenMax.to('.preload__symbol circle', 0.5, { strokeDashoffset: 0, ease: window.Linear.easeNone });
-
-					var onWrapperClick = function onWrapperClick(e) {
-
-						TweenMax.to(txt, 0.5, { opacity: 0 });
-
-						wrapper.removeEventListener('click', onWrapperClick);
-
-						(0, _utils.preventLink)(e, true);
-						_this4.resizeHandler();
-						_this4.start();
-					};
-
-					wrapper.addEventListener('click', onWrapperClick);
-				}
 			}, this, true);
 		}
 	}, {
@@ -1711,36 +1689,73 @@ var AppManager = function () {
 			global.SOUNDS['music'].play();
 
 			// Complete loader 100%
-			if (_Device.Device.touch === false) TweenMax.to('.preload__symbol circle', 0.5, { strokeDashoffset: 0, ease: window.Linear.easeNone });
+			TweenMax.to('.preload__symbol circle', 0.5, { strokeDashoffset: 0, ease: window.Linear.easeNone });
 		}
 	}, {
 		key: 'callbackInit',
 		value: function callbackInit() {
 			var _this5 = this;
 
-			// start destruction effect
-			this.glitch.video.play(); // play video
+			if (this.initiated === true) {
 
-			var tl = new TimelineMax();
-
-			if (_Device.Device.touch === false) {
-
-				this.glitch.isLoading = false; // apply video alpha
-				tl.add(function () {
-					_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
-				}, 0);
+				TweenMax.delayedCall(0.1, function () {
+					_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl); // why ???
+				});
 			} else {
-				tl.add(function () {
-					_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
-					_this5.glitch.isLoading = false; // apply video alpha
-				}, 0.9);
+
+				this.initiated = true;
+				if (_Device.Device.touch === true) {
+
+					var wrapper = document.querySelector('.preload__wrapper');
+					var txt = document.querySelector('.preload__txt');
+					txt.innerHTML = 'start';
+					TweenMax.to(txt, 0, { opacity: 1 });
+					this.glitch.isLoading = false;
+
+					var onWrapperClick = function onWrapperClick(e) {
+
+						// start destruction effect
+						_this5.glitch.video.play(); // play video
+
+
+						// TweenMax.to(txt, 0.5, {opacity: 0});
+
+						// wrapper.removeEventListener('click', onWrapperClick);
+
+						// preventLink(e, true);
+						// this.resizeHandler();
+
+						// this.glitch.isLoading = false; // apply video alpha
+
+						// const tl = new TimelineMax();
+						// tl.add(() => {
+						// 	RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
+						// }, 0.9);
+						// tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+
+						// tl.add(() => {
+						// 	this.glitch.ready = false; // stop raf destr
+						// });
+					};
+
+					wrapper.addEventListener('click', onWrapperClick);
+				} else {
+
+					// start destruction effect
+					this.glitch.video.play(); // play video
+
+					var tl = new TimelineMax();
+					tl.add(function () {
+						_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
+						_this5.glitch.isLoading = false; // apply video alpha
+					}, 0);
+					tl.to('.preload', 1.5, { autoAlpha: 0, ease: window.Linear.easeNone }, '+=0.5');
+
+					tl.add(function () {
+						_this5.glitch.ready = false; // stop raf destr
+					});
+				}
 			}
-
-			tl.to('.preload', 1.5, { autoAlpha: 0, ease: window.Linear.easeNone }, '+=0.5');
-
-			tl.add(function () {
-				_this5.glitch.ready = false; // stop raf destr
-			});
 		}
 	}, {
 		key: 'events',
@@ -2277,7 +2292,7 @@ var SceneManager = function () {
 			if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
 			if (opts.camera) opts.camera.updateProjectionMatrix();
 
-			var coef = window.innerWidth > 1920 ? 0.65 : 0.8;
+			var coef = window.innerWidth > 1920 ? 0.65 : 0.75;
 
 			if (_Device.Device.touch === true && window.innerWidth <= 1200) {
 				coef *= window.devicePixelRatio; // good perfs on retina mobile
@@ -2497,6 +2512,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
+// THREE JS
+
+
 var _ProjectView2 = require('../views/ProjectView');
 
 var _ProjectView3 = _interopRequireDefault(_ProjectView2);
@@ -2521,22 +2539,21 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// THREE JS
-
-
 var Blob = function (_ProjectView) {
 	_inherits(Blob, _ProjectView);
 
 	function Blob(obj) {
 		_classCallCheck(this, Blob);
 
-		var _this = _possibleConstructorReturn(this, (Blob.__proto__ || Object.getPrototypeOf(Blob)).call(this, obj));
+		// this.playTex = this.playTex.bind(this);
 
-		_this.playTex = _this.playTex.bind(_this);
+		var _this = _possibleConstructorReturn(this, (Blob.__proto__ || Object.getPrototypeOf(Blob)).call(this, obj));
 
 		_this.interval = 0;
 		_this.intersection;
 		_this.inc = Date.now();
+
+		_get(Blob.prototype.__proto__ || Object.getPrototypeOf(Blob.prototype), 'startScene', _this).call(_this);
 
 		// this.video = document.createElement('video');
 		// this.video.id = 'video';
@@ -2554,7 +2571,7 @@ var Blob = function (_ProjectView) {
 		// this.video.setAttribute('playsinline', '');
 		// this.el.appendChild(this.video);
 
-		_this.playTex();
+		// this.playTex();
 
 		// if (this.canplay === true) {
 		// 	this.playTex();
@@ -2567,15 +2584,14 @@ var Blob = function (_ProjectView) {
 		return _this;
 	}
 
-	_createClass(Blob, [{
-		key: 'playTex',
-		value: function playTex() {
-			if (this.canplay === true) return false;
-			this.canplay = true;
+	// playTex() {
+	// 	if (this.canplay === true) return false;
+	// 	this.canplay = true;
 
-			_get(Blob.prototype.__proto__ || Object.getPrototypeOf(Blob.prototype), 'startScene', this).call(this);
-		}
-	}, {
+	// 	super.startScene();
+	// }
+
+	_createClass(Blob, [{
 		key: 'setAsteroids',
 		value: function setAsteroids() {
 
@@ -2586,7 +2602,7 @@ var Blob = function (_ProjectView) {
 
 			global.BLOBTEX.minFilter = _three.LinearFilter;
 			global.BLOBTEX.magFilter = _three.LinearFilter;
-			global.BLOBTEX.format = _three.RGBFormat;
+			global.BLOBTEX.format = _three.RGBAFormat;
 			global.BLOBTEX.needsUpdate = true;
 
 			var pos = void 0;
@@ -2604,7 +2620,8 @@ var Blob = function (_ProjectView) {
 						time: { type: 'f', value: 0 },
 						weight: { type: 'f', value: 0 },
 						brightness: { type: 'f', value: 0 },
-						contrast: { type: 'f', value: 0.6 } // already set
+						contrast: { type: 'f', value: 0.6 }, // already set
+						vOpacity: { type: 'f', value: 0.0 } // already set
 					},
 					vertexShader: blobLightShader.vertexShader,
 					fragmentShader: blobLightShader.fragmentShader
@@ -2612,7 +2629,7 @@ var Blob = function (_ProjectView) {
 				});
 
 				material.transparent = true;
-				material.opacity = 0.5;
+				material.opacity = 0.1;
 
 				var rot = {
 					x: 0,
@@ -2672,15 +2689,15 @@ var Blob = function (_ProjectView) {
 		key: 'transitionIn',
 		value: function transitionIn() {
 
-			console.log('oui');
-
 			var tl = new TimelineMax();
-			var delay = 0;
+			var delay = 0.2;
 
 			for (var i = 0; i < this.asteroidsM.length; i++) {
 
-				tl.fromTo(this.asteroidsM[i].scale, 2.5, { x: 0, y: 0, z: 0 }, { x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut }, delay);
-				delay += 0.07;
+				tl.fromTo(this.asteroidsM[i].scale, 2, { x: 2, y: 2, z: 2 }, { x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut }, delay);
+				tl.fromTo(this.asteroids[i].mesh.material.uniforms['vOpacity'], 1.5, { value: 0.0 }, { value: 1.0, ease: window.Linear.easeNone }, delay);
+
+				delay += 0.05;
 			}
 
 			_get(Blob.prototype.__proto__ || Object.getPrototypeOf(Blob.prototype), 'transitionIn', this).call(this);
@@ -2805,7 +2822,7 @@ var Circular = function (_ProjectView) {
 
 			this.asteroids = [];
 			this.asteroidsM = [];
-			this.materials = [new _three.MeshLambertMaterial({ color: this.color1 }), new _three.MeshLambertMaterial({ color: this.color2 }), new _three.MeshLambertMaterial({ color: this.color3 })];
+			this.materials = [new _three.MeshLambertMaterial({ color: this.color1, transparent: true }), new _three.MeshLambertMaterial({ color: this.color2, transparent: true }), new _three.MeshLambertMaterial({ color: this.color3, transparent: true })];
 
 			this.groupAst = new _three.Group();
 
@@ -2886,36 +2903,32 @@ var Circular = function (_ProjectView) {
 		key: 'setLight',
 		value: function setLight() {
 
-			// let paramsLight = [
-			// 	// { x: 70, y: 70, z: 0 },
-			// 	// { x: -100, y: 0, z: 0 },
-			// 	// { x: 100, y: 0, z: 0 },
-			// 	// { x: 0, y: 0, z: 170 },
-			// 	// { x: 0, y: -0, z: 0 },
-			// 	// { x: 0, y: 20, z: -100, l: 480 },
-			// ];
-
-			// Test Ambient Light
-			// scene.add( new THREE.AmbientLight( 0x00020 ) );
-
-			// for (let i = 0; i < paramsLight.length; i++) {
-
-			// 	const l = paramsLight[i].l || 480;
-
-			// 	// create a point light
-			// 	let pointLight = new PointLight(0xFFFFFF, 0.8, l, 2);
-			// 	// set its position
-			// 	pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-			// 	// pointLight.power = 20;
-			// 	pointLight.visible = true;
-
-			// 	// add to the scene
-			// 	this.scene.add(pointLight);
-			// }
-
 			var light = new _three.DirectionalLight(0xB72ABF, 2);
 			light.position.set(0, 0, 1);
 			this.scene.add(light);
+		}
+	}, {
+		key: 'transitionIn',
+		value: function transitionIn() {
+
+			// console.log(this.asteroidsM);
+			// this.materials[0].opacity = 0;
+			var delay = 0.5;
+			var tl = new TimelineMax();
+			for (var i = 0; i < this.materials.length; i++) {
+				tl.fromTo(this.materials[i], 1.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, delay);
+
+				delay += 0.1;
+			}
+
+			// tl.staggerFromTo(this.materials, 3, {opacity: 0}, {opacity:1});
+
+			// tl.add(() => {
+			// 	this.canRotate = true;
+			// });
+
+
+			_get(Circular.prototype.__proto__ || Object.getPrototypeOf(Circular.prototype), 'transitionIn', this).call(this);
 		}
 	}, {
 		key: 'raf',
@@ -3074,6 +3087,28 @@ var Levit = function (_ProjectView) {
 			this.scene.add(light);
 		}
 	}, {
+		key: 'transitionIn',
+		value: function transitionIn() {
+			var _this2 = this;
+
+			var tl = new TimelineMax();
+			var delay = 0.2;
+
+			for (var i = 0; i < this.asteroidsM.length; i++) {
+				var oldEndY = this.asteroids[i].endY;
+
+				tl.fromTo(this.asteroidsM[i].position, 2.8, { x: 0, y: 0, z: 0 }, { x: _data2.default.projects[this.id].asteroidsData[i].x, y: _data2.default.projects[this.id].asteroidsData[i].y, z: _data2.default.projects[this.id].asteroidsData[i].z, ease: window.Expo.easeOut }, delay);
+				tl.fromTo(this.asteroids[i], 2.8, { endY: 0 }, { endY: oldEndY, ease: window.Expo.easeOut }, delay);
+				tl.fromTo(this.asteroidsM[i].scale, 1.5, { x: 0.01, y: 0.01, z: 0.01 }, { x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Power4.easeOut }, delay);
+			}
+
+			tl.add(function () {
+				_this2.canRotate = true;
+			});
+
+			_get(Levit.prototype.__proto__ || Object.getPrototypeOf(Levit.prototype), 'transitionIn', this).call(this);
+		}
+	}, {
 		key: 'raf',
 		value: function raf() {
 
@@ -3117,8 +3152,10 @@ var Levit = function (_ProjectView) {
 				}
 
 				// Move top and bottom --> Levit effect
+				// if (this.canRotate) {
 				this.asteroids[_i].mesh.position.y = this.asteroids[_i].endY + Math.sin(this.clock.getElapsedTime() * this.asteroids[_i].speed + this.asteroids[_i].offset) * (this.asteroids[_i].range / 2) + this.asteroids[_i].range / 2;
 				this.asteroids[_i].mesh.rotation.z = (0, _utils.toRadian)(this.asteroids[_i].initRotateZ + Math.sin(this.clock.getElapsedTime() * this.asteroids[_i].timeRotate + this.asteroids[_i].offset) * this.asteroids[_i].rotateRangeZ) * this.asteroids[_i].dir; // -30 to 30 deg rotation
+				// }
 			}
 
 			_get(Levit.prototype.__proto__ || Object.getPrototypeOf(Levit.prototype), 'raf', this).call(this);
@@ -3459,6 +3496,17 @@ var Stars = function (_ProjectView) {
 			this.scene.add(this.group);
 		}
 	}, {
+		key: 'transitionIn',
+		value: function transitionIn() {
+			var _this2 = this;
+
+			_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'transitionIn', this).call(this);
+
+			TweenMax.to(this.lightIntensity, 5, { val: 1.5, delay: 0, onUpdate: function onUpdate() {
+					_this2.pointLight.intensity = _this2.lightIntensity.val;
+				} });
+		}
+	}, {
 		key: 'raf',
 		value: function raf() {
 
@@ -3523,17 +3571,6 @@ var Stars = function (_ProjectView) {
 			}
 			_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'raf', this).call(this);
 		}
-	}, {
-		key: 'transitionIn',
-		value: function transitionIn() {
-			var _this2 = this;
-
-			_get(Stars.prototype.__proto__ || Object.getPrototypeOf(Stars.prototype), 'transitionIn', this).call(this);
-
-			TweenMax.to(this.lightIntensity, 5, { val: 1.5, delay: 0, onUpdate: function onUpdate() {
-					_this2.pointLight.intensity = _this2.lightIntensity.val;
-				} });
-		}
 	}]);
 
 	return Stars;
@@ -3555,7 +3592,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var BlobLightShader = function BlobLightShader() {
 	_classCallCheck(this, BlobLightShader);
 
-	this.fragmentShader = ['varying vec2 vUv;', 'varying vec3 vNormal;', 'varying vec3 vReflect;', 'varying float ao;', 'uniform sampler2D tShine;', 'uniform float brightness;', 'uniform float contrast;', 'float PI = 3.14159265358979323846264;', 'void main() {', 'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );', 'float pitch = .5 - asin( vReflect.y ) / PI;', 'vec2 pos = vec2( yaw, pitch );', // old code
+	this.fragmentShader = ['varying vec2 vUv;', 'varying vec3 vNormal;', 'varying vec3 vReflect;', 'varying float ao;', 'uniform sampler2D tShine;', 'uniform float brightness;', 'uniform float contrast;', 'uniform float vOpacity;', 'float PI = 3.14159265358979323846264;', 'void main() {', 'float yaw = .5 - atan( vReflect.z, - vReflect.x ) / ( 2.0 * PI );', 'float pitch = .5 - asin( vReflect.y ) / PI;', 'vec2 pos = vec2( yaw, pitch );', // old code
 	'vec2 uv = normalize( vNormal ).xy * 0.5 + 0.5;', // Classic sphere mapping
 	'vec3 color = texture2D( tShine, uv ).rgb;', 'vec3 colorContrasted = (color) * contrast;', 'vec3 bright = colorContrasted + vec3(brightness,brightness,brightness);',
 
@@ -3565,7 +3602,7 @@ var BlobLightShader = function BlobLightShader() {
 	// 'float diffuse_value4 = .0005 * max(dot(vNormal, vec3( 466.0, 45.3, 172.9 ) ), 0.0);',
 
 	// gl_FragColor = vec4( color - .15 * ao + .5 * vec3( diffuse_value1 + diffuse_value2 + diffuse_value3 + diffuse_value4 ), 1.0 );',
-	'gl_FragColor = vec4( bright, 1.0 );', '}'].join('\n');
+	'gl_FragColor = vec4( bright, vOpacity );', '}'].join('\n');
 
 	this.vertexShader = [
 
@@ -9078,10 +9115,12 @@ var AboutView = function (_AbstractView) {
 			tl.add(function () {
 				_this6.moveCameraIn();
 			}, 0);
+			console.log('ouiz');
 		}
 	}, {
 		key: 'moveCameraIn',
 		value: function moveCameraIn(dest) {
+			console.log('ouiii');
 
 			var delay = _RouterManager2.default.fromUrl === true ? 2 : 0.5;
 
@@ -9681,7 +9720,7 @@ var IntroView = function (_AbstractView) {
 				this.initWater();
 			} else {
 				var geo = new _three.PlaneGeometry(3000, 3000);
-				var mat = new _three.MeshBasicMaterial({ color: 0xE7EFFC });
+				var mat = new _three.MeshBasicMaterial({ color: 0xFFFFFF });
 				var ground = new _three.Mesh(geo, mat);
 				ground.position.y = 2;
 				ground.rotation.x = (0, _utils.toRadian)(-90);
@@ -11320,8 +11359,6 @@ var ProjectView = function (_AbstractView) {
 							} else {
 								window.location.href = '#about';
 							}
-							// this.coefScrollZ = 0.006;
-							// this.scrollZ = this.maxZoomZ; // final destination
 						}
 					} else if (this.scrollZSmooth > this.zoomZ) {
 						// going backward
@@ -11332,8 +11369,6 @@ var ProjectView = function (_AbstractView) {
 							this.goToNoScroll = true;
 							this.dir = 1;
 							window.location.href = '#' + _data2.default.projects[this.prevId].slug;
-							// this.scrollZ = this.minZoomZ; // final destination
-							// this.coefScrollZ = 0.027;
 						}
 					}
 				}
@@ -11499,7 +11534,7 @@ var ProjectView = function (_AbstractView) {
 
 			tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 				opacity: 0,
-				y: 80
+				y: 150
 			}, {
 				opacity: 0.8,
 				y: 0,

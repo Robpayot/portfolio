@@ -97,6 +97,28 @@ export default class Levit extends ProjectView {
 
 	}
 
+	transitionIn() {
+
+		const tl = new TimelineMax();
+		let delay = 0.2;
+
+		for (let i = 0; i < this.asteroidsM.length; i++) {
+			const oldEndY = this.asteroids[i].endY;
+
+			tl.fromTo(this.asteroidsM[i].position, 2.8, {x: 0, y: 0, z: 0}, {x: DATA.projects[this.id].asteroidsData[i].x, y: DATA.projects[this.id].asteroidsData[i].y, z: DATA.projects[this.id].asteroidsData[i].z, ease: window.Expo.easeOut}, delay);
+			tl.fromTo(this.asteroids[i], 2.8, {endY: 0}, { endY: oldEndY, ease: window.Expo.easeOut}, delay);
+			tl.fromTo(this.asteroidsM[i].scale, 1.5, {x: 0.01, y: 0.01, z: 0.01}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Power4.easeOut}, delay);
+
+		}
+
+		tl.add(() => {
+			this.canRotate = true;
+		});
+
+
+		super.transitionIn();
+	}
+
 	raf() {
 
 
@@ -146,8 +168,11 @@ export default class Levit extends ProjectView {
 			}
 
 			// Move top and bottom --> Levit effect
+			// if (this.canRotate) {
 			this.asteroids[i].mesh.position.y = this.asteroids[i].endY + Math.sin( this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * (this.asteroids[i].range / 2) + this.asteroids[i].range / 2;
 			this.asteroids[i].mesh.rotation.z = toRadian(this.asteroids[i].initRotateZ + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].timeRotate + this.asteroids[i].offset) * this.asteroids[i].rotateRangeZ ) * this.asteroids[i].dir; // -30 to 30 deg rotation
+			// }
+
 		}
 
 		super.raf();

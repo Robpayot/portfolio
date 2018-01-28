@@ -29,9 +29,9 @@ export default class Circular extends ProjectView {
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.materials = [
-			new MeshLambertMaterial({color: this.color1}),
-			new MeshLambertMaterial({color: this.color2}),
-			new MeshLambertMaterial({color: this.color3})
+			new MeshLambertMaterial({color: this.color1, transparent: true}),
+			new MeshLambertMaterial({color: this.color2, transparent: true}),
+			new MeshLambertMaterial({color: this.color3, transparent: true})
 		];
 
 		this.groupAst = new Group();
@@ -118,38 +118,32 @@ export default class Circular extends ProjectView {
 
 	setLight() {
 
-
-		// let paramsLight = [
-		// 	// { x: 70, y: 70, z: 0 },
-		// 	// { x: -100, y: 0, z: 0 },
-		// 	// { x: 100, y: 0, z: 0 },
-		// 	// { x: 0, y: 0, z: 170 },
-		// 	// { x: 0, y: -0, z: 0 },
-		// 	// { x: 0, y: 20, z: -100, l: 480 },
-		// ];
-
-		// Test Ambient Light
-		// scene.add( new THREE.AmbientLight( 0x00020 ) );
-
-		// for (let i = 0; i < paramsLight.length; i++) {
-
-		// 	const l = paramsLight[i].l || 480;
-
-		// 	// create a point light
-		// 	let pointLight = new PointLight(0xFFFFFF, 0.8, l, 2);
-		// 	// set its position
-		// 	pointLight.position.set(paramsLight[i].x, paramsLight[i].y, paramsLight[i].z);
-		// 	// pointLight.power = 20;
-		// 	pointLight.visible = true;
-
-		// 	// add to the scene
-		// 	this.scene.add(pointLight);
-		// }
-
 		let light = new DirectionalLight( 0xB72ABF, 2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
 
+	}
+
+	transitionIn() {
+
+		// console.log(this.asteroidsM);
+		// this.materials[0].opacity = 0;
+		let delay = 0.5;
+		const tl = new TimelineMax();
+		for (let i = 0; i < this.materials.length; i++) {
+			tl.fromTo(this.materials[i], 1.5, {opacity: 0}, {opacity: 1, ease: window.Linear.easeNone }, delay);
+
+			delay += 0.1;
+		}
+
+		// tl.staggerFromTo(this.materials, 3, {opacity: 0}, {opacity:1});
+
+		// tl.add(() => {
+		// 	this.canRotate = true;
+		// });
+
+
+		super.transitionIn();
 	}
 
 	raf() {

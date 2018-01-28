@@ -304,6 +304,16 @@ export default class Stars extends ProjectView {
 
 	}
 
+	transitionIn() {
+
+		super.transitionIn();
+
+		TweenMax.to(this.lightIntensity, 5, {val:1.5, delay: 0, onUpdate:() => {
+			this.pointLight.intensity = this.lightIntensity.val;
+		}});
+
+	}
+
 	raf() {
 
 		// update uniforms
@@ -371,16 +381,6 @@ export default class Stars extends ProjectView {
 			}
 		}
 		super.raf();
-	}
-
-	transitionIn() {
-
-		super.transitionIn();
-
-		TweenMax.to(this.lightIntensity, 5, {val:1.5, delay: 0, onUpdate:() => {
-			this.pointLight.intensity = this.lightIntensity.val;
-		}});
-
 	}
 
 }

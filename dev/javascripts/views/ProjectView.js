@@ -893,8 +893,7 @@ export default class ProjectView extends AbstractView {
 						} else {
 							window.location.href = '#about';
 						}
-						// this.coefScrollZ = 0.006;
-						// this.scrollZ = this.maxZoomZ; // final destination
+
 					}
 
 				} else if (this.scrollZSmooth > this.zoomZ) { // going backward
@@ -905,8 +904,7 @@ export default class ProjectView extends AbstractView {
 						this.goToNoScroll = true;
 						this.dir = 1;
 						window.location.href = `#${DATA.projects[this.prevId].slug}`;
-						// this.scrollZ = this.minZoomZ; // final destination
-						// this.coefScrollZ = 0.027;
+
 					}
 				}
 
@@ -1075,7 +1073,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 			opacity: 0,
-			y: 80
+			y: 150
 		}, {
 			opacity: 0.8,
 			y: 0,

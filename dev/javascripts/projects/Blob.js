@@ -4,7 +4,7 @@ import Asteroid from '../shapes/Asteroid';
 import { Device } from '../helpers/Device';
 
 // THREE JS
-import { ShaderMaterial, RGBFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
+import { ShaderMaterial, RGBAFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
 import { BlobLightShader } from '../shaders/BlobLightShader';
 
 
@@ -14,11 +14,13 @@ export default class Blob extends ProjectView {
 
 		super(obj);
 
-		this.playTex = this.playTex.bind(this);
+		// this.playTex = this.playTex.bind(this);
 
 		this.interval = 0;
 		this.intersection;
 		this.inc = Date.now();
+
+		super.startScene();
 
 
 		// this.video = document.createElement('video');
@@ -37,7 +39,7 @@ export default class Blob extends ProjectView {
 		// this.video.setAttribute('playsinline', '');
 		// this.el.appendChild(this.video);
 
-		this.playTex();
+		// this.playTex();
 
 		// if (this.canplay === true) {
 		// 	this.playTex();
@@ -49,12 +51,12 @@ export default class Blob extends ProjectView {
 
 	}
 
-	playTex() {
-		if (this.canplay === true) return false;
-		this.canplay = true;
+	// playTex() {
+	// 	if (this.canplay === true) return false;
+	// 	this.canplay = true;
 
-		super.startScene();
-	}
+	// 	super.startScene();
+	// }
 
 	setAsteroids() {
 
@@ -66,7 +68,7 @@ export default class Blob extends ProjectView {
 
 		global.BLOBTEX.minFilter = LinearFilter;
 		global.BLOBTEX.magFilter = LinearFilter;
-		global.BLOBTEX.format = RGBFormat;
+		global.BLOBTEX.format = RGBAFormat;
 		global.BLOBTEX.needsUpdate = true;
 
 		let pos;
@@ -93,6 +95,7 @@ export default class Blob extends ProjectView {
 					weight: { type: 'f', value: 0 },
 					brightness: { type: 'f', value: 0 },
 					contrast: { type: 'f', value: 0.6 }, // already set
+					vOpacity: { type: 'f', value: 0.0 }, // already set
 				},
 				vertexShader: blobLightShader.vertexShader,
 				fragmentShader: blobLightShader.fragmentShader
@@ -100,7 +103,7 @@ export default class Blob extends ProjectView {
 			} );
 
 			material.transparent = true;
-			material.opacity = 0.5;
+			material.opacity = 0.1;
 
 			const rot = {
 				x: 0,
@@ -163,16 +166,17 @@ export default class Blob extends ProjectView {
 
 	transitionIn() {
 
-		console.log('oui');
-
 		const tl = new TimelineMax();
-		let delay = 0;
+		let delay = 0.2;
 
 		for (let i = 0; i < this.asteroidsM.length; i++) {
 
-			tl.fromTo(this.asteroidsM[i].scale, 2.5, {x: 0, y: 0, z: 0}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
-			delay += 0.07;
+			tl.fromTo(this.asteroidsM[i].scale, 2, {x: 2, y: 2, z: 2}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
+			tl.fromTo(this.asteroids[i].mesh.material.uniforms[ 'vOpacity' ], 1.5, {value: 0.0}, {value: 1.0, ease: window.Linear.easeNone}, delay);
+
+			delay += 0.05;
 		}
+
 
 		super.transitionIn();
 	}

@@ -13,6 +13,7 @@ class BlobLightShader {
 			'uniform sampler2D tShine;',
 			'uniform float brightness;',
 			'uniform float contrast;',
+			'uniform float vOpacity;',
 
 			'float PI = 3.14159265358979323846264;',
 
@@ -32,7 +33,7 @@ class BlobLightShader {
 				// 'float diffuse_value4 = .0005 * max(dot(vNormal, vec3( 466.0, 45.3, 172.9 ) ), 0.0);',
 
 				// gl_FragColor = vec4( color - .15 * ao + .5 * vec3( diffuse_value1 + diffuse_value2 + diffuse_value3 + diffuse_value4 ), 1.0 );',
-				'gl_FragColor = vec4( bright, 1.0 );',
+				'gl_FragColor = vec4( bright, vOpacity );',
 
 			'}',
 

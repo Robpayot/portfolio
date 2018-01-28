@@ -158,7 +158,7 @@ export default class IntroView extends AbstractView {
 			this.initWater();
 		} else {
 			let geo = new PlaneGeometry(3000,3000);
-			let mat = new MeshBasicMaterial({color: 0xE7EFFC});
+			let mat = new MeshBasicMaterial({color: 0xFFFFFF});
 			let ground = new Mesh(geo, mat);
 			ground.position.y = 2;
 			ground.rotation.x = toRadian(-90);

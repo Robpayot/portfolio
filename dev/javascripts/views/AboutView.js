@@ -788,17 +788,19 @@ export default class AboutView extends AbstractView {
 
 		if ( RouterManager.fromUrl !== true) {
 			tl.add(() => {
-				global.OVERLAY.classList.remove('visible')
-			}, 0)
+				global.OVERLAY.classList.remove('visible');
+			}, 0);
 		}
 
 		tl.add(() => {
 			this.moveCameraIn();
 		}, 0);
+		console.log('ouiz');
 
 	}
 
 	moveCameraIn(dest) {
+		console.log('ouiii');
 
 		const delay = RouterManager.fromUrl === true ? 2 : 0.5;
 

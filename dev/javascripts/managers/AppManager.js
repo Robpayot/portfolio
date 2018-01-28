@@ -81,6 +81,7 @@ class AppManager {
 		global.SOUNDS = {
 			'music': new Howl({
 				src: [`${global.BASE}/sounds/music.mp3`],
+				volume: 2,
 				loop: true
 			}),
 			'glitch': new Howl({
@@ -176,7 +177,7 @@ class AppManager {
 
 		// SkyTex
 		global.SKYTEX = new TextureLoader().load( `${global.BASE}/images/textures/intro2_up.jpg` );
-		global.BLOBTEX = new TextureLoader().load( `${global.BASE}/images/textures/blob-4.jpg` );
+		global.BLOBTEX = new TextureLoader().load( `${global.BASE}/images/textures/blob-7.jpg` );
 
 		// Preload all img projects
 		for (let i = 0; i < DATA.projects.length; i++) {
@@ -203,34 +204,7 @@ class AppManager {
 			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
 			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
 
-			if (Device.touch === false) {
-
-				this.start();
-
-			} else {
-
-				let wrapper = document.querySelector('.preload__wrapper');
-				let txt = document.querySelector('.preload__txt');
-				txt.innerHTML = 'start';
-				TweenMax.to(txt, 0.5, {opacity: 1});
-				// Complete loader 100%
-				TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: 0, ease: window.Linear.easeNone});
-
-				let onWrapperClick = (e) => {
-
-
-					TweenMax.to(txt, 0.5, {opacity: 0});
-
-					wrapper.removeEventListener('click', onWrapperClick);
-
-					preventLink(e, true);
-					this.resizeHandler();
-					this.start();
-
-				};
-
-				wrapper.addEventListener('click', onWrapperClick);
-			}
+			TweenMax.delayedCall(0.6, this.start); // --> Avoid freeze creating 3D scene during Animation
 
 
 		}, this, true);
@@ -262,38 +236,75 @@ class AppManager {
 		global.SOUNDS['music'].play();
 
 		// Complete loader 100%
-		if (Device.touch === false) TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: 0, ease: window.Linear.easeNone});
+		TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: 0, ease: window.Linear.easeNone});
 
 
 	}
 
 	callbackInit() {
 
-		// start destruction effect
-		this.glitch.video.play(); // play video
+		if (this.initiated === true) {
 
-		const tl = new TimelineMax();
-
-		if (Device.touch === false) {
-
-			this.glitch.isLoading = false; // apply video alpha
-			tl.add(() => {
-				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
-			}, 0);
-
+			TweenMax.delayedCall(0.1, () => {
+				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl); // why ???
+			});
 		} else {
-			tl.add(() => {
-				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
-				this.glitch.isLoading = false; // apply video alpha
-			}, 0.9);
+
+			this.initiated = true;
+			if (Device.touch === true) {
+
+				let wrapper = document.querySelector('.preload__wrapper');
+				let txt = document.querySelector('.preload__txt');
+				txt.innerHTML = 'start';
+				TweenMax.to(txt, 0, {opacity: 1});
+				this.glitch.isLoading = false;
+
+				let onWrapperClick = (e) => {
+
+					// start destruction effect
+					this.glitch.video.play(); // play video
+
+
+					// TweenMax.to(txt, 0.5, {opacity: 0});
+
+					// wrapper.removeEventListener('click', onWrapperClick);
+
+					// preventLink(e, true);
+					// this.resizeHandler();
+
+					// this.glitch.isLoading = false; // apply video alpha
+
+					// const tl = new TimelineMax();
+					// tl.add(() => {
+					// 	RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
+					// }, 0.9);
+					// tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+
+					// tl.add(() => {
+					// 	this.glitch.ready = false; // stop raf destr
+					// });
+
+				};
+
+				wrapper.addEventListener('click', onWrapperClick);
+
+			} else {
+
+				// start destruction effect
+				this.glitch.video.play(); // play video
+
+				const tl = new TimelineMax();
+				tl.add(() => {
+					RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
+					this.glitch.isLoading = false; // apply video alpha
+				}, 0);
+				tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+
+				tl.add(() => {
+					this.glitch.ready = false; // stop raf destr
+				});
+			}
 		}
-
-		tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
-
-		tl.add(() => {
-			this.glitch.ready = false; // stop raf destr
-		});
-
 
 	}
 
