@@ -95,13 +95,18 @@ class RouterManager {
 
 			this.lastPage = this.currentPage.name;
 			let dir = this.lastId > index ? 1 : -1;
-			if (goToPage === '/about') dir = -1;
+			if (goToPage === '/about') {
+				dir = -1;
+				global.OVERLAY.classList.remove('is-intro');
+				global.OVERLAY.classList.add('is-about');
+			}
 			if (goToPage === '/intro') dir = 1;
 			this.currentPage.transitionOut(dir); // animation Out
 
 			if (global.MENU.el.classList.contains('is-open') === true) global.MENU.toggleOpen(null, true); // close Menu
 			if (!Device.touch) global.CURSOR.interractLeave({color: 'reset'});
 			// When animation out, destroy scene, init new view
+
 
 			EmitterManager.once('view:transition:out', () => {
 				this.isChanging = false;

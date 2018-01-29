@@ -4,7 +4,7 @@ import Asteroid from '../shapes/Asteroid';
 import { Device } from '../helpers/Device';
 
 // THREE JS
-import { ShaderMaterial, RGBAFormat, DirectionalLight, LinearFilter, IcosahedronGeometry } from 'three';
+import { ShaderMaterial, RGBAFormat, DirectionalLight, LinearFilter, IcosahedronGeometry, Object3D, Group } from 'three';
 import { BlobLightShader } from '../shaders/BlobLightShader';
 
 
@@ -63,6 +63,7 @@ export default class Blob extends ProjectView {
 
 		this.asteroids = [];
 		this.asteroidsM = [];
+		this.groupPivots = [];
 
 		global.BLOBTEX.minFilter = LinearFilter;
 		global.BLOBTEX.magFilter = LinearFilter;
@@ -84,6 +85,9 @@ export default class Blob extends ProjectView {
 
 
 		for (let i = 0; i < posFixed.length; i++) {
+
+			const group = new Group();
+			const pivot = new Object3D();
 
 			// const geometry = new IcosahedronGeometry( 5, 5 );
 
@@ -132,6 +136,9 @@ export default class Blob extends ProjectView {
 			// pos.x = 0;
 			// pos.z = 0;
 
+			pivot.x = -pos.x;
+			pivot.z = -pos.z;
+
 			const asteroid = new Asteroid({
 				geometry,
 				material,
@@ -153,9 +160,14 @@ export default class Blob extends ProjectView {
 
 			this.asteroids.push(asteroid);
 			this.asteroidsM.push(asteroid.mesh);
+			this.groupPivots.push(group);
 
 			// add mesh to the scene
-			this.scene.add(asteroid.mesh);
+
+			group.add(asteroid.mesh);
+			group.add(pivot);
+
+			this.scene.add(group);
 
 
 		}
@@ -177,8 +189,8 @@ export default class Blob extends ProjectView {
 
 		for (let i = 0; i < this.asteroidsM.length; i++) {
 
-			tl.fromTo(this.asteroidsM[i].scale, 3, {x: 1.5, y: 1.5, z: 1.5}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
-			tl.fromTo(this.asteroids[i].mesh.material.uniforms[ 'vOpacity' ], 2, {value: 0.0}, {value: 1.0, ease: window.Expo.easeOut}, delay);
+			tl.fromTo(this.asteroidsM[i].scale, 2, {x: 1.5, y: 1.5, z: 1.5}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
+			tl.fromTo(this.asteroids[i].mesh.material.uniforms[ 'vOpacity' ], 1.5, {value: 0.0}, {value: 1.0, ease: window.Expo.easeOut}, delay);
 
 			delay += 0.1;
 		}
@@ -197,7 +209,7 @@ export default class Blob extends ProjectView {
 			this.intersection = intersectsAst.length > 0 ? intersectsAst[ 0 ] : null;
 
 			if ( this.interval > 0.02 && this.intersection !== null) {
-				document.body.style.cursor = 'pointer';
+
 				this.hoverAst = true;
 				this.currentHoverAst = this.asteroids[intersectsAst[0].object.index];
 				const el = this.asteroids[intersectsAst[0].object.index];
@@ -217,8 +229,8 @@ export default class Blob extends ProjectView {
 		for (let i = 0; i < this.nbAst; i++) {
 
 			// Move top and bottom --> Levit effect
-			this.asteroids[i].mesh.position.y = this.asteroids[i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * this.asteroids[i].range.coef + this.asteroids[i].range.add;
-			// this.asteroids[i].mesh.rotation.y += 0.0015;
+			// this.asteroids[i].mesh.position.y = this.asteroids[i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * this.asteroids[i].range.coef + this.asteroids[i].range.add;
+			this.groupPivots[i].rotation.y += 0.0025;
 			if (Device.touch === false) {
 				// rotate
 				this.asteroids[i].mesh.material.uniforms[ 'time' ].value = .00065 * ( Date.now() - this.inc ); // use getDelta??

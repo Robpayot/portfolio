@@ -316,7 +316,7 @@ export default class Stars extends ProjectView {
 			this.pointLight.intensity = this.lightIntensity.val;
 		}});
 
-		TweenMax.fromTo(this.uniformsTerrain[ 'uDisplacementScale' ], 3, {value: 1.0}, {value: this.scaleHeight, ease: window.Expo.easeOut, delay: 0.5}); // max height of mountains
+		TweenMax.fromTo(this.uniformsTerrain[ 'uDisplacementScale' ], 3, {value: 1.0}, {value: this.scaleHeight, ease: window.Expo.easeOut, delay: 0.2}); // max height of mountains
 
 	}
 
@@ -354,7 +354,7 @@ export default class Stars extends ProjectView {
 					const intersection = this.raycaster.intersectObject(this.cursorPlane);
 					if ( intersection.length > 0 ) {
 
-						if (this.contentOpen === true) {
+						if (this.lightZ === true) {
 							this.group.position.set(intersection[0].point.x, intersection[0].point.y * 0.7, intersection[0].point.z);
 						} else {
 							this.group.position.set(intersection[0].point.x, intersection[0].point.y, intersection[0].point.z * 0.7);

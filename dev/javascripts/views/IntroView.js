@@ -172,6 +172,7 @@ export default class IntroView extends AbstractView {
 		// this.resizeHandler(); // size first time
 		global.CURSOR.el.classList.add('alt'); // ie 11 issue : ClassList on svg
 		global.OVERLAY.classList.add('is-intro');
+		global.OVERLAY.classList.remove('is-about');
 
 		sceneReady();
 

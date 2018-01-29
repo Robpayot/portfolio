@@ -1,6 +1,6 @@
 import AbstractView from './AbstractView';
 import EmitterManager from '../managers/EmitterManager';
-import {toRadian, getIndex, round } from '../helpers/utils';
+import {toRadian, getIndex, round, clamp } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import PreloadManager from '../managers/PreloadManager';
 import RouterManager from '../managers/RouterManager';
@@ -39,11 +39,9 @@ export default class AboutView extends AbstractView {
 		this.init = this.init.bind(this);
 		this.raf = this.raf.bind(this);
 		this.resizeHandler = this.resizeHandler.bind(this);
-		this.valuesChanger = this.valuesChanger.bind(this);
 		this.initWater = this.initWater.bind(this);
 		this.fillTexture = this.fillTexture.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
-		this.smoothWater = this.smoothWater.bind(this);
 		this.setMouseCoords = this.setMouseCoords.bind(this);
 		this.onTouchStartContainer = this.onTouchStartContainer.bind(this);
 		this.onTouchMoveContainer = this.onTouchMoveContainer.bind(this);
@@ -110,10 +108,14 @@ export default class AboutView extends AbstractView {
 		global.OVERLAY.classList.add('black');
 
 		this.scrollY = this.scrollYSmooth = this.lastTouchY = this.startTouchY = 0;
+		this.scrollZ = this.scrollZSmooth = 0;
+		this.zoomZ = 0;
 		this.coefScrollY = Device.touch === true ? 0.1 : 0.6;
+		this.coefScrollZ = 0.15;
 		this.margeScrollY = Device.touch === true ? 100 : 250;
 
-		// init
+		global.OVERLAY.classList.add('is-about');
+		global.OVERLAY.classList.remove('is-intro');
 
 
 	}
@@ -131,10 +133,10 @@ export default class AboutView extends AbstractView {
 			// move camera
 			EmitterManager.on('mousemove', this.onMouseMove);
 
-			if (this.noscroll !== true) {
-				EmitterManager[listener]('scroll', this.scroll);
-				ScrollManager[listener]();
-			}
+			// if (this.noscroll !== true) {
+			EmitterManager[listener]('scroll', this.scroll);
+			ScrollManager[listener]();
+			// }
 
 			for (let i = 0; i < this.ui.links.length; i++) {
 				this.ui.links[i][evListener]( 'mouseenter', this.onHoverLink, false );
@@ -435,31 +437,6 @@ export default class AboutView extends AbstractView {
 
 	}
 
-	valuesChanger() {
-
-		// this.heightmapVariable.material.uniforms.mouseSize.value = this.effectController.mouseSize;
-		this.heightmapVariable.material.uniforms.viscosityConstant.value = this.effectController.viscosity;
-
-	}
-
-	smoothWater() {
-
-		let currentRenderTarget = this.gpuCompute.getCurrentRenderTarget( this.heightmapVariable );
-		let alternateRenderTarget = this.gpuCompute.getAlternateRenderTarget( this.heightmapVariable );
-
-		// for ( let i = 0; i < 10; i++ ) {
-
-			this.smoothShader.uniforms.texture.value = currentRenderTarget.texture;
-			// this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
-			this.gpuCompute.doRenderTarget( this.smoothShader, alternateRenderTarget );
-
-			this.smoothShader.uniforms.texture.value = alternateRenderTarget.texture;
-			// this.smoothShader.uniforms.texture.value = this.heightmapVariable.initialValueTexture;
-			this.gpuCompute.doRenderTarget( this.smoothShader, currentRenderTarget );
-
-		// }
-	}
-
 	resetWater() {
 
 		let obj = this.scene.getObjectByName('water');
@@ -626,8 +603,14 @@ export default class AboutView extends AbstractView {
 		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 1);
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
 
+		tl.add(() => {
+			this.moreOpen = false;
+
+		}, 2);
+
 		// sound
 		global.SOUNDS['switch'].play();
+
 
 	}
 
@@ -680,6 +663,15 @@ export default class AboutView extends AbstractView {
 	}
 
 	scroll(e) {
+
+		if (this.stopScrollZ === true) return false;
+
+		if (e.deltaY > 30 || e.deltaY < -30 ) { ///!\ depend of Browsers clamp value.
+			this.scrollZ += clamp(e.deltaY * 0.04, -6, 6); //reverse
+
+			// if (this.id === 0) this.scrollZ = Math.min(this.zoomZ, this.scrollZ); // cannot scroll supp zoomZ
+
+		}
 
 		if (this.moreOpen !== true || this.noscroll === true) {
 			this.scrollY = 0;
@@ -749,22 +741,49 @@ export default class AboutView extends AbstractView {
 			}
 		}
 
-		// on scroll Content
-		if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
+		// on scroll Z
+		// smooth scroll
+		if (this.scrollZ !== 0 || this.scrollY !== 0) {
 
-			// smooth scroll
-			this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
+			if (this.noscroll === true || this.moreOpen !== true && this.noscroll !== true) {
+				if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
+					// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
 
-			if (this.scrollYSmooth >= this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY) { // end
-				this.scrollY = this.scrollYSmooth = this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY;
-				TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
-			} else if (this.scrollYSmooth < 0) { // top
-				this.scrollY = this.scrollYSmooth = 0;
-				TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
-			} else {
-				TweenMax.set(this.ui.worksWrap, { y: -this.scrollYSmooth});
+					// smooth scroll
+					this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
+
+					if (this.scrollZSmooth > this.zoomZ) { // going backward
+
+						if (this.stopScrollZ !== true ) {
+							// this.transitionOutScrolled = true;
+							this.stopScrollZ = true;
+							this.goToNoScroll = true;
+							this.dir = 1;
+							window.location.href = `#${DATA.projects[3].slug}`;
+
+						}
+					}
+
+				}
 			}
 
+			// on scroll Content
+			if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
+
+				// smooth scroll
+				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
+
+				if (this.scrollYSmooth >= this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY) { // end
+					this.scrollY = this.scrollYSmooth = this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY;
+					TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
+				} else if (this.scrollYSmooth < 0) { // top
+					this.scrollY = this.scrollYSmooth = 0;
+					TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
+				} else {
+					TweenMax.set(this.ui.worksWrap, { y: -this.scrollYSmooth});
+				}
+
+			}
 		}
 
 		// Do the gpu computation
@@ -795,12 +814,10 @@ export default class AboutView extends AbstractView {
 		tl.add(() => {
 			this.moveCameraIn();
 		}, 0);
-		console.log('ouiz');
 
 	}
 
 	moveCameraIn(dest) {
-		console.log('ouiii');
 
 		const delay = RouterManager.fromUrl === true ? 2 : 0.5;
 
@@ -822,9 +839,9 @@ export default class AboutView extends AbstractView {
 	}
 
 	transitionOut(dest) {
-		this.resetWater();
+		// this.resetWater();
 
-		const tl = new TimelineMax({delay: 0.5});
+		const tl = new TimelineMax({delay: 0});
 
 		tl.staggerTo(this.targetsIntro, 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
 		tl.staggerTo(this.targetsIntro, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
@@ -833,13 +850,13 @@ export default class AboutView extends AbstractView {
 		tl.staggerTo(this.targetsWorks, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
 		tl.set(this.ui.worksWrap, {display : 'none'});
 
-		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom, ease: window.Expo.easeOut}, 0);
+		tl.fromTo(this.camera.position, 2, {y: this.minZoom }, {y: this.maxZoom - 150, ease: window.Expo.easeOut}, 0);
 		tl.add(() => {
 			global.OVERLAY.classList.add('visible');
-		}, 0);
+		}, 0.5);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');
-		}, 1);
+		}, 1.5);
 
 	}
 

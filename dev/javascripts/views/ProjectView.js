@@ -461,6 +461,8 @@ export default class ProjectView extends AbstractView {
 				// this.cameraRotX = true;
 				this.animating = false;
 				this.glitch.stop = true;
+
+				if (this.id === 0) this.lightZ = true;
 			},
 		});
 
@@ -555,7 +557,7 @@ export default class ProjectView extends AbstractView {
 			// this.initTopContentY = this.topContentTargetY = this.topContentSmoothY = this.topContentY = 5;
 			TweenMax.set(this.ui.container, { y: -this.scrollY});
 			this.camera.rotation.order = 'XYZ';
-			// this.contentOpen = false;
+
 		} });
 
 		tl.staggerTo(['.project__top', '.project__footer', '.project__gallery', '.project__back' ], 1.2, {
@@ -617,6 +619,8 @@ export default class ProjectView extends AbstractView {
 		if (global.SCROLLED === false) {
 			tl.to('.scroll', 1, {opacity: 1}, 2.6);
 		}
+
+		if (this.id === 0) this.lightZ = false;
 
 
 	}
@@ -1031,6 +1035,7 @@ export default class ProjectView extends AbstractView {
 			onComplete: () => {
 				this.camera.position.set(0, 0, this.zoomZ);
 				this.clicked = false;
+				global.OVERLAY.classList.remove('is-about');
 			}
 		});
 

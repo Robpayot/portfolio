@@ -36,10 +36,13 @@ body {
 	}
 
 	overflow: hidden;
-    cursor:none !important;
-    a {
-    	cursor: none !important;
-    }
+
+	&.is-init {
+	    cursor:none !important;
+	    a {
+	    	cursor: none !important;
+	    }	
+	}
 
 }
 

@@ -246,11 +246,14 @@ class AppManager {
 		if (this.initiated === true) {
 
 			TweenMax.delayedCall(0.1, () => {
-				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl); // why ???
+				RouterManager.currentPage.transitionIn(!RouterManager.fromUrl); // GL issues ???
 			});
+
 		} else {
 
 			this.initiated = true;
+			document.body.classList.add('is-init');
+
 			if (Device.touch === true) {
 
 				let wrapper = document.querySelector('.preload__wrapper');
