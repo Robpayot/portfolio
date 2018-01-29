@@ -789,14 +789,14 @@ export default class IntroView extends AbstractView {
 		tl.to(this.ui.button, 0.5, {opacity: 0}, 0);
 		tl.set(this.ui.button, {opacity: 0, visibility: 'hidden'}, 0.5);
 
-		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 200, ease: window.Expo.easeOut}, 0);
+		tl.fromTo(this.camera.position, 4, {y: this.minZoom }, {y: this.maxZoom + 100, ease: window.Expo.easeOut}, 0);
 		tl.add(() => {
 			global.OVERLAY.classList.add('visible');
 		}, 0);
 		tl.add(() => {
 			EmitterManager.emit('view:transition:out');
 
-		}, 1.5);
+		}, 1.2);
 
 
 		this.animating = true;

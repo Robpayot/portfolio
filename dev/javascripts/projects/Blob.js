@@ -64,8 +64,6 @@ export default class Blob extends ProjectView {
 		this.asteroids = [];
 		this.asteroidsM = [];
 
-		const geometry = new IcosahedronGeometry( 5, 5 );
-
 		global.BLOBTEX.minFilter = LinearFilter;
 		global.BLOBTEX.magFilter = LinearFilter;
 		global.BLOBTEX.format = RGBAFormat;
@@ -74,17 +72,20 @@ export default class Blob extends ProjectView {
 		let pos;
 		const posFixed = [
 			{ x: 30, y: 35, z: -10, s: 5 },
-			{ x: -50, y: -30, z: 30 },
-			{ x: 40, y: -78, z: -80 },
-			{ x: -60, y: 50, z: -50 },
-			{ x: 70, y: -15, z: -40 },
+			{ x: -50, y: -30, z: 30, s: 3.4 },
+			{ x: 40, y: -78, z: -80, s: 3 },
+			{ x: -60, y: 50, z: -50, s: 3.5 },
+			{ x: 70, y: -15, z: -40, s: 3.8 },
 		];
 
 		this.nbAst = posFixed.length;
 
+		const geometry = new IcosahedronGeometry( 5, 5 );
+
 
 		for (let i = 0; i < posFixed.length; i++) {
 
+			// const geometry = new IcosahedronGeometry( 5, 5 );
 
 			const blobLightShader = new BlobLightShader();
 			const material = new ShaderMaterial( {
@@ -125,6 +126,11 @@ export default class Blob extends ProjectView {
 			const range = oscillate(-5,5);
 			const timeRotate = getRandom(15000, 17000);
 
+			// // change vertices positions
+			// geometry.translate( posFixed[i].x / 3, 0, posFixed[i].z / 3 );
+
+			// pos.x = 0;
+			// pos.z = 0;
 
 			const asteroid = new Asteroid({
 				geometry,
@@ -171,10 +177,10 @@ export default class Blob extends ProjectView {
 
 		for (let i = 0; i < this.asteroidsM.length; i++) {
 
-			tl.fromTo(this.asteroidsM[i].scale, 2, {x: 2, y: 2, z: 2}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
-			tl.fromTo(this.asteroids[i].mesh.material.uniforms[ 'vOpacity' ], 1.5, {value: 0.0}, {value: 1.0, ease: window.Linear.easeNone}, delay);
+			tl.fromTo(this.asteroidsM[i].scale, 3, {x: 1.5, y: 1.5, z: 1.5}, {x: this.asteroids[i].scale, y: this.asteroids[i].scale, z: this.asteroids[i].scale, ease: window.Expo.easeOut}, delay);
+			tl.fromTo(this.asteroids[i].mesh.material.uniforms[ 'vOpacity' ], 2, {value: 0.0}, {value: 1.0, ease: window.Expo.easeOut}, delay);
 
-			delay += 0.05;
+			delay += 0.1;
 		}
 
 
@@ -212,7 +218,7 @@ export default class Blob extends ProjectView {
 
 			// Move top and bottom --> Levit effect
 			this.asteroids[i].mesh.position.y = this.asteroids[i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * this.asteroids[i].range.coef + this.asteroids[i].range.add;
-
+			// this.asteroids[i].mesh.rotation.y += 0.0015;
 			if (Device.touch === false) {
 				// rotate
 				this.asteroids[i].mesh.material.uniforms[ 'time' ].value = .00065 * ( Date.now() - this.inc ); // use getDelta??

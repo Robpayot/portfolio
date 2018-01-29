@@ -81,28 +81,28 @@ class AppManager {
 		global.SOUNDS = {
 			'music': new Howl({
 				src: [`${global.BASE}/sounds/music.mp3`],
-				volume: 2,
+				volume: 1.8,
 				loop: true
 			}),
 			'glitch': new Howl({
 				src: [`${global.BASE}/sounds/glitch-1.mp3`],
-				volume: 0.1
+				volume: 0.2
 			}),
 			'switch': new Howl({
 				src: [`${global.BASE}/sounds/switch-3.mp3`],
-				volume: 0.2
+				volume: 0.3
 			}),
 			'switch_long': new Howl({
 				src: [`${global.BASE}/sounds/switch-4.mp3`],
-				volume: 0.2
+				volume: 0.3
 			}),
 			'hover': new Howl({
 				src: [`${global.BASE}/sounds/hover-3.mp3`],
-				volume: 0.3
+				volume: 0.4
 			}),
 			'hover_2': new Howl({
 				src: [`${global.BASE}/sounds/glitch-2.mp3`],
-				volume: 0.1
+				volume: 0.2
 			})
 		};
 
@@ -257,7 +257,6 @@ class AppManager {
 				let txt = document.querySelector('.preload__txt');
 				txt.innerHTML = 'start';
 				TweenMax.to(txt, 0, {opacity: 1});
-				this.glitch.isLoading = false;
 
 				let onWrapperClick = (e) => {
 
@@ -265,24 +264,23 @@ class AppManager {
 					this.glitch.video.play(); // play video
 
 
-					// TweenMax.to(txt, 0.5, {opacity: 0});
+					TweenMax.to(txt, 0.5, {opacity: 0});
 
-					// wrapper.removeEventListener('click', onWrapperClick);
+					wrapper.removeEventListener('click', onWrapperClick);
 
-					// preventLink(e, true);
-					// this.resizeHandler();
+					preventLink(e, true);
+					this.resizeHandler();
 
-					// this.glitch.isLoading = false; // apply video alpha
+					const tl = new TimelineMax();
+					tl.add(() => {
+						RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
+						this.glitch.isLoading = false; // apply video alpha
+					}, 0.9);
+					tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 
-					// const tl = new TimelineMax();
-					// tl.add(() => {
-					// 	RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
-					// }, 0.9);
-					// tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
-
-					// tl.add(() => {
-					// 	this.glitch.ready = false; // stop raf destr
-					// });
+					tl.add(() => {
+						this.glitch.ready = false; // stop raf destr
+					});
 
 				};
 

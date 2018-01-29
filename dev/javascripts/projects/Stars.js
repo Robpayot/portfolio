@@ -144,6 +144,10 @@ export default class Stars extends ProjectView {
 
 		this.animDeltaDir *= -1;
 
+		let valNorm = 0.1; // center light reflection
+
+		this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement,
+
 
 		// Invisible objet used to cast a ray for the light
 		const cursorPlane = new PlaneBufferGeometry( 1000, 1000 );
@@ -312,6 +316,8 @@ export default class Stars extends ProjectView {
 			this.pointLight.intensity = this.lightIntensity.val;
 		}});
 
+		TweenMax.fromTo(this.uniformsTerrain[ 'uDisplacementScale' ], 3, {value: 1.0}, {value: this.scaleHeight, ease: window.Expo.easeOut, delay: 0.5}); // max height of mountains
+
 	}
 
 	raf() {
@@ -361,10 +367,6 @@ export default class Stars extends ProjectView {
 				} else {
 					this.movingLight.position.x = this.pointLight.position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.pointLight.range;
 				}
-
-				let valNorm = 0.1; // center light reflection
-
-				this.uniformsTerrain[ 'uNormalScale' ].value = MathThree.mapLinear( valNorm, 0, 1, 0.6, 3.5 ); // scale, displacement,
 
 				if ( this.updateNoise ) {
 
