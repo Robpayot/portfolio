@@ -534,7 +534,7 @@ body {
   left: 0;
   background-color: white;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -705,7 +705,7 @@ body {
   transition: padding 0.8s cubic-bezier(0.16, 0.29, 0, 1); }
   @media screen and (max-width: 720px) {
     .project__more {
-      top: 210px;
+      top: 230px;
       font-size: 70px; } }
   .project__more:after {
     content: '';
@@ -1235,7 +1235,7 @@ body {
         user-select: none;
         opacity: 0;
         display: none;
-        width: calc(100vw - 36vw);
+        width: 64vw;
         left: 50%;
         -webkit-transform: translateX(-50%);
         -ms-transform: translateX(-50%);
@@ -1426,7 +1426,8 @@ body {
             -webkit-box-pack: start;
             -ms-flex-pack: start;
             justify-content: flex-start;
-            z-index: 20; } }
+            z-index: 20;
+            pointer-events: none; } }
         .ui-content.is-project .project__back p {
           padding-left: 15px;
           margin-right: -1.5px;
@@ -1437,11 +1438,16 @@ body {
           font-weight: normal;
           font-style: normal;
           font-size: 1rem;
+          line-height: 40px;
           pointer-events: auto; }
           @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
             .ui-content.is-project .project__back p {
-              margin-left: 7vw; } }
-          .ui-content.is-project .project__back p:after {
+              margin-left: 7vw;
+              margin-right: 7vw;
+              padding-left: 25px;
+              font-size: 1.5rem;
+              pointer-events: auto; } }
+          .ui-content.is-project .project__back p::after {
             content: '';
             position: absolute;
             width: 10px;
@@ -1452,6 +1458,9 @@ body {
             -webkit-transform: translateY(-50%);
             -ms-transform: translateY(-50%);
             transform: translateY(-50%); }
+            @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+              .ui-content.is-project .project__back p::after {
+                width: 18px; } }
         .is-touch .ui-content.is-project .project__back {
           display: -webkit-box;
           display: -ms-flexbox;
@@ -1503,7 +1512,7 @@ body {
         text-align: center; }
         @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
           .ui-content.is-project .scroll {
-            bottom: 20rem; } }
+            bottom: 15rem; } }
         .scrolled .ui-content.is-project .scroll {
           display: none; }
 

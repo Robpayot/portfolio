@@ -96,12 +96,19 @@ export default class ProjectView extends AbstractView {
 		this.zoomZ = 160;
 		this.minZoomZ = 210;
 		this.maxZoomZ = 0;
+		if (Device.orientation === 'portrait') {
+			this.zoomZ = 200;
+			this.scrollZ = this.scrollZSmooth = 200;
+			this.minZoomZ = 260;
+		}
 		this.lastTouchY = 0;
 		this.startTouchY = 0;
 		this.coefScrollY = Device.touch === true ? 0.1 : 0.6;
 		// this.stopScrollZ = true;
 
-		this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
+		if (Device.touch === true) this.tlGlitch = new TimelineMax({paused: true});
+		else this.tlGlitch = new TimelineMax({repeat: -1, repeatDelay: 1.5, paused: true});
+
 
 		global.OVERLAY.classList.remove('is-intro');
 
@@ -289,8 +296,15 @@ export default class ProjectView extends AbstractView {
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
 		if (Device.orientation === 'portrait' ) {
-			this.coefText = 0.03;
-			title.position.set(-25, 0, 0);
+			this.coefText = 0.05;
+			// Magic calculs ;)
+			const vFOV = this.camera.fov * Math.PI / 180;        // convert vertical fov to radians
+			const height = 2 * Math.tan( vFOV / 2 ) * this.zoomZ; // dist between 0 and camerapos.y
+			const width = height * window.innerWidth / window.innerHeight;
+
+			const offset = width * 0.07;
+
+			title.position.set(-width / 2 + offset, 0, 0);
 		} else {
 			title.position.set(40, 0, 10);
 		}
@@ -358,7 +372,6 @@ export default class ProjectView extends AbstractView {
 				clock: this.clock,
 				stop: true
 			});
-
 
 			////////////////////
 			// EVENTS WHEN PROJECT IS CLOSED
@@ -449,7 +462,7 @@ export default class ProjectView extends AbstractView {
 			bean.on(document.body, 'touchstart.projectContent', '.project__container', this.onTouchStartContainer);
 			bean.on(document.body, 'touchmove.projectContent', '.project__container', this.onTouchMoveContainer);
 			bean.on(document.body, 'touchend.projectContent', '.project__container', this.onTouchEndContainer);
-			bean.on(document.body, 'touchstart.projectContent', '.project__back', this.onClick);
+			bean.on(document.body, 'touchstart.projectContent', '.project__back p', this.onClick);
 		}
 
 
@@ -555,6 +568,18 @@ export default class ProjectView extends AbstractView {
 		TweenMax.killTweensOf('.scroll');
 		TweenMax.to('.scroll', 0.5, {opacity: 0});
 		// }
+
+		if (Device.touch === true) {
+			tl.add(() => {
+				this.glitch.hover = true;
+			}, 0);
+			tl.add(() => {
+				this.glitch.hover = false;
+
+				// manual repeat
+			}, 0.4);
+
+		}
 
 	}
 
@@ -1120,6 +1145,7 @@ export default class ProjectView extends AbstractView {
 		}
 
 
+
 	}
 
 	transitionOut(dir) {
@@ -1150,7 +1176,6 @@ export default class ProjectView extends AbstractView {
 			tl.add(() => {
 				this.animating = false;
 
-				// TweenMax.killAll(); // venere
 				EmitterManager.emit('view:transition:out');
 			}, delay + 0.4); // + time
 
@@ -1160,6 +1185,13 @@ export default class ProjectView extends AbstractView {
 			global.SOUNDS['switch_long'].play();
 			// global.SOUNDS['switch_long'].fade(1, 0, 1000);
 
+			if (Device.touch === true && Device.orientation === 'portrait' && dir !== 1) {
+				tl.to(['.project__number', '.glitch', '.project__more'], 0.7, { // 1.2
+					opacity: 0,
+					ease: window.Expo.easeOut
+				}, 0);
+			}
+
 		} else {
 			// tl.to(this.camera.position, 3, {z : 0, ease: window.Power4.easeOut});
 			tl.add(() => {
@@ -1168,10 +1200,12 @@ export default class ProjectView extends AbstractView {
 			tl.add(() => {
 				this.animating = false;
 
-				// TweenMax.killAll(); // venere
+
 				EmitterManager.emit('view:transition:out');
 			}, 0.4);
 		}
+
+
 
 
 

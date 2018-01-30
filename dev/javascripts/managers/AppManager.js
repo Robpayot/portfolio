@@ -382,9 +382,13 @@ class AppManager {
 
 		if (window.innerWidth <= 1440) {
 			Device.size = 'small-desktop';
-		} else if (window.innerWidth <= 1024) {
+		}
+
+		if (window.innerWidth <= 1024) {
 			Device.size = 'tablet';
-		} else if (window.innerWidth <= 768) {
+		}
+
+		if (window.innerWidth <= 768) {
 			Device.size = 'mobile';
 		}
 

@@ -32,7 +32,7 @@ $project3D-w : 1075px;
 			user-select: none;
 			opacity: 0;
 			display: none;
-			width: calc(100vw - 36vw);
+			width: 64vw;
 			// height: 100%;
 			left: 50%;
 			transform: translateX(-50%);
@@ -245,6 +245,7 @@ $project3D-w : 1075px;
 				background: linear-gradient(to bottom, rgba(0,0,0,1) 0%,rgba(0,0,0,1) 12%,rgba(0,0,0,0) 85%,rgba(0,0,0,0) 100%);
 				justify-content: flex-start;
 				z-index: 20;
+				pointer-events: none;
 			}
 
 			p {
@@ -259,14 +260,19 @@ $project3D-w : 1075px;
 				font-weight: normal;
 				font-style: normal;
 				font-size: 1rem;
+				line-height: 40px;
 
 				pointer-events: auto;
 
 				@include mobile-portrait {
 					margin-left: 7vw;
+					margin-right: 7vw;
+					padding-left: 25px;
+					font-size: 1.5rem;
+					pointer-events: auto;
 				}
 
-				&:after {
+				&::after {
 					content: '';
 					position: absolute;
 					width: 10px;
@@ -275,6 +281,10 @@ $project3D-w : 1075px;
 					left: 0px;
 					top: 48%;
 					transform: translateY(-50%);
+
+					@include mobile-portrait {
+						width: 18px;
+					}
 				}
 			}
 
@@ -337,7 +347,7 @@ $project3D-w : 1075px;
 		text-align: center;
 
 		@include mobile-portrait {
-			bottom: 20rem;
+			bottom: 15rem;
 		}
 
 		.scrolled & {
