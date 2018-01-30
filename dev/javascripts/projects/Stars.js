@@ -60,10 +60,12 @@ export default class Stars extends ProjectView {
 		// SCENE (FINAL)
 
 		// HEIGHT + NORMAL MAPS
-		const marge = 70;
+		const marge = Device.orientation === 'portrait' ? 120 : 70;
 
 		// NormalMap shader
-		this.size = this.wScreenSize + marge; //
+		this.size = this.wScreenSize + marge;
+
+		// this.pointLight.range = this.size / 2; // for point light in device Touch
 
 		this.scaleHeight = this.size * 0.15;
 		this.tPosY = -20 - this.scaleHeight;
@@ -269,9 +271,9 @@ export default class Stars extends ProjectView {
 
 	setLight() {
 
+		if (Device.touch === true) this.pointLight = new PointLight(0xffffff, 6, 160, 1);
+		else this.pointLight = new PointLight(0xffffff, 0, 120, 1);
 
-		this.pointLight = new PointLight(0xffffff, 0, 120, 1);
-		this.pointLight.range = 120;
 		// add to the scene
 		this.scene.add(this.pointLight);
 
@@ -365,7 +367,7 @@ export default class Stars extends ProjectView {
 					}
 
 				} else {
-					this.movingLight.position.x = this.pointLight.position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.pointLight.range;
+					this.movingLight.position.x = this.pointLight.position.x = 0;
 				}
 
 				if ( this.updateNoise ) {

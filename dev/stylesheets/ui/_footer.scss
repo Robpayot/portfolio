@@ -3,9 +3,35 @@
 	right: 5rem;
 	bottom: 5rem;
 
+	@include tablet {
+		right: 7vw;
+		bottom: 7vw;
+	}
+
+	@include mobile-portrait {
+		right: 0;
+		bottom: 0;
+		width: 100%;
+		transition: background 0.5s ease;
+		line-height: 40px;
+		z-index: 100;
+	}
+
+	&.content-open {
+		@include mobile-portrait {
+			background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
+		}
+	}
+
 	ul {
 		display: flex;
 		align-items: center;
+		line-height: 1;
+
+		@include mobile-portrait {
+			justify-content: space-around;
+			height: 7rem;
+		}
 
 		li {
 			display: inline-block;
@@ -15,6 +41,10 @@
 			margin: 0 0.5rem;
 			transition: opacity 0.5s ease;
 
+			@include tablet {
+				margin: 0 1rem;
+			}
+
 			&.off {
 				opacity: 0.1;
 			}
@@ -22,6 +52,9 @@
 			svg {
 				width: 1.6rem;
 				fill: black;
+				@include tablet {
+					width: 2.1rem;
+				}
 
 			}
 

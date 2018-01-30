@@ -958,13 +958,34 @@ body {
     position: absolute;
     right: 5rem;
     bottom: 5rem; }
+    @media screen and (max-width: 1080px) {
+      .ui .footer {
+        right: 7vw;
+        bottom: 7vw; } }
+    @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+      .ui .footer {
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        transition: background 0.5s ease;
+        line-height: 40px;
+        z-index: 100; } }
+    @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+      .ui .footer.content-open {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, transparent 93%, transparent 100%); } }
     .ui .footer ul {
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
       -webkit-box-align: center;
       -ms-flex-align: center;
-      align-items: center; }
+      align-items: center;
+      line-height: 1; }
+      @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+        .ui .footer ul {
+          -ms-flex-pack: distribute;
+          justify-content: space-around;
+          height: 7rem; } }
       .ui .footer ul li {
         display: inline-block;
         vertical-align: middle;
@@ -972,11 +993,17 @@ body {
         pointer-events: auto;
         margin: 0 0.5rem;
         transition: opacity 0.5s ease; }
+        @media screen and (max-width: 1080px) {
+          .ui .footer ul li {
+            margin: 0 1rem; } }
         .ui .footer ul li.off {
           opacity: 0.1; }
         .ui .footer ul li svg {
           width: 1.6rem;
           fill: black; }
+          @media screen and (max-width: 1080px) {
+            .ui .footer ul li svg {
+              width: 2.1rem; } }
         .ui .footer ul li:hover {
           opacity: 1; }
   .ui .is-project + .footer ul li svg {
@@ -1285,11 +1312,7 @@ body {
         font-style: normal; }
         @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
           .ui-content.is-project .project__subHeader {
-            -ms-flex-wrap: wrap;
-            flex-wrap: wrap; }
-            .ui-content.is-project .project__subHeader::after {
-              content: '';
-              width: 100%; } }
+            display: block; } }
       .ui-content.is-project .project__role, .ui-content.is-project .project__technos, .ui-content.is-project .project__context {
         width: 20%; }
         .ui-content.is-project .project__role p:first-child, .ui-content.is-project .project__technos p:first-child, .ui-content.is-project .project__context p:first-child {
@@ -1299,7 +1322,8 @@ body {
           white-space: nowrap; }
         @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
           .ui-content.is-project .project__role, .ui-content.is-project .project__technos, .ui-content.is-project .project__context {
-            width: 30%; } }
+            width: 30%;
+            margin-top: 3rem; } }
       .ui-content.is-project .project__link {
         width: 40%;
         display: -webkit-box;
@@ -1314,7 +1338,10 @@ body {
         @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
           .ui-content.is-project .project__link {
             width: auto;
-            margin-top: 3rem; } }
+            margin-top: 3rem;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between; } }
         .ui-content.is-project .project__link span {
           margin-right: 2.0rem; }
         .ui-content.is-project .project__link a svg {
@@ -1417,12 +1444,12 @@ body {
         pointer-events: auto; }
         @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
           .ui-content.is-project .project__back {
-            height: 15.0rem;
+            height: 10.0rem;
             width: 100%;
             top: 0px;
             padding: 0;
             left: 0;
-            background: linear-gradient(to bottom, black 0%, black 12%, transparent 85%, transparent 100%);
+            background: linear-gradient(to bottom, black 0%, transparent 95%, transparent 100%);
             -webkit-box-pack: start;
             -ms-flex-pack: start;
             justify-content: flex-start;

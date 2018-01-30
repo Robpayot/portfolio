@@ -382,7 +382,7 @@ export default class ProjectView extends AbstractView {
 				bean.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 				bean.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 			} else {
-				bean.on(document.body, 'touchstart.project', '.project__title', this.showContent);
+				bean.on(document.body, 'touchstart.project', '.project__title', this.showContent); // touchstart and not click du to issues on Safari iOs
 			}
 
 			// Start transition In
@@ -533,6 +533,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.add(() => {
 			this.ui.imgs[0].classList.add('is-visible');
+			document.querySelector('.footer').classList.add('content-open');
 		}, 1.8);
 
 		// angle
@@ -602,6 +603,7 @@ export default class ProjectView extends AbstractView {
 		this.glitch.stop = false;
 		if (!Device.touch) global.CURSOR.interractLeave({back: true});
 		TweenMax.set(global.MENU.ui.button, { display: 'block'});
+		document.querySelector('.footer').classList.remove('content-open');
 
 
 		this.lastTouchY = this.scrollY = this.scrollYSmooth = 0;
@@ -1051,15 +1053,15 @@ export default class ProjectView extends AbstractView {
 				'camera': [{
 					'x': 0,
 					'y': -115,
-					'z': 300
+					'z': this.zoomZ + 140
 				}, {
 					'x': 0,
 					'y': -65,
-					'z': 240
+					'z': this.zoomZ + 80
 				}, {
 					'x': 0,
 					'y': 0,
-					'z': 160
+					'z': this.zoomZ
 				}],
 				'lookat': [{
 					'x': 0,

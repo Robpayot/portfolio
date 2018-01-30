@@ -3313,10 +3313,12 @@ var Stars = function (_ProjectView) {
 			// SCENE (FINAL)
 
 			// HEIGHT + NORMAL MAPS
-			var marge = 70;
+			var marge = _Device.Device.orientation === 'portrait' ? 120 : 70;
 
 			// NormalMap shader
-			this.size = this.wScreenSize + marge; //
+			this.size = this.wScreenSize + marge;
+
+			// this.pointLight.range = this.size / 2; // for point light in device Touch
 
 			this.scaleHeight = this.size * 0.15;
 			this.tPosY = -20 - this.scaleHeight;
@@ -3514,8 +3516,8 @@ var Stars = function (_ProjectView) {
 		key: 'setLight',
 		value: function setLight() {
 
-			this.pointLight = new _three.PointLight(0xffffff, 0, 120, 1);
-			this.pointLight.range = 120;
+			if (_Device.Device.touch === true) this.pointLight = new _three.PointLight(0xffffff, 6, 160, 1);else this.pointLight = new _three.PointLight(0xffffff, 0, 120, 1);
+
 			// add to the scene
 			this.scene.add(this.pointLight);
 
@@ -3602,7 +3604,7 @@ var Stars = function (_ProjectView) {
 							this.pointLight.position.setFromMatrixPosition(this.movingLight.matrixWorld);
 						}
 					} else {
-						this.movingLight.position.x = this.pointLight.position.x = Math.sin(this.clock.getElapsedTime() * 0.8) * this.pointLight.range;
+						this.movingLight.position.x = this.pointLight.position.x = 0;
 					}
 
 					if (this.updateNoise) {
@@ -9753,7 +9755,7 @@ var IntroView = function (_AbstractView) {
 			// Set physics
 			if (this.gravity === true) this.initPhysics([0, 0]);
 
-			this.nbAst = 30;
+			this.nbAst = _Device.Device.size === 'mobile' ? 20 : 30;
 			this.minZoom = 900;
 			this.maxZoom = 1700;
 			if (_Device.Device.orientation === 'portrait') {
@@ -10358,8 +10360,8 @@ var IntroView = function (_AbstractView) {
 
 				if (_Device.Device.touch === true) {
 
-					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 7);
-					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 7);
+					tl.fromTo('.start p', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 3);
+					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 3);
 				}
 			}
 		}
@@ -10910,7 +10912,7 @@ var ProjectView = function (_AbstractView) {
 					_bean2.default.on(document.body, 'mouseenter.project', '.glitch', this.onHoverTitle);
 					_bean2.default.on(document.body, 'mouseleave.project', '.glitch', this.onLeaveTitle);
 				} else {
-					_bean2.default.on(document.body, 'touchstart.project', '.project__title', this.showContent);
+					_bean2.default.on(document.body, 'touchstart.project', '.project__title', this.showContent); // touchstart and not click du to issues on Safari iOs
 				}
 
 				// Start transition In
@@ -11063,6 +11065,7 @@ var ProjectView = function (_AbstractView) {
 
 			tl.add(function () {
 				_this3.ui.imgs[0].classList.add('is-visible');
+				document.querySelector('.footer').classList.add('content-open');
 			}, 1.8);
 
 			// angle
@@ -11130,6 +11133,7 @@ var ProjectView = function (_AbstractView) {
 			this.glitch.stop = false;
 			if (!_Device.Device.touch) global.CURSOR.interractLeave({ back: true });
 			TweenMax.set(global.MENU.ui.button, { display: 'block' });
+			document.querySelector('.footer').classList.remove('content-open');
 
 			this.lastTouchY = this.scrollY = this.scrollYSmooth = 0;
 
@@ -11576,15 +11580,15 @@ var ProjectView = function (_AbstractView) {
 					'camera': [{
 						'x': 0,
 						'y': -115,
-						'z': 300
+						'z': this.zoomZ + 140
 					}, {
 						'x': 0,
 						'y': -65,
-						'z': 240
+						'z': this.zoomZ + 80
 					}, {
 						'x': 0,
 						'y': 0,
-						'z': 160
+						'z': this.zoomZ
 					}],
 					'lookat': [{
 						'x': 0,

@@ -130,7 +130,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics([0,0]);
 
-		this.nbAst = 30;
+		this.nbAst = Device.size === 'mobile' ? 20 : 30;
 		this.minZoom = 900;
 		this.maxZoom = 1700;
 		if (Device.orientation === 'portrait') {
@@ -738,8 +738,8 @@ export default class IntroView extends AbstractView {
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 7);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 7);
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 3);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
 			}
 		}
 
