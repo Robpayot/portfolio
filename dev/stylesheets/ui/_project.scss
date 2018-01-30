@@ -301,31 +301,6 @@ $project3D-w : 1075px;
 			}
 		}
 
-		.gallery {
-			&__arrow {
-				width: 25px;
-				height: 35px;
-				display: inline-block;
-				visibility: hidden;
-				opacity: 0;
-				transition: transform 0.5s $easeToinou;
-				&-l {
-					transform: rotate(-180deg);
-					margin-right: 5px;
-					opacity: 0.2;
-				}
-				&:hover {
-					transform: scale(1.05) translateX(-5px) rotate(-180deg) !important;
-				}
-				&-r {
-					// transform: rotate(0deg);
-					margin-left: 5px;
-					&:hover {
-						transform: scale(1.05) translateX(5px) !important;
-					}
-				}
-			}
-		}
 
 	}
 

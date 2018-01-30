@@ -66,8 +66,6 @@ export default class ProjectView extends AbstractView {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onClick = this.onClick.bind(this);
 		this.showContent = this.showContent.bind(this);
-		this.slideUp = this.slideUp.bind(this);
-		this.slideDown = this.slideDown.bind(this);
 		this.backFromContent = this.backFromContent.bind(this);
 		this.transitionOut = this.transitionOut.bind(this);
 		this.scroll = this.scroll.bind(this);
@@ -336,7 +334,7 @@ export default class ProjectView extends AbstractView {
 		// Gallery
 
 		// Context + gallery arrows
-		data.scrollContent = Device.touch ? 'scroll to navigate' : 'scroll or click top to navigate';
+		data.scrollContent = Device.touch ? 'scroll up to navigate' : 'scroll or click top to navigate';
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'), {noEscape: true});
 		html = template(data);
 		this.ui.uiContent.className = '';
@@ -696,45 +694,6 @@ export default class ProjectView extends AbstractView {
 		if (el.classList.contains('cursor__next')) this.dir = -1;
 		else this.dir = 1;
 
-	}
-
-	slideUp() {
-
-		if (this.isSliding === true || this.currentSlide === this.nbSlides - 1) return false;
-
-		this.isSliding = true;
-		TweenMax.set(['.gallery__arrow-l', '.gallery__arrow-r'], { opacity: 1 });
-
-		if (this.currentSlide === this.nbSlides - 2) TweenMax.to('.gallery__arrow-r', 1.5, { opacity: 0.2 });
-
-		TweenMax.to(this.galleryPivot.rotation, 1.5, {
-			y: -this.galleryAngle * (this.currentSlide + 1),
-			ease: window.Expo.easeInOut,
-			onComplete: () => {
-				this.currentSlide++;
-				this.isSliding = false;
-			}
-		});
-
-	}
-
-	slideDown() {
-
-		if (this.isSliding === true || this.currentSlide === 0) return false;
-
-		this.isSliding = true;
-		TweenMax.set(['.gallery__arrow-l', '.gallery__arrow-r'], { opacity: 1 });
-
-		if (this.currentSlide === 1) TweenMax.to('.gallery__arrow-l', 1.5, { opacity: 0.2 });
-
-		TweenMax.to(this.galleryPivot.rotation, 1.5, {
-			y: -this.galleryAngle * (this.currentSlide - 1),
-			ease: window.Expo.easeInOut,
-			onComplete: () => {
-				this.currentSlide--;
-				this.isSliding = false;
-			}
-		});
 	}
 
 	animScrollContainer() {
@@ -1222,12 +1181,12 @@ export default class ProjectView extends AbstractView {
 			this.camera.rotation.order = 'XYZ';
 		} });
 
-		tl.set(['.project__container', '.gallery__arrow', '.project__footer' ], {
+		tl.set(['.project__container', '.project__footer' ], {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		});
 
-		tl.set(['.project__item', '.gallery__arrow', '.project__footer', '.project__container'], { visibility: 'hidden' });
+		tl.set(['.project__item', '.project__footer', '.project__container'], { visibility: 'hidden' });
 
 		this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * 1);
 		this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * 1);

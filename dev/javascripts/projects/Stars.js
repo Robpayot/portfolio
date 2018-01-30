@@ -271,7 +271,7 @@ export default class Stars extends ProjectView {
 
 	setLight() {
 
-		if (Device.touch === true) this.pointLight = new PointLight(0xffffff, 6, 160, 1);
+		if (Device.touch === true) this.pointLight = new PointLight(0xffffff, 5, 120, 1);
 		else this.pointLight = new PointLight(0xffffff, 0, 120, 1);
 
 		// add to the scene

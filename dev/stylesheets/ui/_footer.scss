@@ -4,8 +4,12 @@
 	bottom: 5rem;
 
 	@include tablet {
-		right: 7vw;
-		bottom: 7vw;
+		right: 0;
+		bottom: 0;
+		width: 100%;
+		transition: background 0.5s ease;
+		line-height: 40px;
+		z-index: 100;
 	}
 
 	@include mobile-portrait {
@@ -21,6 +25,10 @@
 		@include mobile-portrait {
 			background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
 		}
+
+		@include tablet {
+			background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
+		}
 	}
 
 	ul {
@@ -29,6 +37,11 @@
 		line-height: 1;
 
 		@include mobile-portrait {
+			justify-content: space-around;
+			height: 7rem;
+		}
+
+		@include tablet {
 			justify-content: space-around;
 			height: 7rem;
 		}
@@ -58,9 +71,16 @@
 
 			}
 
-			&:hover {
-				opacity: 1;
+			.is-touch & {
+
 			}
+
+			body:not(.is-touch) & {
+				&:hover {
+					opacity: 1;
+				}
+			}
+
 		}
 	}
 

@@ -63,9 +63,12 @@ class AppManager {
 			tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: maxDash * 5 + 205, ease: window.Expo.easeOut}, 0);
 			tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 
-			const tl2 = new TimelineMax({repeat: -1});
-			tl2.to('.preload__txt', 1, {opacity: 1});
-			tl2.to('.preload__txt', 1, {opacity: 0});
+			if (Device.touch === true) {
+				// const tl2 = new TimelineMax({repeat: -1});
+				// tl2.to('.preload__txt', 1, {opacity: 1});
+				// tl2.to('.preload__txt', 1, {opacity: 0});
+				TweenMax.to('.preload__txt', 1, {opacity: 1});
+			}
 
 			TweenMax.to('.preload__wrapper', 0.5, {opacity: 1});
 
@@ -156,6 +159,11 @@ class AppManager {
 
 	preloadTextures() {
 
+		console.log('load');
+
+
+		let mediaPath = Device.size === 'mobile' || Device.size === 'tablet' ? 'mobile/' : '';
+
 
 		// Preload all assets
 		PreloadManager.loadManifest([
@@ -169,10 +177,10 @@ class AppManager {
 			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
 			{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
 			// bkg projects
-			{ id: 'bkg-0', src: `${global.BASE}/images/textures/project-0.png` },
-			{ id: 'bkg-1', src: `${global.BASE}/images/textures/project-1.png` },
-			{ id: 'bkg-2', src: `${global.BASE}/images/textures/project-2.png` },
-			{ id: 'bkg-3', src: `${global.BASE}/images/textures/project-3.png` }
+			{ id: 'bkg-0', src: `${global.BASE}/images/${mediaPath}textures/project-0.png` },
+			{ id: 'bkg-1', src: `${global.BASE}/images/${mediaPath}textures/project-1.png` },
+			{ id: 'bkg-2', src: `${global.BASE}/images/${mediaPath}textures/project-2.png` },
+			{ id: 'bkg-3', src: `${global.BASE}/images/${mediaPath}textures/project-3.png` }
 		]);
 
 		// SkyTex
@@ -184,7 +192,7 @@ class AppManager {
 
 			for (let y = 0; y < DATA.projects[i].imgs.length; y++) {
 				if (/.mp4$/.test(DATA.projects[i].imgs[y]) === false) { // if not mp4 video
-					PreloadManager.loadFile(`${global.BASE}/images/projects/${DATA.projects[i].imgs[y]}`);
+					PreloadManager.loadFile(`${global.BASE}/images/${mediaPath}projects/${DATA.projects[i].imgs[y]}`);
 				}
 			}
 
@@ -201,8 +209,8 @@ class AppManager {
 
 			PreloadManager.off('progress');
 
-			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt']);
-			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down', '.preload__txt'], {clearProps: 'all'});
+			TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
+			TweenMax.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 
 			TweenMax.delayedCall(0.6, this.start); // --> Avoid freeze creating 3D scene during Animation
 
@@ -258,8 +266,12 @@ class AppManager {
 
 				let wrapper = document.querySelector('.preload__wrapper');
 				let txt = document.querySelector('.preload__txt');
-				txt.innerHTML = 'start';
-				TweenMax.to(txt, 0, {opacity: 1});
+				const tl1 = new TimelineMax();
+				tl1.to(txt, 0.5, {opacity: 0});
+				tl1.add(() => {
+					txt.innerHTML = 'start';
+				});
+				tl1.to(txt, 0.5, {opacity: 1});
 
 				let onWrapperClick = (e) => {
 
@@ -356,6 +368,8 @@ class AppManager {
 	}
 
 	resizeHandler() {
+
+		console.log('resize');
 
 
 		Device.touch = isTouch();

@@ -9,6 +9,7 @@
 				position: relative;
 				z-index: 9000;
 				transform: translateX(50%); // align with other title
+				
 
 				@include mobile {
 					font-size: 758%;

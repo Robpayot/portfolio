@@ -698,13 +698,13 @@ export default class IntroView extends AbstractView {
 		}
 
 		const tl = new TimelineMax();
+		tl.add(() => {
+
+			this.moveCameraIn(fromProject);
+		}, 0 );
 
 		if (fromProject === false) {
 
-			tl.add(() => {
-
-				this.moveCameraIn(fromProject);
-			}, 0 );
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
@@ -722,9 +722,7 @@ export default class IntroView extends AbstractView {
 
 			this.camera.position.set(0, this.maxZoom, 0);
 			this.camera.rotation.x = toRadian(-90);
-			tl.add(() => {
-				this.moveCameraIn(fromProject);
-			}, 0);
+
 			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
 			tl.to(this.ui.button, 3, {opacity: 1});
 			tl.add(() => {
@@ -738,8 +736,8 @@ export default class IntroView extends AbstractView {
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 3);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
+				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 2.5);
+				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 2.5);
 			}
 		}
 
