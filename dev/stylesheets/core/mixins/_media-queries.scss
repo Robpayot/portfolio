@@ -8,6 +8,12 @@
     }
 }
 
+@mixin mobile-portrait {
+    @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+        @content;
+    }
+}
+
 @mixin tablet {
     @media screen and (max-width: $breakpoint-tablet) {
         @content;

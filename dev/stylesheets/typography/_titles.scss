@@ -29,6 +29,9 @@
 		@include mobile {
 			font-size: 3.6rem;
 		}
+		@include mobile-portrait {
+			font-size: 6rem;
+		}
     }
 
     // Only in WebGL 

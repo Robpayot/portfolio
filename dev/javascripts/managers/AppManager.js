@@ -370,7 +370,15 @@ class AppManager {
 		//     document.body.classList.add('ie');
 		// }
 
+		// console.log(window.orientation);
+
 		Device.size = 'desktop';
+
+		if (window.innerHeight > window.innerWidth) {
+			Device.orientation = 'portrait';
+		} else {
+			Device.orientation = 'landscape';
+		}
 
 		if (window.innerWidth <= 1440) {
 			Device.size = 'small-desktop';

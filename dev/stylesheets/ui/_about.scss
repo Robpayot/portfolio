@@ -17,6 +17,10 @@
 		width: 70vw;
 	}
 
+	@include mobile-portrait {
+		width: 86vw;
+	}
+
 	p, li {
 		font-size: 1.2em;
 		line-height: 2em;

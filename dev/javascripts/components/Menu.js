@@ -142,9 +142,14 @@ export default class Menu {
 			this.tl = new TimelineMax();
 
 			this.tl.set(links, {opacity: 0});
-			this.tl.staggerFromTo([links[2], links[1], links[0]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
-			// tl.set('.menu__sublink span', {opacity: 1}, 1.5);
-			this.tl.staggerFromTo('.menu__sublink div', 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.03, 0.4);
+			if (Device.orientation === 'portrait' ) {
+				const subLinks = document.querySelectorAll('.menu__sublink div');
+				this.tl.staggerFromTo([links[0], links[1], ...subLinks, links[2]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
+			} else {
+				this.tl.staggerFromTo([links[2], links[1], links[0]], 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.05, 0.2);
+				this.tl.staggerFromTo('.menu__sublink div', 1.5, {x: '-120%', opacity: 0}, { x: '0%', opacity: 1, ease: window.Expo.easeOut}, 0.03, 0.4);
+			}
+
 			this.tl.to('.menu__button .close-up', 0.3, {strokeDashoffset: this.maxDash, ease: window.Expo.easeOut }, 0);
 			this.tl.to('.menu__button .close-down', 0.3, {strokeDashoffset: this.maxDash * 5, ease: window.Expo.easeOut }, 0);
 			this.tl.to('.menu__button .open-down', 0.65, {strokeDashoffset: this.maxDash * 5 - 205, ease: window.Expo.easeOut}, 0.1 );

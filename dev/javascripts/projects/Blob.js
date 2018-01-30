@@ -72,11 +72,11 @@ export default class Blob extends ProjectView {
 
 		let pos;
 		const posFixed = [
-			{ x: 30, y: 35, z: -10, s: 5 },
-			{ x: -50, y: -30, z: 30, s: 3.4 },
-			{ x: 40, y: -78, z: -80, s: 3 },
-			{ x: -60, y: 50, z: -50, s: 3.5 },
-			{ x: 70, y: -15, z: -40, s: 3.8 },
+			{ x: 30, y: 35, z: -10, s: 5, v: 0.0010},
+			{ x: -50, y: -40, z: 30, s: 3.4 , v: 0.0015},
+			{ x: 40, y: -78, z: -80, s: 3, v: 0.0025},
+			{ x: -60, y: 50, z: -50, s: 3.5, v: 0.0035},
+			{ x: 70, y: -15, z: -40, s: 3.8, v: 0.0020},
 		];
 
 		this.nbAst = posFixed.length;
@@ -166,6 +166,7 @@ export default class Blob extends ProjectView {
 
 			group.add(asteroid.mesh);
 			group.add(pivot);
+			group.speed = posFixed[i].v;
 
 			this.scene.add(group);
 
@@ -230,7 +231,7 @@ export default class Blob extends ProjectView {
 
 			// Move top and bottom --> Levit effect
 			// this.asteroids[i].mesh.position.y = this.asteroids[i].initY + Math.sin(this.clock.getElapsedTime() * this.asteroids[i].speed + this.asteroids[i].offset) * this.asteroids[i].range.coef + this.asteroids[i].range.add;
-			this.groupPivots[i].rotation.y += 0.0025;
+			this.groupPivots[i].rotation.y += this.groupPivots[i].speed;
 			if (Device.touch === false) {
 				// rotate
 				this.asteroids[i].mesh.material.uniforms[ 'time' ].value = .00065 * ( Date.now() - this.inc ); // use getDelta??

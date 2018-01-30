@@ -61,6 +61,12 @@
 		left: 7vw;
 
 		pointer-events: auto;
+
+		@include mobile-portrait {
+			top: 7vw;
+			transform: rotate(-90deg);
+		}
+
 		svg polyline,
 		svg circle {
 			stroke: white;
@@ -123,6 +129,13 @@
 		@include small-desktop {
 			left: 27.5vw;
 		}
+
+		@include mobile-portrait {
+			flex-direction: column;
+			left: 7vw;
+			top: calc(5rem + 7vw + 1rem);
+			transform: none;
+		}
 	}
 
 	&__link {
@@ -150,6 +163,11 @@
 		font-family: 'Theinhardt-light';
 	    font-weight: 300;
 	    font-style: normal;
+
+	    @include mobile-portrait {
+			position: relative;
+			top: 0;
+		}
 	}
 
 	&__sublink {
@@ -164,6 +182,9 @@
 		@include mobile {
 			margin: 1.5rem 0;
 			font-size: 1.4rem;
+		}
+		@include mobile-portrait {
+			font-size: 2.4rem;
 		}
 		.menu__subtitle {
 			display: inline-block;
@@ -189,6 +210,9 @@
 			@include mobile {
 				margin-top: 2rem;
 			}
+			@include mobile-portrait {
+				margin-top: 1rem;
+			}
 		}
 		&.is-active {
 			color: rgba(255,255,255,1);
@@ -199,6 +223,9 @@
 				padding-left: 1.5em;
 				&::after {
 					width: 1.6rem;
+					@include mobile-portrait {
+						width: 2.4rem;
+					}
 				}
 			}
 		}
@@ -212,6 +239,9 @@
 				padding-left: 1.5em;
 				&::after {
 					width: 1.6rem;
+					@include mobile-portrait {
+						width: 2.4rem;
+					}
 				}
 			}
 			.color {

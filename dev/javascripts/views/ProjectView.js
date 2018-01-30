@@ -288,7 +288,13 @@ export default class ProjectView extends AbstractView {
 		let template = Handlebars.compile(PreloadManager.getResult('tpl-project-title'));
 		let html  = template(data);
 		const title = new CssContainer(html, this.cssScene, this.cssObjects);
-		title.position.set(40, 0, 10);
+		if (Device.orientation === 'portrait' ) {
+			this.coefText = 0.03;
+			title.position.set(-25, 0, 0);
+		} else {
+			title.position.set(40, 0, 10);
+		}
+
 		title.scale.multiplyScalar(this.coefText); // Il faudrait ne pas scale ici. Canvas trop gros
 
 		this.prevId = this.id - 1 < 0 ? DATA.projects.length - 1 : this.id - 1;
@@ -316,8 +322,9 @@ export default class ProjectView extends AbstractView {
 		// Gallery
 
 		// Context + gallery arrows
+		data.scrollContent = Device.touch ? 'scroll to navigate' : 'scroll or click top to navigate';
 		template = Handlebars.compile(PreloadManager.getResult('tpl-project-content'), {noEscape: true});
-		html  = template(data);
+		html = template(data);
 		this.ui.uiContent.className = '';
 		this.ui.uiContent.classList.add('ui-content', 'is-project');
 
@@ -479,14 +486,37 @@ export default class ProjectView extends AbstractView {
 		tl.set(['.project__top', '.project__back', ...this.ui.imgs], { visibility: 'visible' }, 0);  // ,1.7
 		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
 
-		tl.fromTo(['.project__top', '.project__back'], 1.2, { // 1.2
-			opacity: 0,
-			y: 80
-		}, {
-			opacity: 0.9,
-			y: 0,
-			ease: window.Expo.easeOut
-		}, 1.7);
+		if (Device.orientation === 'portrait') {
+
+			tl.fromTo('.project__top', 1.2, { // 1.2
+				opacity: 0,
+				y: 80
+			}, {
+				opacity: 0.9,
+				y: 0,
+				ease: window.Expo.easeOut
+			}, 1.7);
+
+			tl.fromTo('.project__back', 1.2, {
+				opacity: 0,
+			}, {
+				opacity: 1,
+				ease: window.Expo.easeOut
+			}, 1.7);
+
+		} else {
+
+			tl.fromTo(['.project__top', '.project__back'], 1.2, { // 1.2
+				opacity: 0,
+				y: 80
+			}, {
+				opacity: 0.9,
+				y: 0,
+				ease: window.Expo.easeOut
+			}, 1.7);
+		}
+
+
 
 		tl.add(() => {
 			this.ui.imgs[0].classList.add('is-visible');

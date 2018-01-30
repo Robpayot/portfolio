@@ -71,7 +71,7 @@
 
 	    display: none;
 
-	    @include mobile {
+	    .is-touch & {
 	    	display: block;
 	    }
 	}

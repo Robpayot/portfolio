@@ -133,6 +133,10 @@ export default class IntroView extends AbstractView {
 		this.nbAst = 30;
 		this.minZoom = 900;
 		this.maxZoom = 1700;
+		if (Device.orientation === 'portrait') {
+			this.maxZoom = 2700;
+			this.minZoom = 1700;
+		}
 		this.asteroids = [];
 		this.asteroidsM = [];
 		this.asteroidsMove = false;

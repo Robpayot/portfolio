@@ -37,6 +37,12 @@ $project3D-w : 1075px;
 			left: 50%;
 			transform: translateX(-50%);
 			max-width: 1300px;
+
+			@include mobile-portrait {
+				width: 86vw;
+				left: 7vw;
+				transform: none;
+			}
 		}
 
 		&__header {
@@ -70,6 +76,14 @@ $project3D-w : 1075px;
 			font-family: 'Theinhardt-light';
 			font-weight: 300;
 			font-style: normal;
+
+			@include mobile-portrait {
+				flex-wrap: wrap;
+				&::after {
+					content: '';
+					width: 100%;
+				}
+			}
 		}
 
 		&__role,
@@ -85,6 +99,10 @@ $project3D-w : 1075px;
 				color: $color-grey;
 				white-space: nowrap;
 			}
+
+			@include mobile-portrait {
+				width: 30%;
+			}
 		}
 
 		&__link {
@@ -92,6 +110,10 @@ $project3D-w : 1075px;
 			display: flex;
 			justify-content: flex-end;
 			align-items: center;
+			@include mobile-portrait {
+				width: auto;
+				margin-top: 3rem;
+			}
 
 			span {
 				margin-right: 2.0rem;
@@ -214,6 +236,17 @@ $project3D-w : 1075px;
 			left: 5vw;
 			pointer-events: auto;
 
+			@include mobile-portrait {
+				height: 15.0rem;
+				width: 100%;
+				top: 0px;
+				padding: 0;
+				left: 0;
+				background: linear-gradient(to bottom, rgba(0,0,0,1) 0%,rgba(0,0,0,1) 12%,rgba(0,0,0,0) 85%,rgba(0,0,0,0) 100%);
+				justify-content: flex-start;
+				z-index: 20;
+			}
+
 			p {
 				padding-left: 15px;
 				margin-right: -1.5px;
@@ -228,6 +261,10 @@ $project3D-w : 1075px;
 				font-size: 1rem;
 
 				pointer-events: auto;
+
+				@include mobile-portrait {
+					margin-left: 7vw;
+				}
 
 				&:after {
 					content: '';
@@ -297,6 +334,11 @@ $project3D-w : 1075px;
 		text-transform: uppercase;
 		font-size: 1rem;
 		opacity: 0;
+		text-align: center;
+
+		@include mobile-portrait {
+			bottom: 20rem;
+		}
 
 		.scrolled & {
 			display: none;
