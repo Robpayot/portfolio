@@ -67,7 +67,7 @@ class AppManager {
 				// const tl2 = new TimelineMax({repeat: -1});
 				// tl2.to('.preload__txt', 1, {opacity: 1});
 				// tl2.to('.preload__txt', 1, {opacity: 0});
-				TweenMax.to('.preload__txt', 1, {opacity: 1});
+				TweenMax.set('.preload__txt', {opacity: 0});
 			}
 
 			TweenMax.to('.preload__wrapper', 0.5, {opacity: 1});
@@ -219,6 +219,7 @@ class AppManager {
 	}
 
 	start() {
+		console.log('create');
 
 		// Start main components
 
@@ -250,6 +251,7 @@ class AppManager {
 	}
 
 	callbackInit() {
+		console.log('finish create');
 
 		if (this.initiated === true) {
 
@@ -266,12 +268,13 @@ class AppManager {
 
 				let wrapper = document.querySelector('.preload__wrapper');
 				let txt = document.querySelector('.preload__txt');
+				txt.innerHTML = 'start';
 				const tl1 = new TimelineMax();
-				tl1.to(txt, 0.5, {opacity: 0});
-				tl1.add(() => {
-					txt.innerHTML = 'start';
-				});
-				tl1.to(txt, 0.5, {opacity: 1});
+				// tl1.to(txt, 0.5, {opacity: 0});
+				// tl1.add(() => {
+				// 	txt.innerHTML = 'start';
+				// });
+				tl1.to(txt, 1, {opacity: 1});
 
 				let onWrapperClick = (e) => {
 

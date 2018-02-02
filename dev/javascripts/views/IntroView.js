@@ -130,7 +130,7 @@ export default class IntroView extends AbstractView {
 		// Set physics
 		if (this.gravity === true) this.initPhysics([0,0]);
 
-		this.nbAst = Device.size === 'mobile' ? 20 : 30;
+		this.nbAst = Device.size === 'mobile' ? 25 : 30;
 		this.minZoom = 900;
 		this.maxZoom = 1700;
 		if (Device.orientation === 'portrait') {
@@ -301,21 +301,22 @@ export default class IntroView extends AbstractView {
 
 		this.scene.add(mesh);
 
-		// invisble perimeter
-		mat = new MeshBasicMaterial( {
-			color: 0xffff00,
-			transparent: true,
-			opacity: 0.4
-		} );
+		// Invisible blocks
 
 		this.perimeter = 490;
+		if (this.debug === true) {
+			mat = new MeshBasicMaterial( {
+				color: 0xffff00,
+				transparent: true,
+				opacity: 0.4
+			} );
 
-		mesh = new Mesh(new SphereGeometry(this.perimeter, this.perimeter, this.perimeter), mat);
-		mesh.visible = this.debug;
+			mesh = new Mesh(new SphereGeometry(this.perimeter, 32, 32), mat);
+			mesh.visible = this.debug;
 
-		// this.scene.add(mesh);
+			this.scene.add(mesh);
+		}
 
-		// Invisible blocks
 
 		mat = new MeshBasicMaterial( {
 			color: 0x0000ff,
