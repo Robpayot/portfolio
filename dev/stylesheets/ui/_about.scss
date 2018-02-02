@@ -38,7 +38,7 @@
 			line-height: 1.4em;
 		}
 
-		a span {
+		a:not(.about__work__top) span {
 			bottom: 0px;
 		}
 	}
@@ -48,7 +48,7 @@
 	    font-style: normal;
 	}
 
-	a {
+	a:not(.about__work__top) {
         opacity: 1;
         position: relative;
         display: inline-block;
@@ -143,6 +143,7 @@
 	    	margin-bottom: 3.6rem;
 			
 			&__top {
+				color: black;
 		    	display: flex;
 		    	align-items: center;
 		    	justify-content: space-between;		
@@ -166,7 +167,7 @@
 	    		margin-right: 20px;
 	    	}
 
-	    	a {
+	    	.about__button {
 		    	display: flex;
 		    	align-items: center;
 	    		svg {

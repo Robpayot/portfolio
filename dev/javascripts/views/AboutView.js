@@ -77,7 +77,7 @@ export default class AboutView extends AbstractView {
 			introWrap: document.querySelector('.about__intro'),
 			worksWrap: document.querySelector('.about__works'),
 			works: document.querySelectorAll('.about__work'),
-			worksLinks: document.querySelectorAll('.about__work a'),
+			worksLinks: document.querySelectorAll('.about__work .about__button'),
 			worksCircle: document.querySelectorAll('.about__works svg circle'),
 			worksDown: document.querySelectorAll('.about__works svg .close-down'),
 			worksDown2: document.querySelectorAll('.about__works svg .close-down-2'),

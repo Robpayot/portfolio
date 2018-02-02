@@ -155,6 +155,12 @@
 				color: rgba(255,255,255,1);
 			}
 		}
+
+		&:nth-child(2) > a {
+			@include mobile-portrait {
+				display: none;
+			}
+		}
 	}
 
 	&__sublinks {
