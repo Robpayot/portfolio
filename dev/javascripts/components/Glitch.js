@@ -86,12 +86,12 @@ export default class Glitch {
 
 	}
 
-	setAlphaVideo() {
-
+	setAlphaVideo(video) {
+		// if (video)
 		this.video = document.createElement('video');
 		this.video.id = 'video2';
 		// this.video.src = 'videos/destr-reverse.mp4';
-		this.video.src = 'videos/destr.mp4';
+		this.video.src = PreloadManager.getItem('videoGlitch') ? PreloadManager.getItem('videoGlitch').src : 'videos/destr.mp4';
 		// this.video.autoplay = true;
 		// this.video.loop = true;
 		this.video.muted = true;

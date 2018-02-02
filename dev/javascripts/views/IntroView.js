@@ -728,7 +728,7 @@ export default class IntroView extends AbstractView {
 			tl.to(this.ui.button, 3, {opacity: 1});
 			tl.add(() => {
 				global.OVERLAY.classList.remove('visible');
-			}, 0);
+			}, 0.5);
 
 			tl.add(() => {
 				// start move Ast
@@ -765,7 +765,7 @@ export default class IntroView extends AbstractView {
 		});
 
 		if (fromProject === true) {
-			tl.fromTo(this.camera.position, 5, {y: this.maxZoom }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
+			tl.fromTo(this.camera.position, 4.5, {y: this.maxZoom + 100 }, {y: this.minZoom, ease: window.Expo.easeOut}, 0); // 5
 			// sound
 			global.SOUNDS['switch_long'].play();
 		} else {

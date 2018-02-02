@@ -36,6 +36,8 @@ class AppManager {
 
 
 		PreloadManager.loadFile({ id: 'introTxt', src: `${global.BASE}/images/textures/name-2.png` });
+		// video
+		if (Device.touch === true) PreloadManager.loadFile({ id: 'videoGlitch', src: `${global.BASE}/videos/destr.mp4` });
 
 
 		this.introTexLoad = PreloadManager.on('complete', () => {
@@ -279,6 +281,7 @@ class AppManager {
 				let onWrapperClick = (e) => {
 
 					// start destruction effect
+
 					this.glitch.video.play(); // play video
 
 
@@ -293,7 +296,7 @@ class AppManager {
 					tl.add(() => {
 						RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 						this.glitch.isLoading = false; // apply video alpha
-					}, 0.9);
+					}, 0.5);
 					tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 
 					tl.add(() => {

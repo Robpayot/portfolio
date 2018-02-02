@@ -470,12 +470,12 @@ var Glitch = function () {
 		}
 	}, {
 		key: 'setAlphaVideo',
-		value: function setAlphaVideo() {
-
+		value: function setAlphaVideo(video) {
+			// if (video)
 			this.video = document.createElement('video');
 			this.video.id = 'video2';
 			// this.video.src = 'videos/destr-reverse.mp4';
-			this.video.src = 'videos/destr.mp4';
+			this.video.src = _PreloadManager2.default.getItem('videoGlitch') ? _PreloadManager2.default.getItem('videoGlitch').src : 'videos/destr.mp4';
 			// this.video.autoplay = true;
 			// this.video.loop = true;
 			this.video.muted = true;
@@ -1520,6 +1520,8 @@ var AppManager = function () {
 
 
 			_PreloadManager2.default.loadFile({ id: 'introTxt', src: global.BASE + '/images/textures/name-2.png' });
+			// video
+			if (_Device.Device.touch === true) _PreloadManager2.default.loadFile({ id: 'videoGlitch', src: global.BASE + '/videos/destr.mp4' });
 
 			this.introTexLoad = _PreloadManager2.default.on('complete', function () {
 
@@ -1737,6 +1739,7 @@ var AppManager = function () {
 					var onWrapperClick = function onWrapperClick(e) {
 
 						// start destruction effect
+
 						_this5.glitch.video.play(); // play video
 
 
@@ -1751,7 +1754,7 @@ var AppManager = function () {
 						tl.add(function () {
 							_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
 							_this5.glitch.isLoading = false; // apply video alpha
-						}, 0.9);
+						}, 0.5);
 						tl.to('.preload', 1.5, { autoAlpha: 0, ease: window.Linear.easeNone }, '+=0.5');
 
 						tl.add(function () {
@@ -10365,7 +10368,7 @@ var IntroView = function (_AbstractView) {
 				tl.to(this.ui.button, 3, { opacity: 1 });
 				tl.add(function () {
 					global.OVERLAY.classList.remove('visible');
-				}, 0);
+				}, 0.5);
 
 				tl.add(function () {
 					// start move Ast
@@ -10405,7 +10408,7 @@ var IntroView = function (_AbstractView) {
 			});
 
 			if (fromProject === true) {
-				tl.fromTo(this.camera.position, 5, { y: this.maxZoom }, { y: this.minZoom, ease: window.Expo.easeOut }, 0); // 5
+				tl.fromTo(this.camera.position, 4.5, { y: this.maxZoom + 100 }, { y: this.minZoom, ease: window.Expo.easeOut }, 0); // 5
 				// sound
 				global.SOUNDS['switch_long'].play();
 			} else {
