@@ -11,6 +11,7 @@ import RouterManager from '../managers/RouterManager';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
 import Glitch from '../components/Glitch';
+import SplitText from '../vendors/SplitText';
 
 
 // THREE JS
@@ -362,6 +363,10 @@ export default class ProjectView extends AbstractView {
 			this.ui.footer = document.querySelector('.project__footer');
 			this.ui.linkSvg = document.querySelector('.project__link svg');
 
+			this.splitTitle = new SplitText('.project__header .title--4', {type:'chars'});
+
+			console.log(this.splitTitle);
+
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
 				sndColor: this.data.color,
@@ -492,47 +497,58 @@ export default class ProjectView extends AbstractView {
 			for (let i = 0; i < this.ui.videos.length; i++) {
 				this.ui.videos[i].play();
 			}
-		}, 1.7);
+		}, 1.4);
 		tl.set('.project__gallery', { opacity: 1 }, 0);  // ,1.7, '.project__gallery'
 		tl.set(['.project__top', '.project__back', ...this.ui.imgs], { visibility: 'visible' }, 0);  // ,1.7
-		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.7);
+		tl.set(['.project__container'], { visibility: 'visible', display: 'block', opacity: 1 }, 1.3);
 
-		if (Device.orientation === 'portrait') {
+		// Gallery animation
+		tl.add(() => {
+			document.querySelector('.project__top').classList.add('is-anim');
+			document.querySelector('.project__back').classList.add('is-anim');
 
-			tl.fromTo('.project__top', 1.2, { // 1.2
-				opacity: 0,
-				y: 80
-			}, {
-				opacity: 0.9,
-				y: 0,
-				ease: window.Expo.easeOut
-			}, 1.7);
+			const tlGallery = new TimelineMax();
+			let delay = 0;
+			for (let i = 0; i < this.splitTitle.chars.length; i++) {
 
-			tl.fromTo('.project__back', 1.2, {
-				opacity: 0,
-			}, {
-				opacity: 1,
-				ease: window.Expo.easeOut
-			}, 1.7);
+				tlGallery.add(() => {
+					this.splitTitle.chars[i].classList.add('is-anim');
+				}, delay);
 
-		} else {
+				delay += 0.07;
+			}
+			tlGallery.add(() => {
+				document.querySelector('.project__date').classList.add('is-anim');
+			}, '+=0.2');
+			tlGallery.add(() => {
+				document.querySelector('.project__descr').classList.add('is-anim');
+			}, 0.3);
+			tlGallery.add(() => {
+				document.querySelector('.project__subHeader').classList.add('is-anim');
+			}, 0.55);
 
-			tl.fromTo(['.project__top', '.project__back'], 1.2, { // 1.2
-				opacity: 0,
-				y: 80
-			}, {
-				opacity: 0.9,
-				y: 0,
-				ease: window.Expo.easeOut
-			}, 1.7);
-		}
+			let subHeaderChildren = document.querySelector('.project__subHeader').children;
+			delay = 0;
+			for (let i = 0; i < subHeaderChildren.length; i++) {
+				tlGallery.add(() => {
+					subHeaderChildren[i].classList.add('is-anim');
+				}, 0.55 + delay); // 1.5
+
+				if (Device.orientation === 'portrait') delay += 0.2;
+
+			}
+
+			tlGallery.add(() => {
+				this.ui.imgs[0].classList.add('is-anim');
+			}, 0.8);
+
+		}, 1.4);
 
 
 
 		tl.add(() => {
-			this.ui.imgs[0].classList.add('is-visible');
 			document.querySelector('.footer').classList.add('content-open');
-		}, 1.8);
+		}, 2);
 
 		// angle
 
@@ -603,7 +619,7 @@ export default class ProjectView extends AbstractView {
 		this.cameraRotX = true;
 		this.glitch.stop = false;
 		if (!Device.touch) global.CURSOR.interractLeave({back: true});
-		TweenMax.set(global.MENU.ui.button, { display: 'block'});
+
 		document.querySelector('.footer').classList.remove('content-open');
 
 
@@ -618,12 +634,17 @@ export default class ProjectView extends AbstractView {
 
 		} });
 
-		tl.staggerTo(['.project__top', '.project__footer', '.project__gallery', '.project__back' ], 1.2, {
+		tl.set('.project__back', {
+			transition: 'none'
+		}, 0);
+
+		tl.to(['.project__container','.project__back'], 0.7, {
 			opacity: 0,
-			ease: window.Power4.easeOut
-		}, 0.1);
+			ease: window.Linear.easeNone
+		}, 0);
 
 		tl.set('.project__container', { display: 'none' });
+		tl.set('.project__back', { clearProps: 'all' });
 
 
 		tl.to(trigo, 3, { // 3.5
@@ -635,12 +656,12 @@ export default class ProjectView extends AbstractView {
 				this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * trigo.angle);
 				// this.camera.lookAt(this.cameraTarget);
 			}
-		}, 0.5);
+		}, 0);
 
 		tl.to(this.currentRotateY, 3, {
 			angle: toRadian(0),
 			ease: window.Power3.easeInOut
-		}, 0.5);
+		}, 0);
 
 		tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
 			opacity: 0,
@@ -649,33 +670,37 @@ export default class ProjectView extends AbstractView {
 			opacity: 0.8,
 			y: 0,
 			ease: window.Expo.easeOut
-		}, 0.1, 2.6);
+		}, 0.1, 2.1);
 
 		tl.set(['.project__title'], {
 			opacity: 1
-		}, 2.6);
+		}, 2.1);
 
 		tl.to(global.MENU.ui.button, 2, {
 			opacity: 1
-		}, 2.6);
+		}, 2.1);
 
 		tl.add(() => {
 			this.animating = false;
 			this.contentOpen = false;
-			for (let i = 0; i < this.ui.imgs.length; i++) {
-				this.ui.imgs[i].classList.remove('is-visible');
-			}
-			this.ui.footer.classList.remove('is-visible');
 
-		}, 2.6);
+			const isAnims = this.ui.container.querySelectorAll('.is-anim');
+			for (let i = 0; i < isAnims.length; i++) {
+				isAnims[i].classList.remove('is-anim');
+			}
+
+			document.querySelector('.project__back').classList.remove('is-anim');
+
+		}, 2.1);
 
 		tl.add(() => {
+			TweenMax.set(global.MENU.ui.button, { display: 'block'});
 			// sound
 			global.SOUNDS['switch_long'].play();
-		}, 1.5);
+		}, 1);
 
 		if (global.SCROLLED === false) {
-			tl.to('.scroll', 1, {opacity: 1}, 2.6);
+			tl.to('.scroll', 1, {opacity: 1}, 2.1);
 		}
 
 		if (this.id === 0) this.lightZ = false;
@@ -704,20 +729,20 @@ export default class ProjectView extends AbstractView {
 
 		for (let i = 1; i < this.ui.imgs.length; i++) {
 
-			if (this.ui.imgs[i].classList.contains('is-visible') === false) {
+			if (this.ui.imgs[i].classList.contains('is-anim') === false) {
 
 				if (getOffsetTop(this.ui.imgs[i]) - this.scrollY <= document.body.offsetHeight - coefIsVisible) {
 
 					const tl = new TimelineMax();
 					tl.set(this.ui.imgs[i], {visibility: 'visible'});
 
-					this.ui.imgs[i].classList.add('is-visible');
+					this.ui.imgs[i].classList.add('is-anim');
 
 				}
 			}
 		}
 
-		if (this.ui.footer.classList.contains('is-visible') === false) {
+		if (this.ui.footer.classList.contains('is-anim') === false) {
 
 			if (getOffsetTop(this.ui.footer) - this.scrollY <= window.innerHeight * 0.7) {
 
@@ -731,7 +756,7 @@ export default class ProjectView extends AbstractView {
 					y: 0,
 					ease: window.Expo.easeOut
 				});
-				this.ui.footer.classList.add('is-visible');
+				this.ui.footer.classList.add('is-anim');
 
 			}
 		}
@@ -1184,12 +1209,12 @@ export default class ProjectView extends AbstractView {
 			this.camera.rotation.order = 'XYZ';
 		} });
 
-		tl.set(['.project__container', '.project__footer' ], {
+		tl.set(['.project__container', this.ui.footer ], {
 			opacity: 0,
 			ease: window.Power4.easeOut
 		});
 
-		tl.set(['.project__item', '.project__footer', '.project__container'], { visibility: 'hidden' });
+		tl.set(['.project__item', this.ui.footer, '.project__container'], { visibility: 'hidden' });
 
 		this.camera.position.x = this.pathRadius * Math.cos(Math.PI / 2 * 1);
 		this.camera.position.z = this.pathRadius * Math.sin(Math.PI / 2 * 1);
