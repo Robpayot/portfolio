@@ -577,6 +577,9 @@ export default class ProjectView extends AbstractView {
 
 				// manual repeat
 			}, 0.4);
+			tl.add(() => {
+				global.SOUNDS['glitch'].play();
+			}, 0.2);
 
 		}
 

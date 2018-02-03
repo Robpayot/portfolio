@@ -69,6 +69,13 @@ export default class Menu {
 		} else {
 			this.ui.sound[evListener]('touchstart', this.toggleSound);
 			this.ui.button[evListener]('touchstart', this.toggleOpen);
+			for (let i = 0; i < this.ui.linksTitles.length; i++) {
+				this.ui.linksTitles[i][evListener]('touchstart', this.onHoverLink);
+			}
+
+			for (let i = 0; i < this.ui.subLinksTitles.length; i++) {
+				this.ui.subLinksTitles[i][evListener]('touchstart', this.onHoverLink);
+			}
 			for (let i = 0; i < this.ui.aLinks.length; i++) {
 				this.ui.aLinks[i][evListener]('click', preventLink);
 			}
@@ -180,11 +187,14 @@ export default class Menu {
 		const el = e.currentTarget;
 		el.parentNode.classList.add('is-hover');
 
-		if (el.parentNode.getAttribute('data-color')) {
-			global.CURSOR.interractHover({color: el.parentNode.getAttribute('data-color'), small: true });
-		} else {
-			global.CURSOR.interractHover();
+		if (Device.touch === false) {
+			if (el.parentNode.getAttribute('data-color')) {
+				global.CURSOR.interractHover({color: el.parentNode.getAttribute('data-color'), small: true });
+			} else {
+				global.CURSOR.interractHover();
+			}
 		}
+
 		// sound
 		global.SOUNDS['hover_2'].play();
 	}

@@ -221,7 +221,6 @@ class AppManager {
 	}
 
 	start() {
-		console.log('create');
 
 		// Start main components
 
@@ -253,7 +252,6 @@ class AppManager {
 	}
 
 	callbackInit() {
-		console.log('finish create');
 
 		if (this.initiated === true) {
 
