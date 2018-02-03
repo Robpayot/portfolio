@@ -1641,7 +1641,8 @@ var AppManager = function () {
 		value: function preloadTextures() {
 			var _this4 = this;
 
-			console.log('load');
+			// console.log('load');
+
 
 			var mediaPath = _Device.Device.size === 'mobile' || _Device.Device.size === 'tablet' ? 'mobile/' : '';
 
@@ -1840,7 +1841,8 @@ var AppManager = function () {
 		key: 'resizeHandler',
 		value: function resizeHandler() {
 
-			console.log('resize');
+			// console.log('resize');
+
 
 			_Device.Device.touch = (0, _utils.isTouch)();
 
@@ -8921,6 +8923,10 @@ var _data = require('../../datas/data.json');
 
 var _data2 = _interopRequireDefault(_data);
 
+var _SplitText = require('../vendors/SplitText');
+
+var _SplitText2 = _interopRequireDefault(_SplitText);
+
 var _three = require('three');
 
 var _OrbitControls = require('../vendors/OrbitControls');
@@ -9370,6 +9376,8 @@ var AboutView = function (_AbstractView) {
 			var html = template(data.about);
 
 			this.ui.uiContent.innerHTML = html;
+
+			this.splitTitle = new _SplitText2.default('.about__title', { type: 'chars' });
 		}
 	}, {
 		key: 'resetWater',
@@ -9562,6 +9570,10 @@ var AboutView = function (_AbstractView) {
 
 			tl.add(function () {
 				_this3.moreOpen = true;
+				var isAnims = document.querySelectorAll('.is-anim');
+				for (var i = 0; i < isAnims.length; i++) {
+					isAnims[i].classList.remove('is-anim');
+				}
 			}, 2);
 
 			// sound
@@ -9581,6 +9593,24 @@ var AboutView = function (_AbstractView) {
 			tl.set(this.ui.introWrap, { display: 'block' }, 1);
 			tl.staggerFromTo(this.targetsIntro, 2, { y: 120 }, { y: 0, ease: window.Expo.easeOut }, 0.04, 1);
 			tl.staggerFromTo(this.targetsIntro, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, 1);
+
+			tl.add(function () {
+				var tlTitle = new TimelineMax();
+				var delay = 0;
+
+				var _loop = function _loop(i) {
+
+					tlTitle.add(function () {
+						_this4.splitTitle.chars[i].classList.add('is-anim');
+					}, delay);
+
+					delay += 0.07;
+				};
+
+				for (var i = 0; i < _this4.splitTitle.chars.length; i++) {
+					_loop(i);
+				}
+			}, 1);
 
 			tl.add(function () {
 				_this4.moreOpen = false;
@@ -9800,6 +9830,7 @@ var AboutView = function (_AbstractView) {
 	}, {
 		key: 'moveCameraIn',
 		value: function moveCameraIn(dest) {
+			var _this8 = this;
 
 			var delay = _RouterManager2.default.fromUrl === true ? 2 : 0.5;
 
@@ -9815,6 +9846,23 @@ var AboutView = function (_AbstractView) {
 			tl.staggerFromTo(this.targetsIntro, 2, { y: 120 }, { y: 0, ease: window.Expo.easeOut }, 0.04, delay);
 			tl.staggerFromTo(this.targetsIntro, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, delay);
 
+			tl.add(function () {
+				var tlTitle = new TimelineMax();
+				var delayTitle = 0;
+
+				var _loop2 = function _loop2(i) {
+
+					tlTitle.add(function () {
+						_this8.splitTitle.chars[i].classList.add('is-anim');
+					}, delayTitle);
+
+					delayTitle += 0.07;
+				};
+
+				for (var i = 0; i < _this8.splitTitle.chars.length; i++) {
+					_loop2(i);
+				}
+			}, delay);
 			// sound
 			global.SOUNDS['switch_long'].play();
 		}
@@ -9944,7 +9992,7 @@ exports.default = AboutView;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/RouterManager":15,"../managers/SceneManager":16,"../managers/ScrollManager":17,"../shaders/HeightmapFragmentShader":27,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":41,"../vendors/SimplexNoise":43,"./AbstractView":47,"handlebars":412,"three":494}],47:[function(require,module,exports){
+},{"../../datas/data.json":1,"../helpers/Device":7,"../helpers/utils":11,"../managers/EmitterManager":13,"../managers/PreloadManager":14,"../managers/RouterManager":15,"../managers/SceneManager":16,"../managers/ScrollManager":17,"../shaders/HeightmapFragmentShader":27,"../shaders/WaterVertexShader":32,"../vendors/GPUComputationRenderer":38,"../vendors/OrbitControls":41,"../vendors/SimplexNoise":43,"../vendors/SplitText":44,"./AbstractView":47,"handlebars":412,"three":494}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11512,8 +11560,6 @@ var ProjectView = function (_AbstractView) {
 
 				this.splitTitle = new _SplitText2.default('.project__header .title--4', { type: 'chars' });
 
-				console.log(this.splitTitle);
-
 				this.glitch = new _Glitch2.default({ // issue link to ui footer here but Css
 					el: this.glitchEl,
 					sndColor: this.data.color,
@@ -11676,7 +11722,7 @@ var ProjectView = function (_AbstractView) {
 				}
 				tlGallery.add(function () {
 					document.querySelector('.project__date').classList.add('is-anim');
-				}, '+=0.2');
+				}, 0.3);
 				tlGallery.add(function () {
 					document.querySelector('.project__descr').classList.add('is-anim');
 				}, 0.3);

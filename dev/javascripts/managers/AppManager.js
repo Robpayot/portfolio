@@ -161,7 +161,7 @@ class AppManager {
 
 	preloadTextures() {
 
-		console.log('load');
+		// console.log('load');
 
 
 		let mediaPath = Device.size === 'mobile' || Device.size === 'tablet' ? 'mobile/' : '';
@@ -373,7 +373,7 @@ class AppManager {
 
 	resizeHandler() {
 
-		console.log('resize');
+		// console.log('resize');
 
 
 		Device.touch = isTouch();

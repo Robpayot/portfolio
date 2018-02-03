@@ -8,6 +8,7 @@ import ScrollManager from '../managers/ScrollManager';
 import { Device } from '../helpers/Device';
 import Handlebars from 'handlebars';
 import DATA from '../../datas/data.json';
+import SplitText from '../vendors/SplitText';
 
 
 import { Vector2, Raycaster, Vector3, Scene, DirectionalLight, PlaneGeometry, PlaneBufferGeometry, Mesh, MeshBasicMaterial, UniformsUtils, ShaderLib, ShaderChunk, ShaderMaterial, Color, MeshPhongMaterial } from 'three';
@@ -435,6 +436,8 @@ export default class AboutView extends AbstractView {
 
 		this.ui.uiContent.innerHTML = html;
 
+		this.splitTitle = new SplitText('.about__title', {type:'chars'});
+
 	}
 
 	resetWater() {
@@ -582,7 +585,10 @@ export default class AboutView extends AbstractView {
 
 		tl.add(() => {
 			this.moreOpen = true;
-
+			const isAnims = document.querySelectorAll('.is-anim');
+			for (let i = 0; i < isAnims.length; i++) {
+				isAnims[i].classList.remove('is-anim');
+			}
 		}, 2);
 
 		// sound
@@ -602,6 +608,19 @@ export default class AboutView extends AbstractView {
 		tl.set(this.ui.introWrap, {display : 'block'} , 1);
 		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 1);
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
+
+		tl.add(() => {
+			const tlTitle = new TimelineMax();
+			let delay = 0;
+			for (let i = 0; i < this.splitTitle.chars.length; i++) {
+
+				tlTitle.add(() => {
+					this.splitTitle.chars[i].classList.add('is-anim');
+				}, delay);
+
+				delay += 0.07;
+			}
+		}, 1);
 
 		tl.add(() => {
 			this.moreOpen = false;
@@ -632,6 +651,7 @@ export default class AboutView extends AbstractView {
 		tl.set([this.ui.worksUp[index], this.ui.worksDown[index], this.ui.worksDown2[index]], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animLink = false;
+
 		});
 
 		// sound
@@ -833,6 +853,18 @@ export default class AboutView extends AbstractView {
 		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, delay);
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, delay);
 
+		tl.add(() => {
+			const tlTitle = new TimelineMax();
+			let delayTitle = 0;
+			for (let i = 0; i < this.splitTitle.chars.length; i++) {
+
+				tlTitle.add(() => {
+					this.splitTitle.chars[i].classList.add('is-anim');
+				}, delayTitle);
+
+				delayTitle += 0.07;
+			}
+		}, delay);
 		// sound
 		global.SOUNDS['switch_long'].play();
 

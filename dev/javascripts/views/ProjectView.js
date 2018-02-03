@@ -365,8 +365,6 @@ export default class ProjectView extends AbstractView {
 
 			this.splitTitle = new SplitText('.project__header .title--4', {type:'chars'});
 
-			console.log(this.splitTitle);
-
 			this.glitch = new Glitch({ // issue link to ui footer here but Css
 				el: this.glitchEl,
 				sndColor: this.data.color,
@@ -519,7 +517,7 @@ export default class ProjectView extends AbstractView {
 			}
 			tlGallery.add(() => {
 				document.querySelector('.project__date').classList.add('is-anim');
-			}, '+=0.2');
+			}, 0.3);
 			tlGallery.add(() => {
 				document.querySelector('.project__descr').classList.add('is-anim');
 			}, 0.3);

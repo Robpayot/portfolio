@@ -241,7 +241,7 @@ $project3D-w : 1075px;
 			user-select: none;
 			opacity: 0;
 			transition: opacity 0.6s linear,  transform 1.3s $ExpoEaseOut;
-			transform: scaleY(2) translateY(80px);
+			transform: scaleY(2.2) translateY(80px);
 			transform-origin: 0% 0%;
 
 			@include mobile {
