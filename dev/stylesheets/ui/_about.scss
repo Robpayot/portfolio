@@ -78,6 +78,22 @@
 			@include mobile {
 				width: 100%;
 			}
+
+			p {
+				overflow: hidden;
+				& > * {
+					transform: translateY(130%);
+					opacity: 0;
+					transition: opacity 1s linear, transform 2s $ExpoEaseOut;
+					overflow: hidden;
+					display: inline-block;
+
+					&.is-anim {
+						opacity: 1;
+						transform: translateY(0%);
+					}
+				}
+			}
 		}
 
 		&__title {
@@ -127,6 +143,19 @@
 			}
 	    }
 
+	    &__more {
+	    	transform: translateY(100%);
+			opacity: 0;
+			transition: opacity 1s linear, transform 2s $ExpoEaseOut;
+			overflow: hidden;
+			display: inline-block;
+
+			&.is-anim {
+				opacity: 1;
+				transform: translateY(0%);
+			}
+	    }
+
 	    &__back {
 	    	margin-bottom: 36px;
 	    	margin-top: 0px;
@@ -163,6 +192,38 @@
 				@include mobile {
 					font-size: 1.7em;
 					line-height: 1em;
+				}
+
+				& > span:first-child {
+					overflow: hidden;
+					line-height: 1;
+					& > * {
+						transform: translateY(150%);
+						opacity: 0;
+						transition: opacity 0.6s linear, transform 2s $ExpoEaseOut;
+						overflow: hidden;
+						display: inline-block;
+
+						&.is-anim {
+							opacity: 1;
+							transform: translateY(0%);
+						}
+					}
+				}
+			}
+
+			&__descr {
+				line-height: 1;
+				& > * {
+					transform: translateY(100%);
+					opacity: 0;
+					transition: opacity 1s linear, transform 2s $ExpoEaseOut;
+					display: inline-block;
+
+					&.is-anim {
+						opacity: 1;
+						transform: translateY(0%);
+					}
 				}
 			}
 

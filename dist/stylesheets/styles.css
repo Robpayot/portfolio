@@ -1150,6 +1150,23 @@ body {
         @media screen and (max-width: 768px) {
           .ui-content.is-about .about__intro {
             width: 100%; } }
+        .ui-content.is-about .about__intro p {
+          overflow: hidden; }
+          .ui-content.is-about .about__intro p > * {
+            -webkit-transform: translateY(130%);
+            -ms-transform: translateY(130%);
+            transform: translateY(130%);
+            opacity: 0;
+            transition: opacity 1s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow: hidden;
+            display: inline-block; }
+            .ui-content.is-about .about__intro p > *.is-anim {
+              opacity: 1;
+              -webkit-transform: translateY(0%);
+              -ms-transform: translateY(0%);
+              transform: translateY(0%); }
       .ui-content.is-about .about__title {
         font-size: 3.4em;
         display: inline-block;
@@ -1189,6 +1206,21 @@ body {
             width: 15px; }
         .is-touch .ui-content.is-about .about__more, .is-touch .ui-content.is-about .about__back {
           padding-left: 25px; }
+      .ui-content.is-about .about__more {
+        -webkit-transform: translateY(100%);
+        -ms-transform: translateY(100%);
+        transform: translateY(100%);
+        opacity: 0;
+        transition: opacity 1s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+        overflow: hidden;
+        display: inline-block; }
+        .ui-content.is-about .about__more.is-anim {
+          opacity: 1;
+          -webkit-transform: translateY(0%);
+          -ms-transform: translateY(0%);
+          transform: translateY(0%); }
       .ui-content.is-about .about__back {
         margin-bottom: 36px;
         margin-top: 0px; }
@@ -1227,6 +1259,40 @@ body {
             .ui-content.is-about .about__work__top {
               font-size: 1.7em;
               line-height: 1em; } }
+          .ui-content.is-about .about__work__top > span:first-child {
+            overflow: hidden;
+            line-height: 1; }
+            .ui-content.is-about .about__work__top > span:first-child > * {
+              -webkit-transform: translateY(150%);
+              -ms-transform: translateY(150%);
+              transform: translateY(150%);
+              opacity: 0;
+              transition: opacity 0.6s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+              transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+              transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+              overflow: hidden;
+              display: inline-block; }
+              .ui-content.is-about .about__work__top > span:first-child > *.is-anim {
+                opacity: 1;
+                -webkit-transform: translateY(0%);
+                -ms-transform: translateY(0%);
+                transform: translateY(0%); }
+        .ui-content.is-about .about__work__descr {
+          line-height: 1; }
+          .ui-content.is-about .about__work__descr > * {
+            -webkit-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            transform: translateY(100%);
+            opacity: 0;
+            transition: opacity 1s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            display: inline-block; }
+            .ui-content.is-about .about__work__descr > *.is-anim {
+              opacity: 1;
+              -webkit-transform: translateY(0%);
+              -ms-transform: translateY(0%);
+              transform: translateY(0%); }
         .ui-content.is-about .about__work p {
           font-size: 1.4rem;
           font-family: 'Theinhardt-light';
@@ -1337,9 +1403,9 @@ body {
             -webkit-transform: translateY(100%);
             -ms-transform: translateY(100%);
             transform: translateY(100%);
-            transition: -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-            transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-            transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1); }
+            transition: -webkit-transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: transform 1.8s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.8s cubic-bezier(0.19, 1, 0.22, 1); }
             .ui-content.is-project .project__header .title--4 > *.is-anim {
               -webkit-transform: translateY(0%);
               -ms-transform: translateY(0%);
@@ -1349,9 +1415,9 @@ body {
         -webkit-transform: translateY(100%);
         -ms-transform: translateY(100%);
         transform: translateY(100%);
-        transition: -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1); }
+        transition: -webkit-transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: transform 1.8s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: transform 1.8s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.8s cubic-bezier(0.19, 1, 0.22, 1); }
         .ui-content.is-project .project__date.is-anim {
           -webkit-transform: translateY(0%);
           -ms-transform: translateY(0%);
@@ -1366,9 +1432,9 @@ body {
         -ms-transform: translateY(80px);
         transform: translateY(80px);
         opacity: 0;
-        transition: opacity 0.6s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1); }
+        transition: opacity 0.6s linear, -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: opacity 0.6s linear, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: opacity 0.6s linear, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
         .ui-content.is-project .project__descr.is-anim {
           -webkit-transform: translateY(0px);
           -ms-transform: translateY(0px);
@@ -1394,9 +1460,9 @@ body {
         -ms-transform: translateY(80px);
         transform: translateY(80px);
         opacity: 0;
-        transition: opacity 0.6s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1); }
+        transition: opacity 0.6s linear, -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: opacity 0.6s linear, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: opacity 0.6s linear, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
         .ui-content.is-project .project__subHeader.is-anim {
           -webkit-transform: translateY(0px);
           -ms-transform: translateY(0px);
@@ -1407,12 +1473,12 @@ body {
             display: block; } }
       .ui-content.is-project .project__role, .ui-content.is-project .project__technos, .ui-content.is-project .project__context {
         width: 20%;
-        -webkit-transform: translateY(80%);
-        -ms-transform: translateY(80%);
-        transform: translateY(80%);
-        transition: -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1); }
+        -webkit-transform: translateY(90%);
+        -ms-transform: translateY(90%);
+        transform: translateY(90%);
+        transition: -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
         .ui-content.is-project .project__role p:first-child, .ui-content.is-project .project__technos p:first-child, .ui-content.is-project .project__context p:first-child {
           margin-bottom: 1.0rem; }
         .ui-content.is-project .project__role p:last-child, .ui-content.is-project .project__technos p:last-child, .ui-content.is-project .project__context p:last-child {
@@ -1508,9 +1574,9 @@ body {
             transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
             margin-bottom: 2.0rem; } }
         .ui-content.is-project .project__item:first-child {
-          transition: opacity 0.6s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-          transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-          transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1); }
+          transition: opacity 0.6s linear, -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+          transition: opacity 0.6s linear, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+          transition: opacity 0.6s linear, transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
         .ui-content.is-project .project__item.is-anim {
           -webkit-transform: scaleY(1) translateY(0px);
           -ms-transform: scaleY(1) translateY(0px);

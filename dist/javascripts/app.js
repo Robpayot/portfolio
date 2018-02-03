@@ -8951,6 +8951,8 @@ var _WaterVertexShader2 = _interopRequireDefault(_WaterVertexShader);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -9028,8 +9030,8 @@ var AboutView = function (_AbstractView) {
 		_this.targetsIntro = [_this.ui.title];
 		var p = [].slice.call(_this.ui.p);
 		_this.targetsIntro = _this.targetsIntro.concat(p);
-		_this.targetsIntro.push(_this.ui.socials);
-		_this.targetsIntro.push(_this.ui.more);
+		// this.targetsIntro.push(this.ui.socials);
+		// this.targetsIntro.push(this.ui.more);
 
 		_this.targetsWorks = [_this.ui.back];
 		var works = [].slice.call(_this.ui.works);
@@ -9378,6 +9380,9 @@ var AboutView = function (_AbstractView) {
 			this.ui.uiContent.innerHTML = html;
 
 			this.splitTitle = new _SplitText2.default('.about__title', { type: 'chars' });
+			this.splitTexts = new _SplitText2.default('.about__intro p', { type: 'words' });
+			this.splitWorksTop = new _SplitText2.default('.about__work__top > span:first-child', { type: 'chars' });
+			this.splitWorksDescr = new _SplitText2.default('.about__work__descr', { type: 'words' });
 		}
 	}, {
 		key: 'resetWater',
@@ -9560,17 +9565,23 @@ var AboutView = function (_AbstractView) {
 
 			var tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
 
-			tl.staggerTo(this.targetsIntro, 2, { y: -120, ease: window.Power4.easeOut }, 0.04);
-			tl.staggerTo(this.targetsIntro, 0.5, { opacity: 0, ease: window.Linear.easeNone }, 0.04, 0);
+			tl.set(this.ui.more, { transition: 'none' });
+			tl.staggerTo([].concat(_toConsumableArray(this.targetsIntro), [this.ui.more]), 2, { y: -120, ease: window.Power4.easeOut }, 0.04);
+			tl.staggerTo([].concat(_toConsumableArray(this.targetsIntro), [this.ui.more]), 0.5, { opacity: 0, ease: window.Linear.easeNone }, 0.04, 0);
 			tl.set(this.ui.introWrap, { display: 'none' });
 
 			tl.set(this.ui.worksWrap, { display: 'block' }, 1);
 			tl.staggerFromTo(this.targetsWorks, 2, { y: 120 }, { y: 0, ease: window.Expo.easeOut }, 0.04, 1);
 			tl.staggerFromTo(this.targetsWorks, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, 1);
+			tl.set(this.ui.more, { clearProps: 'all' });
+
+			tl.add(function () {
+				_this3.animWorks();
+			}, 1);
 
 			tl.add(function () {
 				_this3.moreOpen = true;
-				var isAnims = document.querySelectorAll('.is-anim');
+				var isAnims = _this3.ui.introWrap.querySelectorAll('.is-anim');
 				for (var i = 0; i < isAnims.length; i++) {
 					isAnims[i].classList.remove('is-anim');
 				}
@@ -9595,25 +9606,15 @@ var AboutView = function (_AbstractView) {
 			tl.staggerFromTo(this.targetsIntro, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, 1);
 
 			tl.add(function () {
-				var tlTitle = new TimelineMax();
-				var delay = 0;
-
-				var _loop = function _loop(i) {
-
-					tlTitle.add(function () {
-						_this4.splitTitle.chars[i].classList.add('is-anim');
-					}, delay);
-
-					delay += 0.07;
-				};
-
-				for (var i = 0; i < _this4.splitTitle.chars.length; i++) {
-					_loop(i);
-				}
+				_this4.animIntro();
 			}, 1);
 
 			tl.add(function () {
 				_this4.moreOpen = false;
+				var isAnims = _this4.ui.worksWrap.querySelectorAll('.is-anim');
+				for (var i = 0; i < isAnims.length; i++) {
+					isAnims[i].classList.remove('is-anim');
+				}
 			}, 2);
 
 			// sound
@@ -9670,6 +9671,149 @@ var AboutView = function (_AbstractView) {
 				_this6.heightmapVariable.material.uniforms.mouseSize = { value: _this6.effectController.mouseSize }; // water agitation
 				_this6.clickAnim = false;
 			}, 100); // time circle propagation
+		}
+	}, {
+		key: 'animIntro',
+		value: function animIntro() {
+			var _this7 = this;
+
+			var tlTitle = new TimelineMax();
+			var delayTitle = 0;
+
+			var _loop = function _loop(i) {
+
+				tlTitle.add(function () {
+					_this7.splitTitle.chars[i].classList.add('is-anim');
+				}, delayTitle);
+
+				delayTitle += 0.07;
+			};
+
+			for (var i = 0; i < this.splitTitle.chars.length; i++) {
+				_loop(i);
+			}
+
+			// delayTitle = 0;
+			// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
+			// console.log(splitTextsWords);
+
+			// for (let i = 0; i < this.splitTexts.words.length; i++) {
+
+			// 	tlTitle.add(() => {
+			// 		splitTextsWords[i].classList.add('is-anim');
+			// 	}, 0.5 + delayTitle);
+
+			// 	delayTitle += 0.01;
+			// }
+
+			delayTitle = 0;
+			var splitP = document.querySelectorAll('.about__intro p');
+
+			var _loop2 = function _loop2(i) {
+
+				tlTitle.add(function () {
+					var delayWords = 0;
+					var tlWords = new TimelineMax();
+
+					var _loop3 = function _loop3(y) {
+
+						tlWords.add(function () {
+							splitP[i].children[y].classList.add('is-anim');
+						}, delayWords);
+						delayWords += 0.015;
+					};
+
+					for (var y = 0; y < splitP[i].children.length; y++) {
+						_loop3(y);
+					}
+				}, delayTitle);
+
+				delayTitle += 0.2;
+			};
+
+			for (var i = 0; i < splitP.length; i++) {
+				_loop2(i);
+			}
+
+			tlTitle.add(function () {
+				_this7.ui.more.classList.add('is-anim');
+			});
+		}
+	}, {
+		key: 'animWorks',
+		value: function animWorks() {
+			var tlTitle = new TimelineMax();
+			var delayTitle = 0;
+			// for (let i = 0; i < this.splitTitle.chars.length; i++) {
+
+			// 	tlTitle.add(() => {
+			// 		this.splitTitle.chars[i].classList.add('is-anim');
+			// 	}, delayTitle);
+
+			// 	delayTitle += 0.07;
+			// }
+
+			// delayTitle = 0;
+			// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
+			// console.log(splitTextsWords);
+
+			// for (let i = 0; i < this.splitTexts.words.length; i++) {
+
+			// 	tlTitle.add(() => {
+			// 		splitTextsWords[i].classList.add('is-anim');
+			// 	}, 0.5 + delayTitle);
+
+			// 	delayTitle += 0.01;
+			// }
+
+			delayTitle = 0;
+			var splitP = document.querySelectorAll('.about__work__top > span:first-child');
+			var splitDescr = document.querySelectorAll('.about__work__descr');
+
+			var _loop4 = function _loop4(i) {
+
+				tlTitle.add(function () {
+					var delayWords = 0;
+					var tlWords = new TimelineMax();
+
+					var _loop5 = function _loop5(y) {
+
+						tlWords.add(function () {
+							splitP[i].children[y].classList.add('is-anim');
+						}, delayWords);
+						delayWords += 0.015;
+					};
+
+					for (var y = 0; y < splitP[i].children.length; y++) {
+						_loop5(y);
+					}
+
+					var delayDescr = 0;
+					var tlDescr = new TimelineMax();
+
+					var _loop6 = function _loop6(y) {
+
+						tlDescr.add(function () {
+							splitDescr[i].children[y].classList.add('is-anim');
+						}, delayDescr);
+						delayDescr += 0.1;
+					};
+
+					for (var y = 0; y < splitDescr[i].children.length; y++) {
+						_loop6(y);
+					}
+				}, delayTitle);
+
+				delayTitle += 0.3;
+			};
+
+			for (var i = 0; i < splitP.length; i++) {
+				_loop4(i);
+			}
+
+			// tlTitle.add(() => {
+			// 	this.ui.more.classList.add('is-anim');
+			// });
 		}
 	}, {
 		key: 'scroll',
@@ -9809,7 +9953,7 @@ var AboutView = function (_AbstractView) {
 	}, {
 		key: 'transitionIn',
 		value: function transitionIn() {
-			var _this7 = this;
+			var _this8 = this;
 
 			this.el.classList.add('about');
 			this.el.classList.remove('project');
@@ -9824,13 +9968,13 @@ var AboutView = function (_AbstractView) {
 			}
 
 			tl.add(function () {
-				_this7.moveCameraIn();
+				_this8.moveCameraIn();
 			}, 0);
 		}
 	}, {
 		key: 'moveCameraIn',
 		value: function moveCameraIn(dest) {
-			var _this8 = this;
+			var _this9 = this;
 
 			var delay = _RouterManager2.default.fromUrl === true ? 2 : 0.5;
 
@@ -9847,21 +9991,7 @@ var AboutView = function (_AbstractView) {
 			tl.staggerFromTo(this.targetsIntro, 0.5, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0.04, delay);
 
 			tl.add(function () {
-				var tlTitle = new TimelineMax();
-				var delayTitle = 0;
-
-				var _loop2 = function _loop2(i) {
-
-					tlTitle.add(function () {
-						_this8.splitTitle.chars[i].classList.add('is-anim');
-					}, delayTitle);
-
-					delayTitle += 0.07;
-				};
-
-				for (var i = 0; i < _this8.splitTitle.chars.length; i++) {
-					_loop2(i);
-				}
+				_this9.animIntro();
 			}, delay);
 			// sound
 			global.SOUNDS['switch_long'].play();

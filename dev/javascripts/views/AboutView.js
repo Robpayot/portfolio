@@ -89,8 +89,8 @@ export default class AboutView extends AbstractView {
 		this.targetsIntro = [this.ui.title];
 		let p = [].slice.call(this.ui.p);
 		this.targetsIntro = this.targetsIntro.concat(p);
-		this.targetsIntro.push(this.ui.socials);
-		this.targetsIntro.push(this.ui.more);
+		// this.targetsIntro.push(this.ui.socials);
+		// this.targetsIntro.push(this.ui.more);
 
 		this.targetsWorks = [this.ui.back];
 		let works = [].slice.call(this.ui.works);
@@ -437,6 +437,9 @@ export default class AboutView extends AbstractView {
 		this.ui.uiContent.innerHTML = html;
 
 		this.splitTitle = new SplitText('.about__title', {type:'chars'});
+		this.splitTexts = new SplitText('.about__intro p', {type:'words'});
+		this.splitWorksTop = new SplitText('.about__work__top > span:first-child', {type:'chars'});
+		this.splitWorksDescr = new SplitText('.about__work__descr', {type:'words'});
 
 	}
 
@@ -575,21 +578,31 @@ export default class AboutView extends AbstractView {
 
 		const tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
 
-		tl.staggerTo(this.targetsIntro, 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
-		tl.staggerTo(this.targetsIntro, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
+		tl.set(this.ui.more, {transition: 'none'});
+		tl.staggerTo([...this.targetsIntro, this.ui.more], 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
+		tl.staggerTo([...this.targetsIntro, this.ui.more], 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
 		tl.set(this.ui.introWrap, {display : 'none'});
 
 		tl.set(this.ui.worksWrap, {display : 'block'} , 1);
 		tl.staggerFromTo(this.targetsWorks, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, 1);
 		tl.staggerFromTo(this.targetsWorks, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
+		tl.set(this.ui.more, {clearProps: 'all'});
+
+		tl.add(() => {
+			this.animWorks();
+		}, 1);
 
 		tl.add(() => {
 			this.moreOpen = true;
-			const isAnims = document.querySelectorAll('.is-anim');
+			const isAnims = this.ui.introWrap.querySelectorAll('.is-anim');
 			for (let i = 0; i < isAnims.length; i++) {
 				isAnims[i].classList.remove('is-anim');
 			}
+
 		}, 2);
+
+
+
 
 		// sound
 		global.SOUNDS['switch'].play();
@@ -610,21 +623,15 @@ export default class AboutView extends AbstractView {
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, 1);
 
 		tl.add(() => {
-			const tlTitle = new TimelineMax();
-			let delay = 0;
-			for (let i = 0; i < this.splitTitle.chars.length; i++) {
-
-				tlTitle.add(() => {
-					this.splitTitle.chars[i].classList.add('is-anim');
-				}, delay);
-
-				delay += 0.07;
-			}
+			this.animIntro();
 		}, 1);
 
 		tl.add(() => {
 			this.moreOpen = false;
-
+			const isAnims = this.ui.worksWrap.querySelectorAll('.is-anim');
+			for (let i = 0; i < isAnims.length; i++) {
+				isAnims[i].classList.remove('is-anim');
+			}
 		}, 2);
 
 		// sound
@@ -680,6 +687,127 @@ export default class AboutView extends AbstractView {
 			this.heightmapVariable.material.uniforms.mouseSize = { value: this.effectController.mouseSize }; // water agitation
 			this.clickAnim = false;
 		}, 100); // time circle propagation
+	}
+
+	animIntro() {
+
+		const tlTitle = new TimelineMax();
+		let delayTitle = 0;
+		for (let i = 0; i < this.splitTitle.chars.length; i++) {
+
+			tlTitle.add(() => {
+				this.splitTitle.chars[i].classList.add('is-anim');
+			}, delayTitle);
+
+			delayTitle += 0.07;
+		}
+
+		// delayTitle = 0;
+		// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
+		// console.log(splitTextsWords);
+
+		// for (let i = 0; i < this.splitTexts.words.length; i++) {
+
+		// 	tlTitle.add(() => {
+		// 		splitTextsWords[i].classList.add('is-anim');
+		// 	}, 0.5 + delayTitle);
+
+		// 	delayTitle += 0.01;
+		// }
+
+		delayTitle = 0;
+		const splitP = document.querySelectorAll('.about__intro p');
+
+		for (let i = 0; i < splitP.length; i++) {
+
+			tlTitle.add(() => {
+				let delayWords = 0;
+				const tlWords = new TimelineMax();
+
+				for (let y = 0; y < splitP[i].children.length; y++) {
+
+					tlWords.add(() => {
+						splitP[i].children[y].classList.add('is-anim');
+					}, delayWords);
+					delayWords += 0.015;
+
+				}
+
+			}, delayTitle);
+
+			delayTitle += 0.2;
+		}
+
+		tlTitle.add(() => {
+			this.ui.more.classList.add('is-anim');
+		});
+	}
+
+	animWorks() {
+		const tlTitle = new TimelineMax();
+		let delayTitle = 0;
+		// for (let i = 0; i < this.splitTitle.chars.length; i++) {
+
+		// 	tlTitle.add(() => {
+		// 		this.splitTitle.chars[i].classList.add('is-anim');
+		// 	}, delayTitle);
+
+		// 	delayTitle += 0.07;
+		// }
+
+		// delayTitle = 0;
+		// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
+		// console.log(splitTextsWords);
+
+		// for (let i = 0; i < this.splitTexts.words.length; i++) {
+
+		// 	tlTitle.add(() => {
+		// 		splitTextsWords[i].classList.add('is-anim');
+		// 	}, 0.5 + delayTitle);
+
+		// 	delayTitle += 0.01;
+		// }
+
+		delayTitle = 0;
+		const splitP = document.querySelectorAll('.about__work__top > span:first-child');
+		const splitDescr = document.querySelectorAll('.about__work__descr');
+
+
+		for (let i = 0; i < splitP.length; i++) {
+
+			tlTitle.add(() => {
+				let delayWords = 0;
+				const tlWords = new TimelineMax();
+
+				for (let y = 0; y < splitP[i].children.length; y++) {
+
+					tlWords.add(() => {
+						splitP[i].children[y].classList.add('is-anim');
+					}, delayWords);
+					delayWords += 0.015;
+
+				}
+
+				let delayDescr = 0;
+				const tlDescr = new TimelineMax();
+
+				for (let y = 0; y < splitDescr[i].children.length; y++) {
+
+					tlDescr.add(() => {
+						splitDescr[i].children[y].classList.add('is-anim');
+					}, delayDescr);
+					delayDescr += 0.1;
+
+				}
+
+			}, delayTitle);
+
+			delayTitle += 0.3;
+		}
+
+		// tlTitle.add(() => {
+		// 	this.ui.more.classList.add('is-anim');
+		// });
 	}
 
 	scroll(e) {
@@ -854,16 +982,8 @@ export default class AboutView extends AbstractView {
 		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, delay);
 
 		tl.add(() => {
-			const tlTitle = new TimelineMax();
-			let delayTitle = 0;
-			for (let i = 0; i < this.splitTitle.chars.length; i++) {
+			this.animIntro();
 
-				tlTitle.add(() => {
-					this.splitTitle.chars[i].classList.add('is-anim');
-				}, delayTitle);
-
-				delayTitle += 0.07;
-			}
 		}, delay);
 		// sound
 		global.SOUNDS['switch_long'].play();
