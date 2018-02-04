@@ -973,26 +973,21 @@ body {
     left: 7vw;
     bottom: 5rem;
     z-index: 100; }
-    @media screen and (max-width: 1024px) {
-      .ui .footer {
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        transition: background 0.5s ease;
-        line-height: 40px; } }
     @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
       .ui .footer {
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        transition: background 0.5s ease;
-        line-height: 40px; } }
-    @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
-      .ui .footer.content-open {
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, transparent 93%, transparent 100%); } }
+        left: 97vw;
+        top: 8vw;
+        -webkit-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+        -webkit-transform-origin: 0% 0%;
+        -ms-transform-origin: 0% 0%;
+        transform-origin: 0% 0%;
+        display: inline-block;
+        bottom: auto; } }
     @media screen and (max-width: 1024px) {
-      .ui .footer.content-open {
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, transparent 93%, transparent 100%); } }
+      .ui .footer {
+        bottom: 2rem; } }
     .ui .footer ul {
       display: -webkit-box;
       display: -ms-flexbox;
@@ -1023,13 +1018,23 @@ body {
         @media screen and (max-width: 1024px) {
           .ui .footer ul li {
             margin: 0 1rem; } }
+        @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+          .ui .footer ul li {
+            font-size: 1.5rem; } }
         .ui .footer ul li.sound {
           position: relative;
           overflow: hidden;
           width: 2rem;
           height: 2rem;
-          opacity: 0.5;
+          opacity: 0.7;
           transition: opacity 0.5s ease; }
+          @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+            .ui .footer ul li.sound {
+              -webkit-transform: rotate(-90deg);
+              -ms-transform: rotate(-90deg);
+              transform: rotate(-90deg); } }
+          .is-touch .ui .footer ul li.sound {
+            opacity: 1; }
           .ui .footer ul li.sound svg {
             width: 12rem;
             stroke-width: 3;
@@ -1045,7 +1050,10 @@ body {
             -ms-flex-align: center;
             align-items: center;
             height: 100%;
-            transition: left 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955); }
+            transition: left 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+            background: url(../images/icons/wave-01.svg);
+            z-index: 1;
+            pointer-events: auto; }
           .ui .footer ul li.sound.off span {
             left: -470%;
             transition: left 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
@@ -1060,6 +1068,8 @@ body {
           align-items: center; }
           .ui .footer ul li.plus svg {
             height: 1.4rem; }
+          .ui .footer ul li.plus.is-hide {
+            opacity: 0; }
         .ui .footer ul li .plus__icon {
           width: 1.8rem;
           height: 1.8rem;
@@ -1082,6 +1092,8 @@ body {
             stroke: black;
             stroke-width: 3;
             opacity: 1; }
+          .is-touch .ui .footer ul li .plus__icon {
+            display: none; }
         .ui .footer ul li .socials {
           height: 2rem;
           display: -webkit-inline-box;
@@ -1104,6 +1116,8 @@ body {
           -webkit-transform: translateX(-80%);
           -ms-transform: translateX(-80%);
           transform: translateX(-80%); }
+          .ui .footer ul li .socials a {
+            color: black; }
           body:not(.is-touch) .ui .footer ul li .socials:hover {
             opacity: 1; }
         .ui .footer ul li svg {
@@ -1112,20 +1126,29 @@ body {
           @media screen and (max-width: 1024px) {
             .ui .footer ul li svg {
               width: 2.1rem; } }
+        .is-touch .ui .footer ul li .plus__icon,
         .ui .footer ul li .is-open .plus__icon, .ui .footer ul li:hover .plus__icon {
           -webkit-transform: rotate(135deg);
           -ms-transform: rotate(135deg);
           transform: rotate(135deg); }
+        .is-touch .ui .footer ul li .socials,
         .ui .footer ul li .is-open .socials, .ui .footer ul li:hover .socials {
           -webkit-transform: translateX(0%);
           -ms-transform: translateX(0%);
           transform: translateX(0%);
-          opacity: 0.5; }
+          opacity: 0.7; }
+        .is-touch .ui .footer ul li .socials {
+          opacity: 1; }
   .ui .is-project + .footer ul li svg {
     fill: white; }
     .ui .is-project + .footer ul li svg path,
     .ui .is-project + .footer ul li svg line {
       stroke: white; }
+  .ui .is-project + .footer .socials a {
+    color: white; }
+  @media screen and (max-width: 1024px) {
+    .ui .is-about + .footer .socials {
+      display: none; } }
   .ui-content {
     width: 100%;
     height: 100%;
@@ -1612,7 +1635,18 @@ body {
             margin-top: 3rem;
             -webkit-box-pack: justify;
             -ms-flex-pack: justify;
-            justify-content: space-between; } }
+            justify-content: space-between;
+            -webkit-transform: translateY(90%);
+            -ms-transform: translateY(90%);
+            transform: translateY(90%);
+            transition: -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); } }
+        @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
+          .ui-content.is-project .project__link.is-anim {
+            -webkit-transform: translateY(0%);
+            -ms-transform: translateY(0%);
+            transform: translateY(0%); } }
         .ui-content.is-project .project__link span {
           margin-right: 2.0rem; }
         .ui-content.is-project .project__link a svg {
@@ -1731,7 +1765,7 @@ body {
           transform: translateY(0px); }
         @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
           .ui-content.is-project .project__back {
-            height: 10.0rem;
+            height: 24vw;
             width: 100%;
             top: 0px;
             padding: 0;

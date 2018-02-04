@@ -999,8 +999,8 @@ export default class AboutView extends AbstractView {
 
 		const tl = new TimelineMax({delay: 0});
 
-		tl.staggerTo(this.targetsIntro, 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
-		tl.staggerTo(this.targetsIntro, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
+		tl.staggerTo([...this.targetsIntro, this.ui.more], 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
+		tl.staggerTo([...this.targetsIntro, this.ui.more], 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
 		tl.set(this.ui.introWrap, {display : 'none'});
 		tl.staggerTo(this.targetsWorks, 1.7, {y: -120, ease: window.Power4.easeOut}, 0.04);
 		tl.staggerTo(this.targetsWorks, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);

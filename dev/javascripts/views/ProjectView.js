@@ -473,6 +473,8 @@ export default class ProjectView extends AbstractView {
 
 		TweenMax.to(global.MENU.ui.button, 1, { opacity: 0});
 		TweenMax.set(global.MENU.ui.button, { display: 'none', delay: 1});
+		TweenMax.to('.plus', 1, { opacity: 0});
+		TweenMax.set('.plus', { display: 'none', delay: 1});
 		TweenMax.to('.project__title', 1, { opacity: 0 });
 		// Turn around the perimeter of a circle
 		const trigo = { angle: 1 };
@@ -532,7 +534,7 @@ export default class ProjectView extends AbstractView {
 					subHeaderChildren[i].classList.add('is-anim');
 				}, 0.55 + delay); // 1.5
 
-				if (Device.orientation === 'portrait') delay += 0.2;
+				if (Device.orientation === 'portrait') delay += 0.1;
 
 			}
 
@@ -674,7 +676,7 @@ export default class ProjectView extends AbstractView {
 			opacity: 1
 		}, 2.1);
 
-		tl.to(global.MENU.ui.button, 2, {
+		tl.to([global.MENU.ui.button, '.plus'], 2, {
 			opacity: 1
 		}, 2.1);
 
@@ -693,6 +695,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.add(() => {
 			TweenMax.set(global.MENU.ui.button, { display: 'block'});
+			TweenMax.set( '.plus', { display: 'flex'});
 			// sound
 			global.SOUNDS['switch_long'].play();
 		}, 1);
@@ -887,12 +890,12 @@ export default class ProjectView extends AbstractView {
 
 		if (this.contentOpen === true || global.MENU.el.classList.contains('is-open') === true || this.animating === true) return false;
 
-		if (y < window.innerHeight * 0.2 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8 ) {
+		if (y < window.innerHeight * 0.2 && x > window.innerWidth * 0.3 && x < window.innerWidth * 0.7 ) {
 			this.goToNoScroll = true;
 			this.dir = -1;
 			global.CURSOR.interractHover({type: 'next', color: global.CURSOR.next.getAttribute('data-color'), el: global.CURSOR.next});
 			this.cursorActive = true;
-		} else if (y > window.innerHeight * 0.80 && x > window.innerWidth * 0.2 && x < window.innerWidth * 0.8) {
+		} else if (y > window.innerHeight * 0.80 && x > window.innerWidth * 0.3 && x < window.innerWidth * 0.7) {
 
 			if (this.id !== 0) {
 				this.goToNoScroll = true;

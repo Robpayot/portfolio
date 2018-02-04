@@ -4,30 +4,27 @@
 	bottom: 5rem;
 	z-index: 100;
 
-	@include tablet {
-		right: 0;
-		bottom: 0;
-		width: 100%;
-		transition: background 0.5s ease;
-		line-height: 40px;
+	@include mobile-portrait {
+	    left: 97vw;
+	    top: 8vw;
+	    transform: rotate(90deg);
+	    transform-origin: 0% 0%;
+	    display: inline-block;
+	    bottom: auto;
 	}
 
-	@include mobile-portrait {
-		right: 0;
-		bottom: 0;
-		width: 100%;
-		transition: background 0.5s ease;
-		line-height: 40px;
+	@include tablet {
+		bottom: 2rem;
 	}
 
 	&.content-open {
-		@include mobile-portrait {
-			background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
-		}
+		// @include mobile-portrait {
+		// 	background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
+		// }
 
-		@include tablet {
-			background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
-		}
+		// @include tablet {
+		// 	background: linear-gradient(to top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 93%,rgba(0,0,0,0) 100%);
+		// }
 	}
 
 	ul {
@@ -61,14 +58,24 @@
 				margin: 0 1rem;
 			}
 
+			@include mobile-portrait {
+				font-size: 1.5rem;
+			}
+
 			&.sound {
 				position: relative;
 				overflow: hidden;
 				width: 2rem;
 				height: 2rem;
-				opacity: 0.5;
+				opacity: 0.7;
 				transition: opacity 0.5s ease;
 
+				@include mobile-portrait {
+					transform: rotate(-90deg);
+				}
+				.is-touch & {
+					opacity: 1;
+				}
 				svg {
 					width: 12rem;
 					stroke-width: 3;
@@ -85,9 +92,22 @@
 					left: 0%;
 					display: flex;
 					align-items: center;
-					// background-color: red;
 					height: 100%;
 					transition: left 1.5s $Power1EaseInOut;
+					background: url(../images/icons/wave-01.svg);
+					z-index: 1;
+					pointer-events: auto;
+
+					// &::before {
+					// 	content: '';
+					// 	position: absolute;
+					// 	top: 0%;
+					// 	left: 0%;
+					// 	height: 100%;
+					// 	width: 100%;
+					// 	background-color: blue;
+					// 	z-index: -1;
+					// }
 				}
 
 				&.off span {
@@ -107,6 +127,10 @@
 				align-items: center;
 				svg {
 					height: 1.4rem;
+				}
+
+				&.is-hide {
+					opacity: 0;
 				}
 			}
 
@@ -133,6 +157,10 @@
 					stroke-width: 3;
 					opacity: 1;
 				}
+
+				.is-touch & {
+					display: none;
+				}
 			}
 
 			.socials {
@@ -150,6 +178,11 @@
 				transition: transform 1s $ExpoEaseOut, opacity 0.2s linear;
 				transform: translateX(-80%);
 
+				a {
+					color: black;
+				}
+				
+
 				body:not(.is-touch) & {
 					&:hover {
 						opacity: 1;
@@ -166,6 +199,7 @@
 
 			}
 
+			.is-touch &,
 			.is-open,
 			&:hover {
 				.plus__icon {
@@ -173,13 +207,15 @@
 				}
 				.socials {
 					transform: translateX(0%);
-					opacity: 0.5;
+					opacity: 0.7;
 				}
 				
 			}
 
 			.is-touch & {
-
+				.socials {
+					opacity: 1;
+				}
 			}
 
 		}
@@ -189,8 +225,19 @@
 
 .is-project + .footer ul li svg {
 	fill: white;
+
 	path,
 	line {
 		stroke: white;
+	}
+}
+
+.is-project + .footer .socials a {
+	color: white;
+}
+
+.is-about + .footer .socials {
+	@include tablet {
+		display: none;
 	}
 }
