@@ -1115,6 +1115,7 @@ export default class ProjectView extends AbstractView {
 		tl.add(() => {
 			// remover overlay class
 			this.transitionInComplete = true;
+			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') global.MENU.el.classList.add('is-anim');
 		}, 0.8);
 
 
@@ -1130,7 +1131,6 @@ export default class ProjectView extends AbstractView {
 		if (global.SCROLLED === false) {
 			TweenMax.to('.scroll', 1, {opacity: 1, delay: 3.5});
 		}
-
 
 
 	}

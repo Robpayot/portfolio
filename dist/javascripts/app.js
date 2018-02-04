@@ -924,6 +924,8 @@ var Menu = function () {
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.update = this.update.bind(this);
+		this.turnOff = this.turnOff.bind(this);
+		this.toggleSound = this.toggleSound.bind(this);
 
 		this.events(true);
 	}
@@ -966,16 +968,24 @@ var Menu = function () {
 			}
 		}
 	}, {
+		key: 'turnOff',
+		value: function turnOff() {
+			_howler.Howler.volume(0);
+		}
+	}, {
 		key: 'toggleSound',
 		value: function toggleSound(e) {
 			var el = e.currentTarget;
+			TweenMax.killDelayedCallsTo(this.turnOff);
 
 			if (el.classList.contains('off') === true) {
 				el.classList.remove('off');
 				_howler.Howler.volume(1);
+				global.SOUNDS['music'].fade(0, 1, 1500);
 			} else {
 				el.classList.add('off');
-				_howler.Howler.volume(0);
+				global.SOUNDS['music'].fade(1, 0, 1500);
+				TweenMax.delayedCall(1.5, this.turnOff);
 			}
 		}
 	}, {
@@ -1053,7 +1063,7 @@ var Menu = function () {
 					_this.animClicked = false;
 				});
 
-				TweenMax.to('.navigate', 1, { y: 20, ease: window.Expo.easeOut });
+				TweenMax.to('.navigate', 1, { x: '0%', ease: window.Expo.easeOut });
 				TweenMax.to('.navigate', 0.2, { opacity: 0, ease: window.Linear.easeNone });
 			}
 
@@ -1118,7 +1128,7 @@ var Menu = function () {
 					_this2.animBtn = false;
 				});
 
-				tl.fromTo('.navigate', 1, { y: 20 }, { y: 0, ease: window.Expo.easeOut }, 0);
+				tl.fromTo('.navigate', 1, { x: '0%' }, { x: '60%', ease: window.Expo.easeOut }, 0);
 				tl.fromTo('.navigate', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 0);
 			} else {
 				tl.to('.menu__button .open-up', 1, { strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut }, 0);
@@ -1141,7 +1151,7 @@ var Menu = function () {
 			TweenMax.set('.menu__button circle', { transformOrigin: '50% 50%' });
 			TweenMax.fromTo('.menu__button circle', 1.2, { scale: 0.5 }, { scale: 1, ease: window.Expo.easeOut });
 
-			TweenMax.to('.navigate', 1, { y: 20, ease: window.Expo.easeOut });
+			TweenMax.to('.navigate', 1, { x: '0%', ease: window.Expo.easeOut });
 			TweenMax.to('.navigate', 0.2, { opacity: 0, ease: window.Linear.easeNone });
 		}
 	}, {
@@ -9970,6 +9980,10 @@ var AboutView = function (_AbstractView) {
 			tl.add(function () {
 				_this8.moveCameraIn();
 			}, 0);
+
+			tl.add(function () {
+				if (global.MENU.el.classList.contains('is-anim') === false && _Device.Device.orientation !== 'portrait') global.MENU.el.classList.add('is-anim');
+			}, 1);
 		}
 	}, {
 		key: 'moveCameraIn',
@@ -10595,6 +10609,7 @@ var IntroView = function (_AbstractView) {
 			global.CURSOR.el.classList.add('alt'); // ie 11 issue : ClassList on svg
 			global.OVERLAY.classList.add('is-intro');
 			global.OVERLAY.classList.remove('is-about');
+			if (_Device.Device.orientation !== 'portrait') global.MENU.el.classList.remove('is-anim');
 
 			sceneReady();
 		}
@@ -12440,6 +12455,7 @@ var ProjectView = function (_AbstractView) {
 			tl.add(function () {
 				// remover overlay class
 				_this6.transitionInComplete = true;
+				if (global.MENU.el.classList.contains('is-anim') === false && _Device.Device.orientation !== 'portrait') global.MENU.el.classList.add('is-anim');
 			}, 0.8);
 
 			tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2

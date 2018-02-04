@@ -58,12 +58,36 @@
 				margin: 0 1rem;
 			}
 
-			&.off {
-				opacity: 0.1;
+			&.sound {
+				position: relative;
+				overflow: hidden;
+				width: 2rem;
+				height: 2rem;
+
+				svg {
+					width: 12rem;
+					stroke-width: 3;
+				}
+
+				span {
+					width: 12rem;
+					position: absolute;
+					top: 50%;
+					transform: translateY(-50%);
+					left: 0%;
+					// display: flex;
+					// align-items: center;
+					transition: left 1.5s $Power1EaseInOut;
+				}
+
+				&.off span {
+					left: -470%;
+					transition: left 1.5s $Power1EaseOut;
+				}
 			}
 
 			svg {
-				width: 1.6rem;
+				width: 2rem;
 				fill: black;
 				@include tablet {
 					width: 2.1rem;
@@ -88,4 +112,7 @@
 
 .is-project + .footer ul li svg {
 	fill: white;
+	path {
+		stroke: white;
+	}
 }

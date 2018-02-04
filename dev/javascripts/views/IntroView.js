@@ -177,6 +177,7 @@ export default class IntroView extends AbstractView {
 		global.CURSOR.el.classList.add('alt'); // ie 11 issue : ClassList on svg
 		global.OVERLAY.classList.add('is-intro');
 		global.OVERLAY.classList.remove('is-about');
+		if ( Device.orientation !== 'portrait') global.MENU.el.classList.remove('is-anim');
 
 		sceneReady();
 

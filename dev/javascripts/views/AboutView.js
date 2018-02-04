@@ -963,6 +963,10 @@ export default class AboutView extends AbstractView {
 			this.moveCameraIn();
 		}, 0);
 
+		tl.add(() => {
+			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') global.MENU.el.classList.add('is-anim');
+		}, 1);
+
 	}
 
 	moveCameraIn(dest) {

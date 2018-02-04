@@ -10,6 +10,7 @@
 	color: white;
 	&.is-active {
 		display: flex;
+	
 	}
 
 	&.alt {
@@ -25,6 +26,7 @@
 		}
 		.navigate {
 			color: black;
+			display: none;
 		}
 	}
 
@@ -49,6 +51,12 @@
 
 	}
 
+	&.is-anim {
+		.menu__button {
+			transform: rotate(0deg);
+		}
+	}
+
 	a {
 		display: block;
 	}
@@ -61,6 +69,9 @@
 		left: 7vw;
 
 		pointer-events: auto;
+		transform: rotate(-90deg);
+		transition: transform 2s $CircEaseInOut;
+
 
 		@include mobile-portrait {
 			top: 7vw;
@@ -299,9 +310,9 @@
 	.navigate {
 		position: absolute;
 		color: white;
-		bottom: -3.0rem;
+		top: 50%;
 		left: 50%;
-		transform: translate(-50%, 100%);
+		transform: translate(-50%, -50%);
     	letter-spacing: 2.5px;
     	font-family: 'Theinhardt-light';
 	    font-weight: normal;

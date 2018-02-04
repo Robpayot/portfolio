@@ -41,6 +41,8 @@ export default class Menu {
 		this.onHoverBtn = this.onHoverBtn.bind(this);
 		this.onLeaveBtn = this.onLeaveBtn.bind(this);
 		this.update = this.update.bind(this);
+		this.turnOff = this.turnOff.bind(this);
+		this.toggleSound = this.toggleSound.bind(this);
 
 		this.events(true);
 
@@ -84,15 +86,22 @@ export default class Menu {
 
 	}
 
+	turnOff() {
+		Howler.volume(0);
+	}
+
 	toggleSound(e) {
 		const el = e.currentTarget;
+		TweenMax.killDelayedCallsTo(this.turnOff);
 
 		if (el.classList.contains('off') === true) {
 			el.classList.remove('off');
 			Howler.volume(1);
+			global.SOUNDS['music'].fade(0, 1, 1500);
 		} else {
 			el.classList.add('off');
-			Howler.volume(0);
+			global.SOUNDS['music'].fade(1, 0, 1500);
+			TweenMax.delayedCall(1.5, this.turnOff);
 		}
 	}
 
@@ -168,7 +177,7 @@ export default class Menu {
 				this.animClicked = false;
 			});
 
-			TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});
+			TweenMax.to('.navigate', 1, {x: '0%', ease: window.Expo.easeOut});
 			TweenMax.to('.navigate', 0.2, {opacity: 0, ease: window.Linear.easeNone});
 		}
 
@@ -228,7 +237,7 @@ export default class Menu {
 				this.animBtn = false;
 			});
 
-			tl.fromTo('.navigate', 1, {y: 20}, {y:0, ease: window.Expo.easeOut}, 0);
+			tl.fromTo('.navigate', 1, {x: '0%'}, {x: '60%', ease: window.Expo.easeOut}, 0);
 			tl.fromTo('.navigate', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
 		} else {
 			tl.to('.menu__button .open-up', 1, {strokeDashoffset: this.maxDash * 4, ease: window.Expo.easeOut}, 0 );
@@ -250,7 +259,7 @@ export default class Menu {
 		TweenMax.set('.menu__button circle', {transformOrigin: '50% 50%'});
 		TweenMax.fromTo('.menu__button circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 
-		TweenMax.to('.navigate', 1, {y: 20, ease: window.Expo.easeOut});
+		TweenMax.to('.navigate', 1, {x: '0%', ease: window.Expo.easeOut});
 		TweenMax.to('.navigate', 0.2, {opacity: 0, ease: window.Linear.easeNone});
 	}
 

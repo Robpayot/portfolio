@@ -755,7 +755,8 @@ body {
     .ui .menu.alt .menu__button svg circle {
       stroke: black; }
     .ui .menu.alt .navigate {
-      color: black; }
+      color: black;
+      display: none; }
     .ui .menu.is-open .menu__button {
       color: white;
       border-color: white; }
@@ -767,13 +768,23 @@ body {
     .ui .menu.is-open .menu__links {
       opacity: 1;
       pointer-events: auto; }
+    .ui .menu.is-anim .menu__button {
+      -webkit-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      transform: rotate(0deg); }
     .ui .menu a {
       display: block; }
     .ui .menu__button {
       position: absolute;
       top: calc(50% - 2.5rem);
       left: 7vw;
-      pointer-events: auto; }
+      pointer-events: auto;
+      -webkit-transform: rotate(-90deg);
+      -ms-transform: rotate(-90deg);
+      transform: rotate(-90deg);
+      transition: -webkit-transform 2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+      transition: transform 2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+      transition: transform 2s cubic-bezier(0.785, 0.135, 0.15, 0.86), -webkit-transform 2s cubic-bezier(0.785, 0.135, 0.15, 0.86); }
       @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
         .ui .menu__button {
           top: 7vw;
@@ -945,11 +956,11 @@ body {
     .ui .menu .navigate {
       position: absolute;
       color: white;
-      bottom: -3.0rem;
+      top: 50%;
       left: 50%;
-      -webkit-transform: translate(-50%, 100%);
-      -ms-transform: translate(-50%, 100%);
-      transform: translate(-50%, 100%);
+      -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
       letter-spacing: 2.5px;
       font-family: 'Theinhardt-light';
       font-weight: normal;
@@ -1011,10 +1022,28 @@ body {
         @media screen and (max-width: 1024px) {
           .ui .footer ul li {
             margin: 0 1rem; } }
-        .ui .footer ul li.off {
-          opacity: 0.1; }
+        .ui .footer ul li.sound {
+          position: relative;
+          overflow: hidden;
+          width: 2rem;
+          height: 2rem; }
+          .ui .footer ul li.sound svg {
+            width: 12rem;
+            stroke-width: 3; }
+          .ui .footer ul li.sound span {
+            width: 12rem;
+            position: absolute;
+            top: 50%;
+            -webkit-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+            left: 0%;
+            transition: left 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955); }
+          .ui .footer ul li.sound.off span {
+            left: -470%;
+            transition: left 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         .ui .footer ul li svg {
-          width: 1.6rem;
+          width: 2rem;
           fill: black; }
           @media screen and (max-width: 1024px) {
             .ui .footer ul li svg {
@@ -1023,6 +1052,8 @@ body {
           opacity: 1; }
   .ui .is-project + .footer ul li svg {
     fill: white; }
+    .ui .is-project + .footer ul li svg path {
+      stroke: white; }
   .ui-content {
     width: 100%;
     height: 100%;
