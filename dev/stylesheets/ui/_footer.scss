@@ -2,6 +2,7 @@
 	position: absolute;
 	left: 7vw;
 	bottom: 5rem;
+	z-index: 100;
 
 	@include tablet {
 		right: 0;
@@ -9,7 +10,6 @@
 		width: 100%;
 		transition: background 0.5s ease;
 		line-height: 40px;
-		z-index: 100;
 	}
 
 	@include mobile-portrait {
@@ -18,7 +18,6 @@
 		width: 100%;
 		transition: background 0.5s ease;
 		line-height: 40px;
-		z-index: 100;
 	}
 
 	&.content-open {
@@ -49,10 +48,14 @@
 		li {
 			display: inline-block;
 			vertical-align: middle;
-			opacity: 0.5;
+			
 			pointer-events: auto;
-			margin: 0 0.5rem;
-			transition: opacity 0.5s ease;
+			margin: 0 1rem;
+			
+	    	letter-spacing: 1px;
+			font-family: 'Theinhardt-light';
+			font-weight: 300;
+	    	font-size: 1.4rem;
 
 			@include tablet {
 				margin: 0 1rem;
@@ -63,20 +66,27 @@
 				overflow: hidden;
 				width: 2rem;
 				height: 2rem;
+				opacity: 0.5;
+				transition: opacity 0.5s ease;
 
 				svg {
 					width: 12rem;
 					stroke-width: 3;
+					height: 2rem;
+					// position: absolute;
+					// left: 0;
+					// top: 50%;
+					// transform: translateY(-50%);
 				}
 
 				span {
 					width: 12rem;
 					position: absolute;
-					top: 50%;
-					transform: translateY(-50%);
 					left: 0%;
-					// display: flex;
-					// align-items: center;
+					display: flex;
+					align-items: center;
+					// background-color: red;
+					height: 100%;
 					transition: left 1.5s $Power1EaseInOut;
 				}
 
@@ -84,8 +94,69 @@
 					left: -470%;
 					transition: left 1.5s $Power1EaseOut;
 				}
+
+				body:not(.is-touch) & {
+					&:hover {
+						opacity: 1;
+					}
+				}
 			}
 
+			&.plus {
+				display: flex;
+				align-items: center;
+				svg {
+					height: 1.4rem;
+				}
+			}
+
+			.plus__icon {
+				width: 1.8rem;
+				height: 1.8rem;
+				position: relative;
+				display: flex;
+				align-items: center;
+				// background-color: green;
+				height: 100%;
+				margin-right: 1rem;
+				opacity: 0.5;
+				transition: transform 1s $ExpoEaseOut, opacity 0.5s ease;
+
+				body:not(.is-touch) & {
+					&:hover {
+						opacity: 1;
+					}
+				}
+
+				line {
+					stroke: black;
+					stroke-width: 3;
+					opacity: 1;
+				}
+			}
+
+			.socials {
+				height: 2rem;
+				display: inline-flex;
+				align-items: center;
+				vertical-align: middle;
+				pointer-events: auto;
+				margin: 0 0.5rem;
+		    	letter-spacing: 1px;
+				font-family: 'Theinhardt-light';
+				font-weight: 300;
+		    	font-size: 1.4rem;
+				opacity: 0;
+				transition: transform 1s $ExpoEaseOut, opacity 0.2s linear;
+				transform: translateX(-80%);
+
+				body:not(.is-touch) & {
+					&:hover {
+						opacity: 1;
+					}
+				}
+
+			}
 			svg {
 				width: 2rem;
 				fill: black;
@@ -95,14 +166,20 @@
 
 			}
 
-			.is-touch & {
-
+			.is-open,
+			&:hover {
+				.plus__icon {
+					transform: rotate(135deg);
+				}
+				.socials {
+					transform: translateX(0%);
+					opacity: 0.5;
+				}
+				
 			}
 
-			body:not(.is-touch) & {
-				&:hover {
-					opacity: 1;
-				}
+			.is-touch & {
+
 			}
 
 		}
@@ -112,7 +189,8 @@
 
 .is-project + .footer ul li svg {
 	fill: white;
-	path {
+	path,
+	line {
 		stroke: white;
 	}
 }
