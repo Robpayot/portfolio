@@ -195,8 +195,6 @@ export default class Glitch {
 			return false;
 		}
 
-		return false;
-
 		// offset gesture
 		this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
 		this.posX1 =  this.randomTimed(30, 80, this.posX1); // 50

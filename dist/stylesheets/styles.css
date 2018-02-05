@@ -391,8 +391,9 @@ body {
     box-sizing: border-box;
     text-align: center;
     z-index: 9000;
-    position: relative;
-    background-color: red; }
+    position: relative; }
+    .glitch__canvas-buffer {
+      display: none; }
     .glitch__canvas-alpha-buffer {
       display: none; }
   .glitch__img {
@@ -416,6 +417,20 @@ body {
       @media screen and (max-width: 768px) {
         .project__title .glitch__canvas, .project__title .glitch__canvas-buffer {
           height: 650px; } }
+  .android .glitch {
+    -webkit-transform: scale(2.8);
+    -ms-transform: scale(2.8);
+    transform: scale(2.8); }
+    @media screen and (max-width: 768px) {
+      .android .glitch {
+        -webkit-transform: scale(4.3);
+        -ms-transform: scale(4.3);
+        transform: scale(4.3); } }
+    .android .glitch__canvas, .android .glitch__canvas-buffer {
+      height: auto; }
+      @media screen and (max-width: 768px) {
+        .android .glitch__canvas, .android .glitch__canvas-buffer {
+          height: auto; } }
 
 .project__title__container {
   z-index: 9000;

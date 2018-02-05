@@ -26,10 +26,9 @@
 		text-align: center;
 		z-index: 9000;
 		position: relative;
-		background-color: red;
 
 		&-buffer {
-			// display: none;
+			display: none;
 		}
 
 		&-alpha-buffer {
@@ -49,6 +48,9 @@
 	.project__title & {
 		background: none;
 		opacity: 0;
+		// 
+
+
 
 		&__canvas,
 		&__canvas-buffer {
@@ -62,6 +64,22 @@
 
 			@include mobile {
 				height: 650px;
+			}
+
+		}
+	}
+
+	.android & { // fix weird crop issue on Android devices
+		transform: scale(2.8);
+		@include mobile {
+			transform: scale(4.3);
+		}
+		&__canvas,
+		&__canvas-buffer {
+			height: auto;
+
+			@include mobile {
+				height: auto;
 			}
 
 		}

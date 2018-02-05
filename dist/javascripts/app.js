@@ -577,8 +577,6 @@ var Glitch = function () {
 				return false;
 			}
 
-			return false;
-
 			// offset gesture
 			this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
 			this.posX1 = this.randomTimed(30, 80, this.posX1); // 50
@@ -1901,6 +1899,13 @@ var AppManager = function () {
 
 					TweenMax.set(document.body, { width: window.innerWidth, height: window.innerHeight });
 				}, 100);
+			}
+
+			var ua = navigator.userAgent.toLowerCase();
+			var isAndroid = ua.indexOf('android') > -1; //&& ua.indexOf("mobile");
+			if (isAndroid) {
+				console.log('yolo');
+				document.body.classList.add('android');
 			}
 		}
 	}]);

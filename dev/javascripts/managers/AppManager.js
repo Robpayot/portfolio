@@ -422,6 +422,13 @@ class AppManager {
 			}, 100);
 		}
 
+		const ua = navigator.userAgent.toLowerCase();
+		const isAndroid = ua.indexOf('android') > -1; //&& ua.indexOf("mobile");
+		if (isAndroid) {
+			console.log('yolo');
+			document.body.classList.add('android');
+		}
+
 	}
 }
 
