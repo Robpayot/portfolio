@@ -425,8 +425,12 @@ class AppManager {
 		const ua = navigator.userAgent.toLowerCase();
 		const isAndroid = ua.indexOf('android') > -1; //&& ua.indexOf("mobile");
 		if (isAndroid) {
-			console.log('yolo');
 			document.body.classList.add('android');
+		}
+
+		const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+		if (isFirefox) {
+			document.body.classList.add('ff');
 		}
 
 	}

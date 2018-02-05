@@ -294,7 +294,7 @@ export default class IntroView extends AbstractView {
 		} );
 		mesh = new Mesh(this.models[1], mat);
 		mesh.position.y = 5;
-		mesh.position.x = 0;
+		mesh.position.x = 25;
 		mesh.rotation.y = toRadian(-180);
 		mesh.scale.set(60, 60, 60);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
@@ -329,19 +329,19 @@ export default class IntroView extends AbstractView {
 
 		let blocksParams = [{
 			size: {w: this.fZone * 2, h: 245, d: 160},
-			pos: {x: -4, y: 0, z: 100},
+			pos: {x: 16, y: 0, z: 100},
 			rot: {x: 0, y: 0, z: 0}
 		}, {
 			size: {w: 85, h: 250, d: 160},
-			pos: {x: -90, y: 0, z: -85},
+			pos: {x: -70, y: 0, z: -85},
 			rot: {x: 0, y: -45, z: 0}
 		}, {
 			size: {w: 75, h: 185, d: 160},
-			pos: {x: 115, y: 0, z: -130},
+			pos: {x: 135, y: 0, z: -130},
 			rot: {x: 0, y: 40, z: 0}
 		},{
 			size: {w: 70, h: 70, d: 160},
-			pos: {x: -4, y: 0, z: 227},
+			pos: {x: 16, y: 0, z: 227},
 			rot: {x: 0, y: -40, z: 0}
 		}];
 

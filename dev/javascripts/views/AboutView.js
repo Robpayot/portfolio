@@ -856,8 +856,6 @@ export default class AboutView extends AbstractView {
 
 		this.scrollY = -y * 1.5;
 
-		this.animScrollContainer();
-
 	}
 
 	onTouchEndContainer(e) {

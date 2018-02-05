@@ -126,16 +126,16 @@ export function preventLink(e, nohref = false) {
 	// 	console.log('already fullscreen');
 	// } else {
 	// go full-screen
-	// let i = document.documentElement;
-	// if (i.requestFullscreen) {
-	// 	i.requestFullscreen();
-	// } else if (i.webkitRequestFullscreen) {
-	// 	i.webkitRequestFullscreen();
-	// } else if (i.mozRequestFullScreen) {
-	// 	i.mozRequestFullScreen();
-	// } else if (i.msRequestFullscreen) {
-	// 	i.msRequestFullscreen();
-	// }
+	let i = document.documentElement;
+	if (i.requestFullscreen) {
+		i.requestFullscreen();
+	} else if (i.webkitRequestFullscreen) {
+		i.webkitRequestFullscreen();
+	} else if (i.mozRequestFullScreen) {
+		i.mozRequestFullScreen();
+	} else if (i.msRequestFullscreen) {
+		i.msRequestFullscreen();
+	}
 	// if (document.exitFullscreen) {
 	// 	document.exitFullscreen();
 	// }

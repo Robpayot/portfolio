@@ -4,17 +4,18 @@
 	bottom: 5rem;
 	z-index: 100;
 
-	@include mobile-portrait {
-	    left: 97vw;
-	    top: 8vw;
-	    transform: rotate(90deg);
-	    transform-origin: 0% 0%;
-	    display: inline-block;
-	    bottom: auto;
-	}
-
 	@include tablet {
 		bottom: 2rem;
+	}
+
+	@include mobile-portrait {
+		left: 95vw;
+   		top: 19vw;
+   		bottom: auto;
+	    transform: rotate(180deg);
+	    transform-origin: 0% 0%;
+	    display: inline-block;
+
 	}
 
 	&.content-open {
@@ -71,19 +72,22 @@
 				transition: opacity 0.5s ease;
 
 				@include mobile-portrait {
-					transform: rotate(-90deg);
+					transform: rotate(180deg);
 				}
 				.is-touch & {
 					opacity: 1;
+					width: 3rem;
+					height: 3rem;
 				}
 				svg {
 					width: 12rem;
 					stroke-width: 3;
 					height: 2rem;
-					// position: absolute;
-					// left: 0;
-					// top: 50%;
-					// transform: translateY(-50%);
+
+					.is-touch & {
+						width: 18rem;
+						height: 3rem;
+					}
 				}
 
 				span {
@@ -98,16 +102,10 @@
 					z-index: 1;
 					pointer-events: auto;
 
-					// &::before {
-					// 	content: '';
-					// 	position: absolute;
-					// 	top: 0%;
-					// 	left: 0%;
-					// 	height: 100%;
-					// 	width: 100%;
-					// 	background-color: blue;
-					// 	z-index: -1;
-					// }
+					.is-touch & {
+						width: 18rem;
+					}
+
 				}
 
 				&.off span {
@@ -127,6 +125,12 @@
 				align-items: center;
 				svg {
 					height: 1.4rem;
+					width: 1.4rem;
+					.is-touch & {
+						width: 2.2rem;
+						height: 2.2rem;
+
+					}
 				}
 
 				&.is-hide {
@@ -135,7 +139,6 @@
 			}
 
 			.plus__icon {
-				width: 1.8rem;
 				height: 1.8rem;
 				position: relative;
 				display: flex;
@@ -159,7 +162,13 @@
 				}
 
 				.is-touch & {
-					display: none;
+					opacity: 1;
+
+				}
+
+				@include mobile-portrait {
+					display: flex !important;
+					height: 2.2rem;
 				}
 			}
 
@@ -180,12 +189,23 @@
 
 				a {
 					color: black;
+
+					@include mobile-portrait {
+						transform: rotate(180deg);
+					}
+					.is-touch & {
+						line-height: 1.5em;
+					}
 				}
 				
+				.is-touch & {
+					font-size: 1.6rem;
+					height: 2.2rem;
 
+				}
 				body:not(.is-touch) & {
 					&:hover {
-						opacity: 1;
+						opacity: 1 !important;
 					}
 				}
 
@@ -199,24 +219,38 @@
 
 			}
 
-			.is-touch &,
-			.is-open,
-			&:hover {
-				.plus__icon {
-					transform: rotate(135deg);
+			body:not(.is-touch) & {
+				&:hover {
+					.plus__icon {
+						transform: rotate(135deg);
+					}
+					.socials {
+						transform: translateX(0%);
+						opacity: 0.5;
+					}
+					
 				}
-				.socials {
-					transform: translateX(0%);
-					opacity: 0.5;
-				}
-				
 			}
 
 			.is-touch & {
 				.socials {
-					opacity: 1;
+					transform: translateX(-80%);
+					opacity: 0;
+					pointer-events: none;
+				}
+				&.is-open {
+					.plus__icon {
+						transform: rotate(135deg);
+					}
+					.socials {
+						transform: translateX(0%);
+						opacity: 1;
+						// pointer-events: auto;
+					}
 				}
 			}
+
+
 
 		}
 	}

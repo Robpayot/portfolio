@@ -27,7 +27,9 @@ export default class Menu {
 			links: this.el.querySelectorAll('.menu__link'),
 			linksTitles: this.el.querySelectorAll('.menu__link .title--3'),
 			aLinks: this.el.querySelectorAll('.menu__link a'),
-			sound: document.querySelector('.sound')
+			sound: document.querySelector('.sound'),
+			plus: document.querySelector('.plus__icon'),
+			socials: document.querySelectorAll('.socials')
 		};
 
 		this.maxDash = 635;
@@ -81,6 +83,7 @@ export default class Menu {
 			for (let i = 0; i < this.ui.aLinks.length; i++) {
 				this.ui.aLinks[i][evListener]('click', preventLink);
 			}
+			this.ui.plus[evListener]('touchstart', this.togglePlus);
 		}
 
 
@@ -102,6 +105,21 @@ export default class Menu {
 			el.classList.add('off');
 			global.SOUNDS['music'].fade(1, 0, 1500);
 			TweenMax.delayedCall(1.5, this.turnOff);
+		}
+	}
+
+	togglePlus(e) {
+		const el = e.currentTarget.parentNode;
+
+		if (el.classList.contains('is-open') === true) {
+			el.classList.remove('is-open');
+		} else {
+			el.classList.add('is-open');
+			TweenMax.delayedCall(0.5, () => {
+				for (let i = 0; i < this.ui.socials.length; i++) {
+					this.ui.socials[i].pointerEvents = 'auto';
+				}
+			});
 		}
 	}
 

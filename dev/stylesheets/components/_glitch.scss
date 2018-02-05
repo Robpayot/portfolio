@@ -48,9 +48,6 @@
 	.project__title & {
 		background: none;
 		opacity: 0;
-		// 
-
-
 
 		&__canvas,
 		&__canvas-buffer {
@@ -84,30 +81,6 @@
 
 		}
 	}
-}
-
-.project__title__container {
-	z-index: 9000;
-	position: relative;
-	transform: translate(50%,0%);
-	pointer-events: auto;
-	font-size: 758%;
-
-		.glitch__canvas,
-		.glitch__canvas-buffer {
-			z-index: 9000;
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%,-50%);
-			height: auto;
-			top: 3%;
-
-			@include mobile {
-				height: auto;
-			}
-
-		}
 }
 
 // img {
