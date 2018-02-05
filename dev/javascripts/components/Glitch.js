@@ -162,7 +162,7 @@ export default class Glitch {
 			this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 			this.ctxBuffer.fillStyle = this.color;
-			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+			this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY, this.ui.canvas.width); // First Text
 
 			this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
 
@@ -194,6 +194,8 @@ export default class Glitch {
 
 			return false;
 		}
+
+		return false;
 
 		// offset gesture
 		this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
@@ -448,9 +450,10 @@ export default class Glitch {
 
 			this.ui.canvasBuffer.width = this.width;
 			this.ui.canvasBuffer.height = this.height;
+			// alert(this.width);
 		}
 
-		this.ui.canvas.width = this.width;
+		this.ui.canvas.width = this.width ;
 		this.ui.canvas.height = this.height;
 
 		if (this.obj.type === 'intro') {

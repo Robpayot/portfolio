@@ -176,7 +176,7 @@ class AppManager {
 			{ id: 'tpl-about-content', src: `${global.BASE}/templates/aboutContent.hbs` },
 			{ id: 'tpl-intro-content', src: `${global.BASE}/templates/introContent.hbs` },
 			// textures
-			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-1.png` },
+			{ id: 'glitchTex', src: `${global.BASE}/images/textures/glitch-2.png` },
 			{ id: 'skyTex', src: `${global.BASE}/images/textures/intro2_up.jpg` },
 			// bkg projects
 			{ id: 'bkg-0', src: `${global.BASE}/images/${mediaPath}textures/project-0.png` },

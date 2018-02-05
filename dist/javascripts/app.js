@@ -544,7 +544,7 @@ var Glitch = function () {
 				this.ctxBuffer.clearRect(0, 0, this.ui.canvas.width, this.ui.canvas.height);
 
 				this.ctxBuffer.fillStyle = this.color;
-				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY); // First Text
+				this.ctxBuffer.fillText(this.text, (this.width - this.textWidth) / 2, centerY, this.ui.canvas.width); // First Text
 
 				this.ctx.drawImage(this.ui.canvasBuffer, 0, 0); // add First comp
 
@@ -576,6 +576,8 @@ var Glitch = function () {
 
 				return false;
 			}
+
+			return false;
 
 			// offset gesture
 			this.margeX1 = this.randomTimed(this.textWidth * 0.2, this.textWidth * 0.3, this.margeX1);
@@ -822,6 +824,7 @@ var Glitch = function () {
 
 				this.ui.canvasBuffer.width = this.width;
 				this.ui.canvasBuffer.height = this.height;
+				// alert(this.width);
 			}
 
 			this.ui.canvas.width = this.width;
@@ -1661,7 +1664,7 @@ var AppManager = function () {
 			// template hbs
 			{ id: 'tpl-project-title', src: global.BASE + '/templates/projectTitle.hbs' }, { id: 'tpl-project-content', src: global.BASE + '/templates/projectContent.hbs' }, { id: 'tpl-menu', src: global.BASE + '/templates/menu.hbs' }, { id: 'tpl-about-content', src: global.BASE + '/templates/aboutContent.hbs' }, { id: 'tpl-intro-content', src: global.BASE + '/templates/introContent.hbs' },
 			// textures
-			{ id: 'glitchTex', src: global.BASE + '/images/textures/glitch-1.png' }, { id: 'skyTex', src: global.BASE + '/images/textures/intro2_up.jpg' },
+			{ id: 'glitchTex', src: global.BASE + '/images/textures/glitch-2.png' }, { id: 'skyTex', src: global.BASE + '/images/textures/intro2_up.jpg' },
 			// bkg projects
 			{ id: 'bkg-0', src: global.BASE + '/images/' + mediaPath + 'textures/project-0.png' }, { id: 'bkg-1', src: global.BASE + '/images/' + mediaPath + 'textures/project-1.png' }, { id: 'bkg-2', src: global.BASE + '/images/' + mediaPath + 'textures/project-2.png' }, { id: 'bkg-3', src: global.BASE + '/images/' + mediaPath + 'textures/project-3.png' }]);
 
@@ -9703,47 +9706,44 @@ var AboutView = function (_AbstractView) {
 				_loop(i);
 			}
 
-			// delayTitle = 0;
-			// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
-			// console.log(splitTextsWords);
-
-			// for (let i = 0; i < this.splitTexts.words.length; i++) {
-
-			// 	tlTitle.add(() => {
-			// 		splitTextsWords[i].classList.add('is-anim');
-			// 	}, 0.5 + delayTitle);
-
-			// 	delayTitle += 0.01;
-			// }
-
 			delayTitle = 0;
-			var splitP = document.querySelectorAll('.about__intro p');
+			var splitTextsWords = document.querySelectorAll('.about__intro p > *');
 
 			var _loop2 = function _loop2(i) {
 
 				tlTitle.add(function () {
-					var delayWords = 0;
-					var tlWords = new TimelineMax();
+					splitTextsWords[i].classList.add('is-anim');
+				}, 0.5 + delayTitle);
 
-					var _loop3 = function _loop3(y) {
-
-						tlWords.add(function () {
-							splitP[i].children[y].classList.add('is-anim');
-						}, delayWords);
-						delayWords += 0.015;
-					};
-
-					for (var y = 0; y < splitP[i].children.length; y++) {
-						_loop3(y);
-					}
-				}, delayTitle);
-
-				delayTitle += 0.2;
+				delayTitle += 0.01;
 			};
 
-			for (var i = 0; i < splitP.length; i++) {
+			for (var i = 0; i < splitTextsWords.length; i++) {
 				_loop2(i);
 			}
+
+			// delayTitle = 0;
+			// const splitP = document.querySelectorAll('.about__intro p');
+
+			// for (let i = 0; i < splitP.length; i++) {
+
+			// 	tlTitle.add(() => {
+			// 		let delayWords = 0;
+			// 		const tlWords = new TimelineMax();
+
+			// 		for (let y = 0; y < splitP[i].children.length; y++) {
+
+			// 			tlWords.add(() => {
+			// 				splitP[i].children[y].classList.add('is-anim');
+			// 			}, delayWords);
+			// 			delayWords += 0.015;
+
+			// 		}
+
+			// 	}, delayTitle);
+
+			// 	delayTitle += 0.2;
+			// }
 
 			tlTitle.add(function () {
 				_this7.ui.more.classList.add('is-anim');
@@ -9779,14 +9779,16 @@ var AboutView = function (_AbstractView) {
 			delayTitle = 0;
 			var splitP = document.querySelectorAll('.about__work__top > span:first-child');
 			var splitDescr = document.querySelectorAll('.about__work__descr');
+			var splitBtn = document.querySelectorAll('.about__work .about__button');
+			console.log(splitBtn);
 
-			var _loop4 = function _loop4(i) {
+			var _loop3 = function _loop3(i) {
 
 				tlTitle.add(function () {
 					var delayWords = 0;
 					var tlWords = new TimelineMax();
 
-					var _loop5 = function _loop5(y) {
+					var _loop4 = function _loop4(y) {
 
 						tlWords.add(function () {
 							splitP[i].children[y].classList.add('is-anim');
@@ -9795,13 +9797,13 @@ var AboutView = function (_AbstractView) {
 					};
 
 					for (var y = 0; y < splitP[i].children.length; y++) {
-						_loop5(y);
+						_loop4(y);
 					}
 
 					var delayDescr = 0;
 					var tlDescr = new TimelineMax();
 
-					var _loop6 = function _loop6(y) {
+					var _loop5 = function _loop5(y) {
 
 						tlDescr.add(function () {
 							splitDescr[i].children[y].classList.add('is-anim');
@@ -9810,15 +9812,17 @@ var AboutView = function (_AbstractView) {
 					};
 
 					for (var y = 0; y < splitDescr[i].children.length; y++) {
-						_loop6(y);
+						_loop5(y);
 					}
+
+					splitBtn[i].classList.add('is-anim');
 				}, delayTitle);
 
 				delayTitle += 0.3;
 			};
 
 			for (var i = 0; i < splitP.length; i++) {
-				_loop4(i);
+				_loop3(i);
 			}
 
 			// tlTitle.add(() => {

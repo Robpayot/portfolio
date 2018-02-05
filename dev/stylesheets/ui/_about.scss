@@ -82,15 +82,15 @@
 			p {
 				overflow: hidden;
 				& > * {
-					transform: translateY(130%);
+					transform: translate3d(0, 130%, 0);
 					opacity: 0;
-					transition: opacity 1s linear, transform 2s $ExpoEaseOut;
+					transition: opacity 1s linear, transform 1.6s $ExpoEaseOut;
 					overflow: hidden;
 					display: inline-block;
 
 					&.is-anim {
 						opacity: 1;
-						transform: translateY(0%);
+						transform: translate3d(0, 0, 0);
 					}
 				}
 			}
@@ -217,7 +217,7 @@
 				& > * {
 					transform: translateY(100%);
 					opacity: 0;
-					transition: opacity 1s linear, transform 2s $ExpoEaseOut;
+					transition: opacity 1s linear, transform 1.6s $ExpoEaseOut;
 					display: inline-block;
 
 					&.is-anim {
@@ -242,6 +242,8 @@
 	    	.about__button {
 		    	display: flex;
 		    	align-items: center;
+				opacity: 0;
+				transition: opacity 1.6s linear;
 	    		svg {
 				 	width: 4.5rem;
 					height: 4.5rem;
@@ -270,6 +272,9 @@
 					}
 	    		}
 
+				&.is-anim {
+					opacity: 1;
+				}
 	    	}
 	    }
     }

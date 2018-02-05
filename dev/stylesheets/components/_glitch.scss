@@ -26,9 +26,10 @@
 		text-align: center;
 		z-index: 9000;
 		position: relative;
+		background-color: red;
 
 		&-buffer {
-			display: none;
+			// display: none;
 		}
 
 		&-alpha-buffer {
@@ -49,7 +50,8 @@
 		background: none;
 		opacity: 0;
 
-		&__canvas {
+		&__canvas,
+		&__canvas-buffer {
 			z-index: 9000;
 			position: absolute;
 			top: 50%;
@@ -66,27 +68,51 @@
 	}
 }
 
+.project__title__container {
+	z-index: 9000;
+	position: relative;
+	transform: translate(50%,0%);
+	pointer-events: auto;
+	font-size: 758%;
+
+		.glitch__canvas,
+		.glitch__canvas-buffer {
+			z-index: 9000;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%,-50%);
+			height: auto;
+			top: 3%;
+
+			@include mobile {
+				height: auto;
+			}
+
+		}
+}
+
 // img {
 //   display: none;
 // }
-@-webkit-keyframes rainbow {
-    0%{background-position:0% 82%}
-    50%{background-position:100% 19%}
-    100%{background-position:0% 82%}
-}
-@-moz-keyframes rainbow {
-    0%{background-position:0% 82%}
-    50%{background-position:100% 19%}
-    100%{background-position:0% 82%}
-}
-@-o-keyframes rainbow {
-    0%{background-position:0% 82%}
-    50%{background-position:100% 19%}
-    100%{background-position:0% 82%}
-}
-@keyframes rainbow { 
-    0%{background-position:0% 82%}
-    50%{background-position:100% 19%}
-    100%{background-position:0% 82%}
-}
+// @-webkit-keyframes rainbow {
+//     0%{background-position:0% 82%}
+//     50%{background-position:100% 19%}
+//     100%{background-position:0% 82%}
+// }
+// @-moz-keyframes rainbow {
+//     0%{background-position:0% 82%}
+//     50%{background-position:100% 19%}
+//     100%{background-position:0% 82%}
+// }
+// @-o-keyframes rainbow {
+//     0%{background-position:0% 82%}
+//     50%{background-position:100% 19%}
+//     100%{background-position:0% 82%}
+// }
+// @keyframes rainbow { 
+//     0%{background-position:0% 82%}
+//     50%{background-position:100% 19%}
+//     100%{background-position:0% 82%}
+// }
 

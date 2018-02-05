@@ -391,9 +391,8 @@ body {
     box-sizing: border-box;
     text-align: center;
     z-index: 9000;
-    position: relative; }
-    .glitch__canvas-buffer {
-      display: none; }
+    position: relative;
+    background-color: red; }
     .glitch__canvas-alpha-buffer {
       display: none; }
   .glitch__img {
@@ -404,7 +403,7 @@ body {
   .project__title .glitch {
     background: none;
     opacity: 0; }
-    .project__title .glitch__canvas {
+    .project__title .glitch__canvas, .project__title .glitch__canvas-buffer {
       z-index: 9000;
       position: absolute;
       top: 50%;
@@ -415,24 +414,32 @@ body {
       height: 420px;
       top: 3%; }
       @media screen and (max-width: 768px) {
-        .project__title .glitch__canvas {
+        .project__title .glitch__canvas, .project__title .glitch__canvas-buffer {
           height: 650px; } }
 
-@-webkit-keyframes rainbow {
-  0% {
-    background-position: 0% 82%; }
-  50% {
-    background-position: 100% 19%; }
-  100% {
-    background-position: 0% 82%; } }
-
-@keyframes rainbow {
-  0% {
-    background-position: 0% 82%; }
-  50% {
-    background-position: 100% 19%; }
-  100% {
-    background-position: 0% 82%; } }
+.project__title__container {
+  z-index: 9000;
+  position: relative;
+  -webkit-transform: translate(50%, 0%);
+  -ms-transform: translate(50%, 0%);
+  transform: translate(50%, 0%);
+  pointer-events: auto;
+  font-size: 758%; }
+  .project__title__container .glitch__canvas,
+  .project__title__container .glitch__canvas-buffer {
+    z-index: 9000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    height: auto;
+    top: 3%; }
+    @media screen and (max-width: 768px) {
+      .project__title__container .glitch__canvas,
+      .project__title__container .glitch__canvas-buffer {
+        height: auto; } }
 
 .cursor {
   position: relative;
@@ -670,7 +677,8 @@ body {
   .project__title h1 {
     opacity: 0;
     visibility: hidden;
-    display: inline-block; }
+    display: inline-block;
+    width: 300%; }
   .project__title:hover .project__more,
   .is-touch .project__title .project__more {
     padding-left: 100px; }
@@ -1026,7 +1034,7 @@ body {
           overflow: hidden;
           width: 2rem;
           height: 2rem;
-          opacity: 0.7;
+          opacity: 0.5;
           transition: opacity 0.5s ease; }
           @media only screen and (max-device-width: 1024px) and (orientation: portrait) {
             .ui .footer ul li.sound {
@@ -1136,7 +1144,7 @@ body {
           -webkit-transform: translateX(0%);
           -ms-transform: translateX(0%);
           transform: translateX(0%);
-          opacity: 0.7; }
+          opacity: 0.5; }
         .is-touch .ui .footer ul li .socials {
           opacity: 1; }
   .ui .is-project + .footer ul li svg {
@@ -1279,20 +1287,18 @@ body {
         .ui-content.is-about .about__intro p {
           overflow: hidden; }
           .ui-content.is-about .about__intro p > * {
-            -webkit-transform: translateY(130%);
-            -ms-transform: translateY(130%);
-            transform: translateY(130%);
+            -webkit-transform: translate3d(0, 130%, 0);
+            transform: translate3d(0, 130%, 0);
             opacity: 0;
-            transition: opacity 1s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
             overflow: hidden;
             display: inline-block; }
             .ui-content.is-about .about__intro p > *.is-anim {
               opacity: 1;
-              -webkit-transform: translateY(0%);
-              -ms-transform: translateY(0%);
-              transform: translateY(0%); }
+              -webkit-transform: translate3d(0, 0, 0);
+              transform: translate3d(0, 0, 0); }
       .ui-content.is-about .about__title {
         font-size: 3.4em;
         display: inline-block;
@@ -1410,9 +1416,9 @@ body {
             -ms-transform: translateY(100%);
             transform: translateY(100%);
             opacity: 0;
-            transition: opacity 1s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-            transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
             display: inline-block; }
             .ui-content.is-about .about__work__descr > *.is-anim {
               opacity: 1;
@@ -1431,7 +1437,9 @@ body {
           display: flex;
           -webkit-box-align: center;
           -ms-flex-align: center;
-          align-items: center; }
+          align-items: center;
+          opacity: 0;
+          transition: opacity 1.6s linear; }
           .ui-content.is-about .about__work .about__button svg {
             width: 4.5rem;
             height: 4.5rem;
@@ -1452,6 +1460,8 @@ body {
             .ui-content.is-about .about__work .about__button svg .close-down-2 {
               stroke-dasharray: 635;
               stroke-dashoffset: 3075; }
+          .ui-content.is-about .about__work .about__button.is-anim {
+            opacity: 1; }
     .ui-content.is-project {
       color: #FFFFFF;
       line-height: 1.4em;

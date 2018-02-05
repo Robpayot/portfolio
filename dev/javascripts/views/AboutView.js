@@ -702,41 +702,40 @@ export default class AboutView extends AbstractView {
 			delayTitle += 0.07;
 		}
 
-		// delayTitle = 0;
-		// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
-		// console.log(splitTextsWords);
-
-		// for (let i = 0; i < this.splitTexts.words.length; i++) {
-
-		// 	tlTitle.add(() => {
-		// 		splitTextsWords[i].classList.add('is-anim');
-		// 	}, 0.5 + delayTitle);
-
-		// 	delayTitle += 0.01;
-		// }
-
 		delayTitle = 0;
-		const splitP = document.querySelectorAll('.about__intro p');
+		const splitTextsWords = document.querySelectorAll('.about__intro p > *');
 
-		for (let i = 0; i < splitP.length; i++) {
+		for (let i = 0; i < splitTextsWords.length; i++) {
 
 			tlTitle.add(() => {
-				let delayWords = 0;
-				const tlWords = new TimelineMax();
+				splitTextsWords[i].classList.add('is-anim');
+			}, 0.5 + delayTitle);
 
-				for (let y = 0; y < splitP[i].children.length; y++) {
-
-					tlWords.add(() => {
-						splitP[i].children[y].classList.add('is-anim');
-					}, delayWords);
-					delayWords += 0.015;
-
-				}
-
-			}, delayTitle);
-
-			delayTitle += 0.2;
+			delayTitle += 0.01;
 		}
+
+		// delayTitle = 0;
+		// const splitP = document.querySelectorAll('.about__intro p');
+
+		// for (let i = 0; i < splitP.length; i++) {
+
+		// 	tlTitle.add(() => {
+		// 		let delayWords = 0;
+		// 		const tlWords = new TimelineMax();
+
+		// 		for (let y = 0; y < splitP[i].children.length; y++) {
+
+		// 			tlWords.add(() => {
+		// 				splitP[i].children[y].classList.add('is-anim');
+		// 			}, delayWords);
+		// 			delayWords += 0.015;
+
+		// 		}
+
+		// 	}, delayTitle);
+
+		// 	delayTitle += 0.2;
+		// }
 
 		tlTitle.add(() => {
 			this.ui.more.classList.add('is-anim');
@@ -771,6 +770,8 @@ export default class AboutView extends AbstractView {
 		delayTitle = 0;
 		const splitP = document.querySelectorAll('.about__work__top > span:first-child');
 		const splitDescr = document.querySelectorAll('.about__work__descr');
+		const splitBtn = document.querySelectorAll('.about__work .about__button');
+		console.log(splitBtn);
 
 
 		for (let i = 0; i < splitP.length; i++) {
@@ -799,6 +800,8 @@ export default class AboutView extends AbstractView {
 					delayDescr += 0.1;
 
 				}
+
+				splitBtn[i].classList.add('is-anim');
 
 			}, delayTitle);
 
