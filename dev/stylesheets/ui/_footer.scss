@@ -80,9 +80,11 @@
 					height: 3rem;
 				}
 				svg {
-					width: 12rem;
-					stroke-width: 3;
-					height: 2rem;
+				    width: 17rem;
+				    stroke-width: 9;
+				    height: 5rem;
+				    fill: none;
+				    stroke: black;
 
 					.is-touch & {
 						width: 18rem;
@@ -91,7 +93,7 @@
 				}
 
 				span {
-					width: 12rem;
+					width: 17rem;
 					position: absolute;
 					left: 0%;
 					display: flex;
@@ -157,7 +159,7 @@
 
 				line {
 					stroke: black;
-					stroke-width: 3;
+					stroke-width: 4;
 					opacity: 1;
 				}
 
@@ -264,6 +266,11 @@
 	line {
 		stroke: white;
 	}
+}
+
+.is-project + .footer ul li.sound svg {
+	fill: none;
+	stroke: white;
 }
 
 .is-project + .footer .socials a {
