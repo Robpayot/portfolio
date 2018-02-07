@@ -139,7 +139,7 @@ export default class Cursor {
 		// }
 
 		if (obj.back === true) {
-			TweenMax.to('text', 0.2, {opacity: 0});
+			TweenMax.to('text', 0.1, {opacity: 0});
 			TweenMax.set('text', {display: 'block', delay: 0.2});
 		}
 
@@ -163,13 +163,13 @@ export default class Cursor {
 
 		switch (Device.size) {
 			case 'desktop':
-				textLength = 54;
+				textLength = 61;
 				break;
 			case 'small-desktop':
-				textLength = 46;
+				textLength = 53;
 				break;
 			default:
-				textLength = 43;
+				textLength = 50;
 				break;
 		}
 

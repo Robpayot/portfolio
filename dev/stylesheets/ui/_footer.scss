@@ -48,12 +48,15 @@
 			vertical-align: middle;
 			
 			pointer-events: auto;
-			margin: 0 1rem;
+			margin: 0 1.5rem;
 			
 	    	letter-spacing: 1px;
-			font-family: 'Theinhardt-light';
-			font-weight: 300;
+			@extend %Regular;
 	    	font-size: 1.4rem;
+
+	    	&:first-child {
+	    		margin-left: 0px;
+	    	}
 
 			@include tablet {
 				margin: 0 1rem;
@@ -76,12 +79,15 @@
 				}
 				.is-touch & {
 					opacity: 1;
-					width: 3rem;
-					height: 3rem;
+					width: 4rem;
+					height: 4rem;
+					display: flex;
+					align-items: center;
+					justify-content: center;
 				}
 				svg {
 				    width: 17rem;
-				    stroke-width: 9;
+				    stroke-width: 8;
 				    height: 5rem;
 				    fill: none;
 				    stroke: black;
@@ -92,26 +98,36 @@
 					}
 				}
 
-				span {
-					width: 17rem;
-					position: absolute;
-					left: 0%;
-					display: flex;
-					align-items: center;
-					height: 100%;
-					transition: left 1.5s $Power1EaseInOut;
-					background: url(../images/icons/wave-01.svg);
-					z-index: 1;
-					pointer-events: auto;
+				.touch__container {
 
 					.is-touch & {
-						width: 26rem;
+						position: relative;
+						width: 2.5rem;
+						height: 2.5rem;
+						overflow: hidden;
+					}
+
+					span {
+						width: 17rem;
+						position: absolute;
+						left: 0%;
+						display: flex;
+						align-items: center;
+						height: 100%;
+						transition: left 1.5s $Power1EaseInOut;
+						background: url(../images/icons/wave-01.svg);
+						z-index: 1;
+						pointer-events: auto;
+
+						.is-touch & {
+							width: 21rem;
+						}
 					}
 
 				}
 
-				&.off span {
-					left: -470%;
+				&.off .touch__container span {
+					left: -480%;
 					transition: left 1.5s $Power1EaseOut;
 				}
 
@@ -129,14 +145,17 @@
 					height: 1.4rem;
 					width: 1.4rem;
 					.is-touch & {
-						width: 2.2rem;
-						height: 2.2rem;
+						width: 1.5rem;
+						height: 1.5rem;
 
 					}
 				}
 
 				&.is-hide {
 					opacity: 0;
+				}
+				.is-touch & {
+					margin: 0;
 				}
 			}
 
@@ -165,7 +184,18 @@
 
 				.is-touch & {
 					opacity: 1;
+					width: 4rem;
+					height: 4rem;
+					justify-content: center;
+					margin-right: 0;
 
+				}
+
+				.touch__container {
+					.is-touch & {
+						position: relative;
+						display: flex;
+					}
 				}
 
 				@include mobile-portrait {
@@ -182,11 +212,14 @@
 				pointer-events: auto;
 				margin: 0 0.5rem;
 		    	letter-spacing: 1px;
-				font-family: 'Theinhardt';
 		    	font-size: 1.4rem;
 				opacity: 0;
 				transition: transform 1s $ExpoEaseOut, opacity 0.2s linear;
-				transform: translateX(-80%);
+				transform: translateX(-100%);
+
+				&:nth-child(2) {
+					margin-left: 1.8rem;
+				}
 
 				a {
 					color: black;

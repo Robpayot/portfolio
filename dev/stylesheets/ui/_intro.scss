@@ -22,9 +22,7 @@
 	    	letter-spacing: 4px;
 	    	margin-right: -4px;
 	    	margin-top: 15px;
-	    	font-family: 'Theinhardt';
-		    font-weight: normal;
-		    font-style: normal;
+	    	@extend %Regular;
 		    opacity: 0;
 		}
 		svg polyline,

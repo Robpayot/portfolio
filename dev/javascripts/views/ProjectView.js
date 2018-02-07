@@ -458,6 +458,9 @@ export default class ProjectView extends AbstractView {
 			bean.on(document.body, 'mouseleave.projectContent', '.project__container', this.onLeaveContainer);
 			bean.on(document.body, 'mouseenter.projectContent', '.project__link svg', this.onHoverLink);
 			bean.on(document.body, 'mouseleave.projectContent', '.project__link svg', this.onLeaveLink);
+			bean.on(document.body, 'click.projectContent', '.sound', this.onClickContainer);
+			bean.on(document.body, 'mouseenter.projectContent', '.sound', this.onHoverContainer);
+			bean.on(document.body, 'mouseleave.projectContent', '.sound', this.onLeaveContainer);
 		} else {
 
 			bean.on(document.body, 'touchstart.projectContent', '.project__container', this.onTouchStartContainer);
@@ -769,13 +772,6 @@ export default class ProjectView extends AbstractView {
 
 		if (this.transitionInComplete !== true) {
 			e.deltaY = 0; // prevent inertia
-		} else {
-			if (global.SCROLLED === false && this.contentOpen !== true) {
-				global.SCROLLED = true;
-				TweenMax.to('.scroll', 0.5, {opacity: 0, onComplete: () => {
-					document.documentElement.classList.add('scrolled');
-				}});
-			}
 		}
 
 		if (this.contentOpen === true) {
@@ -1118,7 +1114,10 @@ export default class ProjectView extends AbstractView {
 		tl.add(() => {
 			// remover overlay class
 			this.transitionInComplete = true;
-			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') global.MENU.el.classList.add('is-anim');
+			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') {
+				global.MENU.el.classList.add('is-anim');
+				TweenMax.set('.navigate', {display: 'block', delay: 2});
+			}
 		}, 0.8);
 
 
@@ -1132,7 +1131,7 @@ export default class ProjectView extends AbstractView {
 		}, 0.1, delay);
 
 		if (global.SCROLLED === false) {
-			TweenMax.to('.scroll', 1, {opacity: 1, delay: 3.5});
+			TweenMax.to('.scroll', 1, {opacity: 1, delay: 5});
 		}
 
 
@@ -1142,6 +1141,13 @@ export default class ProjectView extends AbstractView {
 
 		if (this.animating === true) return false;
 		this.animating = true;
+
+		if (global.SCROLLED === false && this.contentOpen !== true) {
+			global.SCROLLED = true;
+			TweenMax.to('.scroll', 0.5, {opacity: 0, onComplete: () => {
+				document.documentElement.classList.add('scrolled');
+			}});
+		}
 
 		const tl = new TimelineMax();
 

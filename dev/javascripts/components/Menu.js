@@ -45,6 +45,7 @@ export default class Menu {
 		this.update = this.update.bind(this);
 		this.turnOff = this.turnOff.bind(this);
 		this.toggleSound = this.toggleSound.bind(this);
+		this.togglePlus = this.togglePlus.bind(this);
 
 		this.events(true);
 
@@ -110,6 +111,7 @@ export default class Menu {
 
 	togglePlus(e) {
 		const el = e.currentTarget.parentNode;
+		console.log('hein');
 
 		if (el.classList.contains('is-open') === true) {
 			el.classList.remove('is-open');
@@ -117,7 +119,7 @@ export default class Menu {
 			el.classList.add('is-open');
 			TweenMax.delayedCall(0.5, () => {
 				for (let i = 0; i < this.ui.socials.length; i++) {
-					this.ui.socials[i].pointerEvents = 'auto';
+					this.ui.socials[i].style.pointerEvents = 'auto';
 				}
 			});
 		}

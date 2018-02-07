@@ -16,9 +16,7 @@
 		text-align: center;
 		color: white;
 		letter-spacing: 2.5px;
-	    font-family: 'Theinhardt-light';
-	    font-weight: normal;
-	    font-style: normal;
+	    @extend %Medium;
 
 	    &.alt circle {
 			stroke: black;
@@ -38,11 +36,12 @@
 	&__next {
 		top: 100%;
 		margin-top: 0.7rem;
-		margin-left: 1.5px;
+		margin-left: 0.16rem;
 	}
 	&__prev {
 		bottom: 100%;
 		margin-bottom: 0.7rem;
+		margin-left: 0.16rem;
 		// opacity: 1;
 	}
 
@@ -63,11 +62,10 @@
 		// stroke: white;
 		// transform: translate(-50%,-50%);
 		text-transform: uppercase;
-		font-family: 'Theinhardt-light';
-	    font-weight: 300;
-	    font-style: normal;
-	    letter-spacing: 3rem;
+		@extend %Medium;
+	    letter-spacing: 10rem;
 		opacity: 0;
+		font-size: 1.8rem;
 	}
 
 	.up-1,
@@ -75,6 +73,17 @@
 	.down-1,
 	.down-2 {
 		opacity: 0;
+		
+	}
+
+	.up-1,
+	.up-2 {
+		transform: scale(0.8) translate(10px,10px);
+	}
+
+	.down-1,
+	.down-2 {
+		transform: scale(0.8) translate(14px,10px);
 	}
 
 	// next / prev

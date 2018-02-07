@@ -295,7 +295,7 @@ class AppManager {
 						RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 						this.glitch.isLoading = false; // apply video alpha
 					}, 0.5);
-					tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+					tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 
 					tl.add(() => {
 						this.glitch.ready = false; // stop raf destr
@@ -315,7 +315,7 @@ class AppManager {
 					RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 					this.glitch.isLoading = false; // apply video alpha
 				}, 0);
-				tl.to('.preload', 1.5, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+				tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 
 				tl.add(() => {
 					this.glitch.ready = false; // stop raf destr

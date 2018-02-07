@@ -771,7 +771,6 @@ export default class AboutView extends AbstractView {
 		const splitP = document.querySelectorAll('.about__work__top > span:first-child');
 		const splitDescr = document.querySelectorAll('.about__work__descr');
 		const splitBtn = document.querySelectorAll('.about__work .about__button');
-		console.log(splitBtn);
 
 
 		for (let i = 0; i < splitP.length; i++) {
@@ -965,7 +964,10 @@ export default class AboutView extends AbstractView {
 		}, 0);
 
 		tl.add(() => {
-			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') global.MENU.el.classList.add('is-anim');
+			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') {
+				global.MENU.el.classList.add('is-anim');
+				TweenMax.set('.navigate', {display: 'block', delay: 2});
+			}
 		}, 1);
 
 	}

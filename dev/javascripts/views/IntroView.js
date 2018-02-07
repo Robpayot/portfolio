@@ -503,7 +503,7 @@ export default class IntroView extends AbstractView {
 			this.animBtn = false;
 		});
 
-		tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.start p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 0);
 		tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
 
 		// sound
@@ -519,7 +519,7 @@ export default class IntroView extends AbstractView {
 		TweenMax.fromTo('.start circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 
 		TweenMax.to('.start p', 1, {y: 20, ease: window.Expo.easeOut});
-		TweenMax.to('.start p', 0.2, {opacity: 0, ease: window.Linear.easeNone});
+		TweenMax.to('.start p', 0.1, {opacity: 0, ease: window.Linear.easeNone});
 	}
 
 	onClick() {
@@ -712,11 +712,11 @@ export default class IntroView extends AbstractView {
 				this.startMove = true;
 			}, 1 );
 
-			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 4); // display buttons
+			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 2.3); // display buttons
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 3);
+				tl.fromTo('.start p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 3);
 				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
 			}
 
@@ -738,7 +738,7 @@ export default class IntroView extends AbstractView {
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 1, {y: 20}, {y: 0, ease: window.Expo.easeOut}, 2.5);
+				tl.fromTo('.start p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 2.5);
 				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 2.5);
 			}
 		}

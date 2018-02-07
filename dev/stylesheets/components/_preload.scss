@@ -42,9 +42,7 @@
 			font-size: 1.6rem;
 	    	letter-spacing: 0.2em;
 	    	text-transform: uppercase;
-	    	font-family: 'Theinhardt';
-		    font-weight: normal;
-		    font-style: normal;
+	    	@extend %Regular;
 		}
 
 	}
@@ -64,9 +62,7 @@
 		text-transform: uppercase;
     	letter-spacing: 0.2em;
     	margin-top: 2.5rem;
-    	font-family: 'Theinhardt';
-	    font-weight: normal;
-	    font-style: normal;
+    	@extend %Regular;
 	    opacity: 0;
 
 	    display: none;

@@ -55,9 +55,7 @@
 			padding-left: 0px;
 			font-size: 44px; // in px because resize relative to the scene
 			letter-spacing: 4px;
-			font-family: 'Theinhardt';
-			font-weight: normal;
-			font-style: normal;
+			@extend %Regular;
 			top: 170px;
 			opacity: 1;
 			transition: padding 0.8s $easeToinou;
