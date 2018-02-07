@@ -313,4 +313,7 @@
 	@include tablet {
 		display: none;
 	}
+	@include mobile-portrait {
+		display: flex;
+	}
 }

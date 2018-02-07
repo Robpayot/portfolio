@@ -115,6 +115,9 @@ export default class Menu {
 
 		if (el.classList.contains('is-open') === true) {
 			el.classList.remove('is-open');
+			for (let i = 0; i < this.ui.socials.length; i++) {
+				this.ui.socials[i].style.pointerEvents = 'none';
+			}
 		} else {
 			el.classList.add('is-open');
 			TweenMax.delayedCall(0.5, () => {

@@ -36,8 +36,6 @@ class AppManager {
 
 
 		PreloadManager.loadFile({ id: 'introTxt', src: `${global.BASE}/images/textures/name-2.png` });
-		// video
-		if (Device.touch === true) PreloadManager.loadFile({ id: 'videoGlitch', src: `${global.BASE}/videos/destr.mp4` });
 
 
 		this.introTexLoad = PreloadManager.on('complete', () => {
@@ -53,7 +51,6 @@ class AppManager {
 
 			this.glitch.isLoading = true;
 			this.glitch.ready = true;
-
 
 			// Loader Animation
 			let maxDash = 635;
@@ -76,9 +73,35 @@ class AppManager {
 
 			// Run global events
 			this.events(true);
+			// video
+			if (Device.touch === true) { // Video blob not working with preload.js, using classic xhr
+				let req = new XMLHttpRequest();
+				req.open('GET', 'videos/destr.mp4', true);
+				req.responseType = 'blob';
 
-			// start others preload
-			this.preloadFonts();
+				req.onload = () => {
+					// Onload is triggered even on 404
+					// so we need to check the status code
+					if (req.status === 200) {
+						const videoBlob = req.response;
+						const vid = URL.createObjectURL(videoBlob); // IE10+
+						this.glitch.video.src = vid;
+						this.preloadFonts();
+					}
+				};
+
+				req.onerror = function() {
+				// Error
+				};
+
+				req.send();
+
+			} else {
+				// start others preload
+				// this.glitch.setAlphaVideo('videos/destr.mp4');
+				this.preloadFonts();
+			}
+
 
 		}, this, true);
 
@@ -295,11 +318,11 @@ class AppManager {
 						RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 						this.glitch.isLoading = false; // apply video alpha
 					}, 0.5);
-					tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+					tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=1');
 
-					tl.add(() => {
-						this.glitch.ready = false; // stop raf destr
-					});
+					// tl.add(() => {
+					// 	this.glitch.ready = false; // stop raf destr
+					// });
 
 				};
 

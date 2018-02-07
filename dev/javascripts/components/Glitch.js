@@ -86,18 +86,30 @@ export default class Glitch {
 
 	}
 
-	setAlphaVideo(video) {
+	setAlphaVideo() {
 		// if (video)
-		this.video = document.createElement('video');
-		this.video.id = 'video2';
+
+		// this.video.id = 'video2';
 		// this.video.src = 'videos/destr-reverse.mp4';
-		this.video.src = PreloadManager.getItem('videoGlitch') ? PreloadManager.getItem('videoGlitch').src : 'videos/destr.mp4';
+		// if (PreloadManager.getItem('videoGlitch')) {
+		// 	console.log('oui');
+
+		// 	// Not working ??????
+		// 	let arrayBufferView = PreloadManager.getResult('videoGlitch');
+		// 	this.el.innerHTML = arrayBufferView;
+		// 	let blob = new Blob( [ new Uint8Array(arrayBufferView), {type: 'video/mp4' }] );
+		// 	let urlCreator = window.URL || window.webkitURL;
+		// 	let blobURL = urlCreator.createObjectURL( blob );
+		// 	console.log(blobURL);
+
 		// this.video.autoplay = true;
-		// this.video.loop = true;
+		this.video = document.createElement('video');
 		this.video.muted = true;
+		this.video.src = 'videos/destr.mp4';
 		this.video.setAttribute('playsinline', '');
 		this.video.pause();
-		// this.el.appendChild(this.video);
+		this.resizeHandler();
+
 		// this.video.remove();
 
 	}
@@ -114,7 +126,6 @@ export default class Glitch {
 
 		// set up alpha video
 		if (this.obj.type === 'intro') this.setAlphaVideo();
-		this.resizeHandler();
 
 		if (this.debug === true) {
 			this.events(true);
@@ -128,6 +139,7 @@ export default class Glitch {
 	}
 
 	render() {
+
 
 		this.phase += this.phaseStep;
 
