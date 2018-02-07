@@ -71,6 +71,7 @@ export default class Menu {
 				this.ui.subLinksTitles[i][evListener]('mouseenter', this.onHoverLink);
 				this.ui.subLinksTitles[i][evListener]('mouseleave', this.onLeaveLink);
 			}
+			this.ui.plus[evListener]('mouseenter', this.onHoverPlus);
 		} else {
 			this.ui.sound[evListener]('touchstart', this.toggleSound);
 			this.ui.button[evListener]('touchstart', this.toggleOpen);
@@ -101,17 +102,16 @@ export default class Menu {
 		if (el.classList.contains('off') === true) {
 			el.classList.remove('off');
 			Howler.volume(1);
-			global.SOUNDS['music'].fade(0, 1, 1500);
+			global.SOUNDS['music'].fade(0, 2, 1500);
 		} else {
 			el.classList.add('off');
-			global.SOUNDS['music'].fade(1, 0, 1500);
-			TweenMax.delayedCall(1.5, this.turnOff);
+			global.SOUNDS['music'].fade(2, 0, 1500);
+			TweenMax.delayedCall(1.6, this.turnOff);
 		}
 	}
 
 	togglePlus(e) {
 		const el = e.currentTarget.parentNode;
-		console.log('hein');
 
 		if (el.classList.contains('is-open') === true) {
 			el.classList.remove('is-open');
@@ -126,6 +126,11 @@ export default class Menu {
 				}
 			});
 		}
+	}
+
+	onHoverPlus() {
+		// sound
+		global.SOUNDS['hover_2'].play();
 	}
 
 	toggleOpen(e, close = false) {

@@ -154,7 +154,6 @@ export default class ProjectView extends AbstractView {
 		this.postProc = this.data.postProc || false;
 
 		this.cssObjects = [];
-		this.finalFov = 45;
 		this.currentRotateY = { angle: 0};
 		this.cameraRotX = true;
 		this.composer = null;
@@ -171,7 +170,8 @@ export default class ProjectView extends AbstractView {
 		this.cameraTarget = new Vector3(0, 0, 0);
 
 		// Set Camera
-		this.setCamera(50);
+		let fov = this.id === 1 ? 45 : 50;
+		this.setCamera(fov);
 		this.setCameraPos();
 
 		this.resizeHandler(this.scene, this.camera); // resize one time for css scene
@@ -477,7 +477,7 @@ export default class ProjectView extends AbstractView {
 		TweenMax.to(global.MENU.ui.button, 1, { opacity: 0});
 		TweenMax.set(global.MENU.ui.button, { display: 'none', delay: 1});
 		TweenMax.to('.plus', 1, { opacity: 0});
-		TweenMax.set('.plus', { display: 'none', delay: 1});
+		TweenMax.set('.plus', { visibility: 'hidden', delay: 1});
 		TweenMax.to('.project__title', 1, { opacity: 0 });
 		// Turn around the perimeter of a circle
 		const trigo = { angle: 1 };
@@ -698,7 +698,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.add(() => {
 			TweenMax.set(global.MENU.ui.button, { display: 'block'});
-			TweenMax.set( '.plus', { display: 'flex'});
+			TweenMax.set( '.plus', { visibility: 'visible'});
 			// sound
 			global.SOUNDS['switch_long'].play();
 		}, 1);

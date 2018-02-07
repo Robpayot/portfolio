@@ -109,12 +109,12 @@ class AppManager {
 		global.SOUNDS = {
 			'music': new Howl({
 				src: [`${global.BASE}/sounds/music.mp3`],
-				volume: 1.8,
+				volume: 2,
 				loop: true
 			}),
 			'glitch': new Howl({
 				src: [`${global.BASE}/sounds/glitch-1.mp3`],
-				volume: 0.2
+				volume: 0.05
 			}),
 			'switch': new Howl({
 				src: [`${global.BASE}/sounds/switch-3.mp3`],
@@ -130,7 +130,7 @@ class AppManager {
 			}),
 			'hover_2': new Howl({
 				src: [`${global.BASE}/sounds/glitch-2.mp3`],
-				volume: 0.2
+				volume: 0.05
 			})
 		};
 

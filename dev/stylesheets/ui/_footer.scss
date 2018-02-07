@@ -142,11 +142,16 @@
 				display: flex;
 				align-items: center;
 				svg {
-					height: 1.4rem;
-					width: 1.4rem;
+					height: 1.3rem;
+					width: 1.3rem;
+					@include small-desktop {
+						height: 1rem;
+						width: 1rem;
+					}
+
 					.is-touch & {
-						width: 1.5rem;
-						height: 1.5rem;
+						width: 1.2rem;
+						height: 1.2rem;
 
 					}
 				}
@@ -204,7 +209,7 @@
 				}
 
 				@include mobile-portrait {
-					display: flex !important;
+					display: flex;
 					height: 2.2rem;
 				}
 			}

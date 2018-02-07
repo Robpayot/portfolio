@@ -31,7 +31,7 @@ export default class Levit extends ProjectView {
 		this.asteroidsM = [];
 
 		const material = new MeshPhongMaterial({
-			color: 0x125714,
+			color: 0x12573F,
 			flatShading: true
 		});
 
@@ -91,7 +91,7 @@ export default class Levit extends ProjectView {
 
 	setLight() {
 
-		let light = new DirectionalLight( 0x125714, 2 );
+		let light = new DirectionalLight( 0x1B8560, 1.2 );
 		light.position.set( 0, 0, 1 );
 		this.scene.add( light );
 
