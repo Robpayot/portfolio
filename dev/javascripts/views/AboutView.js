@@ -219,7 +219,7 @@ export default class AboutView extends AbstractView {
 		}
 
 		this.effectController = {
-			mouseSize: 34.0,
+			mouseSize: 40.0,
 			viscosity: 0.15
 		};
 
@@ -579,8 +579,8 @@ export default class AboutView extends AbstractView {
 		const tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
 
 		tl.set(this.ui.more, {transition: 'none'});
-		tl.staggerTo([...this.targetsIntro, this.ui.more], 2, {y: -120, ease: window.Power4.easeOut}, 0.04);
-		tl.staggerTo([...this.targetsIntro, this.ui.more], 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
+		tl.staggerTo([...this.targetsIntro, this.ui.more], 1.9, {y: -110, ease: window.Expo.easeOut}, 0.04);
+		tl.staggerTo([...this.targetsIntro, this.ui.more], 0.6, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
 		tl.set(this.ui.introWrap, {display : 'none'});
 
 		tl.set(this.ui.worksWrap, {display : 'block'} , 1);
@@ -614,8 +614,8 @@ export default class AboutView extends AbstractView {
 
 		const tl = new TimelineMax(); // Ultimate TimelineMax God Saiyan
 
-		tl.staggerTo(this.targetsWorks, 1.7, {y: -120, ease: window.Power4.easeOut}, 0.04);
-		tl.staggerTo(this.targetsWorks, 0.5, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
+		tl.staggerTo(this.targetsWorks, 1.9, {y: -110, ease: window.Expo.easeOut}, 0.04);
+		tl.staggerTo(this.targetsWorks, 0.6, {opacity: 0, ease: window.Linear.easeNone}, 0.04, 0);
 		tl.set(this.ui.worksWrap, {display : 'none'});
 
 		tl.set(this.ui.introWrap, {display : 'block'} , 1);

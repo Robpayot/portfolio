@@ -108,7 +108,6 @@ export default class Glitch {
 		this.video.src = 'videos/destr.mp4';
 		this.video.setAttribute('playsinline', '');
 		this.video.pause();
-		this.resizeHandler();
 
 		// this.video.remove();
 
@@ -126,6 +125,8 @@ export default class Glitch {
 
 		// set up alpha video
 		if (this.obj.type === 'intro') this.setAlphaVideo();
+
+		this.resizeHandler();
 
 		if (this.debug === true) {
 			this.events(true);
