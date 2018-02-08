@@ -118,15 +118,15 @@ class AppManager {
 			}),
 			'switch': new Howl({
 				src: [`${global.BASE}/sounds/switch-3.mp3`],
-				volume: 0.3
+				volume: 0.15
 			}),
 			'switch_long': new Howl({
 				src: [`${global.BASE}/sounds/switch-4.mp3`],
-				volume: 0.3
+				volume: 0.15
 			}),
 			'hover': new Howl({
 				src: [`${global.BASE}/sounds/hover-3.mp3`],
-				volume: 0.4
+				volume: 0.15
 			}),
 			'hover_2': new Howl({
 				src: [`${global.BASE}/sounds/glitch-2.mp3`],
