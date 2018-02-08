@@ -1253,7 +1253,8 @@ body {
         pointer-events: auto;
         display: none;
         cursor: pointer;
-        letter-spacing: 0.4em; }
+        letter-spacing: 0.4em;
+        visibility: hidden; }
         .ui-content.is-intro .start p {
           font-size: 1.4rem;
           letter-spacing: 4px;

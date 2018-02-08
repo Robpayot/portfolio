@@ -131,7 +131,7 @@ export default class IntroView extends AbstractView {
 		if (this.gravity === true) this.initPhysics([0,0]);
 
 		this.nbAst = Device.size === 'mobile' ? 25 : 30;
-		this.minZoom = 900;
+		this.minZoom = 1200;
 		this.maxZoom = 1700;
 		if (Device.orientation === 'portrait') {
 			this.maxZoom = 2700;
@@ -194,8 +194,8 @@ export default class IntroView extends AbstractView {
 		this.ui.uiContent.classList.add('ui-content', 'is-intro');
 		this.ui.uiContent.innerHTML = html;
 
-		this.ui.button = document.querySelector('.start');
-		this.ui.buttonSvg = document.querySelector('.start svg');
+		this.ui.button = document.querySelector('.preload__symbol');
+		this.ui.buttonSvg = document.querySelector('.preload__symbol svg');
 		this.ui.overlay = document.querySelector('.intro__overlay');
 
 	}
@@ -488,23 +488,25 @@ export default class IntroView extends AbstractView {
 
 	onHoverStart() {
 
+		console.log('helloooooo');
+
 		this.startIsHover = true;
 		if (this.animBtn === true) return false;
 		global.CURSOR.interractHover({magnet: true, el: this.ui.buttonSvg});
 
 		const tl = new TimelineMax();
-		TweenMax.killTweensOf(['.start .close-up','.start .close-down']);
-		TweenMax.to('.start circle', 0, {opacity: 0});
+		TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
+		TweenMax.to('.preload__symbol circle', 0, {opacity: 0});
 
-		tl.to('.start .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
-		tl.to('.start .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
-		tl.set(['.start .close-up','.start .close-down'], {clearProps: 'all'});
+		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
+		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+		tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animBtn = false;
 		});
 
-		tl.fromTo('.start p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 0);
-		tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
+		tl.fromTo('.preload__symbol p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 0);
+		tl.fromTo('.preload__symbol p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 0);
 
 		// sound
 		global.SOUNDS['hover'].play();
@@ -514,12 +516,12 @@ export default class IntroView extends AbstractView {
 
 		global.CURSOR.interractLeave({magnet: true, el: this.ui.buttonSvg});
 		this.startIsHover = false;
-		TweenMax.fromTo('.start circle', 0.2, {opacity: 0}, {opacity: 1});
-		TweenMax.set('.start circle', {transformOrigin: '50% 50%'});
-		TweenMax.fromTo('.start circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
+		TweenMax.fromTo('.preload__symbol circle', 0.2, {opacity: 0}, {opacity: 1});
+		TweenMax.set('.preload__symbol circle', {transformOrigin: '50% 50%'});
+		TweenMax.fromTo('.preload__symbol circle', 1.2, {scale: 0.5}, {scale: 1, ease: window.Expo.easeOut});
 
-		TweenMax.to('.start p', 1, {y: 20, ease: window.Expo.easeOut});
-		TweenMax.to('.start p', 0.1, {opacity: 0, ease: window.Linear.easeNone});
+		TweenMax.to('.preload__symbol p', 1, {y: 20, ease: window.Expo.easeOut});
+		TweenMax.to('.preload__symbol p', 0.1, {opacity: 0, ease: window.Linear.easeNone});
 	}
 
 	onClick() {
@@ -700,17 +702,17 @@ export default class IntroView extends AbstractView {
 		}
 
 		const tl = new TimelineMax();
-		tl.add(() => {
 
-			this.moveCameraIn(fromProject);
-		}, 0 );
 
 		if (fromProject === false) {
+			tl.add(() => {
 
+				this.moveCameraIn(fromProject);
+			}, 2 );
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
-			}, 1 );
+			}, 3 );
 
 			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 2.3); // display buttons
 
@@ -721,7 +723,10 @@ export default class IntroView extends AbstractView {
 			}
 
 		} else {
+			tl.add(() => {
 
+				this.moveCameraIn(fromProject);
+			}, 0 );
 			this.camera.position.set(0, this.maxZoom, 0);
 			this.camera.rotation.x = toRadian(-90);
 

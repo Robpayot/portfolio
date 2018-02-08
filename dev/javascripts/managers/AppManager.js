@@ -338,7 +338,10 @@ class AppManager {
 					RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 					this.glitch.isLoading = false; // apply video alpha
 				}, 0);
-				tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+				// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+				tl.to('.preload__symbol', 1.5, {x: '220%', ease: window.Expo.easeInOut}, 1.5);
+
+				tl.to('.preload', 2, {backgroundColor: 'transparent', ease: window.Expo.easeInOut}, 3);
 
 				tl.add(() => {
 					this.glitch.ready = false; // stop raf destr
