@@ -1481,16 +1481,16 @@ function preventLink(e) {
 	// 	console.log('already fullscreen');
 	// } else {
 	// go full-screen
-	var i = document.documentElement;
-	if (i.requestFullscreen) {
-		i.requestFullscreen();
-	} else if (i.webkitRequestFullscreen) {
-		i.webkitRequestFullscreen();
-	} else if (i.mozRequestFullScreen) {
-		i.mozRequestFullScreen();
-	} else if (i.msRequestFullscreen) {
-		i.msRequestFullscreen();
-	}
+	// let i = document.documentElement;
+	// if (i.requestFullscreen) {
+	// 	i.requestFullscreen();
+	// } else if (i.webkitRequestFullscreen) {
+	// 	i.webkitRequestFullscreen();
+	// } else if (i.mozRequestFullScreen) {
+	// 	i.mozRequestFullScreen();
+	// } else if (i.msRequestFullscreen) {
+	// 	i.msRequestFullscreen();
+	// }
 	// if (document.exitFullscreen) {
 	// 	document.exitFullscreen();
 	// }
@@ -1841,8 +1841,25 @@ var AppManager = function () {
 						tl.add(function () {
 							_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
 							_this5.glitch.isLoading = false; // apply video alpha
-						}, 0.5);
-						tl.to('.preload', 1, { autoAlpha: 0, ease: window.Linear.easeNone }, '+=1');
+						}, 0);
+						// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+						if (_RouterManager2.default.currentPage === null && /\/#about/.test(window.location.href) === false) {
+							tl.to(_this5.ui.preloadSymbol, 2, { x: _this5.ui.preloadWrapper.offsetWidth / 2 - _this5.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut }, 2);
+							tl.to('.preload', 1, { backgroundColor: 'transparent', ease: window.Linear.easeNone }, 4);
+						} else {
+
+							tl.to(_this5.ui.preloadSymbol, 1.5, { opacity: 0, ease: window.Linear.easeNone }, 0.5);
+							tl.to('.preload', 1, { backgroundColor: 'transparent', ease: window.Linear.easeNone }, 1);
+							tl.set(_this5.ui.preloadSymbol, { x: _this5.ui.preloadWrapper.offsetWidth / 2 - _this5.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut }, 2.1);
+						}
+
+						tl.add(function () {
+							_this5.ui.preloadSymbol.classList.add('is-center');
+						}, 1.5);
+						// tl.set(['.preload__glitch', '.preload .glitch__canvas'], {display: 'none'}, 3);
+						tl.add(function () {
+							_this5.ui.preloadSymbol.href = '#' + _data2.default.projects[0].slug;
+						}, 3);
 
 						// tl.add(() => {
 						// 	this.glitch.ready = false; // stop raf destr

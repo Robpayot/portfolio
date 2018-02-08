@@ -318,8 +318,25 @@ class AppManager {
 					tl.add(() => {
 						RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 						this.glitch.isLoading = false; // apply video alpha
-					}, 0.5);
-					tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=1');
+					}, 0);
+					// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
+					if (RouterManager.currentPage === null && /\/#about/.test(window.location.href) === false) {
+						tl.to(this.ui.preloadSymbol, 2, {x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut}, 2);
+						tl.to('.preload', 1, {backgroundColor: 'transparent', ease: window.Linear.easeNone}, 4);
+					} else {
+
+						tl.to(this.ui.preloadSymbol, 1.5, {opacity: 0, ease: window.Linear.easeNone}, 0.5);
+						tl.to('.preload', 1, {backgroundColor: 'transparent', ease: window.Linear.easeNone}, 1);
+						tl.set(this.ui.preloadSymbol, {x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut}, 2.1);
+					}
+
+					tl.add(() => {
+						this.ui.preloadSymbol.classList.add('is-center');
+					}, 1.5);
+					// tl.set(['.preload__glitch', '.preload .glitch__canvas'], {display: 'none'}, 3);
+					tl.add(() => {
+						this.ui.preloadSymbol.href = `#${DATA.projects[0].slug}`;
+					}, 3);
 
 					// tl.add(() => {
 					// 	this.glitch.ready = false; // stop raf destr

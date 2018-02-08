@@ -575,6 +575,8 @@ body {
     align-items: center;
     height: 6.0rem;
     opacity: 0; }
+    .is-touch .preload__wrapper {
+      pointer-events: auto; }
     .preload__wrapper.start-fs {
       pointer-events: auto;
       font-size: 1.6rem;
