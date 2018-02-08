@@ -10,30 +10,12 @@
 	align-items: center;
 	z-index: 9000;
 	overflow: hidden;
-
-	&__bars {
-		position: relative;
-		width: 15.0rem;
-		height: 2px;
-		background-color: white;
-		margin: 0 auto;
-		margin-top: 2.5rem;
-	}
-
-	&__bar {
-		position: absolute;
-		width: 0%;
-		height: 100%;
-		top: 0;
-		left: 0;
-		background-color: black;
-	}
+	pointer-events: none;
 
 	&__wrapper {
 		position: relative;
 		display: flex;
 		align-items: center;
-		pointer-events: auto;
 		height: 6.0rem;
 		opacity: 0;
 
@@ -76,10 +58,27 @@
 		color: black;
 		font-size: 2rem;
 		margin-right: 3.5rem;
-		pointer-events: auto;
-		cursor: pointer;
-		height: 90%;
-		
+		pointer-events: none;
+		height: 100%;
+		text-transform: uppercase;
+		display: flex;
+    	align-items: center;
+
+		&.is-center {
+			pointer-events: auto;
+		}
+
+		p {
+			position: absolute;
+			top: 100%;
+			font-size: 1.4rem;
+	    	letter-spacing: 4px;
+	    	margin-right: -4px;
+	    	margin-top: 15px;
+	    	@extend %Regular;
+		    opacity: 0;
+		    will-change: transform;
+		}
 
 		svg polyline,
 		svg circle {
@@ -94,8 +93,8 @@
 		svg {
 			margin: 0 auto;
 			display: block;
-			width: auto;
-			height: 100%;
+			width: 5.0rem;
+			height: 5.0rem;
 			position: relative;
 			transform: rotate(-90deg);
 			// cursor: pointer;

@@ -132,7 +132,7 @@ export default class IntroView extends AbstractView {
 
 		this.nbAst = Device.size === 'mobile' ? 25 : 30;
 		this.minZoom = 1200;
-		this.maxZoom = 1700;
+		this.maxZoom = 1900;
 		if (Device.orientation === 'portrait') {
 			this.maxZoom = 2700;
 			this.minZoom = 1700;
@@ -260,7 +260,7 @@ export default class IntroView extends AbstractView {
 			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide}) // map: this.skyTex, color: white
 		);
 
-		this.plane.position.y = this.maxZoom - 400;
+		this.plane.position.y = this.minZoom - 400;
 		this.plane.rotation.x = toRadian(-90);
 
 		this.sceneMirror.add( this.plane );
@@ -498,8 +498,8 @@ export default class IntroView extends AbstractView {
 		TweenMax.killTweensOf(['.preload__symbol .close-up','.preload__symbol .close-down']);
 		TweenMax.to('.preload__symbol circle', 0, {opacity: 0});
 
-		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut}, 0);
-		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut}, 0);
+		tl.to('.preload__symbol .close-up', 1, {strokeDashoffset: 0, ease: window.Expo.easeOut}, 0);
+		tl.to('.preload__symbol .close-down', 1.2, {strokeDashoffset: this.maxDash * 5 + 205, ease: window.Expo.easeOut}, 0);
 		tl.set(['.preload__symbol .close-up','.preload__symbol .close-down'], {clearProps: 'all'});
 		tl.add(()=> {
 			this.animBtn = false;
@@ -697,7 +697,7 @@ export default class IntroView extends AbstractView {
 		this.ui.uiContent.style.display = 'block';
 		global.MENU.el.classList.remove('is-active');
 		if (Device.touch === true) {
-			let p = document.querySelector('.start p');
+			let p = document.querySelector('.preload__symbol p');
 			p.innerHTML = 'touch';
 		}
 
@@ -708,18 +708,18 @@ export default class IntroView extends AbstractView {
 			tl.add(() => {
 
 				this.moveCameraIn(fromProject);
-			}, 2 );
+			}, 3 );
 			tl.add(() => {
 				// start move Ast
 				this.startMove = true;
-			}, 3 );
+			}, 4 );
 
-			tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 2.3); // display buttons
+			// tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 2.3); // display buttons
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 3);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
+				tl.fromTo('.preload__symbol p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 3);
+				tl.fromTo('.preload__symbol p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
 			}
 
 		} else {
@@ -730,7 +730,7 @@ export default class IntroView extends AbstractView {
 			this.camera.position.set(0, this.maxZoom, 0);
 			this.camera.rotation.x = toRadian(-90);
 
-			tl.set(this.ui.button, {opacity: 0, display: 'block'}, '+=1.5');
+			tl.set(this.ui.button, {opacity: 0, display: 'block', visibility: 'visible'}, '+=1.5');
 			tl.to(this.ui.button, 3, {opacity: 1});
 			tl.add(() => {
 				global.OVERLAY.classList.remove('visible');
@@ -743,8 +743,8 @@ export default class IntroView extends AbstractView {
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.start p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 2.5);
-				tl.fromTo('.start p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 2.5);
+				tl.fromTo('.preload__symbol p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 2.5);
+				tl.fromTo('.preload__symbol p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 2.5);
 			}
 		}
 

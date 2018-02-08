@@ -85,7 +85,7 @@
 					overflow: visible;
 				}
 				& > * {
-					transform: translate3d(0, 130%, 0);
+					transform: translateY(130%);
 					opacity: 0;
 					transition: opacity 1s linear, transform 1.6s $ExpoEaseOut;
 					display: inline-block;
@@ -93,7 +93,7 @@
 
 					&.is-anim {
 						opacity: 1;
-						transform: translate3d(0, 0, 0);
+						transform: translateY(0);
 					}
 				}
 			}

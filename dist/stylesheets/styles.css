@@ -218,7 +218,7 @@ body {
   font-weight: 300;
   font-style: normal; }
 
-.glitch, .preload__wrapper.start-fs, .preload__txt, .project__more, .ui .menu__sublinks, .ui .menu .navigate, .ui .footer ul li, .ui-content.is-intro .start p, .ui-content.is-about .about__more, .ui-content.is-about .about__back, .ui-content.is-about .about__work p, .ui-content.is-project .project__descr, .ui-content.is-project .project__subHeader, .ui-content.is-project .project__back p, .ui-content.is-project .scroll {
+.glitch, .preload__wrapper.start-fs, .preload__txt, .preload__symbol p, .project__more, .ui .menu__sublinks, .ui .menu .navigate, .ui .footer ul li, .ui-content.is-intro .start p, .ui-content.is-about .about__more, .ui-content.is-about .about__back, .ui-content.is-about .about__work p, .ui-content.is-project .project__descr, .ui-content.is-project .project__subHeader, .ui-content.is-project .project__back p, .ui-content.is-project .scroll {
   font-family: 'Theinhardt';
   font-weight: normal; }
 
@@ -563,21 +563,8 @@ body {
   -ms-flex-align: center;
   align-items: center;
   z-index: 9000;
-  overflow: hidden; }
-  .preload__bars {
-    position: relative;
-    width: 15.0rem;
-    height: 2px;
-    background-color: white;
-    margin: 0 auto;
-    margin-top: 2.5rem; }
-  .preload__bar {
-    position: absolute;
-    width: 0%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: black; }
+  overflow: hidden;
+  pointer-events: none; }
   .preload__wrapper {
     position: relative;
     display: -webkit-box;
@@ -586,7 +573,6 @@ body {
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
-    pointer-events: auto;
     height: 6.0rem;
     opacity: 0; }
     .preload__wrapper.start-fs {
@@ -617,9 +603,26 @@ body {
     color: black;
     font-size: 2rem;
     margin-right: 3.5rem;
-    pointer-events: auto;
-    cursor: pointer;
-    height: 90%; }
+    pointer-events: none;
+    height: 100%;
+    text-transform: uppercase;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center; }
+    .preload__symbol.is-center {
+      pointer-events: auto; }
+    .preload__symbol p {
+      position: absolute;
+      top: 100%;
+      font-size: 1.4rem;
+      letter-spacing: 4px;
+      margin-right: -4px;
+      margin-top: 15px;
+      opacity: 0;
+      will-change: transform; }
     .preload__symbol svg polyline,
     .preload__symbol svg circle {
       stroke: black; }
@@ -629,8 +632,8 @@ body {
     .preload__symbol svg {
       margin: 0 auto;
       display: block;
-      width: auto;
-      height: 100%;
+      width: 5.0rem;
+      height: 5.0rem;
       position: relative;
       -webkit-transform: rotate(-90deg);
       -ms-transform: rotate(-90deg);
@@ -1251,7 +1254,6 @@ body {
         color: black;
         font-size: 2rem;
         pointer-events: auto;
-        display: none;
         cursor: pointer;
         letter-spacing: 0.4em;
         visibility: hidden; }
@@ -1263,7 +1265,7 @@ body {
           opacity: 0; }
         .ui-content.is-intro .start svg polyline,
         .ui-content.is-intro .start svg circle {
-          stroke: black; }
+          stroke: red; }
         .ui-content.is-intro .start svg {
           margin: 0 auto;
           display: block;
@@ -1361,8 +1363,9 @@ body {
           .ff .ui-content.is-about .about__intro p {
             overflow: visible; }
           .ui-content.is-about .about__intro p > * {
-            -webkit-transform: translate3d(0, 130%, 0);
-            transform: translate3d(0, 130%, 0);
+            -webkit-transform: translateY(130%);
+            -ms-transform: translateY(130%);
+            transform: translateY(130%);
             opacity: 0;
             transition: opacity 1s linear, -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
             transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
@@ -1371,8 +1374,9 @@ body {
             will-change: transform; }
             .ui-content.is-about .about__intro p > *.is-anim {
               opacity: 1;
-              -webkit-transform: translate3d(0, 0, 0);
-              transform: translate3d(0, 0, 0); }
+              -webkit-transform: translateY(0);
+              -ms-transform: translateY(0);
+              transform: translateY(0); }
       .ui-content.is-about .about__title {
         font-size: 3.4em;
         display: inline-block;

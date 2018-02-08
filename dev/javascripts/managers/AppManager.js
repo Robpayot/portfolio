@@ -254,6 +254,7 @@ class AppManager {
 		SceneManager.start();
 
 		this.ui = {
+			preloadWrapper: document.querySelector('.preload__wrapper'),
 			preloadSymbol: document.querySelector('.preload__symbol'),
 			xp: document.querySelector('.xp'),
 			webGl: document.querySelector('.webGL'),
@@ -333,15 +334,31 @@ class AppManager {
 				// start destruction effect
 				this.glitch.video.play(); // play video
 
+				console.log(RouterManager.currentPage);
+
 				const tl = new TimelineMax();
 				tl.add(() => {
 					RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
 					this.glitch.isLoading = false; // apply video alpha
 				}, 0);
 				// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
-				tl.to('.preload__symbol', 1.5, {x: '220%', ease: window.Expo.easeInOut}, 1.5);
+				if (RouterManager.currentPage === null && /\/#about/.test(window.location.href) === false) {
+					tl.to(this.ui.preloadSymbol, 2, {x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut}, 2);
+					tl.to('.preload', 1, {backgroundColor: 'transparent', ease: window.Linear.easeNone}, 4);
+				} else {
 
-				tl.to('.preload', 2, {backgroundColor: 'transparent', ease: window.Expo.easeInOut}, 3);
+					tl.to(this.ui.preloadSymbol, 1.5, {opacity: 0, ease: window.Linear.easeNone}, 0.5);
+					tl.to('.preload', 1, {backgroundColor: 'transparent', ease: window.Linear.easeNone}, 1);
+					tl.set(this.ui.preloadSymbol, {x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut}, 2.1);
+				}
+
+				tl.add(() => {
+					this.ui.preloadSymbol.classList.add('is-center');
+				}, 1.5);
+				tl.set(['.preload__glitch', '.preload .glitch__canvas'], {display: 'none'}, 3);
+				tl.add(() => {
+					this.ui.preloadSymbol.href = `#${DATA.projects[0].slug}`;
+				}, 3);
 
 				tl.add(() => {
 					this.glitch.ready = false; // stop raf destr
@@ -418,7 +435,7 @@ class AppManager {
 
 		Device.size = 'desktop';
 
-		if (window.innerHeight > window.innerWidth) {
+		if (window.innerHeight > window.innerWidth && Device.touch === true) {
 			Device.orientation = 'portrait';
 		} else {
 			Device.orientation = 'landscape';

@@ -1778,6 +1778,7 @@ var AppManager = function () {
 			_SceneManager2.default.start();
 
 			this.ui = {
+				preloadWrapper: document.querySelector('.preload__wrapper'),
 				preloadSymbol: document.querySelector('.preload__symbol'),
 				xp: document.querySelector('.xp'),
 				webGl: document.querySelector('.webGL'),
@@ -1854,15 +1855,31 @@ var AppManager = function () {
 					// start destruction effect
 					this.glitch.video.play(); // play video
 
+					console.log(_RouterManager2.default.currentPage);
+
 					var tl = new TimelineMax();
 					tl.add(function () {
 						_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
 						_this5.glitch.isLoading = false; // apply video alpha
 					}, 0);
 					// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
-					tl.to('.preload__symbol', 1.5, { x: '220%', ease: window.Expo.easeInOut }, 1.5);
+					if (_RouterManager2.default.currentPage === null && /\/#about/.test(window.location.href) === false) {
+						tl.to(this.ui.preloadSymbol, 2, { x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut }, 2);
+						tl.to('.preload', 1, { backgroundColor: 'transparent', ease: window.Linear.easeNone }, 4);
+					} else {
 
-					tl.to('.preload', 2, { backgroundColor: 'transparent', ease: window.Expo.easeInOut }, 3);
+						tl.to(this.ui.preloadSymbol, 1.5, { opacity: 0, ease: window.Linear.easeNone }, 0.5);
+						tl.to('.preload', 1, { backgroundColor: 'transparent', ease: window.Linear.easeNone }, 1);
+						tl.set(this.ui.preloadSymbol, { x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut }, 2.1);
+					}
+
+					tl.add(function () {
+						_this5.ui.preloadSymbol.classList.add('is-center');
+					}, 1.5);
+					tl.set(['.preload__glitch', '.preload .glitch__canvas'], { display: 'none' }, 3);
+					tl.add(function () {
+						_this5.ui.preloadSymbol.href = '#' + _data2.default.projects[0].slug;
+					}, 3);
 
 					tl.add(function () {
 						_this5.glitch.ready = false; // stop raf destr
@@ -1940,7 +1957,7 @@ var AppManager = function () {
 
 			_Device.Device.size = 'desktop';
 
-			if (window.innerHeight > window.innerWidth) {
+			if (window.innerHeight > window.innerWidth && _Device.Device.touch === true) {
 				_Device.Device.orientation = 'portrait';
 			} else {
 				_Device.Device.orientation = 'landscape';
@@ -3309,7 +3326,7 @@ var Levit = function (_ProjectView) {
 					this.asteroids[_i].mesh.rotation.y += (this.asteroids[_i].timeRotate + this.asteroids[_i].velocity) * this.asteroids[_i].dir;
 				} else {
 					if (this.asteroids[_i].velocity !== 0) {
-						this.asteroids[_i].velocity -= 0.0004;
+						this.asteroids[_i].velocity -= 0.0003;
 						this.asteroids[_i].velocity = Math.max(0, this.asteroids[_i].velocity);
 					}
 
@@ -10648,7 +10665,7 @@ var IntroView = function (_AbstractView) {
 
 			this.nbAst = _Device.Device.size === 'mobile' ? 25 : 30;
 			this.minZoom = 1200;
-			this.maxZoom = 1700;
+			this.maxZoom = 1900;
 			if (_Device.Device.orientation === 'portrait') {
 				this.maxZoom = 2700;
 				this.minZoom = 1700;
@@ -10774,7 +10791,7 @@ var IntroView = function (_AbstractView) {
 			this.plane = new _three.Mesh(new _three.PlaneGeometry(this.finalBounds * 2, this.finalBounds * 2), new _three.MeshBasicMaterial({ map: this.skyTex, side: _three.DoubleSide }) // map: this.skyTex, color: white
 			);
 
-			this.plane.position.y = this.maxZoom - 400;
+			this.plane.position.y = this.minZoom - 400;
 			this.plane.rotation.x = (0, _utils.toRadian)(-90);
 
 			this.sceneMirror.add(this.plane);
@@ -11011,8 +11028,8 @@ var IntroView = function (_AbstractView) {
 			TweenMax.killTweensOf(['.preload__symbol .close-up', '.preload__symbol .close-down']);
 			TweenMax.to('.preload__symbol circle', 0, { opacity: 0 });
 
-			tl.to('.preload__symbol .close-up', 1, { strokeDashoffset: -this.maxDash * 2, ease: window.Expo.easeOut }, 0);
-			tl.to('.preload__symbol .close-down', 1.2, { strokeDashoffset: this.maxDash * 3 + 205, ease: window.Expo.easeOut }, 0);
+			tl.to('.preload__symbol .close-up', 1, { strokeDashoffset: 0, ease: window.Expo.easeOut }, 0);
+			tl.to('.preload__symbol .close-down', 1.2, { strokeDashoffset: this.maxDash * 5 + 205, ease: window.Expo.easeOut }, 0);
 			tl.set(['.preload__symbol .close-up', '.preload__symbol .close-down'], { clearProps: 'all' });
 			tl.add(function () {
 				_this3.animBtn = false;
@@ -11210,7 +11227,7 @@ var IntroView = function (_AbstractView) {
 			this.ui.uiContent.style.display = 'block';
 			global.MENU.el.classList.remove('is-active');
 			if (_Device.Device.touch === true) {
-				var p = document.querySelector('.start p');
+				var p = document.querySelector('.preload__symbol p');
 				p.innerHTML = 'touch';
 			}
 
@@ -11220,18 +11237,18 @@ var IntroView = function (_AbstractView) {
 				tl.add(function () {
 
 					_this4.moveCameraIn(fromProject);
-				}, 2);
+				}, 3);
 				tl.add(function () {
 					// start move Ast
 					_this4.startMove = true;
-				}, 3);
+				}, 4);
 
-				tl.fromTo(this.ui.button, 3, { opacity: 0, display: 'block' }, { opacity: 1, display: 'block' }, 2.3); // display buttons
+				// tl.fromTo(this.ui.button, 3, {opacity: 0, display: 'block'}, {opacity: 1, display: 'block'}, 2.3); // display buttons
 
 				if (_Device.Device.touch === true) {
 
-					tl.fromTo('.start p', 0.8, { y: 30 }, { y: 0, ease: window.Expo.easeOut }, 3);
-					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 3);
+					tl.fromTo('.preload__symbol p', 0.8, { y: 30 }, { y: 0, ease: window.Expo.easeOut }, 3);
+					tl.fromTo('.preload__symbol p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 3);
 				}
 			} else {
 				tl.add(function () {
@@ -11241,7 +11258,7 @@ var IntroView = function (_AbstractView) {
 				this.camera.position.set(0, this.maxZoom, 0);
 				this.camera.rotation.x = (0, _utils.toRadian)(-90);
 
-				tl.set(this.ui.button, { opacity: 0, display: 'block' }, '+=1.5');
+				tl.set(this.ui.button, { opacity: 0, display: 'block', visibility: 'visible' }, '+=1.5');
 				tl.to(this.ui.button, 3, { opacity: 1 });
 				tl.add(function () {
 					global.OVERLAY.classList.remove('visible');
@@ -11254,8 +11271,8 @@ var IntroView = function (_AbstractView) {
 
 				if (_Device.Device.touch === true) {
 
-					tl.fromTo('.start p', 0.8, { y: 30 }, { y: 0, ease: window.Expo.easeOut }, 2.5);
-					tl.fromTo('.start p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 2.5);
+					tl.fromTo('.preload__symbol p', 0.8, { y: 30 }, { y: 0, ease: window.Expo.easeOut }, 2.5);
+					tl.fromTo('.preload__symbol p', 0.2, { opacity: 0 }, { opacity: 1, ease: window.Linear.easeNone }, 2.5);
 				}
 			}
 		}
