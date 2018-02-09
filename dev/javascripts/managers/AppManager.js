@@ -272,6 +272,8 @@ class AppManager {
 		// Complete loader 100%
 		TweenMax.to('.preload__symbol circle', 0.5, {strokeDashoffset: 0, ease: window.Linear.easeNone});
 
+		global.OVERLAY.classList.add('black');
+
 
 	}
 
