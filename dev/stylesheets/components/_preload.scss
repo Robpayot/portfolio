@@ -67,6 +67,7 @@
 		text-transform: uppercase;
 		display: flex;
     	align-items: center;
+    	position: relative;
 
 		&.is-center {
 			pointer-events: auto;
@@ -75,13 +76,15 @@
 		p {
 			position: absolute;
 			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
 			font-size: 1.4rem;
 	    	letter-spacing: 4px;
-	    	margin-right: -4px;
 	    	margin-top: 15px;
 	    	@extend %Regular;
 		    opacity: 0;
 		    will-change: transform;
+		    margin-left: 0.3rem;
 		}
 
 		svg polyline,

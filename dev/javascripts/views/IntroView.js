@@ -294,7 +294,7 @@ export default class IntroView extends AbstractView {
 		} );
 		mesh = new Mesh(this.models[1], mat);
 		mesh.position.y = 5;
-		mesh.position.x = 25;
+		mesh.position.x = 15;
 		mesh.rotation.y = toRadian(-180);
 		mesh.scale.set(60, 60, 60);
 		// mesh.scale.set(0.075, 0.075, 0.075); // old iceberg
@@ -718,8 +718,8 @@ export default class IntroView extends AbstractView {
 
 			if (Device.touch === true) {
 
-				tl.fromTo('.preload__symbol p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 3);
-				tl.fromTo('.preload__symbol p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 3);
+				tl.fromTo('.preload__symbol p', 0.8, {y: 30}, {y: 0, ease: window.Expo.easeOut}, 5);
+				tl.fromTo('.preload__symbol p', 0.2, {opacity: 0}, {opacity:1, ease: window.Linear.easeNone}, 5);
 			}
 
 		} else {
