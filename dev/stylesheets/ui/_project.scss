@@ -68,11 +68,16 @@ $project3D-w : 1075px;
 				overflow: hidden;
 				line-height: 1;
 				& > * {
-					transform: translateY(100%);
-					transition: transform 1.8s $ExpoEaseOut;
-
+					opacity: 0;
+					transform: translate3D(0, 100%, 0);
+					transition:  opacity 0.8s linear, transform 1.8s $ExpoEaseOut;
+					.ff & {
+						transform: translate3D(0, 0, 0);
+					}
 					&.is-anim {
-						transform: translateY(0%);
+						opacity: 1;
+						transition: opacity 0.8s linear, transform 1.8s $ExpoEaseOut;
+						transform: translate3D(0, 0, 0);
 					}
 				}
 			}
@@ -81,11 +86,15 @@ $project3D-w : 1075px;
 
 		&__date {
 			color: $color-grey;
-			transform: translateY(100%);
-			transition: transform 1.8s $ExpoEaseOut;
-
+			transform: translate3D(0, 100%, 0);
+			opacity: 0;
+			.ff & {
+				transform: translate3D(0, 0, 0);
+			}
 			&.is-anim {
-				transform: translateY(0%);
+				opacity: 1;
+				transition: opacity 0.8s linear, transform 1.8s $ExpoEaseOut;
+				transform: translate3D(0, 0, 0);
 			}
 		}
 
