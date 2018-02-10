@@ -125,25 +125,29 @@
 			font-size: 20px;
 		    color: #030000;
 		    text-align: center;
-			    overflow: hidden;
+			overflow: hidden;
 		    .parent {
 
 				text-align: center;
 			    margin: 0;
 			    display: block;
 			    line-height: 1.3em;
+			    position: relative;
 
 		    }
 
 			.parent > * {
 
-				transform: translate3D(0, 100%, 0);
-				transform-origin: left center 0px;
+				// transform: translate3D(0, 100%, 0);
+				// transform-origin: left center 0px;
+				top: 100%;
+				position: absolute;
 				// vertical-align: middle;
 
 				&.is-anim {
-					transition: transform 2s ease-out;
-					transform: translate3D(0, 0, 0);
+					transition: top 2s ease-out;
+					// transform: translate3D(0, 0, 0);
+					top: 0%;
 				}
 			}	
 		}
