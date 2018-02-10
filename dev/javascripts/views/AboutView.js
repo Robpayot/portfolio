@@ -97,13 +97,13 @@ export default class AboutView extends AbstractView {
 		this.targetsWorks = this.targetsWorks.concat(works);
 
 		// Detect if we need a scroll event
-		TweenMax.set(this.ui.worksWrap, {display: 'block'});
-		if (this.ui.worksWrap.offsetHeight < window.innerHeight - 100) {
-			this.noscroll = true;
-			this.ui.worksWrap.classList.add('noscroll');
+		// TweenMax.set(this.ui.worksWrap, {display: 'block'});
+		// if (this.ui.worksWrap.offsetHeight < window.innerHeight - 100) {
+		// 	this.noscroll = true;
+		// 	this.ui.worksWrap.classList.add('noscroll');
 
-		}
-		TweenMax.set(this.ui.worksWrap, {display: 'none'});
+		// }
+		// TweenMax.set(this.ui.worksWrap, {display: 'none'});
 
 		this.events(true);
 		global.OVERLAY.classList.add('black');
@@ -139,21 +139,21 @@ export default class AboutView extends AbstractView {
 			ScrollManager[listener]();
 			// }
 
-			for (let i = 0; i < this.ui.links.length; i++) {
-				this.ui.links[i][evListener]( 'mouseenter', this.onHoverLink, false );
-				this.ui.links[i][evListener]( 'mouseleave', this.onLeaveLink, false );
-			}
+			// for (let i = 0; i < this.ui.links.length; i++) {
+			// 	this.ui.links[i][evListener]( 'mouseenter', this.onHoverLink, false );
+			// 	this.ui.links[i][evListener]( 'mouseleave', this.onLeaveLink, false );
+			// }
 
-			this.ui.more[evListener]( 'mouseenter', this.onHoverMore, false );
-			this.ui.more[evListener]( 'mouseleave', this.onLeaveMore, false );
+			// this.ui.more[evListener]( 'mouseenter', this.onHoverMore, false );
+			// this.ui.more[evListener]( 'mouseleave', this.onLeaveMore, false );
 
-			this.ui.back[evListener]( 'mouseenter', this.onHoverMore, false );
-			this.ui.back[evListener]( 'mouseleave', this.onLeaveMore, false );
+			// this.ui.back[evListener]( 'mouseenter', this.onHoverMore, false );
+			// this.ui.back[evListener]( 'mouseleave', this.onLeaveMore, false );
 
-			for (let i = 0; i < this.ui.worksLinks.length; i++) {
-				this.ui.worksLinks[i][evListener]( 'mouseenter', this.onHoverWork, false );
-				this.ui.worksLinks[i][evListener]( 'mouseleave', this.onLeaveWork, false );
-			}
+			// for (let i = 0; i < this.ui.worksLinks.length; i++) {
+			// 	this.ui.worksLinks[i][evListener]( 'mouseenter', this.onHoverWork, false );
+			// 	this.ui.worksLinks[i][evListener]( 'mouseleave', this.onLeaveWork, false );
+			// }
 		} else {
 
 			if (this.noscroll !== true) {
@@ -165,8 +165,8 @@ export default class AboutView extends AbstractView {
 			// document[evListener]( 'touchmove', this.onDocumentTouchMove, false );  // à faire pour tablet
 		}
 
-		this.ui.more[evListener]('click', this.onClickMore);
-		this.ui.back[evListener]('click', this.onClickBack);
+		// this.ui.more[evListener]('click', this.onClickMore);
+		// this.ui.back[evListener]('click', this.onClickBack);
 
 
 	}
@@ -239,6 +239,7 @@ export default class AboutView extends AbstractView {
 		// };
 		// gui.add( buttonSmooth, 'smoothWater' );
 		// gui.close();
+		this.resizeHandler();
 
 		global.CURSOR.el.classList.add('alt');
 
@@ -436,10 +437,14 @@ export default class AboutView extends AbstractView {
 
 		this.ui.uiContent.innerHTML = html;
 
-		this.splitTitle = new SplitText('.about__title', {type:'chars'});
-		this.splitTexts = new SplitText('.about__intro p', {type:'words'});
-		this.splitWorksTop = new SplitText('.about__work__top > span:first-child', {type:'chars'});
-		this.splitWorksDescr = new SplitText('.about__work__descr', {type:'words'});
+		console.log('oui');
+
+		this.splitTest = new SplitText('.about__test', {type:'chars'});
+
+		// this.splitTitle = new SplitText('.about__title', {type:'chars'});
+		// this.splitTexts = new SplitText('.about__intro p', {type:'words'});
+		// this.splitWorksTop = new SplitText('.about__work__top > span:first-child', {type:'chars'});
+		// this.splitWorksDescr = new SplitText('.about__work__descr', {type:'words'});
 
 	}
 
@@ -693,26 +698,39 @@ export default class AboutView extends AbstractView {
 
 		const tlTitle = new TimelineMax();
 		let delayTitle = 0;
-		for (let i = 0; i < this.splitTitle.chars.length; i++) {
+		for (let i = 0; i < this.splitTest.chars.length; i++) {
 
 			tlTitle.add(() => {
-				this.splitTitle.chars[i].classList.add('is-anim');
+				this.splitTest.chars[i].classList.add('is-anim');
 			}, delayTitle);
 
 			delayTitle += 0.07;
 		}
 
 		delayTitle = 0;
-		const splitTextsWords = document.querySelectorAll('.about__intro p > *');
 
-		for (let i = 0; i < splitTextsWords.length; i++) {
+		// const tlTitle = new TimelineMax();
+		// let delayTitle = 0;
+		// for (let i = 0; i < this.splitTitle.chars.length; i++) {
 
-			tlTitle.add(() => {
-				splitTextsWords[i].classList.add('is-anim');
-			}, 0.5 + delayTitle);
+		// 	tlTitle.add(() => {
+		// 		this.splitTitle.chars[i].classList.add('is-anim');
+		// 	}, delayTitle);
 
-			delayTitle += 0.01;
-		}
+		// 	delayTitle += 0.07;
+		// }
+
+		// delayTitle = 0;
+		// const splitTextsWords = document.querySelectorAll('.about__intro p > *');
+
+		// for (let i = 0; i < splitTextsWords.length; i++) {
+
+		// 	tlTitle.add(() => {
+		// 		splitTextsWords[i].classList.add('is-anim');
+		// 	}, 0.5 + delayTitle);
+
+		// 	delayTitle += 0.01;
+		// }
 
 		// delayTitle = 0;
 		// const splitP = document.querySelectorAll('.about__intro p');
@@ -737,9 +755,9 @@ export default class AboutView extends AbstractView {
 		// 	delayTitle += 0.2;
 		// }
 
-		tlTitle.add(() => {
-			this.ui.more.classList.add('is-anim');
-		});
+		// tlTitle.add(() => {
+		// 	this.ui.more.classList.add('is-anim');
+		// });
 	}
 
 	animWorks() {
@@ -891,48 +909,48 @@ export default class AboutView extends AbstractView {
 
 		// on scroll Z
 		// smooth scroll
-		if (this.scrollZ !== 0 || this.scrollY !== 0) {
+		// if (this.scrollZ !== 0 || this.scrollY !== 0) {
 
-			if (this.noscroll === true || this.moreOpen !== true && this.noscroll !== true) {
-				if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
-					// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
+		// 	if (this.noscroll === true || this.moreOpen !== true && this.noscroll !== true) {
+		// 		if (round(this.scrollZ, 10) !== round(this.scrollZSmooth, 10))  {
+		// 			// console.log(round(this.scrollZ, 10), this.scrollZSmooth);
 
-					// smooth scroll
-					this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
+		// 			// smooth scroll
+		// 			this.scrollZSmooth += (this.scrollZ - this.scrollZSmooth) * this.coefScrollZ; // We need a RAF for a smooth like that
 
-					if (this.scrollZSmooth > this.zoomZ) { // going backward
+		// 			if (this.scrollZSmooth > this.zoomZ) { // going backward
 
-						if (this.stopScrollZ !== true ) {
-							// this.transitionOutScrolled = true;
-							this.stopScrollZ = true;
-							this.goToNoScroll = true;
-							this.dir = 1;
-							window.location.href = `#${DATA.projects[3].slug}`;
+		// 				if (this.stopScrollZ !== true ) {
+		// 					// this.transitionOutScrolled = true;
+		// 					this.stopScrollZ = true;
+		// 					this.goToNoScroll = true;
+		// 					this.dir = 1;
+		// 					window.location.href = `#${DATA.projects[3].slug}`;
 
-						}
-					}
+		// 				}
+		// 			}
 
-				}
-			}
+		// 		}
+		// 	}
 
-			// on scroll Content
-			if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
+		// 	// on scroll Content
+		// 	if (round(this.scrollY, 10) !== round(this.scrollYSmooth, 10))  {
 
-				// smooth scroll
-				this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
+		// 		// smooth scroll
+		// 		this.scrollYSmooth += (this.scrollY - this.scrollYSmooth) * this.coefScrollY; // We need a RAF for a smooth like that
 
-				if (this.scrollYSmooth >= this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY) { // end
-					this.scrollY = this.scrollYSmooth = this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY;
-					TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
-				} else if (this.scrollYSmooth < 0) { // top
-					this.scrollY = this.scrollYSmooth = 0;
-					TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
-				} else {
-					TweenMax.set(this.ui.worksWrap, { y: -this.scrollYSmooth});
-				}
+		// 		if (this.scrollYSmooth >= this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY) { // end
+		// 			this.scrollY = this.scrollYSmooth = this.ui.worksWrap.offsetHeight - window.innerHeight + this.margeScrollY;
+		// 			TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
+		// 		} else if (this.scrollYSmooth < 0) { // top
+		// 			this.scrollY = this.scrollYSmooth = 0;
+		// 			TweenMax.to(this.ui.worksWrap, 0.4, { y: -this.scrollYSmooth}); // smooth it
+		// 		} else {
+		// 			TweenMax.set(this.ui.worksWrap, { y: -this.scrollYSmooth});
+		// 		}
 
-			}
-		}
+		// 	}
+		// }
 
 		// Do the gpu computation
 		this.gpuCompute.compute();
@@ -984,9 +1002,9 @@ export default class AboutView extends AbstractView {
 			delay: 0
 		});
 		tl.fromTo(this.camera.position, 5, {y: this.maxZoom - 100 }, {y: this.minZoom, ease: window.Expo.easeOut});
-		tl.set(this.ui.introWrap, {display : 'block'} , delay);
-		tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, delay);
-		tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, delay);
+		// tl.set(this.ui.introWrap, {display : 'block'} , delay);
+		// tl.staggerFromTo(this.targetsIntro, 2, {y: 120 }, {y: 0, ease: window.Expo.easeOut}, 0.04, delay);
+		// tl.staggerFromTo(this.targetsIntro, 0.5, {opacity: 0},{opacity: 1, ease: window.Linear.easeNone}, 0.04, delay);
 
 		tl.add(() => {
 			this.animIntro();

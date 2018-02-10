@@ -8,7 +8,7 @@
 	
 	// height: 100%;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translate3D(-50%, 0, 0);
 	// max-width: 1000px;
 	position: absolute;
 	width: 64vw;
@@ -70,7 +70,7 @@
 			position: absolute;
 			left: 0;
 			top: 50%;
-			transform: translateY(-50%);
+			transform: translate3D(0, -50%, 0);
 			display: none;
 
 			@include mobile {
@@ -85,7 +85,7 @@
 					overflow: visible;
 				}
 				& > * {
-					transform: translateY(130%);
+					transform: translate3D(0, 130%, 0);
 					opacity: 0;
 					transition: opacity 1s linear, transform 1.6s $ExpoEaseOut;
 					display: inline-block;
@@ -94,7 +94,7 @@
 
 					&.is-anim {
 						opacity: 1;
-						transform: translateY(0);
+						transform: translate3D(0, 0, 0);
 					}
 				}
 			}
@@ -108,15 +108,27 @@
 			line-height: 1;
 			margin-bottom: 1.6rem;
 			& > * {
-				transform: translateY(100%);
+				transform: translate3D(0, 100%, 0);
 				transition: transform 2s $ExpoEaseOut;
 				vertical-align: middle;
 
 				&.is-anim {
-					transform: translateY(0%);
+					transform: translate3D(0, 0, 0);
 				}
 			}
 			
+		}
+
+		&__test {
+			& > * {
+				transform: translate3D(0, 100%, 0);
+				transition: transform 2s $ExpoEaseOut;
+				vertical-align: middle;
+
+				&.is-anim {
+					transform: translate3D(0, 0, 0);
+				}
+			}	
 		}
 	    &__more,
 	    &__back {
@@ -149,7 +161,7 @@
 	    }
 
 	    &__more {
-	    	transform: translateY(100%);
+	    	transform: translate3D(0, 100%, 0);
 			opacity: 0;
 			transition: opacity 1s linear, transform 2s $ExpoEaseOut;
 			overflow: hidden;
@@ -157,7 +169,7 @@
 
 			&.is-anim {
 				opacity: 1;
-				transform: translateY(0%);
+				transform: translate3D(0, 0, 0);
 			}
 	    }
 
@@ -170,7 +182,7 @@
 	    	position: absolute;
 	    	top: 5rem;
 	    	left: 50%;
-	    	transform: translate(-50%, 0);
+	    	transform: translate3D(-50%, 0, 0);
 			width: 100%;
 			display: none;
 			pointer-events: auto;
@@ -178,7 +190,7 @@
 			&.noscroll {
 		    	top: 50%;
 		    	left: 50%;
-		    	transform: translate(-50%, -50%);	
+		    	transform: translate3D(-50%, -50%, 0);	
 			}
 
 	    }
@@ -203,7 +215,7 @@
 					overflow: hidden;
 					line-height: 1;
 					& > * {
-						transform: translateY(150%);
+						transform: translate3D(0, 150%, 0);
 						opacity: 0;
 						transition: opacity 0.6s linear, transform 2s $ExpoEaseOut;
 						will-change: transform;
@@ -213,7 +225,7 @@
 
 						&.is-anim {
 							opacity: 1;
-							transform: translateY(0%);
+							transform: translate3D(0, 0, 0);
 						}
 					}
 				}
@@ -222,7 +234,7 @@
 			&__descr {
 				line-height: 1;
 				& > * {
-					transform: translateY(100%);
+					transform: translate3D(0, 100%, 0);
 					opacity: 0;
 					transition: opacity 1s linear, transform 1.6s $ExpoEaseOut;
 					will-change: transform;
@@ -231,7 +243,7 @@
 
 					&.is-anim {
 						opacity: 1;
-						transform: translateY(0%);
+						transform: translate3D(0, 0, 0);
 					}
 				}
 			}
