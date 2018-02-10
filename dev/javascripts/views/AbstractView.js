@@ -46,10 +46,25 @@ export default class AbstractView {
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
 
+		let coef = false;
+
+		if (this.id === 0 ) {
+			coef = window.innerWidth > 1920 ? 0.65 : 0.7;
+		}
+
+		if (this.id === 1 ) {
+			coef = window.innerWidth > 1920 ? 0.65 : 0.8;
+		}
+
+		if (this.name === 'intro' || this.id === 2 || this.id === 3) {
+			coef = window.innerWidth > 1920 ? 0.65 : 0.75;
+		}
+
 		// Resize Scene
 		SceneManager.resizeHandler({
 			camera: this.camera,
-			cssScene: this.cssScene
+			cssScene: this.cssScene,
+			coef
 		});
 
 	}

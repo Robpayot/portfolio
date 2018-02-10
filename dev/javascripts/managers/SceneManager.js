@@ -80,7 +80,9 @@ class SceneManager {
 		if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
 		if (opts.camera) opts.camera.updateProjectionMatrix();
 
-		let coef = window.innerWidth > 1920 ? 0.65 : 0.8;
+		let coef = window.innerWidth > 1920 ? 0.65 : 0.65;
+
+		if (opts.coef) coef = opts.coef;
 
 		if (Device.touch === true && window.innerWidth <= 1200) {
 			coef *= window.devicePixelRatio; // good perfs on retina mobile

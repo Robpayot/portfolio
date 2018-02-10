@@ -323,7 +323,7 @@ class AppManager {
 					}, 1);
 					// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 					if (RouterManager.currentPage.name === 'intro') {
-						tl.to(this.ui.preloadSymbol, 2, {x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut}, 2);
+						tl.to(this.ui.preloadSymbol, 2, {x: this.ui.preloadWrapper.offsetWidth / 2 - this.ui.preloadSymbol.offsetWidth / 2, ease: window.Expo.easeInOut}, 1.2);
 						tl.to('.preload', 1, {backgroundColor: 'transparent', ease: window.Linear.easeNone}, 4);
 					} else {
 
