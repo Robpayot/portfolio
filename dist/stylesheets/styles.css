@@ -1314,9 +1314,9 @@ body {
       user-select: none;
       font-size: 1.2rem;
       left: 50%;
-      -webkit-transform: translate3D(-50%, 0, 0);
-      -ms-transform: translate3D(-50%, 0, 0);
-      transform: translate3D(-50%, 0, 0);
+      -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      transform: translateX(-50%);
       position: absolute;
       width: 64vw; }
       @media screen and (max-width: 768px) {
@@ -1358,9 +1358,9 @@ body {
         position: absolute;
         left: 0;
         top: 50%;
-        -webkit-transform: translate3D(0, -50%, 0);
-        -ms-transform: translate3D(0, -50%, 0);
-        transform: translate3D(0, -50%, 0);
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
         display: none; }
         @media screen and (max-width: 768px) {
           .ui-content.is-about .about__intro {
@@ -1372,9 +1372,9 @@ body {
           .ff .ui-content.is-about .about__intro p {
             overflow: visible; }
           .ui-content.is-about .about__intro p > * {
-            -webkit-transform: translate3D(0, 130%, 0);
-            -ms-transform: translate3D(0, 130%, 0);
-            transform: translate3D(0, 130%, 0);
+            -webkit-transform: translateY(130%);
+            -ms-transform: translateY(130%);
+            transform: translateY(130%);
             opacity: 0;
             transition: opacity 1s linear, -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
             transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
@@ -1384,9 +1384,9 @@ body {
             will-change: transform; }
             .ui-content.is-about .about__intro p > *.is-anim {
               opacity: 1;
-              -webkit-transform: translate3D(0, 0, 0);
-              -ms-transform: translate3D(0, 0, 0);
-              transform: translate3D(0, 0, 0); }
+              -webkit-transform: translateY(0);
+              -ms-transform: translateY(0);
+              transform: translateY(0); }
       .ui-content.is-about .about__title {
         font-size: 3.4em;
         display: inline-block;
@@ -1394,29 +1394,17 @@ body {
         line-height: 1;
         margin-bottom: 1.6rem; }
         .ui-content.is-about .about__title > * {
-          -webkit-transform: translate3D(0, 100%, 0);
-          -ms-transform: translate3D(0, 100%, 0);
-          transform: translate3D(0, 100%, 0);
+          -webkit-transform: translateY(100%);
+          -ms-transform: translateY(100%);
+          transform: translateY(100%);
           transition: -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
           transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1);
           transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
           vertical-align: middle; }
           .ui-content.is-about .about__title > *.is-anim {
-            -webkit-transform: translate3D(0, 0, 0);
-            -ms-transform: translate3D(0, 0, 0);
-            transform: translate3D(0, 0, 0); }
-      .ui-content.is-about .about__test > * {
-        -webkit-transform: translate3D(0, 100%, 0);
-        -ms-transform: translate3D(0, 100%, 0);
-        transform: translate3D(0, 100%, 0);
-        transition: -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        transition: transform 2s cubic-bezier(0.19, 1, 0.22, 1), -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
-        vertical-align: middle; }
-        .ui-content.is-about .about__test > *.is-anim {
-          -webkit-transform: translate3D(0, 0, 0);
-          -ms-transform: translate3D(0, 0, 0);
-          transform: translate3D(0, 0, 0); }
+            -webkit-transform: translateY(0%);
+            -ms-transform: translateY(0%);
+            transform: translateY(0%); }
       .ui-content.is-about .about__more, .ui-content.is-about .about__back {
         display: inline-block;
         font-size: 0.8em;
@@ -1439,9 +1427,9 @@ body {
         .is-touch .ui-content.is-about .about__more, .is-touch .ui-content.is-about .about__back {
           padding-left: 25px; }
       .ui-content.is-about .about__more {
-        -webkit-transform: translate3D(0, 100%, 0);
-        -ms-transform: translate3D(0, 100%, 0);
-        transform: translate3D(0, 100%, 0);
+        -webkit-transform: translateY(100%);
+        -ms-transform: translateY(100%);
+        transform: translateY(100%);
         opacity: 0;
         transition: opacity 1s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
         transition: opacity 1s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
@@ -1450,9 +1438,9 @@ body {
         display: inline-block; }
         .ui-content.is-about .about__more.is-anim {
           opacity: 1;
-          -webkit-transform: translate3D(0, 0, 0);
-          -ms-transform: translate3D(0, 0, 0);
-          transform: translate3D(0, 0, 0); }
+          -webkit-transform: translateY(0%);
+          -ms-transform: translateY(0%);
+          transform: translateY(0%); }
       .ui-content.is-about .about__back {
         margin-bottom: 36px;
         margin-top: 0px; }
@@ -1460,18 +1448,18 @@ body {
         position: absolute;
         top: 5rem;
         left: 50%;
-        -webkit-transform: translate3D(-50%, 0, 0);
-        -ms-transform: translate3D(-50%, 0, 0);
-        transform: translate3D(-50%, 0, 0);
+        -webkit-transform: translate(-50%, 0);
+        -ms-transform: translate(-50%, 0);
+        transform: translate(-50%, 0);
         width: 100%;
         display: none;
         pointer-events: auto; }
         .ui-content.is-about .about__works.noscroll {
           top: 50%;
           left: 50%;
-          -webkit-transform: translate3D(-50%, -50%, 0);
-          -ms-transform: translate3D(-50%, -50%, 0);
-          transform: translate3D(-50%, -50%, 0); }
+          -webkit-transform: translate(-50%, -50%);
+          -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%); }
       .ui-content.is-about .about__work {
         margin-bottom: 3.6rem; }
         .ui-content.is-about .about__work__top {
@@ -1495,9 +1483,9 @@ body {
             overflow: hidden;
             line-height: 1; }
             .ui-content.is-about .about__work__top > span:first-child > * {
-              -webkit-transform: translate3D(0, 150%, 0);
-              -ms-transform: translate3D(0, 150%, 0);
-              transform: translate3D(0, 150%, 0);
+              -webkit-transform: translateY(150%);
+              -ms-transform: translateY(150%);
+              transform: translateY(150%);
               opacity: 0;
               transition: opacity 0.6s linear, -webkit-transform 2s cubic-bezier(0.19, 1, 0.22, 1);
               transition: opacity 0.6s linear, transform 2s cubic-bezier(0.19, 1, 0.22, 1);
@@ -1508,15 +1496,15 @@ body {
               vertical-align: middle; }
               .ui-content.is-about .about__work__top > span:first-child > *.is-anim {
                 opacity: 1;
-                -webkit-transform: translate3D(0, 0, 0);
-                -ms-transform: translate3D(0, 0, 0);
-                transform: translate3D(0, 0, 0); }
+                -webkit-transform: translateY(0%);
+                -ms-transform: translateY(0%);
+                transform: translateY(0%); }
         .ui-content.is-about .about__work__descr {
           line-height: 1; }
           .ui-content.is-about .about__work__descr > * {
-            -webkit-transform: translate3D(0, 100%, 0);
-            -ms-transform: translate3D(0, 100%, 0);
-            transform: translate3D(0, 100%, 0);
+            -webkit-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            transform: translateY(100%);
             opacity: 0;
             transition: opacity 1s linear, -webkit-transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
             transition: opacity 1s linear, transform 1.6s cubic-bezier(0.19, 1, 0.22, 1);
@@ -1526,9 +1514,9 @@ body {
             vertical-align: middle; }
             .ui-content.is-about .about__work__descr > *.is-anim {
               opacity: 1;
-              -webkit-transform: translate3D(0, 0, 0);
-              -ms-transform: translate3D(0, 0, 0);
-              transform: translate3D(0, 0, 0); }
+              -webkit-transform: translateY(0%);
+              -ms-transform: translateY(0%);
+              transform: translateY(0%); }
         .ui-content.is-about .about__work p {
           font-size: 1.4rem;
           width: 80%;
