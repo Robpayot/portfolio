@@ -2,8 +2,7 @@ html {
 	font-family: 'Theinhardt';
     line-height:$base-line-height;
     font-size: 12px; // > 1920
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+
 	@include desktop { // 1900
 		font-size: 12px;
 	}
@@ -37,7 +36,7 @@ body {
 		z-index: 2000;
 	}
 	background-color: white;
-	overflow: hidden;
+	// overflow: hidden;
 
 	&.is-init {
 	    cursor:none !important;

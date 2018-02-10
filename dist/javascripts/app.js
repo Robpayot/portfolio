@@ -9510,7 +9510,7 @@ var AboutView = function (_AbstractView) {
 
 			console.log('oui');
 
-			this.splitTest = new _SplitText2.default('.about__test', { type: 'chars' });
+			this.splitTest = new _SplitText2.default('.about__test .parent', { type: 'chars' });
 
 			// this.splitTitle = new SplitText('.about__title', {type:'chars'});
 			// this.splitTexts = new SplitText('.about__intro p', {type:'words'});
@@ -9810,7 +9810,7 @@ var AboutView = function (_AbstractView) {
 		value: function animIntro() {
 			var _this7 = this;
 
-			var tlTitle = new TimelineMax();
+			var tlTitle = new TimelineMax({ repeat: -1 });
 			var delayTitle = 0;
 
 			var _loop = function _loop(i) {
@@ -9819,7 +9819,7 @@ var AboutView = function (_AbstractView) {
 					_this7.splitTest.chars[i].classList.add('is-anim');
 				}, delayTitle);
 
-				delayTitle += 0.07;
+				delayTitle += 0.1;
 			};
 
 			for (var i = 0; i < this.splitTest.chars.length; i++) {

@@ -439,7 +439,7 @@ export default class AboutView extends AbstractView {
 
 		console.log('oui');
 
-		this.splitTest = new SplitText('.about__test', {type:'chars'});
+		this.splitTest = new SplitText('.about__test .parent', {type:'chars'});
 
 		// this.splitTitle = new SplitText('.about__title', {type:'chars'});
 		// this.splitTexts = new SplitText('.about__intro p', {type:'words'});
@@ -696,7 +696,7 @@ export default class AboutView extends AbstractView {
 
 	animIntro() {
 
-		const tlTitle = new TimelineMax();
+		const tlTitle = new TimelineMax({repeat: -1});
 		let delayTitle = 0;
 		for (let i = 0; i < this.splitTest.chars.length; i++) {
 
@@ -704,7 +704,7 @@ export default class AboutView extends AbstractView {
 				this.splitTest.chars[i].classList.add('is-anim');
 			}, delayTitle);
 
-			delayTitle += 0.07;
+			delayTitle += 0.1;
 		}
 
 		delayTitle = 0;

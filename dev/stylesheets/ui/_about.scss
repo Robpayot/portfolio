@@ -3,7 +3,7 @@
 	line-height: 1.4em;
 	z-index: 10;
 	text-align: left;
-	user-select: none;
+	// user-select: none;
 	font-size: 1.2rem;
 	
 	// height: 100%;
@@ -12,6 +12,7 @@
 	// max-width: 1000px;
 	position: absolute;
 	width: 64vw;
+	will-change: transform;
 
 	@include mobile {
 		width: 70vw;
@@ -120,12 +121,28 @@
 		}
 
 		&__test {
-			& > * {
+
+			font-size: 20px;
+		    color: #030000;
+		    text-align: center;
+			    overflow: hidden;
+		    .parent {
+
+				text-align: center;
+			    margin: 0;
+			    display: block;
+			    line-height: 1.3em;
+
+		    }
+
+			.parent > * {
+
 				transform: translate3D(0, 100%, 0);
-				transition: transform 2s $ExpoEaseOut;
-				vertical-align: middle;
+				transform-origin: left center 0px;
+				// vertical-align: middle;
 
 				&.is-anim {
+					transition: transform 2s ease-out;
 					transform: translate3D(0, 0, 0);
 				}
 			}	
