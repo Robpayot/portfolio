@@ -41,7 +41,7 @@ export default class IntroView extends AbstractView {
 		this.el = this.ui.webGl;
 		this.gravity = obj.gravity;
 		this.name = 'intro';
-		this.debug = false;
+		this.debug = true;
 
 		// bind
 
@@ -256,7 +256,7 @@ export default class IntroView extends AbstractView {
 		this.skyTex.offset.x = 0.5;
 		this.skyTex.repeat.set( 1, 1 );
 		this.plane = new Mesh(
-			new PlaneGeometry(this.finalBounds * 2, this.finalBounds * 2),
+			new PlaneGeometry(this.finalBounds * 10, this.finalBounds * 10),
 			new MeshBasicMaterial({map: this.skyTex, side: DoubleSide}) // map: this.skyTex, color: white
 		);
 
@@ -313,7 +313,7 @@ export default class IntroView extends AbstractView {
 			} );
 
 			mesh = new Mesh(new SphereGeometry(this.perimeter, 32, 32), mat);
-			mesh.visible = this.debug;
+			mesh.visible = false;
 
 			this.scene.add(mesh);
 		}

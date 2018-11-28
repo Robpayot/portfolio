@@ -150,7 +150,7 @@ export default class ProjectView extends AbstractView {
 		this.sceneReady = sceneReady;
 
 
-		this.debug = false;
+		this.debug = true;
 		this.postProc = this.data.postProc || false;
 
 		this.cssObjects = [];
@@ -1099,7 +1099,7 @@ export default class ProjectView extends AbstractView {
 			global.SOUNDS['switch_long'].play();
 
 			let start = this.dir === -1 ? 0 : 300;
-			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}); // 2
+			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}, 0); // 2
 
 		}
 
@@ -1109,7 +1109,7 @@ export default class ProjectView extends AbstractView {
 
 		tl.add(() => {
 			global.OVERLAY.classList.remove('visible');
-		}, 0.1);
+		}, 0);
 
 		tl.add(() => {
 			// remover overlay class

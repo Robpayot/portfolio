@@ -80,7 +80,7 @@ class SceneManager {
 		if (opts.camera) opts.camera.aspect = window.innerWidth / window.innerHeight;
 		if (opts.camera) opts.camera.updateProjectionMatrix();
 
-		let coef = window.innerWidth > 1920 ? 0.65 : 0.65;
+		let coef = window.innerWidth > 1920 ? 0.65 : 0.75;
 
 		if (opts.coef) coef = opts.coef;
 

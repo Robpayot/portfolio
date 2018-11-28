@@ -49,7 +49,7 @@ export default class AbstractView {
 		let coef = false;
 
 		if (this.id === 0 ) {
-			coef = window.innerWidth > 1920 ? 0.65 : 0.7;
+			coef = window.innerWidth > 1920 ? 0.65 : 0.9;
 		}
 
 		if (this.id === 1 ) {

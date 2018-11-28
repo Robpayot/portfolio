@@ -100,7 +100,7 @@ export default class Levit extends ProjectView {
 	transitionIn() {
 
 		const tl = new TimelineMax();
-		let delay = 0.2;
+		let delay = 0;
 
 		for (let i = 0; i < this.asteroidsM.length; i++) {
 			const oldEndY = this.asteroids[i].endY;

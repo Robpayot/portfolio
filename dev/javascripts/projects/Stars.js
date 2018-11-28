@@ -3,15 +3,11 @@ import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
 
-
-
 // THREE JS
 import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Line, Vector3, Object3D, MeshPhongMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
-
-
 
 export default class Stars extends ProjectView {
 

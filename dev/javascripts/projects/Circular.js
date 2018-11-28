@@ -128,7 +128,7 @@ export default class Circular extends ProjectView {
 
 		// console.log(this.asteroidsM);
 		// this.materials[0].opacity = 0;
-		let delay = 0.5;
+		let delay = 0.3;
 		const tl = new TimelineMax();
 		for (let i = 0; i < this.materials.length; i++) {
 			tl.fromTo(this.materials[i], 1.5, {opacity: 0}, {opacity: 1, ease: window.Linear.easeNone }, delay);
