@@ -153,6 +153,8 @@ export default class ProjectView extends AbstractView {
 		this.debug = true;
 		this.postProc = this.data.postProc || false;
 
+		this.postProc = false;
+
 		this.cssObjects = [];
 		this.currentRotateY = { angle: 0};
 		this.cameraRotX = true;

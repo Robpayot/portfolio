@@ -10,6 +10,8 @@ export default class Glitch {
 
 	constructor(obj) {
 
+		return false;
+
 		// Load data
 		this.obj = obj;
 		this.el = obj.el;
@@ -140,7 +142,7 @@ export default class Glitch {
 	}
 
 	render() {
-
+		return false;
 
 		this.phase += this.phaseStep;
 

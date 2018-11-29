@@ -4,7 +4,7 @@ import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
 
 // THREE JS
-import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Line, Vector3, Object3D, MeshPhongMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
+import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Line, Vector3, Object3D, MeshPhongMaterial, MeshToonMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -95,7 +95,7 @@ export default class Stars extends ProjectView {
 		this.uniformsTerrain[ 'enableDiffuse2' ].value = false;
 		this.uniformsTerrain[ 'enableSpecular' ].value = true;
 
-		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x343434 ); // Light color : 0x343434
+		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x9A2604 ); // Light color : 0x343434
 		this.uniformsTerrain[ 'specular' ].value.setHex( 0xffffff );
 
 		this.uniformsTerrain[ 'shininess' ].value = 100; // shininess of material
@@ -267,8 +267,7 @@ export default class Stars extends ProjectView {
 
 	setLight() {
 
-		if (Device.touch === true) this.pointLight = new PointLight(0xffffff, 5, 120, 1);
-		else this.pointLight = new PointLight(0xffffff, 0, 120, 1);
+		this.pointLight = new PointLight(0xffffff, 1, 300);
 
 		// add to the scene
 		this.scene.add(this.pointLight);
@@ -282,7 +281,8 @@ export default class Stars extends ProjectView {
 		const material = new MeshBasicMaterial({color: 0x00FFFFF});
 
 		this.movingLight = new Mesh(geometry, material);
-		this.movingLight.position.y = 60;
+		this.movingLight.position.y = 100;
+		this.movingLight.rotation.x = toRadian(20);
 
 		this.group.add(this.movingLight);
 
@@ -303,7 +303,36 @@ export default class Stars extends ProjectView {
 
 		this.scene.add( this.group );
 
+		this.setSphere();
 
+
+	}
+
+	setSphere() {
+
+		this.nbSphere = 50;
+
+		this.groupSphere = new Object3D();
+
+		for (let i = 0; i < this.nbSphere; i++) {
+			const geometry = new SphereGeometry(getRandom(1, 7),32,32);
+
+			const material = new MeshPhongMaterial({color: 0x9C2604});
+			// material.emissive = 0x9C2604;
+			// material.emissiveIntensity = 4;
+
+			let sphere = new Mesh(geometry, material);
+			sphere.position.x = getRandom(-220, 220);
+			sphere.position.y = getRandom(-40, 100);
+			sphere.position.z = getRandom(-220, 220);
+
+			this.groupSphere.add( sphere );
+		}
+
+		this.groupSphere.rotation.x = toRadian(20);
+		this.groupSphere.rotation.y = toRadian(45);
+
+		this.scene.add( this.groupSphere );
 	}
 
 	transitionIn() {

@@ -397,6 +397,8 @@ var Glitch = function () {
 	function Glitch(obj) {
 		_classCallCheck(this, Glitch);
 
+		return false;
+
 		// Load data
 		this.obj = obj;
 		this.el = obj.el;
@@ -523,6 +525,7 @@ var Glitch = function () {
 	}, {
 		key: 'render',
 		value: function render() {
+			return false;
 
 			this.phase += this.phaseStep;
 
@@ -1591,14 +1594,14 @@ var AppManager = function () {
 				_PreloadManager2.default.off('complete', _this.introTexLoad);
 
 				// Display Title
-				_this.glitchEl = document.querySelector('.preload__glitch');
-				_this.glitch = new _Glitch2.default({ // issue link to ui footer here but Css
-					el: _this.glitchEl,
-					type: 'intro'
-				});
+				// this.glitchEl = document.querySelector('.preload__glitch');
+				// this.glitch = new Glitch({ // issue link to ui footer here but Css
+				// el: this.glitchEl,
+				// type: 'intro'
+				// });
 
-				_this.glitch.isLoading = true;
-				_this.glitch.ready = true;
+				// this.glitch.isLoading = true;
+				// this.glitch.ready = true;
 
 				// Loader Animation
 				var maxDash = 635;
@@ -1634,7 +1637,7 @@ var AppManager = function () {
 						if (req.status === 200) {
 							var videoBlob = req.response;
 							var vid = URL.createObjectURL(videoBlob); // IE10+
-							_this.glitch.video.src = vid;
+							// this.glitch.video.src = vid;
 							_this.preloadFonts();
 						}
 					};
@@ -1829,7 +1832,7 @@ var AppManager = function () {
 
 						// start destruction effect
 
-						_this5.glitch.video.play(); // play video
+						// this.glitch.video.play(); // play video
 
 
 						TweenMax.to(txt, 0.5, { opacity: 0 });
@@ -1842,7 +1845,7 @@ var AppManager = function () {
 						var tl = new TimelineMax();
 						tl.add(function () {
 							_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
-							_this5.glitch.isLoading = false; // apply video alpha
+							// this.glitch.isLoading = false; // apply video alpha
 						}, 1);
 						// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 						if (_RouterManager2.default.currentPage.name === 'intro') {
@@ -1864,7 +1867,7 @@ var AppManager = function () {
 						}, 3);
 
 						// tl.add(() => {
-						// 	this.glitch.ready = false; // stop raf destr
+						// this.glitch.ready = false; // stop raf destr
 						// });
 					};
 
@@ -1872,12 +1875,12 @@ var AppManager = function () {
 				} else {
 
 					// start destruction effect
-					this.glitch.video.play(); // play video
+					// this.glitch.video.play(); // play video
 
 					var tl = new TimelineMax();
 					tl.add(function () {
 						_RouterManager2.default.currentPage.transitionIn(!_RouterManager2.default.fromUrl);
-						_this5.glitch.isLoading = false; // apply video alpha
+						// this.glitch.isLoading = false; // apply video alpha
 					}, 0);
 					// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 					if (_RouterManager2.default.currentPage === null && /\/#about/.test(window.location.href) === false) {
@@ -1899,7 +1902,7 @@ var AppManager = function () {
 					}, 3);
 
 					tl.add(function () {
-						_this5.glitch.ready = false; // stop raf destr
+						// this.glitch.ready = false; // stop raf destr
 					});
 				}
 			}
@@ -1929,12 +1932,12 @@ var AppManager = function () {
 
 			_EmitterManager2.default.emit('raf');
 			// glitch title
-			if (this.glitch) {
+			// if (this.glitch) {
 
-				if (this.glitch.ready === true) {
-					this.glitch.render();
-				}
-			}
+			// if (this.glitch.ready === true) {
+			// this.glitch.render();
+			// 	}
+			// }
 		}
 	}, {
 		key: 'onMouseMove',
@@ -3509,7 +3512,7 @@ var Stars = function (_ProjectView) {
 			this.uniformsTerrain['enableDiffuse2'].value = false;
 			this.uniformsTerrain['enableSpecular'].value = true;
 
-			this.uniformsTerrain['diffuse'].value.setHex(0x343434); // Light color : 0x343434
+			this.uniformsTerrain['diffuse'].value.setHex(0x9A2604); // Light color : 0x343434
 			this.uniformsTerrain['specular'].value.setHex(0xffffff);
 
 			this.uniformsTerrain['shininess'].value = 100; // shininess of material
@@ -3672,7 +3675,7 @@ var Stars = function (_ProjectView) {
 		key: 'setLight',
 		value: function setLight() {
 
-			if (_Device.Device.touch === true) this.pointLight = new _three.PointLight(0xffffff, 5, 120, 1);else this.pointLight = new _three.PointLight(0xffffff, 0, 120, 1);
+			this.pointLight = new _three.PointLight(0xffffff, 1, 300);
 
 			// add to the scene
 			this.scene.add(this.pointLight);
@@ -3686,7 +3689,8 @@ var Stars = function (_ProjectView) {
 			var material = new _three.MeshBasicMaterial({ color: 0x00FFFFF });
 
 			this.movingLight = new _three.Mesh(geometry, material);
-			this.movingLight.position.y = 60;
+			this.movingLight.position.y = 100;
+			this.movingLight.rotation.x = (0, _utils.toRadian)(20);
 
 			this.group.add(this.movingLight);
 
@@ -3702,6 +3706,36 @@ var Stars = function (_ProjectView) {
 			this.group.visible = false;
 
 			this.scene.add(this.group);
+
+			this.setSphere();
+		}
+	}, {
+		key: 'setSphere',
+		value: function setSphere() {
+
+			this.nbSphere = 50;
+
+			this.groupSphere = new _three.Object3D();
+
+			for (var i = 0; i < this.nbSphere; i++) {
+				var geometry = new _three.SphereGeometry((0, _utils.getRandom)(1, 7), 32, 32);
+
+				var material = new _three.MeshPhongMaterial({ color: 0x9C2604 });
+				// material.emissive = 0x9C2604;
+				// material.emissiveIntensity = 4;
+
+				var sphere = new _three.Mesh(geometry, material);
+				sphere.position.x = (0, _utils.getRandom)(-220, 220);
+				sphere.position.y = (0, _utils.getRandom)(-40, 100);
+				sphere.position.z = (0, _utils.getRandom)(-220, 220);
+
+				this.groupSphere.add(sphere);
+			}
+
+			this.groupSphere.rotation.x = (0, _utils.toRadian)(20);
+			this.groupSphere.rotation.y = (0, _utils.toRadian)(45);
+
+			this.scene.add(this.groupSphere);
 		}
 	}, {
 		key: 'transitionIn',
@@ -10332,10 +10366,12 @@ var AbstractView = function () {
 			var coef = false;
 
 			if (this.id === 0) {
-				coef = window.innerWidth > 1920 ? 0.65 : 0.9;
+				console.log('yessss');
+				coef = 2;
 			}
 
 			if (this.id === 1) {
+
 				coef = window.innerWidth > 1920 ? 0.65 : 0.8;
 			}
 
@@ -11637,6 +11673,8 @@ var ProjectView = function (_AbstractView) {
 
 			this.debug = true;
 			this.postProc = this.data.postProc || false;
+
+			this.postProc = false;
 
 			this.cssObjects = [];
 			this.currentRotateY = { angle: 0 };

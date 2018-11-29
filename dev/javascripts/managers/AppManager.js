@@ -43,14 +43,14 @@ class AppManager {
 			PreloadManager.off('complete', this.introTexLoad);
 
 			// Display Title
-			this.glitchEl = document.querySelector('.preload__glitch');
-			this.glitch = new Glitch({ // issue link to ui footer here but Css
-				el: this.glitchEl,
-				type: 'intro'
-			});
+			// this.glitchEl = document.querySelector('.preload__glitch');
+			// this.glitch = new Glitch({ // issue link to ui footer here but Css
+				// el: this.glitchEl,
+				// type: 'intro'
+			// });
 
-			this.glitch.isLoading = true;
-			this.glitch.ready = true;
+			// this.glitch.isLoading = true;
+			// this.glitch.ready = true;
 
 			// Loader Animation
 			let maxDash = 635;
@@ -85,7 +85,7 @@ class AppManager {
 					if (req.status === 200) {
 						const videoBlob = req.response;
 						const vid = URL.createObjectURL(videoBlob); // IE10+
-						this.glitch.video.src = vid;
+						// this.glitch.video.src = vid;
 						this.preloadFonts();
 					}
 				};
@@ -306,7 +306,7 @@ class AppManager {
 
 					// start destruction effect
 
-					this.glitch.video.play(); // play video
+					// this.glitch.video.play(); // play video
 
 
 					TweenMax.to(txt, 0.5, {opacity: 0});
@@ -319,7 +319,7 @@ class AppManager {
 					const tl = new TimelineMax();
 					tl.add(() => {
 						RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
-						this.glitch.isLoading = false; // apply video alpha
+						// this.glitch.isLoading = false; // apply video alpha
 					}, 1);
 					// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 					if (RouterManager.currentPage.name === 'intro') {
@@ -341,7 +341,7 @@ class AppManager {
 					}, 3);
 
 					// tl.add(() => {
-					// 	this.glitch.ready = false; // stop raf destr
+						// this.glitch.ready = false; // stop raf destr
 					// });
 
 				};
@@ -351,12 +351,12 @@ class AppManager {
 			} else {
 
 				// start destruction effect
-				this.glitch.video.play(); // play video
+				// this.glitch.video.play(); // play video
 
 				const tl = new TimelineMax();
 				tl.add(() => {
 					RouterManager.currentPage.transitionIn(!RouterManager.fromUrl);
-					this.glitch.isLoading = false; // apply video alpha
+					// this.glitch.isLoading = false; // apply video alpha
 				}, 0);
 				// tl.to('.preload', 1, {autoAlpha: 0, ease: window.Linear.easeNone}, '+=0.5');
 				if (RouterManager.currentPage === null && /\/#about/.test(window.location.href) === false) {
@@ -378,7 +378,7 @@ class AppManager {
 				}, 3);
 
 				tl.add(() => {
-					this.glitch.ready = false; // stop raf destr
+					// this.glitch.ready = false; // stop raf destr
 				});
 			}
 		}
@@ -409,12 +409,12 @@ class AppManager {
 
 		EmitterManager.emit('raf');
 		// glitch title
-		if (this.glitch) {
+		// if (this.glitch) {
 
-			if (this.glitch.ready === true) {
-				this.glitch.render();
-			}
-		}
+			// if (this.glitch.ready === true) {
+				// this.glitch.render();
+		// 	}
+		// }
 	}
 
 	onMouseMove(e) {
