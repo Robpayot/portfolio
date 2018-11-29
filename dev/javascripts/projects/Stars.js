@@ -317,7 +317,11 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < this.nbSphere; i++) {
 			const geometry = new SphereGeometry(getRandom(1, 7),32,32);
 
-			const material = new MeshPhongMaterial({color: 0x9C2604});
+			const material = new MeshPhongMaterial({
+				color: 0x9C2604,
+				reflectivity: 150,
+				shininess: 150
+			});
 			// material.emissive = 0x9C2604;
 			// material.emissiveIntensity = 4;
 

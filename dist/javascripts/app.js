@@ -3720,7 +3720,11 @@ var Stars = function (_ProjectView) {
 			for (var i = 0; i < this.nbSphere; i++) {
 				var geometry = new _three.SphereGeometry((0, _utils.getRandom)(1, 7), 32, 32);
 
-				var material = new _three.MeshPhongMaterial({ color: 0x9C2604 });
+				var material = new _three.MeshPhongMaterial({
+					color: 0x9C2604,
+					reflectivity: 150,
+					shininess: 150
+				});
 				// material.emissive = 0x9C2604;
 				// material.emissiveIntensity = 4;
 
