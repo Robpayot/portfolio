@@ -3512,7 +3512,7 @@ var Stars = function (_ProjectView) {
 			this.uniformsTerrain['enableDiffuse2'].value = false;
 			this.uniformsTerrain['enableSpecular'].value = true;
 
-			this.uniformsTerrain['diffuse'].value.setHex(0x87FFE9); // Light color : 0x343434
+			this.uniformsTerrain['diffuse'].value.setHex(0x2645B0); // Light color : 0x343434
 			this.uniformsTerrain['specular'].value.setHex(0xffffff);
 
 			this.uniformsTerrain['shininess'].value = 100; // shininess of material
@@ -3597,35 +3597,35 @@ var Stars = function (_ProjectView) {
 						material.time = 1;
 						material.range = (0, _utils.oscillate)(0.2, 1);
 						// material.diffuse.value = new Color(0xEF1300);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(239, 19, 0, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
 						break;
 					case 1:
 						material.offset = 1000;
 						material.time = 2;
 						material.range = (0, _utils.oscillate)(0.3, 1);
 						// material.diffuse.value = new Color(0xEF1300);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(239, 19, 0, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
 						break;
 					case 2:
 						material.offset = 200;
 						material.time = 0.5;
 						material.range = (0, _utils.oscillate)(0.8, 1);
 						// material.diffuse.value = new Color(0xEF1300);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(239, 19, 0, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
 						break;
 					case 3:
 						material.offset = 400;
 						material.time = 0.5;
 						material.range = (0, _utils.oscillate)(0.5, 1);
 						// material.diffuse.value = new Color(0xEF4007);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(239, 64, 7, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
 						break;
 					case 4:
 						material.offset = 700;
 						material.time = 1.5;
 						material.range = (0, _utils.oscillate)(0.2, 0.8);
 						// material.diffuse.value = new Color(0xEF4007);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(239, 64, 7, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
 						break;
 				}
 				this.materials.push(material);
@@ -3720,8 +3720,8 @@ var Stars = function (_ProjectView) {
 			for (var i = 0; i < this.nbSphere; i++) {
 				var geometry = new _three.SphereGeometry((0, _utils.getRandom)(1, 7), 32, 32);
 
-				var material = new _three.MeshToonMaterial({
-					color: 0x87FFE9,
+				var material = new _three.MeshPhongMaterial({
+					color: 0x2645B0,
 					reflectivity: 150,
 					shininess: 150
 				});
@@ -11562,7 +11562,7 @@ var ProjectView = function (_AbstractView) {
 		// Get Blob URL bkg
 		var _this = _possibleConstructorReturn(this, (ProjectView.__proto__ || Object.getPrototypeOf(ProjectView)).call(this));
 
-		var arrayBufferView = _PreloadManager2.default.getResult('bkg-' + obj.id, true);
+		var arrayBufferView = _PreloadManager2.default.getResult('bkg-2', true);
 		var blob = new Blob([arrayBufferView], { type: 'image/jpeg' });
 		var urlCreator = window.URL || window.webkitURL;
 		var blobURL = urlCreator.createObjectURL(blob);
