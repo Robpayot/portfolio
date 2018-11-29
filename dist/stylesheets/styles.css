@@ -438,7 +438,8 @@ body {
 
 .cursor {
   position: relative;
-  font-size: 1.6rem; }
+  font-size: 1.6rem;
+  display: none; }
   .cursor__wrapper {
     margin: 0 auto;
     display: block;
