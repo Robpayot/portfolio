@@ -95,7 +95,7 @@ export default class Stars extends ProjectView {
 		this.uniformsTerrain[ 'enableDiffuse2' ].value = false;
 		this.uniformsTerrain[ 'enableSpecular' ].value = true;
 
-		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x9A2604 ); // Light color : 0x343434
+		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x87FFE9 ); // Light color : 0x343434
 		this.uniformsTerrain[ 'specular' ].value.setHex( 0xffffff );
 
 		this.uniformsTerrain[ 'shininess' ].value = 100; // shininess of material
@@ -317,8 +317,8 @@ export default class Stars extends ProjectView {
 		for (let i = 0; i < this.nbSphere; i++) {
 			const geometry = new SphereGeometry(getRandom(1, 7),32,32);
 
-			const material = new MeshPhongMaterial({
-				color: 0x9C2604,
+			const material = new MeshToonMaterial({
+				color: 0x87FFE9,
 				reflectivity: 150,
 				shininess: 150
 			});

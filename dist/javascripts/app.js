@@ -3512,7 +3512,7 @@ var Stars = function (_ProjectView) {
 			this.uniformsTerrain['enableDiffuse2'].value = false;
 			this.uniformsTerrain['enableSpecular'].value = true;
 
-			this.uniformsTerrain['diffuse'].value.setHex(0x9A2604); // Light color : 0x343434
+			this.uniformsTerrain['diffuse'].value.setHex(0x87FFE9); // Light color : 0x343434
 			this.uniformsTerrain['specular'].value.setHex(0xffffff);
 
 			this.uniformsTerrain['shininess'].value = 100; // shininess of material
@@ -3720,8 +3720,8 @@ var Stars = function (_ProjectView) {
 			for (var i = 0; i < this.nbSphere; i++) {
 				var geometry = new _three.SphereGeometry((0, _utils.getRandom)(1, 7), 32, 32);
 
-				var material = new _three.MeshPhongMaterial({
-					color: 0x9C2604,
+				var material = new _three.MeshToonMaterial({
+					color: 0x87FFE9,
 					reflectivity: 150,
 					shininess: 150
 				});
