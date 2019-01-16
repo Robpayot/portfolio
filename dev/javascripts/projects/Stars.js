@@ -2,9 +2,10 @@ import ProjectView from '../views/ProjectView';
 import { getRandom, toRadian, oscillate } from '../helpers/utils';
 import SceneManager from '../managers/SceneManager';
 import { Device } from '../helpers/Device';
+import dat from 'dat-gui';
 
 // THREE JS
-import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Line, Vector3, Object3D, MeshPhongMaterial, MeshToonMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
+import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Color, Line, Vector3, Object3D, MeshPhongMaterial, MeshToonMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -17,10 +18,31 @@ export default class Stars extends ProjectView {
 
 		// bind
 		this.setTerrain = this.setTerrain.bind(this);
+		this.handleGUI = this.handleGUI.bind(this);
 
 		this.nbAst = 150;
 		this.lightIntensity = { val: 0};
 		this.coefSpeed = 0.015;
+
+
+		this.gui = new dat.GUI();
+
+
+		this.guiOpts = {
+			terrain_color: '#2645B0',
+			shape_color: '#2645B0',
+			stars_color: '#2645B0'
+		};
+
+
+
+		this.gui.addColor(this.guiOpts, 'terrain_color').onChange(this.handleGUI).name('terrain color');
+		this.gui.addColor(this.guiOpts, 'shape_color').onChange(this.handleGUI).name('shape color');
+		this.gui.addColor(this.guiOpts, 'stars_color').onChange(this.handleGUI).name('stars color');
+
+
+		// colors
+		this.colorTerrain = '';
 
 		super.startScene();
 		this.setTerrain();
@@ -30,6 +52,29 @@ export default class Stars extends ProjectView {
 		this.scene.add( this.terrain );
 		this.scene.add(this.cursorPlane);
 
+	}
+
+	hexToRgbF(hex) {
+		let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+		return result ? {
+			r: parseInt(result[1], 16),
+			g: parseInt(result[2], 16),
+			b: parseInt(result[3], 16),
+		} : null;
+	}
+
+	handleGUI() {
+		let color = this.guiOpts.terrain_color.substr(1);
+		this.uniformsTerrain[ 'diffuse' ].value.setHex( `0x${color}` );
+
+		color = this.hexToRgbF(this.guiOpts.shape_color);
+		this.shapeMaterial.color = new Color( `rgb(${color.r}, ${color.g}, ${color.b})` );
+
+
+		color = this.hexToRgbF(this.guiOpts.stars_color);
+		for (let i = 0; i < this.asteroidsM.length; i++) {
+			this.asteroidsM[i].material.map = new CanvasTexture( this.generateGradient(`rgba(${color.r}, ${color.g}, ${color.b}, 1)`) ); // color
+		}
 	}
 
 	setTerrain() {
@@ -314,18 +359,19 @@ export default class Stars extends ProjectView {
 
 		this.groupSphere = new Object3D();
 
+		this.shapeMaterial = new MeshToonMaterial({
+			color: 0x2645B0,
+			reflectivity: 150,
+			shininess: 150
+		});
+
 		for (let i = 0; i < this.nbSphere; i++) {
 			const geometry = new SphereGeometry(getRandom(1, 7),32,32);
 
-			const material = new MeshToonMaterial({
-				color: 0x2645B0,
-				reflectivity: 150,
-				shininess: 150
-			});
 			// material.emissive = 0x9C2604;
 			// material.emissiveIntensity = 4;
 
-			let sphere = new Mesh(geometry, material);
+			let sphere = new Mesh(geometry, this.shapeMaterial);
 			sphere.position.x = getRandom(-220, 220);
 			sphere.position.y = getRandom(-40, 100);
 			sphere.position.z = getRandom(-220, 220);

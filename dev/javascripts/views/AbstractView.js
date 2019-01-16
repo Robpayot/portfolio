@@ -49,7 +49,6 @@ export default class AbstractView {
 		let coef = false;
 
 		if (this.id === 0 ) {
-			console.log('yessss');
 			coef = 2;
 		}
 
