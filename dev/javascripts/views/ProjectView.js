@@ -37,11 +37,12 @@ export default class ProjectView extends AbstractView {
 		// Update background
 
 		// Get Blob URL bkg
-		let arrayBufferView = PreloadManager.getResult(`bkg-2`, true);
+		let arrayBufferView = PreloadManager.getResult(`bkg-0`, true);
 		let blob = new Blob( [ arrayBufferView ], { type: 'image/jpeg' } );
 		let urlCreator = window.URL || window.webkitURL;
 		let blobURL = urlCreator.createObjectURL( blob );
 		SceneManager.renderer.domElement.style.backgroundImage = `url(${blobURL})`;
+		// SceneManager.renderer.domElement.style.backgroundImage = `none`;
 
 		// properties
 		this.el = this.ui.webGl;

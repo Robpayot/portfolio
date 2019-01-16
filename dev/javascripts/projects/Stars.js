@@ -29,9 +29,9 @@ export default class Stars extends ProjectView {
 
 
 		this.guiOpts = {
-			terrain_color: '#2645B0',
-			shape_color: '#2645B0',
-			stars_color: '#2645B0'
+			terrain_color: '#45a1de',
+			shape_color: '#45a1de',
+			stars_color: '#96d5ff'
 		};
 
 
@@ -140,7 +140,8 @@ export default class Stars extends ProjectView {
 		this.uniformsTerrain[ 'enableDiffuse2' ].value = false;
 		this.uniformsTerrain[ 'enableSpecular' ].value = true;
 
-		this.uniformsTerrain[ 'diffuse' ].value.setHex( 0x2645B0 ); // Light color : 0x343434
+		let color = this.guiOpts.terrain_color.substr(1);
+		this.uniformsTerrain[ 'diffuse' ].value.setHex( `0x${color}` ); // Light color : 0x343434
 		this.uniformsTerrain[ 'specular' ].value.setHex( 0xffffff );
 
 		this.uniformsTerrain[ 'shininess' ].value = 100; // shininess of material
@@ -220,6 +221,8 @@ export default class Stars extends ProjectView {
 		this.topY = 80;
 		this.bottomY = -45;
 
+		let color = this.hexToRgbF(this.guiOpts.stars_color);
+
 		for (let i = 0; i < this.nbMat; i++) {
 
 			const material = new SpriteMaterial( {
@@ -233,35 +236,35 @@ export default class Stars extends ProjectView {
 					material.time = 1;
 					material.range = oscillate(0.2,1);
 					// material.diffuse.value = new Color(0xEF1300);
-					material.map = new CanvasTexture( this.generateGradient('rgba(38, 69, 176, 1)') ); // color
+					material.map = new CanvasTexture( this.generateGradient(`rgba(${color.r}, ${color.g}, ${color.b}, 1)`) ); // color
 					break;
 				case 1:
 					material.offset = 1000;
 					material.time = 2;
 					material.range = oscillate(0.3,1);
 					// material.diffuse.value = new Color(0xEF1300);
-					material.map = new CanvasTexture( this.generateGradient('rgba(38, 69, 176, 1)') ); // color
+					material.map = new CanvasTexture( this.generateGradient(`rgba(${color.r}, ${color.g}, ${color.b}, 1)`) ); // color
 					break;
 				case 2:
 					material.offset = 200;
 					material.time = 0.5;
 					material.range = oscillate(0.8,1);
 					// material.diffuse.value = new Color(0xEF1300);
-					material.map = new CanvasTexture( this.generateGradient('rgba(38, 69, 176, 1)') ); // color
+					material.map = new CanvasTexture( this.generateGradient(`rgba(${color.r}, ${color.g}, ${color.b}, 1)`) ); // color
 					break;
 				case 3:
 					material.offset = 400;
 					material.time = 0.5;
 					material.range = oscillate(0.5,1);
 					// material.diffuse.value = new Color(0xEF4007);
-					material.map = new CanvasTexture( this.generateGradient('rgba(38, 69, 176, 1)') ); // color
+					material.map = new CanvasTexture( this.generateGradient(`rgba(${color.r}, ${color.g}, ${color.b}, 1)`) ); // color
 					break;
 				case 4:
 					material.offset = 700;
 					material.time = 1.5;
 					material.range = oscillate(0.2,0.8);
 					// material.diffuse.value = new Color(0xEF4007);
-					material.map = new CanvasTexture( this.generateGradient('rgba(38, 69, 176, 1)') ); // color
+					material.map = new CanvasTexture( this.generateGradient(`rgba(${color.r}, ${color.g}, ${color.b}, 1)`) ); // color
 					break;
 			}
 			this.materials.push(material);
@@ -359,8 +362,11 @@ export default class Stars extends ProjectView {
 
 		this.groupSphere = new Object3D();
 
+
+		const color = this.hexToRgbF(this.guiOpts.shape_color);
+
 		this.shapeMaterial = new MeshToonMaterial({
-			color: 0x2645B0,
+			color: `rgb(${color.r}, ${color.g}, ${color.b})`,
 			reflectivity: 150,
 			shininess: 150
 		});

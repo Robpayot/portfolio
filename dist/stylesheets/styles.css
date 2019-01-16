@@ -469,7 +469,8 @@ body {
   .cursor__next {
     top: 100%;
     margin-top: 0.7rem;
-    margin-left: 0.16rem; }
+    margin-left: 0.16rem;
+    display: none; }
   .cursor__prev {
     bottom: 100%;
     margin-bottom: 0.7rem;

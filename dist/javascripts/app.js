@@ -1734,7 +1734,7 @@ var AppManager = function () {
 			// textures
 			{ id: 'glitchTex', src: global.BASE + '/images/textures/glitch-1.png' }, { id: 'skyTex', src: global.BASE + '/images/textures/intro2_up.jpg' },
 			// bkg projects
-			{ id: 'bkg-0', src: global.BASE + '/images/' + mediaPath + 'textures/project-0.png' }, { id: 'bkg-1', src: global.BASE + '/images/' + mediaPath + 'textures/project-1.png' }, { id: 'bkg-2', src: global.BASE + '/images/' + mediaPath + 'textures/project-2.png' }, { id: 'bkg-3', src: global.BASE + '/images/' + mediaPath + 'textures/project-3.png' }]);
+			{ id: 'bkg-0', src: global.BASE + '/images/' + mediaPath + 'textures/project-cyan.png' }, { id: 'bkg-1', src: global.BASE + '/images/' + mediaPath + 'textures/project-1.png' }, { id: 'bkg-2', src: global.BASE + '/images/' + mediaPath + 'textures/project-2.png' }, { id: 'bkg-3', src: global.BASE + '/images/' + mediaPath + 'textures/project-3.png' }]);
 
 			// SkyTex
 			global.SKYTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
@@ -3444,9 +3444,9 @@ var Stars = function (_ProjectView) {
 		_this.gui = new _datGui2.default.GUI();
 
 		_this.guiOpts = {
-			terrain_color: '#2645B0',
-			shape_color: '#2645B0',
-			stars_color: '#2645B0'
+			terrain_color: '#45a1de',
+			shape_color: '#45a1de',
+			stars_color: '#96d5ff'
 		};
 
 		_this.gui.addColor(_this.guiOpts, 'terrain_color').onChange(_this.handleGUI).name('terrain color');
@@ -3556,7 +3556,8 @@ var Stars = function (_ProjectView) {
 			this.uniformsTerrain['enableDiffuse2'].value = false;
 			this.uniformsTerrain['enableSpecular'].value = true;
 
-			this.uniformsTerrain['diffuse'].value.setHex(0x2645B0); // Light color : 0x343434
+			var color = this.guiOpts.terrain_color.substr(1);
+			this.uniformsTerrain['diffuse'].value.setHex('0x' + color); // Light color : 0x343434
 			this.uniformsTerrain['specular'].value.setHex(0xffffff);
 
 			this.uniformsTerrain['shininess'].value = 100; // shininess of material
@@ -3628,6 +3629,8 @@ var Stars = function (_ProjectView) {
 			this.topY = 80;
 			this.bottomY = -45;
 
+			var color = this.hexToRgbF(this.guiOpts.stars_color);
+
 			for (var i = 0; i < this.nbMat; i++) {
 
 				var material = new _three.SpriteMaterial({
@@ -3641,35 +3644,35 @@ var Stars = function (_ProjectView) {
 						material.time = 1;
 						material.range = (0, _utils.oscillate)(0.2, 1);
 						// material.diffuse.value = new Color(0xEF1300);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)')); // color
 						break;
 					case 1:
 						material.offset = 1000;
 						material.time = 2;
 						material.range = (0, _utils.oscillate)(0.3, 1);
 						// material.diffuse.value = new Color(0xEF1300);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)')); // color
 						break;
 					case 2:
 						material.offset = 200;
 						material.time = 0.5;
 						material.range = (0, _utils.oscillate)(0.8, 1);
 						// material.diffuse.value = new Color(0xEF1300);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)')); // color
 						break;
 					case 3:
 						material.offset = 400;
 						material.time = 0.5;
 						material.range = (0, _utils.oscillate)(0.5, 1);
 						// material.diffuse.value = new Color(0xEF4007);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)')); // color
 						break;
 					case 4:
 						material.offset = 700;
 						material.time = 1.5;
 						material.range = (0, _utils.oscillate)(0.2, 0.8);
 						// material.diffuse.value = new Color(0xEF4007);
-						material.map = new _three.CanvasTexture(this.generateGradient('rgba(38, 69, 176, 1)')); // color
+						material.map = new _three.CanvasTexture(this.generateGradient('rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', 1)')); // color
 						break;
 				}
 				this.materials.push(material);
@@ -3761,8 +3764,10 @@ var Stars = function (_ProjectView) {
 
 			this.groupSphere = new _three.Object3D();
 
+			var color = this.hexToRgbF(this.guiOpts.shape_color);
+
 			this.shapeMaterial = new _three.MeshToonMaterial({
-				color: 0x2645B0,
+				color: 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')',
 				reflectivity: 150,
 				shininess: 150
 			});
@@ -11606,11 +11611,12 @@ var ProjectView = function (_AbstractView) {
 		// Get Blob URL bkg
 		var _this = _possibleConstructorReturn(this, (ProjectView.__proto__ || Object.getPrototypeOf(ProjectView)).call(this));
 
-		var arrayBufferView = _PreloadManager2.default.getResult('bkg-2', true);
+		var arrayBufferView = _PreloadManager2.default.getResult('bkg-0', true);
 		var blob = new Blob([arrayBufferView], { type: 'image/jpeg' });
 		var urlCreator = window.URL || window.webkitURL;
 		var blobURL = urlCreator.createObjectURL(blob);
 		_SceneManager2.default.renderer.domElement.style.backgroundImage = 'url(' + blobURL + ')';
+		// SceneManager.renderer.domElement.style.backgroundImage = `none`;
 
 		// properties
 		_this.el = _this.ui.webGl;
