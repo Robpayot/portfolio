@@ -12548,13 +12548,10 @@ var ProjectView = function (_AbstractView) {
 			// this.lastPage = 'intro';
 			fromUrl = false;
 
-			var time = 3;
-			var delay = 1.2;
+			var time = 0;
+			var delay = 0;
 
 			if (this.lastPage === 'intro') {
-
-				time = 4;
-				delay = 1.5;
 
 				var points = {
 					'camera': [{
@@ -12620,7 +12617,7 @@ var ProjectView = function (_AbstractView) {
 				global.SOUNDS['switch_long'].play();
 
 				var start = this.dir === -1 ? 0 : 300;
-				tl.fromTo(this.camera.position, 3, { z: start }, { z: this.zoomZ, ease: window.Expo.easeOut }, 0); // 2
+				tl.fromTo(this.camera.position, 0, { z: start }, { z: this.zoomZ, ease: window.Expo.easeOut }, 0); // 2
 			}
 
 			// tl.to('.overlay', 0.8, {
@@ -12636,18 +12633,18 @@ var ProjectView = function (_AbstractView) {
 				_this6.transitionInComplete = true;
 				if (global.MENU.el.classList.contains('is-anim') === false && _Device.Device.orientation !== 'portrait') {
 					global.MENU.el.classList.add('is-anim');
-					TweenMax.set('.navigate', { display: 'block', delay: 2 });
+					TweenMax.set('.navigate', { display: 'block', delay: 0 });
 				}
-			}, 0.8);
+			}, 0);
 
-			tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
+			tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 0, { // 1.2
 				opacity: 0,
 				y: 150
 			}, {
 				opacity: 0.8,
 				y: 0,
 				ease: window.Expo.easeOut
-			}, 0.1, delay);
+			}, 0, 0);
 
 			if (global.SCROLLED === false) {
 				TweenMax.to('.scroll', 1, { opacity: 1, delay: 5 });
@@ -39569,29 +39566,35 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 },{}],425:[function(require,module,exports){
 module.exports={
-  "_from": "p2@^0.7.1",
+  "_args": [
+    [
+      "p2@0.7.1",
+      "/Users/robinpayot/vagrant-local/www/portfolio"
+    ]
+  ],
+  "_development": true,
+  "_from": "p2@0.7.1",
   "_id": "p2@0.7.1",
   "_inBundle": false,
   "_integrity": "sha1-JfJHTZvDptMUCh2iamfJ4RislUM=",
   "_location": "/p2",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "p2@^0.7.1",
+    "raw": "p2@0.7.1",
     "name": "p2",
     "escapedName": "p2",
-    "rawSpec": "^0.7.1",
+    "rawSpec": "0.7.1",
     "saveSpec": null,
-    "fetchSpec": "^0.7.1"
+    "fetchSpec": "0.7.1"
   },
   "_requiredBy": [
     "#DEV:/"
   ],
   "_resolved": "https://registry.npmjs.org/p2/-/p2-0.7.1.tgz",
-  "_shasum": "25f2474d9bc3a6d3140a1da26a67c9e118ac9543",
-  "_spec": "p2@^0.7.1",
-  "_where": "/Applications/MAMP/htdocs/xp-son",
+  "_spec": "0.7.1",
+  "_where": "/Users/robinpayot/vagrant-local/www/portfolio",
   "author": {
     "name": "Stefan Hedman",
     "email": "schteppe@gmail.com",
@@ -39600,11 +39603,9 @@ module.exports={
   "bugs": {
     "url": "https://github.com/schteppe/p2.js/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {
     "poly-decomp": "0.1.1"
   },
-  "deprecated": false,
   "description": "A JavaScript 2D physics engine.",
   "devDependencies": {
     "grunt": "^0.4.5",

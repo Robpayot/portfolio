@@ -186,7 +186,8 @@ body {
   opacity: 0;
   z-index: 9000;
   pointer-events: none;
-  transition: opacity 0.3s linear; }
+  transition: opacity 0.3s linear;
+  display: none; }
   .overlay.is-intro {
     transition: opacity 1s linear; }
   .overlay.is-about {
@@ -546,7 +547,8 @@ body {
   align-items: center;
   z-index: 9000;
   overflow: hidden;
-  pointer-events: none; }
+  pointer-events: none;
+  display: none; }
   .preload__wrapper {
     position: relative;
     display: -ms-flexbox;
@@ -1225,7 +1227,8 @@ body {
         height: 100%;
         background-color: white;
         opacity: 0;
-        z-index: 0; }
+        z-index: 0;
+        display: none; }
     .ui-content.is-about {
       color: #000000;
       line-height: 1.4em;

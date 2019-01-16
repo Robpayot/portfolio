@@ -9,6 +9,7 @@
 	z-index: 9000;
 	pointer-events: none;
 	transition: opacity 0.3s linear;
+	display: none;
 
 	&.is-intro {
 		transition: opacity 1s linear;

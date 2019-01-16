@@ -1027,13 +1027,10 @@ export default class ProjectView extends AbstractView {
 		// this.lastPage = 'intro';
 		fromUrl = false;
 
-		let time = 3;
-		let delay = 1.2;
+		let time = 0;
+		let delay = 0;
 
 		if (this.lastPage === 'intro') {
-
-			time = 4;
-			delay = 1.5;
 
 			let points = {
 				'camera': [{
@@ -1101,7 +1098,7 @@ export default class ProjectView extends AbstractView {
 			global.SOUNDS['switch_long'].play();
 
 			let start = this.dir === -1 ? 0 : 300;
-			tl.fromTo(this.camera.position, 3, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}, 0); // 2
+			tl.fromTo(this.camera.position, 0, {z : start}, {z : this.zoomZ, ease: window.Expo.easeOut}, 0); // 2
 
 		}
 
@@ -1118,19 +1115,19 @@ export default class ProjectView extends AbstractView {
 			this.transitionInComplete = true;
 			if (global.MENU.el.classList.contains('is-anim') === false && Device.orientation !== 'portrait') {
 				global.MENU.el.classList.add('is-anim');
-				TweenMax.set('.navigate', {display: 'block', delay: 2});
+				TweenMax.set('.navigate', {display: 'block', delay: 0});
 			}
-		}, 0.8);
+		}, 0);
 
 
-		tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 2, { // 1.2
+		tl.staggerFromTo(['.project__number', '.glitch', '.project__more'], 0, { // 1.2
 			opacity: 0,
 			y: 150
 		}, {
 			opacity: 0.8,
 			y: 0,
 			ease: window.Expo.easeOut
-		}, 0.1, delay);
+		}, 0, 0);
 
 		if (global.SCROLLED === false) {
 			TweenMax.to('.scroll', 1, {opacity: 1, delay: 5});
