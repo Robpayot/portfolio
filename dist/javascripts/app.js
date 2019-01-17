@@ -1734,7 +1734,7 @@ var AppManager = function () {
 			// textures
 			{ id: 'glitchTex', src: global.BASE + '/images/textures/glitch-1.png' }, { id: 'skyTex', src: global.BASE + '/images/textures/intro2_up.jpg' },
 			// bkg projects
-			{ id: 'bkg-0', src: global.BASE + '/images/' + mediaPath + 'textures/project-cyan.png' }, { id: 'bkg-1', src: global.BASE + '/images/' + mediaPath + 'textures/project-1.png' }, { id: 'bkg-2', src: global.BASE + '/images/' + mediaPath + 'textures/project-2.png' }, { id: 'bkg-3', src: global.BASE + '/images/' + mediaPath + 'textures/project-3.png' }]);
+			{ id: 'bkg-0', src: global.BASE + '/images/' + mediaPath + 'textures/project-green.png' }, { id: 'bkg-1', src: global.BASE + '/images/' + mediaPath + 'textures/project-1.png' }, { id: 'bkg-2', src: global.BASE + '/images/' + mediaPath + 'textures/project-2.png' }, { id: 'bkg-3', src: global.BASE + '/images/' + mediaPath + 'textures/project-3.png' }]);
 
 			// SkyTex
 			global.SKYTEX = new _three.TextureLoader().load(global.BASE + '/images/textures/intro2_up.jpg');
@@ -3444,14 +3444,18 @@ var Stars = function (_ProjectView) {
 		_this.gui = new _datGui2.default.GUI();
 
 		_this.guiOpts = {
-			terrain_color: '#45a1de',
-			shape_color: '#45a1de',
-			stars_color: '#96d5ff'
+			terrain_color: '#0ccfad',
+			shape_color: '#24c58c',
+			stars_color: '#24c58c',
+			roughness: 1,
+			metalness: 0
 		};
 
 		_this.gui.addColor(_this.guiOpts, 'terrain_color').onChange(_this.handleGUI).name('terrain color');
 		_this.gui.addColor(_this.guiOpts, 'shape_color').onChange(_this.handleGUI).name('shape color');
 		_this.gui.addColor(_this.guiOpts, 'stars_color').onChange(_this.handleGUI).name('stars color');
+		_this.gui.add(_this.guiOpts, 'roughness', 0, 1).onChange(_this.handleGUI);
+		_this.gui.add(_this.guiOpts, 'metalness', 0, 1).onChange(_this.handleGUI);
 
 		// colors
 		_this.colorTerrain = '';
@@ -3484,6 +3488,8 @@ var Stars = function (_ProjectView) {
 
 			color = this.hexToRgbF(this.guiOpts.shape_color);
 			this.shapeMaterial.color = new _three.Color('rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')');
+			this.shapeMaterial.roughness = this.guiOpts.roughness;
+			this.shapeMaterial.metalness = this.guiOpts.metalness;
 
 			color = this.hexToRgbF(this.guiOpts.stars_color);
 			for (var i = 0; i < this.asteroidsM.length; i++) {
@@ -3724,6 +3730,8 @@ var Stars = function (_ProjectView) {
 
 			this.pointLight = new _three.PointLight(0xffffff, 1, 300);
 
+			// this.pointLight.visible = false;
+
 			// add to the scene
 			this.scene.add(this.pointLight);
 
@@ -3760,7 +3768,7 @@ var Stars = function (_ProjectView) {
 		key: 'setSphere',
 		value: function setSphere() {
 
-			this.nbSphere = 50;
+			this.nbSphere = 40;
 
 			this.groupSphere = new _three.Object3D();
 
@@ -3769,11 +3777,13 @@ var Stars = function (_ProjectView) {
 			this.shapeMaterial = new _three.MeshToonMaterial({
 				color: 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')',
 				reflectivity: 150,
-				shininess: 150
+				shininess: 150,
+				roughness: this.guiOpts.roughness,
+				metalness: this.guiOpts.metalness
 			});
 
 			for (var i = 0; i < this.nbSphere; i++) {
-				var geometry = new _three.SphereGeometry((0, _utils.getRandom)(1, 7), 32, 32);
+				var geometry = new _three.ConeGeometry((0, _utils.getRandom)(3, 8), (0, _utils.getRandom)(8, 18), 60);
 
 				// material.emissive = 0x9C2604;
 				// material.emissiveIntensity = 4;
@@ -3782,6 +3792,10 @@ var Stars = function (_ProjectView) {
 				sphere.position.x = (0, _utils.getRandom)(-220, 220);
 				sphere.position.y = (0, _utils.getRandom)(-40, 100);
 				sphere.position.z = (0, _utils.getRandom)(-220, 220);
+
+				sphere.rotation.x = (0, _utils.toRadian)((0, _utils.getRandom)(-220, 220));
+				sphere.rotation.y = (0, _utils.toRadian)((0, _utils.getRandom)(-220, 220));
+				sphere.rotation.z = (0, _utils.toRadian)((0, _utils.getRandom)(-220, 220));
 
 				this.groupSphere.add(sphere);
 			}

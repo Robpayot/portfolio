@@ -5,7 +5,7 @@ import { Device } from '../helpers/Device';
 import dat from 'dat-gui';
 
 // THREE JS
-import { SphereGeometry, Math as MathThree, Scene, MeshBasicMaterial, Geometry, Color, Line, Vector3, Object3D, MeshPhongMaterial, MeshToonMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
+import { SphereGeometry, TetrahedronGeometry, ConeGeometry, CylinderGeometry, Math as MathThree, Scene, MeshBasicMaterial, SpotLight, DirectionalLight, AmbientLight, Geometry, Color, Line, Vector3, Object3D, MeshPhongMaterial, MeshToonMaterial, MeshStandardMaterial, LineBasicMaterial, SpriteMaterial, Sprite, CanvasTexture, Mesh, PlaneBufferGeometry, LinearFilter, RGBFormat, Vector2, WebGLRenderTarget, OrthographicCamera, PointLight, UniformsUtils, ShaderMaterial, AdditiveBlending } from 'three';
 import BufferGeometryUtils from '../vendors/BufferGeometryUtils';
 import TerrainShader from '../shaders/TerrainShader';
 import NoiseShader from '../shaders/NoiseShader';
@@ -29,9 +29,11 @@ export default class Stars extends ProjectView {
 
 
 		this.guiOpts = {
-			terrain_color: '#45a1de',
-			shape_color: '#45a1de',
-			stars_color: '#96d5ff'
+			terrain_color: '#0ccfad',
+			shape_color: '#24c58c',
+			stars_color: '#24c58c',
+			roughness: 1,
+			metalness: 0,
 		};
 
 
@@ -39,6 +41,8 @@ export default class Stars extends ProjectView {
 		this.gui.addColor(this.guiOpts, 'terrain_color').onChange(this.handleGUI).name('terrain color');
 		this.gui.addColor(this.guiOpts, 'shape_color').onChange(this.handleGUI).name('shape color');
 		this.gui.addColor(this.guiOpts, 'stars_color').onChange(this.handleGUI).name('stars color');
+		this.gui.add(this.guiOpts, 'roughness', 0, 1).onChange(this.handleGUI);
+		this.gui.add(this.guiOpts, 'metalness', 0, 1).onChange(this.handleGUI);
 
 
 		// colors
@@ -69,6 +73,8 @@ export default class Stars extends ProjectView {
 
 		color = this.hexToRgbF(this.guiOpts.shape_color);
 		this.shapeMaterial.color = new Color( `rgb(${color.r}, ${color.g}, ${color.b})` );
+		this.shapeMaterial.roughness = this.guiOpts.roughness;
+		this.shapeMaterial.metalness = this.guiOpts.metalness;
 
 
 		color = this.hexToRgbF(this.guiOpts.stars_color);
@@ -317,6 +323,8 @@ export default class Stars extends ProjectView {
 
 		this.pointLight = new PointLight(0xffffff, 1, 300);
 
+		// this.pointLight.visible = false;
+
 		// add to the scene
 		this.scene.add(this.pointLight);
 
@@ -358,7 +366,7 @@ export default class Stars extends ProjectView {
 
 	setSphere() {
 
-		this.nbSphere = 50;
+		this.nbSphere = 40;
 
 		this.groupSphere = new Object3D();
 
@@ -368,11 +376,13 @@ export default class Stars extends ProjectView {
 		this.shapeMaterial = new MeshToonMaterial({
 			color: `rgb(${color.r}, ${color.g}, ${color.b})`,
 			reflectivity: 150,
-			shininess: 150
+			shininess: 150,
+			roughness: this.guiOpts.roughness,
+			metalness: this.guiOpts.metalness,
 		});
 
 		for (let i = 0; i < this.nbSphere; i++) {
-			const geometry = new SphereGeometry(getRandom(1, 7),32,32);
+			const geometry = new ConeGeometry(getRandom(3, 8),getRandom(8, 18), 60);
 
 			// material.emissive = 0x9C2604;
 			// material.emissiveIntensity = 4;
@@ -381,6 +391,11 @@ export default class Stars extends ProjectView {
 			sphere.position.x = getRandom(-220, 220);
 			sphere.position.y = getRandom(-40, 100);
 			sphere.position.z = getRandom(-220, 220);
+
+
+			sphere.rotation.x = toRadian(getRandom(-220, 220));
+			sphere.rotation.y = toRadian(getRandom(-220, 220));
+			sphere.rotation.z = toRadian(getRandom(-220, 220));
 
 			this.groupSphere.add( sphere );
 		}
